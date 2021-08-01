@@ -4,4 +4,6 @@ websocketでマイクラとdiscordを繋ぐやつ
 modules:<br>
 ws, uuid, discord.js, ip<br>
 
-`npm i ws uuid discord.js ip`
+```
+npm i ws uuid discord.js ip
+```
