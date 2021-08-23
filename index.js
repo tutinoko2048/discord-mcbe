@@ -75,7 +75,7 @@ function command(x) {
 
 wss.on('connection', (ws) => {
   console.log('[log] 接続を開始しました');
-  //client.channels.cache.get(channelId).send('[log] 接続を開始しました');
+  client.channels.cache.get(channelId).send('[log] 接続を開始しました');
 
   // ユーザー発言時のイベントをsubscribe
   ws.send(event('PlayerMessage'));
@@ -84,27 +84,22 @@ wss.on('connection', (ws) => {
   ws.on('message', packet => {
     const res = JSON.parse(packet);
     if (res.body.eventName === 'PlayerMessage') {
-      if (res.header.messagePurpose === 'event' && res.body.properties.MessageType !== 'title' && res.body.properties.Sender !== '外部' ) {
+      if (res.header.messagePurpose === 'event' && res.body.properties.MessageType !== 'title' && res.body.properties.Sender !== '外部' && !res.body.properties.Message.startsWith('{') ) {
         let Message = res.body.properties.Message;
         let Sender = res.body.properties.Sender;
         let sendTime = getTime();
-        let chatMessage = `[Minecraft-${sendTime}] ${Sender} : ${Message}`;
-        var result = chatMessage.replace('{"rawtext":[', '');
-        var result = result.replace('{"text":"', '');
-        var result = result.replace('"}]}', '');
+        let result = `[Minecraft-${sendTime}] ${Sender} : ${Message}`;
         console.log(result);
         
         //minecraft->discord
         //@everyone,@hereが含まれていたら送信をブロック
         if (res.body.properties.Message.search(/(@everyone|@here)/) === -1) {
-          //client.channels.cache.get(channelId).send(result);
+          client.channels.cache.get(channelId).send(result);
         } else {
           ws.send(command(`tellraw ${Sender} {\"rawtext\":[{\"text\":\"§4禁止語句が含まれているため送信をブロックしました。\"}]}`))
         }
-        
       }
     }
-
   });
   
   //discord->minecraft
@@ -120,8 +115,7 @@ wss.on('connection', (ws) => {
       console.log(logMessage);
       ws.send(command('tellraw @a {\"rawtext\":[{\"text\":\"' + logMessage + '\"}]}'));
     }
-  });
-    
+  });   
 });
 
 console.log(`Minecraft: /connect ${ip.address()}:${port}`)
