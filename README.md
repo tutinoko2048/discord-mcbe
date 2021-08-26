@@ -29,6 +29,6 @@ discordのbotが必要なので用意してください。
 これでチャットがどちらにも送られるようになるはずです
 
 ## /connectしても繋がらないときは
-pc版で繋がらないときは
+pc版で繋がらないときは<br>
 ```CheckNetIsolation.exe LoopbackExempt -a -n="Microsoft.MinecraftUWP_8wekyb3d8bbwe```<br>
 をコマンドプロンプトで**管理者権限**で実行するといけるみたいです
