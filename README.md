@@ -24,11 +24,11 @@ discordのbotが必要なので用意してください。
 
 ### 動かす
 サーバーを動かしてから、マイクラ側で<br>
-```/connect [ipアドレス]:[ポート]```
+```/connect [ipアドレス]:[ポート]```<br>
 のコマンドを実行します<br>
 これでチャットがどちらにも送られるようになるはずです
 
 ## /connectしても繋がらないときは
 pc版で繋がらないときは
-```CheckNetIsolation.exe LoopbackExempt -a -n="Microsoft.MinecraftUWP_8wekyb3d8bbwe```
+```CheckNetIsolation.exe LoopbackExempt -a -n="Microsoft.MinecraftUWP_8wekyb3d8bbwe```<br>
 をコマンドプロンプトで**管理者権限**で実行するといけるみたいです
