@@ -8,8 +8,8 @@ ws, uuid, discord.js, ip<br>
 npm i ws uuid discord.js ip
 ```
 <br>
-## 準備<br>
-### インストール<br>
+## 準備
+### インストール
 pcの場合はnodejsをインストール<br>
 https://nodejs.org/ja/<br>
 <br>
