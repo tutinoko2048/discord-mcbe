@@ -72,7 +72,6 @@ function command(x) {
 }
 
 // マイクラ側からの接続時に呼び出される関数
-
 wss.on('connection', (ws) => {
   console.log('[log] 接続を開始しました');
   client.channels.cache.get(channelId).send('[log] 接続を開始しました');
@@ -84,19 +83,19 @@ wss.on('connection', (ws) => {
   ws.on('message', packet => {
     const res = JSON.parse(packet);
     if (res.body.eventName === 'PlayerMessage') {
-      if (res.header.messagePurpose === 'event' && res.body.properties.MessageType !== 'title' && res.body.properties.Sender !== '外部' && !res.body.properties.Message.startsWith('{') ) {
+      if (res.body.properties.MessageType === 'chat' && res.body.properties.Sender !== '外部') {
         let Message = res.body.properties.Message;
         let Sender = res.body.properties.Sender;
         let sendTime = getTime();
-        let result = `[Minecraft-${sendTime}] ${Sender} : ${Message}`;
-        console.log(result);
+        let chatMessage = `[Minecraft-${sendTime}] ${Sender} : ${Message}`;
+        console.log(chatMessage);
         
         //minecraft->discord
         //@everyone,@hereが含まれていたら送信をブロック
         if (res.body.properties.Message.search(/(@everyone|@here)/) === -1) {
-          client.channels.cache.get(channelId).send(result);
+          client.channels.cache.get(channelId).send(chatMessage);
         } else {
-          ws.send(command(`tellraw ${Sender} {\"rawtext\":[{\"text\":\"§4禁止語句が含まれているため送信をブロックしました。\"}]}`))
+          ws.send(command(`tellraw ${Sender} {"rawtext":[{"text":"§4禁止語句が含まれているため送信をブロックしました。"}]}`))
         }
       }
     }
@@ -105,15 +104,12 @@ wss.on('connection', (ws) => {
   //discord->minecraft
   client.on('message', message => {
     // メッセージが送信されたとき
-    if (message.author.bot) {
-      return;
-    }
+    if (message.author.bot) return;
     if (message.channel.id == channelId) {
       let sendTime = getTime();
-      let userName = message.author.username;
-      let logMessage = `§b[discord-${sendTime}] ${userName} : ${message.content}`;
+      let logMessage = `[discord-${sendTime}] ${message.member.nickname} : ${message.content}`;
+      ws.send(command(`tellraw @a {"rawtext":[{"text":"§b${logMessage}"}]}`));
       console.log(logMessage);
-      ws.send(command('tellraw @a {\"rawtext\":[{\"text\":\"' + logMessage + '\"}]}'));
     }
   });   
 });
