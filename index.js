@@ -1,16 +1,12 @@
-/*
-modules:
-ws, uuid, discord.js, ip
-*/
-
 const WebSocket = require('ws');
+const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const discord = require("discord.js");
 const client = new discord.Client();
 const ip = require("ip");
 
 //Websocketサーバーのポート番号
-const port = 3000;
+const port = 8000;
 //discordのbotのトークン(流出注意)
 const token = 'ここにdiscordbotのトークンを入力';
 //メッセージを送信したいチャンネルのid
@@ -82,12 +78,11 @@ wss.on('connection', (ws) => {
   // 各種イベント発生時に呼ばれる関数
   ws.on('message', packet => {
     const res = JSON.parse(packet);
-    if (res.body.eventName === 'PlayerMessage') {
-      if (res.body.properties.MessageType === 'chat' && res.body.properties.Sender !== '外部') {
+    if (res.body.eventName == 'PlayerMessage') {
+      if (res.body.properties.MessageType == 'chat' && res.body.properties.Sender != '外部') {
         let Message = res.body.properties.Message;
         let Sender = res.body.properties.Sender;
-        let sendTime = getTime();
-        let chatMessage = `[Minecraft-${sendTime}] ${Sender} : ${Message}`;
+        let chatMessage = `[${getTime()}] ${Sender.replace(/§./g, '')} : ${Message.replace(/§./g, '')}`;
         console.log(chatMessage);
         
         //minecraft->discord
@@ -107,7 +102,7 @@ wss.on('connection', (ws) => {
     if (message.author.bot) return;
     if (message.channel.id == channelId) {
       let sendTime = getTime();
-      let logMessage = `[discord-${sendTime}] ${message.member.nickname} : ${message.content}`;
+      let logMessage = `[discord-${getTime()}] ${message.member.displayName} : ${message.content}`;
       ws.send(command(`tellraw @a {"rawtext":[{"text":"§b${logMessage}"}]}`));
       console.log(logMessage);
     }
