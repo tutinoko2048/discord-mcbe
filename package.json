@@ -1,0 +1,11 @@
+{
+  "name": "my-node-app",
+  "version": "1.0.0",
+  "dependencies": {
+    "discord.js": "^12.5.3",
+    "file-system": "^2.2.2",
+    "ip": "^1.1.5",
+    "uuid": "^8.3.2",
+    "ws": "^7.5.0"
+  }
+}
