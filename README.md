@@ -2,7 +2,7 @@
 websocketでマイクラとdiscordを繋ぐやつ
 <br>
 modules:<br>
-ws, uuid, discord.js, ip, file-system<br>
+ws, uuid, discord.js, ip<br>
 
 
 ## 使い方
