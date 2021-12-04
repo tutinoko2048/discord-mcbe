@@ -68,6 +68,7 @@ console.log(`Minecraft: /connect ${ip.address()}:${port}`);
 client.on('message', message => {
   // メッセージが送信されたとき
   if (message.author.bot) return;
+  if (message.channel.id != channelId) return;
   let logMessage = `[discord-${getTime()}] ${message.member.displayName} : ${message.content}`;
   console.log(logMessage);
   if (connection == null) return;
