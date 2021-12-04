@@ -5,7 +5,6 @@ const discord = require("discord.js");
 const client = new discord.Client();
 const ip = require("ip");
 let connection = null;
-const wss = new WebSocket.Server({ port: port });
 
 //Websocketサーバーのポート番号
 const port = 8000;
@@ -22,6 +21,7 @@ client.on('ready', () => {
 })
 
 // マイクラ側からの接続時に呼び出される関数
+const wss = new WebSocket.Server({ port: port });
 wss.on('connection', ws => {
   connection = ws;
 
