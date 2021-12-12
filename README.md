@@ -1,7 +1,7 @@
 # discord-mcbe
 websocketでマイクラとdiscordを繋ぐやつです。
 <br>
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/tutinoko2048/discord-mcbe/blob/main/LICENSE
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/tutinoko2048/discord-mcbe/blob/main/LICENSE)
 <br>
 modules:<br>
 ws, uuid, discord.js, ip<br>
