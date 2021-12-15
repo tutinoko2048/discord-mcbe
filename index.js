@@ -6,12 +6,8 @@ const client = new discord.Client();
 const ip = require("ip");
 let connection = null;
 
-//Websocketサーバーのポート番号
-const port = 8000;
-//discordのBOTのトークン(流出注意)
-const token = 'BOTのトークン';
-//メッセージを送信したいチャンネルのID
-const channelId = 'チャンネルのID';
+// config.jsonから設定を読み込む
+const { PORT, TOKEN, CHANNEL } = require('./config.json');
 
 //discordにログイン
 client.login(token);
