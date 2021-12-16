@@ -126,6 +126,61 @@ function command(x) {
   });
 }
 
+//コマンド実行結果を返す
+async function sendCmd(command) {
+  if (!state) return 
+  let json = {
+    header: {
+      requestId: uuidv4(),
+      messagePurpose: "commandRequest",
+      version: 1,
+      messageType: "commandRequest"
+    },
+    body: {
+      origin: {
+        type: "player"
+      },
+      commandLine: command,
+      version: 1
+    }
+  };
+  connection.send(JSON.stringify(json));
+  return await getResponse(json.header.requestId)
+}
+
+function getResponse(id) {
+  return new Promise( (res, rej) =>{
+    let interval = setInterval(() => {
+      if (!state) {
+        clearInterval(interval);
+        return rej();
+      }
+      let response = formation.get(id);
+      if (response != undefined) {
+        formation.delete(id);
+        clearInterval(interval);
+        res(response);
+      }
+    },500);
+  });
+}
+ 
+//tellrawメッセージを送信
+function sendMsg(msg, target) {
+  if (!state) return;
+  if (target == undefined) target = '@a';
+  let rawtext = JSON.stringify({
+    rawtext: [{ text: String(msg) }]
+  });
+  let txt = `tellraw ${target} ${rawtext}`;
+  connection.send(command(txt));
+}
+
+function sendD(msg, channel) {
+  if (channel == undefined) channel = CHANNEL;
+  return client.channels.cache.get(channel).send(msg);
+}
+
 //レスポンス付きでコマンド実行
 function sendCmd(command, callback) {
   let json = {
