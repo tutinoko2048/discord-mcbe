@@ -5,6 +5,7 @@ const discord = require("discord.js");
 const client = new discord.Client();
 const ip = require("ip");
 let connection = null;
+const formation = new Map();
 
 // config.jsonから設定を読み込む
 const { PORT, TOKEN, CHANNEL } = require('./config.json');
@@ -38,6 +39,13 @@ wss.on('connection', ws => {
   // 各種イベント発生時に呼ばれる関数
   ws.on('message', packet => {
     const res = JSON.parse(packet);
+    
+    if (res.header.messagePurpose == 'commandResponse') {
+      if (res.body.recipient == undefined) {
+        formation.set(res.header.requestId, res.body)
+      }
+    }
+    
     if (res.body.eventName == 'PlayerMessage') {
       if (res.body.properties.MessageType == 'chat' && res.body.properties.Sender != '外部') {
         let Message = res.body.properties.Message;
