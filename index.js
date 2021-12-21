@@ -10,7 +10,7 @@ const formation = new Map();
 // config.jsonから設定を読み込む
 const { PORT, TOKEN, CHANNEL } = require('./config.json');
 
-//discordにログイン
+// discordにログイン
 client.login(TOKEN);
 client.on('ready', () => {
   console.log(`${client.user.tag} でログインしています。`);
@@ -25,13 +25,12 @@ wss.on('connection', ws => {
   console.log('[log] 接続を開始しました');
   sendD('[log] 接続を開始しました');
 
-  // ユーザー発言時のイベントをsubscribe
+  // イベントを登録
   ws.send(event('PlayerMessage'));
   ws.send(event('commandResponse'));
   
-  getPlayers(callback => {
-    let {players} = callback;
-    fs.writeFileSync('players.json', JSON.stringify(players, null, 2));
+  getPlayers(data => {
+    fs.writeFileSync('players.json', JSON.stringify(data.players, null, 2));
   });
 
   setInterval(player, 2000);
@@ -65,6 +64,7 @@ wss.on('connection', ws => {
     }
   });
   
+  // 接続の切断時に呼び出される関数
   ws.on('close', () => {
     console.log(`[log] 接続が終了しました`);
     sendD(`[log] 接続が終了しました`);
@@ -76,14 +76,40 @@ wss.on('connection', ws => {
 console.log(`Minecraft: /connect ${ip.address()}:${PORT}`);
 
 
-//discord->minecraft
+// discord->minecraft
 client.on('message', message => {
   // メッセージが送信されたとき
   if (message.author.bot) return;
   if (message.channel.id != CHANNEL) return;
-  let logMessage = `[discord-${getTime()}] ${message.member.displayName} : ${message.content}`;
-  console.log(logMessage);
-  sendMsg(`§b${logMessage}`);
+  
+  // command or message
+  if (message.content.startsWith('.')) {
+    let command = message.content.replace(/^./, '');
+    
+    // .list でワールド内のプレイヤー一覧を表示
+    if (command == 'list') {
+      getPlayers(data =>  {
+        let {current,max,players} = data;
+        sendD({
+          embed: {
+            color: '#4287f5',
+            description: `現在の人数: ${current}/${max}\nプレイヤー:\n${players.sort().join(',')}`,
+            footer: {
+              text: `最終更新: ${getTime()}`
+            }
+          }
+        });
+      });
+      return;
+    }
+    
+    sendD('そのコマンドは存在しません');
+  } else {
+    let logMessage = `[discord-${getTime()}] ${message.member.displayName} : ${message.content}`;
+    console.log(logMessage);
+    sendMsg(`§b${logMessage}`);
+  }
+  
 });
   
 //時間取得用
@@ -170,11 +196,11 @@ function getResponse(id) {
         clearInterval(interval);
         res(response);
       }
-    },500);
+    },400);
   });
 }
  
-//tellrawメッセージを送信
+// tellrawメッセージを送信
 function sendMsg(msg, target) {
   if (!connection) return;
   target = (target === undefined) ? '@a' : `"${target}"`;
@@ -182,7 +208,6 @@ function sendMsg(msg, target) {
     rawtext: [{ text: String(msg) }]
   });
   let txt = `tellraw ${target} ${rawtext}`;
-  console.log(txt)
   connection.send(command(txt));
 }
 
@@ -191,8 +216,7 @@ function sendD(msg, channel) {
   return client.channels.cache.get(channel).send(msg);
 }
 
-
-//ワールド内のプレイヤーを取得
+// ワールド内のプレイヤーを取得
 function getPlayers(fn) {
   if (!connection) {
     fn({
@@ -202,19 +226,19 @@ function getPlayers(fn) {
     })
     return;
   }
-  sendCmd('list').then( callback => {
+  sendCmd('list').then(data => {
     fn({
-      current: callback.statusCode < 0 ? 0 : callback.currentPlayerCount,
-      max: callback.statusCode < 0 ? 0 : callback.maxPlayerCount,
-      players: callback.statusCode < 0 ? [] : callback.players.split(', ')
+      current: data.statusCode < 0 ? 0 : data.currentPlayerCount,
+      max: data.statusCode < 0 ? 0 : data.maxPlayerCount,
+      players: data.statusCode < 0 ? [] : data.players.split(', ')
     })
   });
 }
 
-//参加・退出通知
+// 参加・退出通知
 function player() {
-  getPlayers(callback => {
-    let {current,max,players} = callback;
+  getPlayers(data => {
+    let {current,max,players} = data;
     let playersBefore = JSON.parse(fs.readFileSync('players.json'));
     fs.writeFileSync('players.json', JSON.stringify(players, null, 2));
     
