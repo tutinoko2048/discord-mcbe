@@ -18,7 +18,7 @@ iosはplay.js, androidはtermuxというアプリがおすすめです。<br>
 discordのbotが必要なので用意してください。
 
 ### コピペしてみよう
-上の方にサーバーのポート,discordbotのtoken,メッセージを送信するチャンネルのIDを入力してください。<br>
+config.jsonにサーバーのポート,discordbotのtoken,メッセージを送信するチャンネルのIDを入力してください。<br>
 必要なモジュールも入れておいてください
 
 ### 動かす

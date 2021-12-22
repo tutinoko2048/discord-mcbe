@@ -5,87 +5,130 @@ const discord = require("discord.js");
 const client = new discord.Client();
 const ip = require("ip");
 let connection = null;
+const formation = new Map();
 
-//Websocketサーバーのポート番号
-const port = 8000;
-//discordのBOTのトークン(流出注意)
-const token = 'BOTのトークン';
-//メッセージを送信したいチャンネルのID
-const channelId = 'チャンネルのID';
+// config.jsonから設定を読み込む
+const { PORT, TOKEN, CHANNEL } = require('./config.json');
 
-//discordにログイン
-client.login(token);
+// discordにログイン
+client.login(TOKEN);
 client.on('ready', () => {
   console.log(`${client.user.tag} でログインしています。`);
-  client.channels.cache.get(channelId).send('[log] 起動しました');
+  sendD('[log] 起動しました');
 })
 
 // マイクラ側からの接続時に呼び出される関数
-const wss = new WebSocket.Server({ port: port });
+const wss = new WebSocket.Server({ port: PORT });
 wss.on('connection', ws => {
   connection = ws;
 
-  console.log('[log] 接続を開始しました');
-  client.channels.cache.get(channelId).send('[log] 接続を開始しました');
+  sendCmd('getlocalplayername').then(data => {
+    console.log(getTime(), `[log] ${data.localplayername} : 接続を開始しました`);
+    sendD(`[log] ${data.localplayername} : 接続を開始しました`);
+  });
 
-  // ユーザー発言時のイベントをsubscribe
+  // イベントを登録
   ws.send(event('PlayerMessage'));
   ws.send(event('commandResponse'));
   
-  getPlayers(callback => {
-    let {players} = callback;
-    fs.writeFileSync('players.json', JSON.stringify(players, null, 2));
+  // 接続時に現在のプレイヤーを取得しておく
+  getPlayers(data => {
+    fs.writeFileSync('players.json', JSON.stringify(data.players, null, 2));
   });
-
+  
+  // 参加・退出通知
   setInterval(player, 2000);
   
   // 各種イベント発生時に呼ばれる関数
   ws.on('message', packet => {
     const res = JSON.parse(packet);
+    
+    if (res.header.messagePurpose == 'commandResponse') {
+      if (res.body.recipient == undefined) {
+        formation.set(res.header.requestId, res.body)
+      }
+    }
+    
     if (res.body.eventName == 'PlayerMessage') {
       if (res.body.properties.MessageType == 'chat' && res.body.properties.Sender != '外部') {
         let Message = res.body.properties.Message;
         let Sender = res.body.properties.Sender;
+        
         let chatMessage = `[${getTime()}] ${Sender.replace(/§./g, '')} : ${Message.replace(/§./g, '')}`;
         console.log(chatMessage);
         
         //minecraft->discord
         //@everyone,@hereが含まれていたら送信をブロック
         if (res.body.properties.Message.search(/(@everyone|@here)/) === -1) {
-          client.channels.cache.get(channelId).send(chatMessage);
+          sendD(chatMessage);
         } else {
           sendMsg(`§4禁止語句が含まれているため送信をブロックしました。`, Sender);
         }
       }
     }
   });
+  
+  // 接続の切断時に呼び出される関数
+  ws.on('close', () => {
+    console.log(getTime(), `[log] 接続が終了しました`);
+    sendD(`[log] 接続が終了しました`);
+    connection = null;
+  });
+  
 });
 
-console.log(`Minecraft: /connect ${ip.address()}:${port}`);
+console.log(`Minecraft: /connect ${ip.address()}:${PORT}`);
 
 
-//discord->minecraft
+// discord->minecraft
 client.on('message', message => {
   // メッセージが送信されたとき
   if (message.author.bot) return;
-  if (message.channel.id != channelId) return;
-  let logMessage = `[discord-${getTime()}] ${message.member.displayName} : ${message.content}`;
-  console.log(logMessage);
-  if (connection == null) return;
-  sendMsg(`§b${logMessage}`);
+  if (message.channel.id != CHANNEL) return;
+  
+  // command or message
+  if (message.content.startsWith('.')) {
+    let command = message.content.replace(/^./, '');
+    
+    // .list でワールド内のプレイヤー一覧を表示
+    if (command == 'list') {
+      getPlayers(data =>  {
+        let {current,max,players} = data;
+        sendD({
+          embed: {
+            color: '#4287f5',
+            description: `現在の人数: ${current}/${max}\nプレイヤー:\n${players.sort().join(',')}`,
+            footer: {
+              text: `最終更新: ${getTime()}`
+            }
+          }
+        });
+      });
+      return;
+    }
+    
+    sendD('そのコマンドは存在しません');
+  } else {
+    let logMessage = `[discord-${getTime()}] ${message.member.displayName} : ${message.content}`;
+    console.log(logMessage);
+    sendMsg(`§b${logMessage}`);
+  }
+  
 });
   
 //時間取得用
-function getTime() {
+function getTime(mode) {
   let date = new Date();
-  let hour = date.getHours();
-  let minute = date.getMinutes();
-  let second = date.getSeconds();
-  hour = ('0' + hour).slice(-2);
-  minute = ('0' + minute).slice(-2);
-  second = ('0' + second).slice(-2);
-  let time = hour + ':' + minute + ':' + second;
-  return time;
+  let month = date.getMonth()+1;
+  let day = date.getDate();
+  let hour = ('0' + (date.getHours())).slice(-2);
+  let minute = ('0' + date.getMinutes()).slice(-2);
+  let second = ('0' + date.getSeconds()).slice(-2);
+  if (mode == 'date') {
+    return `${month}/${day} ${hour}:${minute}:${second}`;
+  } else {
+    return `${hour}:${minute}:${second}`;
+  }
 }
 
 //ユーザー発言時のイベント登録用JSON文字列を生成する関数
@@ -122,8 +165,9 @@ function command(x) {
   });
 }
 
-//レスポンス付きでコマンド実行
-function sendCmd(command, callback) {
+//コマンド実行結果を返す
+async function sendCmd(command) {
+  if (!connection) return;
   let json = {
     header: {
       requestId: uuidv4(),
@@ -140,38 +184,64 @@ function sendCmd(command, callback) {
     }
   };
   connection.send(JSON.stringify(json));
-  if (callback == undefined) return;
-  connection.on('message', packet => {
-    let res = JSON.parse(packet);
-    if (res.header.requestId == json.header.requestId) {
-      callback(res.body);
-    }
-  });
+  return await getResponse(json.header.requestId);
 }
 
-//tellrawを送信
+function getResponse(id) {
+  return new Promise( (res, rej) =>{
+    let interval = setInterval(() => {
+      if (!connection) {
+        clearInterval(interval);
+        return rej();
+      }
+      let response = formation.get(id);
+      if (response != undefined) {
+        formation.delete(id);
+        clearInterval(interval);
+        res(response);
+      }
+    }, 400);
+  });
+}
+ 
+// tellrawメッセージを送信
 function sendMsg(msg, target) {
-  if (target == undefined) target = '@a';
-  let txt = `tellraw ${target} {"rawtext":[{"text":"${msg}"}]}`;
+  if (!connection) return;
+  target = (target === undefined) ? '@a' : `"${target}"`;
+  let rawtext = JSON.stringify({
+    rawtext: [{ text: String(msg) }]
+  });
+  let txt = `tellraw ${target} ${rawtext}`;
   connection.send(command(txt));
 }
 
-//ワールド内のプレイヤーを取得
+function sendD(msg, channel = CHANNEL) {
+  return client.channels.cache.get(channel).send(msg);
+}
+
+// ワールド内のプレイヤーを取得
 function getPlayers(fn) {
-  sendCmd('list', callback => {
-    let info = {
-      current: callback.statusCode < 0 ? 0 : callback.currentPlayerCount,
-      max: callback.statusCode < 0 ? 0 : callback.maxPlayerCount,
-      players: callback.statusCode < 0 ? [] : callback.players.split(', ')
-    }
-    fn(info);
+  if (!connection) {
+    fn({
+      current: 0,
+      max: 0,
+      players: []
+    })
+    return;
+  }
+  sendCmd('list').then(data => {
+    fn({
+      current: data.statusCode < 0 ? 0 : data.currentPlayerCount,
+      max: data.statusCode < 0 ? 0 : data.maxPlayerCount,
+      players: data.statusCode < 0 ? [] : data.players.split(', ')
+    })
   });
 }
 
-//参加・退出通知
+// 参加・退出通知
 function player() {
-  getPlayers(callback => {
-    let {current,max,players} = callback;
+  getPlayers(data => {
+    let {current,max,players} = data;
     let playersBefore = JSON.parse(fs.readFileSync('players.json'));
     fs.writeFileSync('players.json', JSON.stringify(players, null, 2));
     
@@ -179,7 +249,7 @@ function player() {
       let joined = players.filter(i => playersBefore.indexOf(i) == -1);
       let msg = `Joined: ${joined}  ||  ${current}/${max}`;
       console.log(msg);
-      client.channels.cache.get(channelId).send({
+      sendD({
         embed: {
           color: '#48f542',
           description: `**${msg}**`
@@ -190,7 +260,7 @@ function player() {
       let left = playersBefore.filter(i => players.indexOf(i) == -1);
       let msg = `Left: ${left}  ||  ${current}/${max}`;
       console.log(msg);
-      client.channels.cache.get(channelId).send({
+      sendD({
         embed: {
           color: '#f54242',
           description: `**${msg}**`
