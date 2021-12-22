@@ -22,17 +22,21 @@ const wss = new WebSocket.Server({ port: PORT });
 wss.on('connection', ws => {
   connection = ws;
 
-  console.log('[log] 接続を開始しました');
-  sendD('[log] 接続を開始しました');
+  sendCmd('getlocalplayername').then(data => {
+    console.log(getTime(), `[log] ${data.localplayername} : 接続を開始しました`);
+    sendD(`[log] ${data.localplayername} : 接続を開始しました`);
+  });
 
   // イベントを登録
   ws.send(event('PlayerMessage'));
   ws.send(event('commandResponse'));
   
+  // 接続時に現在のプレイヤーを取得しておく
   getPlayers(data => {
     fs.writeFileSync('players.json', JSON.stringify(data.players, null, 2));
   });
-
+  
+  // 参加・退出通知
   setInterval(player, 2000);
   
   // 各種イベント発生時に呼ばれる関数
@@ -66,7 +70,7 @@ wss.on('connection', ws => {
   
   // 接続の切断時に呼び出される関数
   ws.on('close', () => {
-    console.log(`[log] 接続が終了しました`);
+    console.log(getTime(), `[log] 接続が終了しました`);
     sendD(`[log] 接続が終了しました`);
     connection = null;
   });
@@ -117,7 +121,7 @@ function getTime(mode) {
   let date = new Date();
   let month = date.getMonth()+1;
   let day = date.getDate();
-  let hour = ('0' + (date.getHours()+9)).slice(-2);
+  let hour = ('0' + (date.getHours())).slice(-2);
   let minute = ('0' + date.getMinutes()).slice(-2);
   let second = ('0' + date.getSeconds()).slice(-2);
   if (mode == 'date') {
@@ -196,7 +200,7 @@ function getResponse(id) {
         clearInterval(interval);
         res(response);
       }
-    },400);
+    }, 400);
   });
 }
  
@@ -211,8 +215,7 @@ function sendMsg(msg, target) {
   connection.send(command(txt));
 }
 
-function sendD(msg, channel) {
-  if (channel == undefined) channel = CHANNEL;
+function sendD(msg, channel = CHANNEL) {
   return client.channels.cache.get(channel).send(msg);
 }
 
