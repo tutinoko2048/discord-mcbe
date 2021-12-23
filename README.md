@@ -2,7 +2,7 @@
 websocketでマイクラとdiscordを繋ぐやつです。<br>
 https://youtu.be/BEv4oozeQKU<br>
 <br>
-![image](image.png)<br>
+![image](image.jpeg)<br>
 ![listCommand](list.jpeg)<br>
 
 
