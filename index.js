@@ -1,11 +1,14 @@
 const WebSocket = require('ws');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
-const discord = require("discord.js");
+const discord = require('discord.js');
 const client = new discord.Client();
-const ip = require("ip");
+const ip = require('ip');
+const moment = require('moment-timezone');
+moment.tz.setDefault('Asia/Tokyo'); // タイムゾーンを設定
 let connection = null;
 const formation = new Map();
+const playersNow = [];
 
 // config.jsonから設定を読み込む
 const { PORT, TOKEN, CHANNEL } = require('./config.json');
@@ -15,7 +18,7 @@ client.login(TOKEN);
 client.on('ready', () => {
   console.log(`${client.user.tag} でログインしています。`);
   sendD('[log] 起動しました');
-})
+});
 
 // マイクラ側からの接続時に呼び出される関数
 const wss = new WebSocket.Server({ port: PORT });
@@ -32,9 +35,7 @@ wss.on('connection', ws => {
   ws.send(event('commandResponse'));
   
   // 接続時に現在のプレイヤーを取得しておく
-  getPlayers(data => {
-    fs.writeFileSync('players.json', JSON.stringify(data.players, null, 2));
-  });
+  getPlayers(data => playersNow = data.players);
   
   // 参加・退出通知
   setInterval(player, 2000);
@@ -54,12 +55,11 @@ wss.on('connection', ws => {
         let Message = res.body.properties.Message;
         let Sender = res.body.properties.Sender;
         
-        let chatMessage = `[${getTime()}] ${Sender.replace(/§./g, '')} : ${Message.replace(/§./g, '')}`;
+        let chatMessage = `[${getTime()}] ${Sender.replace(/§./g, '')} : ${Message.replace(/§./g, '').replace('@', '`@`')}`;
         console.log(chatMessage);
         
         //minecraft->discord
-        //@everyone,@hereが含まれていたら送信をブロック
-        if (res.body.properties.Message.search(/(@everyone|@here)/) === -1) {
+        if (chatMessage.search(/(@everyone|@here)/) === -1) {
           sendD(chatMessage);
         } else {
           sendMsg(`§4禁止語句が含まれているため送信をブロックしました。`, Sender);
@@ -104,10 +104,7 @@ client.on('message', message => {
           }
         });
       });
-      return;
     }
-    
-    sendD('そのコマンドは存在しません');
   } else {
     let logMessage = `[discord-${getTime()}] ${message.member.displayName} : ${message.content}`;
     console.log(logMessage);
@@ -118,17 +115,8 @@ client.on('message', message => {
   
 //時間取得用
 function getTime(mode) {
-  let date = new Date();
-  let month = date.getMonth()+1;
-  let day = date.getDate();
-  let hour = ('0' + (date.getHours())).slice(-2);
-  let minute = ('0' + date.getMinutes()).slice(-2);
-  let second = ('0' + date.getSeconds()).slice(-2);
-  if (mode == 'date') {
-    return `${month}/${day} ${hour}:${minute}:${second}`;
-  } else {
-    return `${hour}:${minute}:${second}`;
-  }
+  let time = (mode === 'date') ? moment().format('MM/DD HH:mm:ss') : moment().format('HH:mm:ss');
+  return time
 }
 
 //ユーザー発言時のイベント登録用JSON文字列を生成する関数
@@ -200,7 +188,7 @@ function getResponse(id) {
         clearInterval(interval);
         res(response);
       }
-    }, 400);
+    }, 200);
   });
 }
  
@@ -242,8 +230,8 @@ function getPlayers(fn) {
 function player() {
   getPlayers(data => {
     let {current,max,players} = data;
-    let playersBefore = JSON.parse(fs.readFileSync('players.json'));
-    fs.writeFileSync('players.json', JSON.stringify(players, null, 2));
+    let playersBefore = playersNow;
+    playersNow = players;
     
     if (players.length > playersBefore.length) {
       let joined = players.filter(i => playersBefore.indexOf(i) == -1);
