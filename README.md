@@ -1,10 +1,9 @@
 # discord-mcbe
 websocketでマイクラとdiscordを繋ぐやつです。<br>
+https://youtu.be/BEv4oozeQKU<br>
 <br>
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/tutinoko2048/discord-mcbe/blob/main/LICENSE)<br>
-<br>
-modules:<br>
-ws, uuid, discord.js, ip<br>
+![image](docs/image.jpeg)<br>
+![listCommand](docs/list.jpeg)<br>
 
 
 ## 使い方
