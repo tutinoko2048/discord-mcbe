@@ -230,11 +230,8 @@ function getPlayers(fn) {
 function player() {
   getPlayers(data => {
     let {current,max,players} = data;
-    let playersBefore = playersNow;
-    playersNow = players;
-    
-    if (players.length > playersBefore.length) {
-      let joined = players.filter(i => playersBefore.indexOf(i) == -1);
+    if (players.length > playersNow.length) {
+      let joined = players.filter(i => playersNow.indexOf(i) == -1);
       let msg = `Joined: ${joined}  ||  ${current}/${max}`;
       console.log(msg);
       sendD({
@@ -244,8 +241,8 @@ function player() {
         }
       });
     }
-    if (players.length < playersBefore.length) {
-      let left = playersBefore.filter(i => players.indexOf(i) == -1);
+    if (players.length < playersNow.length) {
+      let left = playersNow.filter(i => players.indexOf(i) == -1);
       let msg = `Left: ${left}  ||  ${current}/${max}`;
       console.log(msg);
       sendD({
@@ -255,5 +252,6 @@ function player() {
         }
       });
     }
+    playersNow = players;
   });
 }
