@@ -12,6 +12,7 @@ const playersNow = [];
 
 // config.jsonから設定を読み込む
 const { PORT, TOKEN, CHANNEL, PREFIX } = require('./config.json');
+const prefixEscaped = new RegExp(`^${PREFIX.replace(/[-\/\\^$*+?.()|\[\]{}]/g, '\\$&')}`);
 
 // discordにログイン
 client.login(TOKEN);
@@ -88,7 +89,8 @@ client.on('message', message => {
   
   // command or message
   if (message.content.startsWith(PREFIX)) {
-    let command = message.content.replace(new RegExp(`^(${PREFIX})`), '');
+    let args = message.content.replace(prefixEscaped, '').split(' ')
+    let command = args[0];
     
     // .list でワールド内のプレイヤー一覧を表示
     if (command == 'list') {
@@ -105,6 +107,7 @@ client.on('message', message => {
         });
       });
     }
+    
   } else {
     let logMessage = `[discord-${getTime()}] ${message.member.displayName} : ${message.content}`;
     console.log(logMessage);
