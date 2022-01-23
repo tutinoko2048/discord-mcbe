@@ -87,8 +87,8 @@ client.on('message', message => {
   if (message.channel.id != CHANNEL) return;
   
   // command or message
-  if (message.content.startsWith('.')) {
-    let command = message.content.replace(/^./, '');
+  if (message.content.startsWith(PREFIX)) {
+    let command = message.content.replace(new RegExp(`^(${PREFIX})`), '');
     
     // .list でワールド内のプレイヤー一覧を表示
     if (command == 'list') {
