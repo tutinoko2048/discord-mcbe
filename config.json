@@ -1,5 +1,6 @@
 {
   "PORT": 19132,
   "TOKEN": "",
-  "CHANNEL": ""
+  "CHANNEL": "",
+  "PREFIX": "."
 }
