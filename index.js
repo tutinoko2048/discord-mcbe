@@ -183,13 +183,12 @@ function getResponse(id) {
     let interval = setInterval(() => {
       if (!connection) {
         clearInterval(interval);
-        return rej();
+        return rej(new Error('Server is offline'));
       }
-      let response = formation.get(id);
-      if (response != undefined) {
+      if (formation.has(id)) {
         formation.delete(id);
         clearInterval(interval);
-        res(response);
+        res(formation.get(id));
       }
     }, 200);
   });
