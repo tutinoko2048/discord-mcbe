@@ -11,7 +11,7 @@ const formation = new Map();
 const playersNow = [];
 
 // config.jsonから設定を読み込む
-const { PORT, TOKEN, CHANNEL } = require('./config.json');
+const { PORT, TOKEN, CHANNEL, PREFIX } = require('./config.json');
 
 // discordにログイン
 client.login(TOKEN);
