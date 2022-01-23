@@ -19,11 +19,12 @@ client.login(TOKEN);
 client.on('ready', () => {
   console.log(`${client.user.tag} でログインしています。`);
   sendD('[log] 起動しました');
+  client.user.setActivity(`Prefix: ${PREFIX}`);
 });
 
 // マイクラ側からの接続時に呼び出される関数
 const wss = new WebSocket.Server({ port: PORT });
-wss.on('connection', ws => {
+wss.on('connection', (ws) => {
   connection = ws;
 
   sendCmd('getlocalplayername').then(data => {
@@ -46,7 +47,7 @@ wss.on('connection', ws => {
     const res = JSON.parse(packet);
     
     if (res.header.messagePurpose == 'commandResponse') {
-      if (res.body.recipient == undefined) {
+      if (res.body.recipient === undefined) {
         formation.set(res.header.requestId, res.body)
       }
     }
@@ -59,7 +60,7 @@ wss.on('connection', ws => {
         let chatMessage = `[${getTime()}] ${Sender.replace(/§./g, '')} : ${Message.replace(/§./g, '').replace('@', '`@`')}`;
         console.log(chatMessage);
         
-        //minecraft->discord
+        // minecraft -> discord
         if (chatMessage.search(/(@everyone|@here)/) === -1) {
           sendD(chatMessage);
         } else {
@@ -80,20 +81,19 @@ wss.on('connection', ws => {
 
 console.log(`Minecraft: /connect ${ip.address()}:${PORT}`);
 
-
 // discord->minecraft
-client.on('message', message => {
+client.on('message', (message) => {
   // メッセージが送信されたとき
   if (message.author.bot) return;
   if (message.channel.id != CHANNEL) return;
   
-  // command or message
+  // command or message | prefixはconfigで設定できます
   if (message.content.startsWith(PREFIX)) {
-    let args = message.content.replace(prefixEscaped, '').split(' ')
+    let args = message.content.replace(prefixEscaped, '').split(' ');
     let command = args[0];
     
-    // .list でワールド内のプレイヤー一覧を表示
-    if (command == 'list') {
+    // .list でプレイヤー一覧を表示
+    if (command === 'list') {
       getPlayers(data =>  {
         let {current,max,players} = data;
         sendD({
@@ -109,14 +109,24 @@ client.on('message', message => {
     }
     
   } else {
+    // discord -> minecraft
     let logMessage = `[discord-${getTime()}] ${message.member.displayName} : ${message.content}`;
     console.log(logMessage);
     sendMsg(`§b${logMessage}`);
+    
+    // ファイルが送信されたらファイルタイプを送信
+    let url = message.attachments.map(x=>x.url)[0];
+    if (url) {
+      let type = url.split('.').pop();
+      let fileMessage = `[discord-${getTime()}] ${message.member.displayName} : [${type} file]`;
+      console.log(fileMessage);
+      sendMsg(`§b${fileMessage}`);
+    }
   }
   
 });
   
-//時間取得用
+// 時間取得用
 function getTime(mode) {
   let time = (mode === 'date') ? moment().format('MM/DD HH:mm:ss') : moment().format('HH:mm:ss');
   return time
