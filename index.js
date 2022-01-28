@@ -4,14 +4,15 @@ const { v4: uuidv4 } = require('uuid');
 const discord = require('discord.js');
 const client = new discord.Client();
 const ip = require('ip');
-const moment = require('moment-timezone');
-moment.tz.setDefault('Asia/Tokyo'); // タイムゾーンを設定
+const {getTime,event,command} = require('./util.js');
+
 let connection = null;
-const formation = new Map();
-const playersNow = [];
+const responses = new Map();
+let playersNow = [];
 
 // config.jsonから設定を読み込む
-const { PORT, TOKEN, CHANNEL, PREFIX } = require('./config.json');
+const { PORT, TOKEN, CHANNEL, PREFIX, OPROLE, cmdResponse } = require('./config.json');
+if (PREFIX === '/') throw new Error('Prefixに/,//は使えないよ');
 const prefixEscaped = new RegExp(`^${PREFIX.replace(/[-\/\\^$*+?.()|\[\]{}]/g, '\\$&')}`);
 
 // discordにログイン
@@ -19,7 +20,7 @@ client.login(TOKEN);
 client.on('ready', () => {
   console.log(`${client.user.tag} でログインしています。`);
   sendD('[log] 起動しました');
-  client.user.setActivity(`Prefix: ${PREFIX}`);
+  setInterval(player, 2000);
 });
 
 // マイクラ側からの接続時に呼び出される関数
@@ -27,45 +28,60 @@ const wss = new WebSocket.Server({ port: PORT });
 wss.on('connection', (ws) => {
   connection = ws;
 
-  sendCmd('getlocalplayername').then(data => {
-    console.log(getTime(), `[log] ${data.localplayername} : 接続を開始しました`);
-    sendD(`[log] ${data.localplayername} : 接続を開始しました`);
-  });
-
   // イベントを登録
   ws.send(event('PlayerMessage'));
   ws.send(event('commandResponse'));
   
-  // 接続時に現在のプレイヤーを取得しておく
-  getPlayers(data => playersNow = data.players);
+  sendCmd('getlocalplayername').then((data) => {
+    console.log(getTime(), `[log] ${data.localplayername} : 接続を開始しました`);
+    sendD(`[log] ${data.localplayername} : 接続を開始しました`);
+  });
   
-  // 参加・退出通知
-  setInterval(player, 2000);
+  // 接続時に現在のプレイヤーを取得しておく
+  getPlayers((data) => playersNow = data.players);
   
   // 各種イベント発生時に呼ばれる関数
-  ws.on('message', packet => {
+  ws.on('message', (packet) => {
     const res = JSON.parse(packet);
     
     if (res.header.messagePurpose == 'commandResponse') {
       if (res.body.recipient === undefined) {
-        formation.set(res.header.requestId, res.body)
+        responses.set(res.header.requestId, res.body);
       }
     }
     
+    if (res.header.messagePurpose == 'error') {
+      console.log(res);
+    }
+    
     if (res.body.eventName == 'PlayerMessage') {
-      if (res.body.properties.MessageType == 'chat' && res.body.properties.Sender != '外部') {
-        let Message = res.body.properties.Message;
-        let Sender = res.body.properties.Sender;
+      if (res.body.properties.MessageType.match(/(chat|me|say)/) && res.body.properties.Sender !== '外部') {
         
-        let chatMessage = `[${getTime()}] ${Sender.replace(/§./g, '')} : ${Message.replace(/§./g, '').replace('@', '`@`')}`;
-        console.log(chatMessage);
+        let Type = res.body.properties.MessageType;
+        let rawMessage = res.body.properties.Message;
+        let Message = rawMessage.replace(/§./g, '').replace('@', '`@`');
+        let rawSender = res.body.properties.Sender;
+        let Sender = rawSender.replace(/§./g, '').replace('@', '＠');
+        
+        if (Message.search(/(@everyone|@here)/) !== -1) return sendMsg(`§4禁止語句が含まれているため送信をブロックしました。`, rawSender);
         
         // minecraft -> discord
-        if (chatMessage.search(/(@everyone|@here)/) === -1) {
+        if (Type == 'chat') {
+          let chatMessage = `[Minecraft] <${Sender}> ${Message}`;
+          console.log(getTime(), chatMessage);
           sendD(chatMessage);
-        } else {
-          sendMsg(`§4禁止語句が含まれているため送信をブロックしました。`, Sender);
-        }
+          
+        } else if (Type == 'me') {
+          let chatMessage = `[Minecraft] * ${Sender} ${Message}`;
+          console.log(getTime(), chatMessage);
+          sendD(chatMessage);
+          
+        } else if (Type == 'say') {
+          let chatMessage = `[Minecraft] ${Message}`;
+          console.log(getTime(), chatMessage);
+          sendD(chatMessage);
+          
+      }
       }
     }
   });
@@ -81,94 +97,83 @@ wss.on('connection', (ws) => {
 
 console.log(`Minecraft: /connect ${ip.address()}:${PORT}`);
 
-// discord->minecraft
 client.on('message', (message) => {
   // メッセージが送信されたとき
   if (message.author.bot) return;
   if (message.channel.id != CHANNEL) return;
   
-  // command or message | prefixはconfigで設定できます
+  let isOP = message.member.roles.cache.has(OPROLE);
+  
+  // discord -> minecraft
+  let logMessage = `[Discord] ${message.member.displayName} : ${message.content}`;
+  console.log(getTime(), logMessage);
+    
+  // prefixはconfigで設定できます
   if (message.content.startsWith(PREFIX)) {
     let args = message.content.replace(prefixEscaped, '').split(' ');
     let command = args[0];
     
-    // .list でプレイヤー一覧を表示
+    if (command === 'help') {
+      sendD({ 
+        embed: {
+          title: 'TN Discord-MCBE BOT Help',
+          color: '#4287f5',
+          description: `Commands:\n${PREFIX}help - ヘルプを表示\n${PREFIX}list - プレイヤーのリストを表示\n\nWebsocketを使用してマイクラとDiscordのチャットを同期することができるBOTです。\n__バニラワールドで使えます！！__\nダウンロード・使い方はこちらからどうぞ:\nhttps://github.com/tutinoko2048/discord-mcbe`,
+          footer: { text: 'Made by Retoruto9900K / Tutinoko9900#1841' }
+        }
+      });
+    }
+    
     if (command === 'list') {
-      getPlayers(data =>  {
+      getPlayers((data) => {
         let {current,max,players} = data;
         sendD({
           embed: {
             color: '#4287f5',
-            description: `現在の人数: ${current}/${max}\nプレイヤー:\n${players.sort().join(',')}`,
-            footer: {
-              text: `最終更新: ${getTime()}`
-            }
+            description: `現在の人数: ${current}/${max}\nプレイヤー:\n${(max === 0) ? '__Server is offline__' : players.sort().join(',')}`,
+            footer: { text: `最終更新: ${getTime()}` }
           }
         });
       });
     }
     
+  } else if (message.content.startsWith('/')) {
+    if (!isOP) return sendD('権限がありません');
+    let cmd = message.content.replace(/^(\/|\/\/)/g, ''); // /または//を先頭につけてコマンドを送信
+    sendMsg(`§a${logMessage}`);
+    
+    sendCmd(cmd).then((data) => {
+      if (data.err) return sendD('Error: ' + data.err);
+      message.react('☑️');
+      if (cmdResponse) sendD({
+        embed: {
+          color: '#4287f5',
+          description: JSON.stringify(data, null, 2),
+          footer: { text: `ID: ${message.id}` }
+        }
+      });
+    });
+    
   } else {
-    // discord -> minecraft
-    let logMessage = `[discord-${getTime()}] ${message.member.displayName} : ${message.content}`;
-    console.log(logMessage);
     sendMsg(`§b${logMessage}`);
     
     // ファイルが送信されたらファイルタイプを送信
-    let url = message.attachments.map(x=>x.url)[0];
+    let url = message.attachments.map(x => x.url)[0];
     if (url) {
       let type = url.split('.').pop();
-      let fileMessage = `[discord-${getTime()}] ${message.member.displayName} : [${type} file]`;
-      console.log(fileMessage);
+      let fileMessage = `[Discord] ${message.member.displayName} : [${type} file]`;
+      console.log(getTime(),fileMessage);
       sendMsg(`§b${fileMessage}`);
     }
   }
   
 });
   
-// 時間取得用
-function getTime(mode) {
-  let time = (mode === 'date') ? moment().format('MM/DD HH:mm:ss') : moment().format('HH:mm:ss');
-  return time
-}
 
-//ユーザー発言時のイベント登録用JSON文字列を生成する関数
-function event(name) {
-  return JSON.stringify({
-    "header": {
-      "requestId": uuidv4(),
-      "messagePurpose": "subscribe",
-      "version": 1,
-      "messageType": "commandRequest"
-    },
-    "body": {
-      "eventName": name
-    }
-  });
-}
-
-//コマンドを実行するのに必要なやつ
-function command(x) {
-  return JSON.stringify({
-    header: {
-      requestId: uuidv4(),
-      messagePurpose: "commandRequest",
-      version: 1,
-      messageType: "commandRequest"
-    },
-    body: {
-      origin: {
-        type: "player"
-      },
-      commandLine: x,
-      version: 1
-    }
-  });
-}
 
 //コマンド実行結果を返す
 async function sendCmd(command) {
-  if (!connection) return;
+  if (!connection) return {err: 'Server is offline'}
   let json = {
     header: {
       requestId: uuidv4(),
@@ -185,22 +190,22 @@ async function sendCmd(command) {
     }
   };
   connection.send(JSON.stringify(json));
-  return await getResponse(json.header.requestId);
+  return await getResponse(json.header.requestId).catch(e => { return {err: e.message} });
 }
 
 function getResponse(id) {
-  return new Promise( (res, rej) =>{
+  return new Promise((res, rej) => {
     let interval = setInterval(() => {
       if (!connection) {
         clearInterval(interval);
         return rej(new Error('Server is offline'));
       }
-      if (formation.has(id)) {
-        formation.delete(id);
+      if (responses.has(id)) {
         clearInterval(interval);
-        res(formation.get(id));
+        res(responses.get(id));
+        responses.delete(id);
       }
-    }, 200);
+    }, 50);
   });
 }
  
@@ -216,31 +221,31 @@ function sendMsg(msg, target) {
 }
 
 function sendD(msg, channel = CHANNEL) {
-  return client.channels.cache.get(channel).send(msg);
+return client.channels.cache.get(channel).send(msg);
 }
 
 // ワールド内のプレイヤーを取得
 function getPlayers(fn) {
   if (!connection) {
-    fn({
+    return fn({
       current: 0,
       max: 0,
       players: []
-    })
-    return;
+    });
   }
-  sendCmd('list').then(data => {
+  sendCmd('list').then((data) => {
+    let status = (data.statusCode == 0 && !data.err);
     fn({
-      current: data.statusCode < 0 ? 0 : data.currentPlayerCount,
-      max: data.statusCode < 0 ? 0 : data.maxPlayerCount,
-      players: data.statusCode < 0 ? [] : data.players.split(', ')
-    })
+      current: status ? data.currentPlayerCount : 0,
+      max: status ? data.maxPlayerCount : 0,
+      players: status ? data.players.split(', ') : []
+    });
   });
 }
 
 // 参加・退出通知
 function player() {
-  getPlayers(data => {
+  getPlayers((data) => {
     let {current,max,players} = data;
     if (players.length > playersNow.length) {
       let joined = players.filter(i => playersNow.indexOf(i) == -1);
@@ -265,5 +270,6 @@ function player() {
       });
     }
     playersNow = players;
+    client.user.setActivity(`Server: ${max === 0 ? 'OFFLINE' : `${current}/${max}`} | ${PREFIX}help`);
   });
 }
