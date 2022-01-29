@@ -1,10 +1,12 @@
 # discord-mcbe
 websocketでマイクラとdiscordを繋ぐやつです。<br>
+MinecraftBE バニラ環境で動かせます。<br>
 https://youtu.be/BEv4oozeQKU<br>
 <br>
 ![example2](docs/example2.jpeg)<br>
 ![example1](docs/example1.jpeg)<br>
 ![runCommand](docs/runCommand.jpeg)<br>
+![list](docs/list.jpeg)<br>
 
 ## 使い方
 ### インストール
