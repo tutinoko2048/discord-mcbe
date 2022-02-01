@@ -12,7 +12,7 @@ let playersNow = [];
 
 // config.jsonから設定を読み込む
 const { PORT, TOKEN, CHANNEL, PREFIX, OPROLE, cmdResponse } = require('./config.json');
-if (PREFIX === '/') throw new Error('Prefixに/,//は使えないよ');
+if (PREFIX === '/' || PREFIX === '//') throw new Error('Prefixに/,//は使えないよ');
 const prefixEscaped = new RegExp(`^${PREFIX.replace(/[-\/\\^$*+?.()|\[\]{}]/g, '\\$&')}`);
 
 // discordにログイン
@@ -67,17 +67,17 @@ wss.on('connection', (ws) => {
         
         // minecraft -> discord
         if (Type == 'chat') {
-          let chatMessage = `[Minecraft] <${Sender}> ${Message}`;
+          let chatMessage = `[Minecraft] <${Sender}> ${Message}`; // 普通のチャットの時
           console.log(getTime(), chatMessage);
           sendD(chatMessage);
           
         } else if (Type == 'me') {
-          let chatMessage = `[Minecraft] * ${Sender} ${Message}`;
+          let chatMessage = `[Minecraft] * ${Sender} ${Message}`; // meコマンドのメッセージの時
           console.log(getTime(), chatMessage);
           sendD(chatMessage);
           
         } else if (Type == 'say') {
-          let chatMessage = `[Minecraft] ${Message}`;
+          let chatMessage = `[Minecraft] ${Message}`; // sayコマンドのメッセージの時
           console.log(getTime(), chatMessage);
           sendD(chatMessage);
           
@@ -95,7 +95,7 @@ wss.on('connection', (ws) => {
   
 });
 
-console.log(`Minecraft: /connect ${ip.address()}:${PORT}`);
+console.log(`Minecraft: /connect localhost:${PORT} or /connect ${ip.address()}:${PORT}`);
 
 client.on('message', (message) => {
   // メッセージが送信されたとき
@@ -105,7 +105,7 @@ client.on('message', (message) => {
   let isOP = message.member.roles.cache.has(OPROLE);
   
   // discord -> minecraft
-  let logMessage = `[Discord] ${message.member.displayName} : ${message.content}`;
+  let logMessage = `[Discord] ${message.member.displayName} : ${message.cleanContent.replace('\u200B','')}`; // マイクラに送られるメッセージ
   console.log(getTime(), logMessage);
     
   // prefixはconfigで設定できます
@@ -130,7 +130,7 @@ client.on('message', (message) => {
         sendD({
           embed: {
             color: '#4287f5',
-            description: `現在の人数: ${current}/${max}\nプレイヤー:\n${(max === 0) ? '__Server is offline__' : players.sort().join(',')}`,
+            description: `現在の人数: ${current}/${max}\nプレイヤー:\n${(max === 0) ? '__Server is offline__' : players.sort().join(', ')}`,
             footer: { text: `最終更新: ${getTime()}` }
           }
         });
@@ -138,6 +138,7 @@ client.on('message', (message) => {
     }
     
   } else if (message.content.startsWith('/')) {
+    if (OPROLE === '') return sendD('OPROLEが未設定です');
     if (!isOP) return sendD('権限がありません');
     let cmd = message.content.replace(/^(\/|\/\/)/g, ''); // /または//を先頭につけてコマンドを送信
     sendMsg(`§a${logMessage}`);
