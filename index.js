@@ -211,9 +211,9 @@ function getResponse(id) {
 }
  
 // tellrawメッセージを送信
-function sendMsg(msg, target) {
+function sendMsg(msg, target = '@a') {
   if (!connection) return;
-  target = (target === undefined) ? '@a' : `"${target}"`;
+  if (!target.match(/@s|@p|@a|@r|@e/)) target = `"${target}"`;
   let rawtext = JSON.stringify({
     rawtext: [{ text: String(msg) }]
   });
