@@ -12,7 +12,7 @@ let playersNow = [];
 
 // config.jsonから設定を読み込む
 const { PORT, TOKEN, CHANNEL, PREFIX, OPROLE, cmdResponse } = require('./config.json');
-if (PREFIX.startsWith('/')) throw new Error('Prefixに/,//は使えないよ');(
+if (PREFIX.startsWith('/')) throw new Error('Prefixに/,//は使えないよ');
 const prefixEscaped = new RegExp(`^${PREFIX.replace(/[-\/\\^$*+?.()|\[\]{}]/g, '\\$&')}`);
 
 // discordにログイン
