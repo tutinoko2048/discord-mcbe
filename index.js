@@ -217,12 +217,11 @@ function sendMsg(msg, target = '@a') {
   let rawtext = JSON.stringify({
     rawtext: [{ text: String(msg) }]
   });
-  let txt = `tellraw ${target} ${rawtext}`;
-  connection.send(command(txt));
+  connection.send(command(`tellraw ${target} ${rawtext}`));
 }
 
 function sendD(msg, channel = CHANNEL) {
-return client.channels.cache.get(channel).send(msg);
+  client.channels.cache.get(channel).send(msg);
 }
 
 // ワールド内のプレイヤーを取得
