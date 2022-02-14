@@ -1,5 +1,4 @@
 const WebSocket = require('ws');
-const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const discord = require('discord.js');
 const client = new discord.Client();
@@ -80,8 +79,7 @@ wss.on('connection', (ws) => {
           let chatMessage = `[Minecraft] ${Message}`; // sayコマンドのメッセージの時
           console.log(getTime(), chatMessage);
           sendD(chatMessage);
-          
-      }
+        }
       }
     }
   });
