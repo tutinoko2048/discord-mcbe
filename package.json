@@ -1,8 +1,8 @@
 {
-  "name": "my-node-app",
-  "version": "1.0.0",
+  "name": "discord-mcbe",
+  "version": "2.1.0",
   "dependencies": {
-    "discord.js": "^12.5.3",
+    "discord.js": "^13.6.0",
     "ip": "^1.1.5",
     "uuid": "^8.3.2",
     "ws": "^7.5.0",
