@@ -1,7 +1,9 @@
 const WebSocket = require('ws');
 const { v4: uuidv4 } = require('uuid');
-const discord = require('discord.js');
-const client = new discord.Client();
+const { Client, Intents } = require('discord.js');
+const client = new Client({
+  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES]
+});
 const ip = require('ip');
 const {getTime,event,command} = require('./util.js');
 
@@ -95,7 +97,7 @@ wss.on('connection', (ws) => {
 
 console.log(`Minecraft: /connect localhost:${PORT} or /connect ${ip.address()}:${PORT}`);
 
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
   // メッセージが送信されたとき
   if (message.author.bot) return;
   if (message.channel.id != CHANNEL) return;
@@ -108,17 +110,16 @@ client.on('message', (message) => {
     
   // prefixはconfigで設定できます
   if (message.content.startsWith(PREFIX)) {
-    let args = message.content.replace(prefixEscaped, '').split(' ');
-    let command = args[0];
+    let [command, ...args] = message.content.replace(prefixEscaped, '').split(' ');
     
     if (command === 'help') {
       sendD({ 
-        embed: {
+        embeds: [{
           title: 'TN Discord-MCBE BOT Help',
           color: '#4287f5',
           description: `Commands:\n${PREFIX}help - ヘルプを表示\n${PREFIX}list - プレイヤーのリストを表示\n\nMore Info: https://github.com/tutinoko2048/discord-mcbe`,
           footer: { text: 'Made by Retoruto9900K / Tutinoko9900#1841' } // クレジット表記は残しといてほしいな
-        }
+        }]
       });
     }
     
@@ -126,11 +127,11 @@ client.on('message', (message) => {
       getPlayers((data) => {
         let {current,max,players} = data;
         sendD({
-          embed: {
+          embeds: [{
             color: '#4287f5',
             description: `現在の人数: ${current}/${max}\nプレイヤー:\n${(max === 0) ? '__Server is offline__' : players.sort().join(', ')}`,
-            footer: { text: `最終更新: ${getTime()}` }
-          }
+            timestamp: Date.now()
+          }]
         });
       });
     }
@@ -250,10 +251,10 @@ function player() {
       let msg = `Joined: ${joined}  ||  ${current}/${max}`;
       console.log(msg);
       sendD({
-        embed: {
+        embeds: [{
           color: '#48f542',
           description: `**${msg}**`
-        }
+        }]
       });
     }
     if (players.length < playersNow.length) {
@@ -261,10 +262,10 @@ function player() {
       let msg = `Left: ${left}  ||  ${current}/${max}`;
       console.log(msg);
       sendD({
-        embed: {
+        embeds: [{
           color: '#f54242',
           description: `**${msg}**`
-        }
+        }]
       });
     }
     playersNow = players;
