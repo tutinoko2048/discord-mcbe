@@ -116,8 +116,8 @@ client.on('message', (message) => {
         embed: {
           title: 'TN Discord-MCBE BOT Help',
           color: '#4287f5',
-          description: `Commands:\n${PREFIX}help - ヘルプを表示\n${PREFIX}list - プレイヤーのリストを表示\n\nWebsocketを使用してマイクラとDiscordのチャットを同期することができるBOTです。\n__バニラワールドで使えます！！__\nダウンロード・使い方はこちらからどうぞ:\nhttps://github.com/tutinoko2048/discord-mcbe`,
-          footer: { text: 'Made by Retoruto9900K / Tutinoko9900#1841' }
+          description: `Commands:\n${PREFIX}help - ヘルプを表示\n${PREFIX}list - プレイヤーのリストを表示\n\nMore Info: https://github.com/tutinoko2048/discord-mcbe`,
+          footer: { text: 'Made by Retoruto9900K / Tutinoko9900#1841' } // クレジット表記は残しといてほしいな
         }
       });
     }
