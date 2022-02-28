@@ -5,7 +5,7 @@ const client = new Client({
   intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES]
 });
 const ip = require('ip');
-const {getTime,event,command} = require('./util.js');
+const {getTime,event,command,expectPlayerName} = require('./util.js');
 
 let connection = null;
 const responses = new Map();
@@ -81,6 +81,7 @@ wss.on('connection', (ws) => {
           let chatMessage = `[Minecraft] ${Message}`; // sayコマンドのメッセージの時
           console.log(getTime(), chatMessage);
           sendD(chatMessage);
+          
         } else if (Type == 'tell' && Sender == 'スクリプト エンジン') {
           try {
             let rawtext = JSON.parse(Message).rawtext[0];
@@ -101,8 +102,10 @@ wss.on('connection', (ws) => {
         if (rawMessage.startsWith(prefixMinecraft)) { // prefix on minecraft is '!'
           let [command, ...args] = rawMessage.replace(prefixMinecraft, '').split(' ');
           
-          if (command == 'time') {
-            sendMsg(getTime('date'));
+          if (command === 'time') {
+            let time = getTime('date');
+            sendMsg(time);
+            sendD(time);
           }
           
         }
@@ -158,6 +161,12 @@ client.on('messageCreate', (message) => {
           }]
         });
       });
+    }
+    
+    if (command === 'time') {
+      let time = getTime('date');
+      sendD(time);
+      sendMsg(time);
     }
     
   } else if (message.content.startsWith('/')) {
