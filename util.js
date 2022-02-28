@@ -4,6 +4,19 @@ moment.tz.setDefault('Asia/Tokyo'); // タイムゾーンを設定
 
 console.log(getTime(), '[log] util.js loaded');
 
+// プレイヤー名の配列を突っ込むと名前予測してくれるやつ
+function expectPlayerName(maybe, array) {
+  let lowPlayers = array.map(x=>x.toLowerCase());
+  let match = lowPlayers.indexOf(maybe.toLowerCase());
+  if (match !== -1) return {name: array[match], match: true, found: true} // 完全一致
+  for (let num in lowPlayers) {
+    if (lowPlayers[num].includes(maybe.toLowerCase())) {
+      return {name: array[num], match: false, found: true} // 一部一致
+    }
+  }
+  return {name: maybe, match: false, found: false} // not found
+}
+
 // 時間取得用
 function getTime(mode) {
   let time = (mode === 'date') ? moment().format('MM/DD HH:mm:ss') : moment().format('HH:mm:ss');
@@ -44,4 +57,4 @@ function command(x) {
   });
 }
 
-module.exports = {getTime,event,command}
+module.exports = {getTime,event,command,expectPlayerName}
