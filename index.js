@@ -88,12 +88,23 @@ wss.on('connection', (ws) => {
               let tellrawSender = rawtext.with.rawtext[0].text;
               if (res.body.properties.Receiver == tellrawSender) {
                 let tellrawMessage = rawtext.with.rawtext[1].text;
-                let chatMessage = `[Minecraft] <${tellrawSender}> ${tellrawMessage}`; // sayコマンドのメッセージの時
+                let chatMessage = `[Minecraft] <${tellrawSender}> ${tellrawMessage}`;
                 console.log(getTime(), chatMessage);
                 sendD(chatMessage);
               }
             }
           } catch {}
+        }
+        
+        // カスタムコマンドのサンプル
+        let prefixMinecraft = '!';
+        if (rawMessage.startsWith(prefixMinecraft)) { // prefix on minecraft is '!'
+          let [command, ...args] = rawMessage.replace(prefixMinecraft, '').split(' ');
+          
+          if (command == 'time') {
+            sendMsg(getTime('date'));
+          }
+          
         }
       }
     }
