@@ -56,7 +56,7 @@ wss.on('connection', (ws) => {
     }
     
     if (res.body.eventName == 'PlayerMessage') {
-      if (res.body.properties.MessageType.match(/(chat|me|say)/) && res.body.properties.Sender !== '外部') {
+      if (res.body.properties.MessageType.match(/(chat|me|say|tell)/) && res.body.properties.Sender !== '外部') {
         
         let Type = res.body.properties.MessageType;
         let rawMessage = res.body.properties.Message;
@@ -81,6 +81,19 @@ wss.on('connection', (ws) => {
           let chatMessage = `[Minecraft] ${Message}`; // sayコマンドのメッセージの時
           console.log(getTime(), chatMessage);
           sendD(chatMessage);
+        } else if (Type == 'tell' && Sender == 'スクリプト エンジン') {
+          try {
+            let rawtext = JSON.parse(Message).rawtext[0];
+            if (rawtext && rawtext.translate == 'chat.type.text') { // gametestからのchat.type.textに反応(docs参照)
+              let tellrawSender = rawtext.with.rawtext[0].text;
+              if (res.body.properties.Receiver == tellrawSender) {
+                let tellrawMessage = rawtext.with.rawtext[1].text;
+                let chatMessage = `[Minecraft] <${tellrawSender}> ${tellrawMessage}`; // sayコマンドのメッセージの時
+                console.log(getTime(), chatMessage);
+                sendD(chatMessage);
+              }
+            }
+          } catch {}
         }
       }
     }
