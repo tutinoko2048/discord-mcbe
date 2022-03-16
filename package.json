@@ -1,6 +1,6 @@
 {
   "name": "discord-mcbe",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "dependencies": {
     "discord.js": "^13.6.0",
     "ip": "^1.1.5",
