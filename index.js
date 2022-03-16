@@ -1,25 +1,25 @@
 const WebSocket = require('ws');
-const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
-const discord = require('discord.js');
-const client = new discord.Client();
+const { Client, Intents } = require('discord.js');
+const client = new Client({
+  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES]
+});
 const ip = require('ip');
-const {getTime,event,command} = require('./util.js');
+const {getTime,event,command,expectPlayerName} = require('./util.js');
 
 let connection = null;
 const responses = new Map();
 let playersNow = [];
 
-// config.jsonから設定を読み込む
-const { PORT, TOKEN, CHANNEL, PREFIX, OPROLE, cmdResponse } = require('./config.json');
-if (PREFIX === '/') throw new Error('Prefixに/,//は使えないよ');
+const { PORT, TOKEN, CHANNEL, PREFIX, OPROLE, cmdResponse } = require('./config.json'); // config.jsonから設定を読み込む
+const lang = require('./lang.js'); // メッセージのカスタマイズ用
+if (PREFIX.startsWith('/')) throw new Error('Prefixに/,//は使えないよ');
 const prefixEscaped = new RegExp(`^${PREFIX.replace(/[-\/\\^$*+?.()|\[\]{}]/g, '\\$&')}`);
 
-// discordにログイン
 client.login(TOKEN);
 client.on('ready', () => {
   console.log(`${client.user.tag} でログインしています。`);
-  sendD('[log] 起動しました');
+  sendD(lang.discord.ready);
   setInterval(player, 2000);
 });
 
@@ -33,8 +33,8 @@ wss.on('connection', (ws) => {
   ws.send(event('commandResponse'));
   
   sendCmd('getlocalplayername').then((data) => {
-    console.log(getTime(), `[log] ${data.localplayername} : 接続を開始しました`);
-    sendD(`[log] ${data.localplayername} : 接続を開始しました`);
+    console.log(getTime(), lang.discord.connectionOpen.replace('$1', data.localplayername));
+    sendD(lang.discord.connectionOpen.replace('$1', data.localplayername));
   });
   
   // 接続時に現在のプレイヤーを取得しておく
@@ -55,7 +55,7 @@ wss.on('connection', (ws) => {
     }
     
     if (res.body.eventName == 'PlayerMessage') {
-      if (res.body.properties.MessageType.match(/(chat|me|say)/) && res.body.properties.Sender !== '外部') {
+      if (res.body.properties.MessageType.match(/(chat|me|say|tell)/) && res.body.properties.Sender !== '外部') {
         
         let Type = res.body.properties.MessageType;
         let rawMessage = res.body.properties.Message;
@@ -67,37 +67,66 @@ wss.on('connection', (ws) => {
         
         // minecraft -> discord
         if (Type == 'chat') {
-          let chatMessage = `[Minecraft] <${Sender}> ${Message}`;
+          let chatMessage = lang.discord.chat.replace('$1', Sender).replace('$2', Message); // 普通のチャットの時
           console.log(getTime(), chatMessage);
           sendD(chatMessage);
           
         } else if (Type == 'me') {
-          let chatMessage = `[Minecraft] * ${Sender} ${Message}`;
+          let chatMessage = lang.discord.me.replace('$1', Sender).replace('$2', Message); // meコマンドのメッセージの時
           console.log(getTime(), chatMessage);
           sendD(chatMessage);
           
         } else if (Type == 'say') {
-          let chatMessage = `[Minecraft] ${Message}`;
+          let chatMessage = lang.discord.say.replace('$1', Message); // sayコマンドのメッセージの時
           console.log(getTime(), chatMessage);
           sendD(chatMessage);
           
-      }
+        }
+        /*
+        else if (Type == 'tell' && Sender == 'スクリプト エンジン') {
+          try {
+            let rawtext = JSON.parse(Message).rawtext[0];
+            if (rawtext && rawtext.translate == 'chat.type.text') { // gametestからのchat.type.textに反応(docs参照)
+              let tellrawSender = rawtext.with.rawtext[0].text;
+              if (res.body.properties.Receiver == tellrawSender) {
+                let tellrawMessage = rawtext.with.rawtext[1].text;
+                let chatMessage = `[Minecraft] <${tellrawSender}> ${tellrawMessage}`;
+                console.log(getTime(), chatMessage);
+                sendD(chatMessage);
+              }
+            }
+          } catch {}
+        }
+        */
+        
+        // カスタムコマンドのサンプル
+        let prefixMinecraft = '!';
+        if (rawMessage.startsWith(prefixMinecraft)) { // prefix on minecraft is '!'
+          let [command, ...args] = rawMessage.replace(prefixMinecraft, '').split(' ');
+          
+          if (command === 'time') {
+            let time = getTime('date');
+            sendMsg(time);
+            sendD(time);
+          }
+          
+        }
       }
     }
   });
   
   // 接続の切断時に呼び出される関数
   ws.on('close', () => {
-    console.log(getTime(), `[log] 接続が終了しました`);
-    sendD(`[log] 接続が終了しました`);
+    console.log(getTime(), lang.discord.connectionClose);
+    sendD(lang.discord.connectionClose);
     connection = null;
   });
   
 });
 
-console.log(`Minecraft: /connect ${ip.address()}:${PORT}`);
+console.log(`Minecraft: /connect localhost:${PORT} or /connect ${ip.address()}:${PORT}`);
 
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
   // メッセージが送信されたとき
   if (message.author.bot) return;
   if (message.channel.id != CHANNEL) return;
@@ -105,22 +134,21 @@ client.on('message', (message) => {
   let isOP = message.member.roles.cache.has(OPROLE);
   
   // discord -> minecraft
-  let logMessage = `[Discord] ${message.member.displayName} : ${message.content}`;
+  let logMessage = lang.minecraft.chat.replace('$1', message.member.displayName).replace('$2', message.cleanContent.replace('\u200B','')) // マイクラに送られるメッセージ
   console.log(getTime(), logMessage);
     
   // prefixはconfigで設定できます
   if (message.content.startsWith(PREFIX)) {
-    let args = message.content.replace(prefixEscaped, '').split(' ');
-    let command = args[0];
+    let [command, ...args] = message.content.replace(prefixEscaped, '').split(' ');
     
     if (command === 'help') {
       sendD({ 
-        embed: {
+        embeds: [{
           title: 'TN Discord-MCBE BOT Help',
           color: '#4287f5',
           description: `Commands:\n${PREFIX}help - ヘルプを表示\n${PREFIX}list - プレイヤーのリストを表示\n\nMore Info: https://github.com/tutinoko2048/discord-mcbe`,
-          footer: { text: 'Made by Retoruto9900K / Tutinoko9900#1841' } // 宣伝減らしたんだからせめて名前とURLだけでも残しといてほしいな...
-        }
+          footer: { text: 'Made by Retoruto9900K / Tutinoko9900#1841' } // クレジット表記は残しといてほしいな
+        }]
       });
     }
     
@@ -128,42 +156,49 @@ client.on('message', (message) => {
       getPlayers((data) => {
         let {current,max,players} = data;
         sendD({
-          embed: {
+          embeds: [{
             color: '#4287f5',
-            description: `現在の人数: ${current}/${max}\nプレイヤー:\n${(max === 0) ? '__Server is offline__' : players.sort().join(',')}`,
-            footer: { text: `最終更新: ${getTime()}` }
-          }
+            description: lang.discord.list.replace('$1', current).replace('$2', max).replace('$3', (max === 0) ? '__Server is offline__' : players.sort().join(', '))
+            timestamp: Date.now()
+          }]
         });
       });
     }
     
+    if (command === 'time') {
+      let time = getTime('date');
+      sendD(time);
+      sendMsg(time);
+    }
+    
   } else if (message.content.startsWith('/')) {
+    if (!OPROLE) return sendD('OPROLEが未設定です');
     if (!isOP) return sendD('権限がありません');
     let cmd = message.content.replace(/^(\/|\/\/)/g, ''); // /または//を先頭につけてコマンドを送信
-    sendMsg(`§a${logMessage}`);
+    sendMsg(lang.minecraft.command.replace('$1', message.member.displayName).replace('$2', message.cleanContent.replace('\u200B','')));
     
     sendCmd(cmd).then((data) => {
       if (data.err) return sendD('Error: ' + data.err);
       message.react('☑️');
       if (cmdResponse) sendD({
-        embed: {
+        embeds: [{
           color: '#4287f5',
           description: JSON.stringify(data, null, 2),
           footer: { text: `ID: ${message.id}` }
-        }
+        }]
       });
     });
     
   } else {
-    sendMsg(`§b${logMessage}`);
+    sendMsg(logMessage);
     
     // ファイルが送信されたらファイルタイプを送信
     let url = message.attachments.map(x => x.url)[0];
     if (url) {
       let type = url.split('.').pop();
-      let fileMessage = `[Discord] ${message.member.displayName} : [${type} file]`;
-      console.log(getTime(),fileMessage);
-      sendMsg(`§b${fileMessage}`);
+      let fileMessage = lang.minecraft.file.replace('$1', message.member.displayName).replace('$2', type);
+      console.log(getTime(), fileMessage);
+      sendMsg(fileMessage);
     }
   }
   
@@ -210,18 +245,17 @@ function getResponse(id) {
 }
  
 // tellrawメッセージを送信
-function sendMsg(msg, target) {
+function sendMsg(msg, target = '@a') {
   if (!connection) return;
-  target = (target === undefined) ? '@a' : `"${target}"`;
+  if (!target.match(/@s|@p|@a|@r|@e/)) target = `"${target}"`;
   let rawtext = JSON.stringify({
     rawtext: [{ text: String(msg) }]
   });
-  let txt = `tellraw ${target} ${rawtext}`;
-  connection.send(command(txt));
+  connection.send(command(`tellraw ${target} ${rawtext}`));
 }
 
 function sendD(msg, channel = CHANNEL) {
-return client.channels.cache.get(channel).send(msg);
+  client.channels.cache.get(channel).send(msg);
 }
 
 // ワールド内のプレイヤーを取得
@@ -252,10 +286,10 @@ function player() {
       let msg = `Joined: ${joined}  ||  ${current}/${max}`;
       console.log(msg);
       sendD({
-        embed: {
+        embeds: [{
           color: '#48f542',
           description: `**${msg}**`
-        }
+        }]
       });
     }
     if (players.length < playersNow.length) {
@@ -263,10 +297,10 @@ function player() {
       let msg = `Left: ${left}  ||  ${current}/${max}`;
       console.log(msg);
       sendD({
-        embed: {
+        embeds: [{
           color: '#f54242',
           description: `**${msg}**`
-        }
+        }]
       });
     }
     playersNow = players;
