@@ -45,7 +45,9 @@ PREFIX: コマンドのPrefix<br>
 OPROLE: マイクラのコマンドを実行できる管理者ロールのID<br>
 cmdResponse: コマンド実行時の結果を表示するかどうか<br>
 
+<!--
 ## ワールド主じゃない人向け
 GameTestを使用して全員のチャットをtellrawで流すことで、ワールドのホスト以外の人でもチャットを拾えるようになります<br>
 tellrawで流す時はtranslateの`chat.type.text`を使用してください。<br>
 ```tellraw @a {"rawtext":[{"translate":"chat.type.text","with":["プレイヤー名","チャットのメッセージ"]}]}```
+-->
