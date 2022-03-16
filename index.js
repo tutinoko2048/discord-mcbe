@@ -11,16 +11,15 @@ let connection = null;
 const responses = new Map();
 let playersNow = [];
 
-// config.jsonから設定を読み込む
-const { PORT, TOKEN, CHANNEL, PREFIX, OPROLE, cmdResponse } = require('./config.json');
+const { PORT, TOKEN, CHANNEL, PREFIX, OPROLE, cmdResponse } = require('./config.json'); // config.jsonから設定を読み込む
+const lang = require('./lang.js'); // メッセージのカスタマイズ用
 if (PREFIX.startsWith('/')) throw new Error('Prefixに/,//は使えないよ');
 const prefixEscaped = new RegExp(`^${PREFIX.replace(/[-\/\\^$*+?.()|\[\]{}]/g, '\\$&')}`);
 
-// discordにログイン
 client.login(TOKEN);
 client.on('ready', () => {
   console.log(`${client.user.tag} でログインしています。`);
-  sendD('[log] 起動しました');
+  sendD(lang.discord.ready);
   setInterval(player, 2000);
 });
 
@@ -34,8 +33,8 @@ wss.on('connection', (ws) => {
   ws.send(event('commandResponse'));
   
   sendCmd('getlocalplayername').then((data) => {
-    console.log(getTime(), `[log] ${data.localplayername} : 接続を開始しました`);
-    sendD(`[log] ${data.localplayername} : 接続を開始しました`);
+    console.log(getTime(), lang.discord.connectionOpen.replace('$1', data.localplayername));
+    sendD(lang.discord.connectionOpen.replace('$1', data.localplayername));
   });
   
   // 接続時に現在のプレイヤーを取得しておく
@@ -68,21 +67,23 @@ wss.on('connection', (ws) => {
         
         // minecraft -> discord
         if (Type == 'chat') {
-          let chatMessage = `[Minecraft] <${Sender}> ${Message}`; // 普通のチャットの時
+          let chatMessage = lang.discord.chat.replace('$1', Sender).replace('$2', Message); // 普通のチャットの時
           console.log(getTime(), chatMessage);
           sendD(chatMessage);
           
         } else if (Type == 'me') {
-          let chatMessage = `[Minecraft] * ${Sender} ${Message}`; // meコマンドのメッセージの時
+          let chatMessage = lang.discord.me.replace('$1', Sender).replace('$2', Message); // meコマンドのメッセージの時
           console.log(getTime(), chatMessage);
           sendD(chatMessage);
           
         } else if (Type == 'say') {
-          let chatMessage = `[Minecraft] ${Message}`; // sayコマンドのメッセージの時
+          let chatMessage = lang.discord.say.replace('$1', Message); // sayコマンドのメッセージの時
           console.log(getTime(), chatMessage);
           sendD(chatMessage);
           
-        } else if (Type == 'tell' && Sender == 'スクリプト エンジン') {
+        }
+        /*
+        else if (Type == 'tell' && Sender == 'スクリプト エンジン') {
           try {
             let rawtext = JSON.parse(Message).rawtext[0];
             if (rawtext && rawtext.translate == 'chat.type.text') { // gametestからのchat.type.textに反応(docs参照)
@@ -96,6 +97,7 @@ wss.on('connection', (ws) => {
             }
           } catch {}
         }
+        */
         
         // カスタムコマンドのサンプル
         let prefixMinecraft = '!';
@@ -115,8 +117,8 @@ wss.on('connection', (ws) => {
   
   // 接続の切断時に呼び出される関数
   ws.on('close', () => {
-    console.log(getTime(), `[log] 接続が終了しました`);
-    sendD(`[log] 接続が終了しました`);
+    console.log(getTime(), lang.discord.connectionClose);
+    sendD(lang.discord.connectionClose);
     connection = null;
   });
   
@@ -132,7 +134,7 @@ client.on('messageCreate', (message) => {
   let isOP = message.member.roles.cache.has(OPROLE);
   
   // discord -> minecraft
-  let logMessage = `[Discord] ${message.member.displayName} : ${message.cleanContent.replace('\u200B','')}`; // マイクラに送られるメッセージ
+  let logMessage = lang.minecraft.chat.replace('$1', message.member.displayName).replace('$2', message.cleanContent.replace('\u200B','')) // マイクラに送られるメッセージ
   console.log(getTime(), logMessage);
     
   // prefixはconfigで設定できます
@@ -156,7 +158,7 @@ client.on('messageCreate', (message) => {
         sendD({
           embeds: [{
             color: '#4287f5',
-            description: `現在の人数: ${current}/${max}\nプレイヤー:\n${(max === 0) ? '__Server is offline__' : players.sort().join(', ')}`,
+            description: lang.discord.list.replace('$1', current).replace('$2', max).replace('$3', (max === 0) ? '__Server is offline__' : players.sort().join(', '))
             timestamp: Date.now()
           }]
         });
@@ -170,7 +172,7 @@ client.on('messageCreate', (message) => {
     }
     
   } else if (message.content.startsWith('/')) {
-    if (OPROLE === '') return sendD('OPROLEが未設定です');
+    if (!OPROLE) return sendD('OPROLEが未設定です');
     if (!isOP) return sendD('権限がありません');
     let cmd = message.content.replace(/^(\/|\/\/)/g, ''); // /または//を先頭につけてコマンドを送信
     sendMsg(`§a${logMessage}`);
@@ -179,24 +181,24 @@ client.on('messageCreate', (message) => {
       if (data.err) return sendD('Error: ' + data.err);
       message.react('☑️');
       if (cmdResponse) sendD({
-        embed: {
+        embeds: [{
           color: '#4287f5',
           description: JSON.stringify(data, null, 2),
           footer: { text: `ID: ${message.id}` }
-        }
+        }]
       });
     });
     
   } else {
-    sendMsg(`§b${logMessage}`);
+    sendMsg(logMessage);
     
     // ファイルが送信されたらファイルタイプを送信
     let url = message.attachments.map(x => x.url)[0];
     if (url) {
       let type = url.split('.').pop();
-      let fileMessage = `[Discord] ${message.member.displayName} : [${type} file]`;
-      console.log(getTime(),fileMessage);
-      sendMsg(`§b${fileMessage}`);
+      let fileMessage = lang.minecraft.file.replace('$1', message.member.displayName).replace('$2', type);
+      console.log(getTime(), fileMessage);
+      sendMsg(fileMessage);
     }
   }
   
