@@ -283,7 +283,7 @@ function player() {
     let {current,max,players} = data;
     if (players.length > playersNow.length) {
       let joined = players.filter(i => playersNow.indexOf(i) == -1);
-      let msg = `Joined: ${joined}  ||  ${current}/${max}`;
+      let msg = lang.discord.join.replace('$1', joined).replace('$2', current).replace('$3', max);
       console.log(msg);
       sendD({
         embeds: [{
@@ -294,7 +294,7 @@ function player() {
     }
     if (players.length < playersNow.length) {
       let left = playersNow.filter(i => players.indexOf(i) == -1);
-      let msg = `Left: ${left}  ||  ${current}/${max}`;
+      let msg = lang.discord.leave.replace('$1', left).replace('$2', current).replace('$3', max);
       console.log(msg);
       sendD({
         embeds: [{
