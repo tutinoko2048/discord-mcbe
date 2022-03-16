@@ -175,7 +175,7 @@ client.on('messageCreate', (message) => {
     if (!OPROLE) return sendD('OPROLEが未設定です');
     if (!isOP) return sendD('権限がありません');
     let cmd = message.content.replace(/^(\/|\/\/)/g, ''); // /または//を先頭につけてコマンドを送信
-    sendMsg(`§a${logMessage}`);
+    sendMsg(lang.minecraft.command.replace('$1', message.member.displayName).replace('$2', message.cleanContent.replace('\u200B','')));
     
     sendCmd(cmd).then((data) => {
       if (data.err) return sendD('Error: ' + data.err);
