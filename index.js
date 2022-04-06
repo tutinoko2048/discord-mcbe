@@ -158,7 +158,7 @@ client.on('messageCreate', (message) => {
         sendD({
           embeds: [{
             color: '#4287f5',
-            description: lang.discord.list.replace('$1', current).replace('$2', max).replace('$3', (max === 0) ? '__Server is offline__' : players.sort().join(', '))
+            description: lang.discord.list.replace('$1', current).replace('$2', max).replace('$3', (max === 0) ? '__Server is offline__' : players.sort().join(', ')),
             timestamp: Date.now()
           }]
         });
