@@ -1,6 +1,12 @@
 {
   "name": "discord-mcbe",
   "version": "2.1.1",
+  "engines": {
+    "node": ">=16.6.0"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
   "dependencies": {
     "discord.js": "^13.6.0",
     "ip": "^1.1.5",
