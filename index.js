@@ -54,13 +54,13 @@ wss.on('connection', (ws) => {
       console.log(res);
     }
     
-    if (res.body.eventName == 'PlayerMessage') {
-      if (res.body.properties.MessageType.match(/(chat|me|say|tell)/) && res.body.properties.Sender !== '外部') {
+    if (res.header.eventName == 'PlayerMessage') {
+      if (res.body.type.match(/(chat|me|say|tell)/) && res.body.sender !== '外部') {
         
-        let Type = res.body.properties.MessageType;
-        let rawMessage = res.body.properties.Message;
+        let Type = res.body.type;
+        let rawMessage = res.body.message;
         let Message = rawMessage.replace(/§./g, '').replace('@', '`@`');
-        let rawSender = res.body.properties.Sender;
+        let rawSender = res.body.sender;
         let Sender = rawSender.replace(/§./g, '').replace('@', '＠');
         
         if (Message.search(/(@everyone|@here)/) !== -1) return sendMsg(`§4禁止語句が含まれているため送信をブロックしました。`, rawSender);
