@@ -17,15 +17,15 @@ androidはtermuxというアプリが使えるみたいです
 
 ### botの準備
 discordのbotが必要なので用意してください。
-作り方は調べれば分かる。
+作り方は調べれば分かる。はず...
 
 ### コピペしてみよう
 [ここ](https://github.com/tutinoko2048/discord-mcbe/releases)から最新のものをダウンロードして展開してください。  
 その中にconfig.jsonが入っているので全て入力してください  
-`npm i`で必要なモジュールも入れておいてください
 
 ### 動かす
-サーバーを動かしてから、マイクラ側で  
+`start.cmd`を実行してサーバーを起動させましょう。  
+次にマイクラ側で  
 ```/connect [ローカルIP]:[ポート]```  
 ```/connect localhost:[ポート]``` (同じ端末の場合)  
 のコマンドを実行します  
@@ -36,6 +36,7 @@ discordのbotが必要なので用意してください。
 - ループバック接続を許可する(pcの場合  
 ```CheckNetIsolation.exe LoopbackExempt -a -n="Microsoft.MinecraftUWP_8wekyb3d8bbwe```  
 をコマンドプロンプトで__管理者権限__で実行してください
+- ウイルス対策ソフトが邪魔してることもあるのでうまく設定してください
 
 ## config.json
 PORT: websocketをlistenするポート  
