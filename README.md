@@ -1,4 +1,7 @@
 # discord-mcbe
+  
+<img src="https://img.shields.io/github/downloads/tutinoko2048/discord-mcbe/total?style=for-the-badge">
+  
 websocketでマイクラとdiscordを繋ぐやつです。  
 MinecraftBE バニラ環境で動かせます。  
 https://youtu.be/BEv4oozeQKU  
