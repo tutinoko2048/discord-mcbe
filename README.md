@@ -5,7 +5,17 @@
 websocketでマイクラとdiscordを繋ぐやつです。  
 MinecraftBE バニラ環境で動かせます。  
 https://youtu.be/BEv4oozeQKU  
-<br>
+  
+主な導入サーバー
+- TN Server (tutinoko2048)
+- Armasia整地鯖 (cocokaz1218)
+- ゲームざんまいserver (iruka30)
+- 大和 Server (LenXelt)
+- ごて鯖 (Yuka0745)
+- Holy RPG Server (ToumeiGames)
+- StadiumRPG (helium1680)
+
+  
 ![example2](docs/example2.jpeg)  
 ![example1](docs/example1.jpeg)  
 ![runCommand](docs/runCommand.jpeg)  
