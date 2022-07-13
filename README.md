@@ -20,6 +20,8 @@ https://youtu.be/BEv4oozeQKU
 ![example1](docs/example1.jpeg)  
 ![runCommand](docs/runCommand.jpeg)  
 ![list](docs/list.jpeg)  
+  
+質問などあればどうぞ: [Discord](https://discord.gg/tnserver)
 
 ## 使い方
 ### インストール
