@@ -6,16 +6,6 @@ websocketでマイクラとdiscordを繋ぐやつです。
 MinecraftBE バニラ環境で動かせます。  
 https://youtu.be/BEv4oozeQKU  
   
-主な導入サーバー
-- TN Server (tutinoko2048)
-- Armasia整地鯖 (cocokaz1218)
-- ゲームざんまいserver (iruka30)
-- 大和 Server (LenXelt)
-- ごて鯖 (Yuka0745)
-- Holy RPG Server (ToumeiGames)
-- StadiumRPG (helium1680)
-
-  
 ![example2](docs/example2.jpeg)  
 ![example1](docs/example1.jpeg)  
 ![runCommand](docs/runCommand.jpeg)  
@@ -25,14 +15,13 @@ https://youtu.be/BEv4oozeQKU
 
 ## 使い方
 ### インストール
-pcの場合はnodejsをインストール  
+nodejsをインストールする必要があります  
 https://nodejs.org/ja/  
-~~iosはplay.js~~ (Discord.js v13への移行により、Nodejsのバージョンが古いplay.jsは使えなくなりました)  
-androidはtermuxというアプリが使えるみたいです
+
 
 ### botの準備
 discordのbotが必要なので用意してください。
-作り方は調べれば分かる。はず...
+(botアカウントの作り方はここでは省略します)  
 
 ### コピペしてみよう
 [ここ](https://github.com/tutinoko2048/discord-mcbe/releases)から最新のものをダウンロードして展開してください。  
