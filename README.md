@@ -38,7 +38,7 @@ discordのbotが必要なので用意してください。
 ## /connectしても繋がらないときは
 - マイクラ側の設定で 暗号化されたWebsocketの要求 をオフにする
 - ループバック接続を許可する(pcの場合  
-```CheckNetIsolation.exe LoopbackExempt -a -n="Microsoft.MinecraftUWP_8wekyb3d8bbwe```  
+```CheckNetIsolation.exe LoopbackExempt -a -n="Microsoft.MinecraftUWP_8wekyb3d8bbwe"```  
 をコマンドプロンプトで__管理者権限__で実行してください
 - ウイルス対策ソフトが邪魔してることもあるのでうまく設定してください
 
