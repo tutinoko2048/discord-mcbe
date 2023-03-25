@@ -1,9 +1,9 @@
 module.exports = 
 {
   discord: { // discordに出力されるもの
-    ready: '[log] 起動しました',
-    connectionOpen: '[log] $1 : 接続を開始しました', // $1: 繋いだ人のプレイヤー名
-    connectionClose: '[log] 接続が終了しました',
+    ready: '[log] 起動したよ!!',
+    connectionOpen: '[log] $1 : 接続を開始したよ!!', // $1: 繋いだ人のプレイヤー名
+connectionClose: '[log] 接続が終了しちゃいました...',
     chat: '[Minecraft] <$1> $2', // $1: プレイヤー名, $2: メッセージ
     me: '[Minecraft] * $1 $2', // $1: プレイヤー名, $2 メッセージ
     say: '[Minecraft] $1', // $1: プレイヤー名とメッセージ

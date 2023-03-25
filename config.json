@@ -3,6 +3,6 @@
   "TOKEN": "DiscordBOTのtoken",
   "CHANNEL": "1036006800442527774",
   "PREFIX": ".",
-  "OPROLE": "管理者ロールのID",
+  "OPROLE": "1058895700890488832",
   "cmdResponse": true
 }
