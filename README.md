@@ -11,7 +11,7 @@ https://youtu.be/BEv4oozeQKU
 ![runCommand](docs/runCommand.jpeg)  
 ![list](docs/list.jpeg)  
   
-質問などあればどうぞ: [Discord](https://discord.gg/tnserver)
+質問などあればどうぞ: [Discord](https://discord.gg/XGR8FcCeFc)
 
 ## 使い方
 ### インストール
