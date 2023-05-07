@@ -1,5 +1,4 @@
-// @ts-check
-const { EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle } = require('discord.js');
+const { ButtonBuilder, ActionRowBuilder, ButtonStyle } = require('discord.js');
 const embeds = require('../../embeds');
 const { panels, lang } = require('../../index.js');
 
@@ -8,10 +7,10 @@ async function getPanel(interaction) {
   await interaction.deferReply({ ephemeral: true });
   const panel = await panels.fetch();
   
-  const options = /** @type {import('discord.js').InteractionReplyOptions} */ ({
+  const options = {
     components: [],
-    embeds: []
-  });
+    embeds: [],
+  }
   
   if (panel) {
     const button = new ButtonBuilder()

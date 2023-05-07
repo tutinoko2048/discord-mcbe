@@ -8,7 +8,7 @@
   "typings": "src/types/index.d.ts",
   "scripts": {
     "start": "node src/index.js",
-    "lint": "eslint src/"
+    "lint": "eslint src/ scripts/"
   },
   "dependencies": {
     "@akki256/discord-interaction": "^3.1.0",

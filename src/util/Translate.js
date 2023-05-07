@@ -7,6 +7,7 @@ class Translate {
     this.defaultTemplates = dotlang.parse('lang/en_US.lang');
   }
   
+  /** @param {string} key */
   getTemplate(key) {
     return this.templates.get(key) ?? this.defaultTemplates.get(key);
   }

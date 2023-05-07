@@ -1,5 +1,3 @@
-// @ts-check
-
   /**
    * @param {import('../index')} main
    * @param {import('socket-be').PlayerChatEvent} chatEvent

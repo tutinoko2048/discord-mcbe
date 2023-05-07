@@ -1,5 +1,3 @@
-// @ts-check
-
 const { ChatInput } = require('@akki256/discord-interaction');
 const { EmbedBuilder } = require('discord.js');
 const { colors } = require('../embeds');

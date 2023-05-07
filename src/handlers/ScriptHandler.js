@@ -14,7 +14,7 @@ class ScriptHandler {
     if (!exists) throw Error(`[Script] entrypoint "${entry}" not found`);
     try {
       require(`../../${entry}`);
-    } catch(e) {
+    } catch (e) {
       console.error('[Script]', e);
     }
   }

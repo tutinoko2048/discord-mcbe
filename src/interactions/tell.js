@@ -1,10 +1,7 @@
-// @ts-check
-
 const fs = require('fs');
 const { ChatInput } = require('@akki256/discord-interaction');
 const { EmbedBuilder, ApplicationCommandOptionType } = require('discord.js');
 const { sendCommand } = require('../handlers/MessageHandler');
-const embeds = require('../embeds');
 const localization = require('./_localizations.json');
 const main = require('../index.js');
 

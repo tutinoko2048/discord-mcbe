@@ -1,7 +1,5 @@
-// @ts-check
-
 const embeds = require('../embeds');
-const { EmbedBuilder, codeBlock } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const fs = require('fs');
 
   /**

@@ -1,5 +1,3 @@
-// @ts-check
-
 const { ChatInput } = require('@akki256/discord-interaction');
 const { EmbedBuilder } = require('discord.js');
 const moment = require('moment-timezone');
@@ -18,7 +16,6 @@ const pingCommand = new ChatInput({
   await interaction.deferReply();
   const deltaTime = Date.now() - sentTime;
   
-  const stamp = String(server.startTime).slice(0, 10);
   const startAt = moment(server.startTime).tz(config.timezone);
   
   const embed = new EmbedBuilder();

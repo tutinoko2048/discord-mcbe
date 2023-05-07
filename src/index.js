@@ -2,7 +2,7 @@
 
 const path = require('path');
 const fs = require('fs');
-const { Client, GatewayIntentBits, codeBlock, EmbedBuilder, RESTJSONErrorCodes } = require('discord.js');
+const { Client, GatewayIntentBits, codeBlock } = require('discord.js');
 const { DiscordInteractions } = require('@akki256/discord-interaction');
 const { Server, Logger } = require('socket-be');
 const readline = require('readline');

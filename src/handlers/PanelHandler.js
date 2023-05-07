@@ -1,5 +1,3 @@
-// @ts-check
-
 const util = require('../util/util');
 const { EmbedBuilder, RESTJSONErrorCodes } = require('discord.js');
 const { colors } = require('../embeds');

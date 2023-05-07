@@ -1,4 +1,3 @@
-// @ts-check
 const { EmbedBuilder } = require('discord.js');
 const { panels, lang } = require('../../index.js');
 

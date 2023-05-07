@@ -1,4 +1,4 @@
-const { server, client, sendDiscord } = require('discord-mcbe');
+const { server, client } = require('discord-mcbe');
 const { version: VERSION } = require('../package.json');
 
 console.log('[Script] loaded!');

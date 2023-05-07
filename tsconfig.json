@@ -1,6 +1,6 @@
 {
-  "include": ["src/*", "src/interactions/*"],
-  "exclude": ["node_modules/*"],
+  "include": [ "src/", "scripts/" ],
+  "exclude": [ "node_modules/" ],
   "files": [ "src/types/index.d.ts"],
   "compilerOptions": {
     "allowJs": true,

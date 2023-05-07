@@ -1,5 +1,3 @@
-// @ts-check
-
 const { ChatInput } = require('@akki256/discord-interaction');
 const { ApplicationCommandOptionType, PermissionFlagsBits } = require('discord.js');
 const setPanel = require('./set_panel');

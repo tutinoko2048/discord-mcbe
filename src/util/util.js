@@ -1,5 +1,3 @@
-// @ts-check
-
 const fs = require('fs');
 const jsonc = require('jsonc');
 

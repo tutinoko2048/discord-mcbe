@@ -1,5 +1,3 @@
-// @ts-check
-
 const fs = require('fs');
 const { ChatInput } = require('@akki256/discord-interaction');
 const { EmbedBuilder, ApplicationCommandOptionType, ButtonBuilder, ActionRowBuilder, ButtonStyle } = require('discord.js');
