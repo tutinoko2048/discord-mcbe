@@ -11,23 +11,25 @@ https://youtu.be/BEv4oozeQKU
 ![runCommand](docs/runCommand.jpeg)  
 ![list](docs/list.jpeg)  
   
-質問などあればどうぞ: [Discord](https://discord.gg/XGR8FcCeFc)
+[Discord サポートサーバー](https://discord.gg/XGR8FcCeFc)
 
 ## 使い方
-### インストール
-nodejsをインストールする必要があります  
+### Nodejsをインストール
+Nodejs v16.6以上をインストールしてください
 https://nodejs.org/ja/  
 
-
-### botの準備
+### botを作る
 discordのbotが必要なので用意してください。
 (botアカウントの作り方はここでは省略します)  
 
-### コピペしてみよう
-[ここ](https://github.com/tutinoko2048/discord-mcbe/releases)から最新のものをダウンロードして展開してください。  
-その中にconfig.jsonが入っているので全て入力してください  
+### Configの編集
+[ここから最新のものをダウンロード](https://github.com/tutinoko2048/discord-mcbe/releases)して展開してください。  
+その中の`config.jsonc`ファイルを編集して必要な値を入力してください
 
 ### 動かす
+> **Note**: マイクラの設定で `暗号化されたWebsocketの要求` がオフになっていることを確認してください  
+> **Note**: PCで動かす場合はループバック接続を許可してください  
+
 `start.cmd`を実行してサーバーを起動させましょう。  
 次にマイクラ側で  
 ```/connect [ローカルIP]:[ポート]```  
@@ -35,21 +37,15 @@ discordのbotが必要なので用意してください。
 のコマンドを実行します  
 これで接続することができます
 
-## /connectしても繋がらないときは
-- マイクラ側の設定で 暗号化されたWebsocketの要求 をオフにする
-- ループバック接続を許可する(pcの場合  
-```CheckNetIsolation.exe LoopbackExempt -a -n="Microsoft.MinecraftUWP_8wekyb3d8bbwe"```  
-をコマンドプロンプトで__管理者権限__で実行してください
-- ウイルス対策ソフトが邪魔してることもあるのでうまく設定してください
+## ループバック接続を許可する
+- ループバック接続を許可する(pcの場合)
+こちらのコマンドをコマンドプロンプトで**管理者権限**で実行してください  
+`CheckNetIsolation.exe LoopbackExempt –a –p=S-1-15-2-1958404141-86561845-1752920682-3514627264-368642714-62675701-733520436;`  
+または `loopback.cmd` を実行してください(同じコマンドが入っています)
+- ファイアウォールが邪魔してることもあるのでうまく設定してください
 
-## config.json
-PORT: websocketをlistenするポート  
-TOKEN: DiscordBOTのトークン  
-CHANNEL: メッセージを送信するチャンネルのID  
-PREFIX: コマンドのPrefix  
-OPROLE: マイクラのコマンドを実行できる管理者ロールのID  
-cmdResponse: コマンド実行時の結果を表示するかどうか  
+## Config
+coming soon...
 
-## メッセージをカスタマイズする
-lang.jsを書き換えることで送信するメッセージをカスタマイズできます。  
-アップデートする時もlang.jsを新しい方に持ってくることで簡単に引き継ぐことができます
+## メッセージのカスタマイズ
+lang/[言語名].langでメッセージのテンプレートを編集できます

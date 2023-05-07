@@ -1,0 +1,16 @@
+{
+  "include": ["src/*", "src/interactions/*"],
+  "exclude": ["node_modules/*"],
+  "files": [ "src/types/index.d.ts"],
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "declaration": true,
+    "noEmit": true,
+    "target": "ES2022",
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "skipLibCheck": true
+  }
+}

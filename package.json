@@ -1,17 +1,29 @@
 {
   "name": "discord-mcbe",
-  "version": "2.2.0",
+  "version": "3.0.0",
   "engines": {
     "node": ">=16.6.0"
   },
+  "main": "src/index.js",
+  "typings": "src/types/index.d.ts",
   "scripts": {
-    "start": "node index.js"
+    "start": "node src/index.js",
+    "lint": "eslint src/"
   },
   "dependencies": {
-    "discord.js": "^13.6.0",
-    "ip": "^1.1.5",
-    "uuid": "^8.3.2",
-    "ws": "^7.5.0",
-    "moment-timezone": "^0.5.34"
+    "@akki256/discord-interaction": "^3.1.0",
+    "discord-mcbe": "file:src",
+    "discord.js": "^14.11.0",
+    "dotlang": "^1.1.1",
+    "jsonc": "^2.0.0",
+    "moment-timezone": "^0.5.43",
+    "socket-be": "^1.1.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.37.0",
+    "typescript": "^5.0.3"
+  },
+  "overrides": {
+    "discord-api-types": "0.37.35"
   }
 }
