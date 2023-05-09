@@ -1,9 +1,3 @@
-declare module 'discord.js' {
-  interface ChatInputCommandInteraction {
-    main: typeof import('../index');
-  }
-}
-
 declare module '_localizations.json' {
   const commands: { [commandName: string]: import('discord.js').LocalizationMap }
   export default commands;
@@ -25,7 +19,7 @@ export interface IConfig {
   command_role_id: string[];
   ready_message: boolean; 
   delete_color_prefix: boolean;
-  use_custom_regex: boolean;
+  styles_tnac: boolean;
   scripts_entry: string;
   command_version: import('socket-be').VersionResolvable;
   debug: boolean;

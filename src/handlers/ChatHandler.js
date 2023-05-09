@@ -1,9 +1,6 @@
-const customRegex = [
-  // TNAC (default)
-  new RegExp(/\[(?:スクリプト エンジン|Script Engine)\] "\[(?:TN-AntiCheat|TN-AC)\] (.*)"/mi),
-  // TNAC (std***)
-  new RegExp(/\[メッセージ\] (?:スクリプト エンジン|Script Engine): "\[(?:TN-AntiCheat|TN-AC)\] (.*)"/mi),
-];
+const embeds = require('../embeds');
+
+const scriptEngines = [ 'スクリプト エンジン', 'Script Engine' ];
 
   /**
    * @param {import('../index')} main
@@ -27,18 +24,17 @@ async function handleChat(main, chatEvent) {
       await main.sendDiscord(worldName + main.lang.run('discord.me', [ safeSender, safeMessage ]));
       break;
     case 'say': {
-      const formatted = main.config.use_custom_regex && formatRegex(safeMessage);
+      const tnacMessage = main.config.styles_tnac && scriptEngines.includes(sender) && formatRegex(safeMessage);
       
       world.logger.log(main.lang.run('console.say', [ message ]));
-      await main.sendDiscord(worldName + main.lang.run('discord.say', [ formatted ?? safeMessage ]));
+      if (tnacMessage) {
+        await main.sendDiscord({ embeds: [embeds.tnac(worldName + tnacMessage)] })
+      } else {
+        await main.sendDiscord(worldName + main.lang.run('discord.say', [ safeMessage ]));
+      }
       break;
     }
   }
-}
-
-/** @param {string} message */
-function formatRegex(message) {
-  return customRegex.map(r => message.match(r)?.[1]).filter(Boolean)[0];
 }
 
 const MAX_MESSAGE_LENGTH = 1000;
@@ -52,6 +48,17 @@ function safeString(str, deleteColor) {
   let sliced = colored.slice(0, MAX_MESSAGE_LENGTH);
   if (colored.length > MAX_MESSAGE_LENGTH) sliced += '...';
   return sliced;
+}
+
+
+const tnacRegex = [
+  new RegExp(`\\[(?:${scriptEngines.join('|')})\\] "\\[(?:TN-AntiCheat|TN-AC)\\] ([\\s\\S]*)"`),
+  new RegExp(`\\[メッセージ\\] (?:${scriptEngines.join('|')}): "\\[(?:TN-AntiCheat|TN-AC)\\] ([\\s\\S]*)"`)
+];
+
+/** @param {string} message */
+function formatRegex(message) {
+  return tnacRegex.map(r => message.match(r)?.[1]).filter(Boolean)[0];
 }
 
 module.exports = { handleChat };

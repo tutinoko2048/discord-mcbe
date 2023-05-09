@@ -52,3 +52,11 @@ exports.error = (desc) => {
     .setDescription(desc)
     .setAuthor({ name: '❌  Error' });
 }
+
+exports.tnac = (desc) => {
+  return new EmbedBuilder()
+    .setColor(0xFF7043)
+    .setDescription(desc)
+    .setTimestamp()
+    .setAuthor({ name: 'TN-AntiCheat warning' });
+}
