@@ -152,15 +152,16 @@ class Main {
       output: process.stdout
     });
     reader.on('line', (line) => {
-      if (line.startsWith('/')) {
-        this.server.runCommand(line).then(console.log);
-      } else {
+      if (line.startsWith('.')) {
         try {
-          const res = eval(line);
+          const res = eval(line.slice(1));
           console.log('<', res);
         } catch (e) {
           console.error('<', e);
         }
+      } else {
+        const command = line.replace(/^\/*/, '');
+        this.server.runCommand(command).then(res => console.log(res));
       }
     });
     

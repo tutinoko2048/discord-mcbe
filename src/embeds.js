@@ -58,5 +58,5 @@ exports.tnac = (desc) => {
     .setColor(0xFF7043)
     .setDescription(desc)
     .setTimestamp()
-    .setAuthor({ name: 'TN-AntiCheat warning' });
+    .setAuthor({ name: 'TN-AntiCheat' });
 }

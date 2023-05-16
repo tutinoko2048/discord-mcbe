@@ -84,9 +84,9 @@ class PanelHandler {
       
       return [
         `\n**${w.name} - ${list.current}/${list.max}**`,
-        `**  |  **Host: ${w.localPlayer ?? '-'}`,
+        `**  |  **Host: \`${w.localPlayer ?? '-'}\``,
         `**  |  **Ping: ${w.ping} ms`,
-        `**  |  **Connected at: ${connectAt}`,
+        `**  |  **Connected: ${connectAt}`,
         '**  |  **Players:',
         `**  |  **${list.players.join(', ')}`
       ].join('\n');
