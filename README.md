@@ -115,7 +115,8 @@ websocketサーバーやdiscordのbotの機能をカスタマイズできます
 configのscripts_entryで指定したファイルが自動で読み込まれます
 
 ### TNACとの連携
-[TN-AntiCheat](https://github.com/tutinoko2048/TNAntiCheat)からのメッセージを強調表示します(configで設定可)
+[TN-AntiCheat](https://github.com/tutinoko2048/TNAntiCheat)からのメッセージを強調表示できます(configで設定)  
+TNAC側のconfig `others/sendws` もオンにしてください
 
 ## Contributing & Translation
 改善点、問題点などのPull RequestやIssueは大歓迎です！  
