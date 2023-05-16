@@ -1,0 +1,22 @@
+// discord-mcbe config 各項目の説明ははREADMEにも載せています
+// version: 1
+
+{
+  // required
+  "discord_token": "", // botのトークン
+  "guild_id": "", // このbotを使うサーバー(Guild)のID
+  "channel_id": "", // メッセージを送信するチャンネルのID
+  
+  // optional
+  "port": 19132, // websocketをlistenするポート
+  "language": "ja_JP", // 使用する言語 langフォルダのファイル名
+  "timezone": "Asia/Tokyo", // 時刻表示に使うタイムゾーン
+  "command_role_id": [ "" ], // マイクラへのコマンドの送信を許可するロールのID
+  "ready_message": true, // サーバー起動時に通知メッセージを送信
+  "delete_color_prefix": true, // discord送信時に§とその後の文字を削除するか
+  "scripts_entry": "scripts/index.js", // 実行するカスタムスクリプトのエントリポイント
+  "command_version": "1.19.80", // マイクラに送るコマンドのバージョン
+  "debug": false,
+  
+  "styles_tnac": true // TN-AntiCheatからのメッセージを強調する
+}
