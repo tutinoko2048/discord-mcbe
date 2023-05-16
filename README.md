@@ -27,7 +27,7 @@ discordのbotが必要なので用意してください。
 (botアカウントの作り方はここでは省略します)  
 
 ### Configを編集
-[ここから最新のものをダウンロード](https://github.com/tutinoko2048/discord-mcbe/releases)して展開してください。  
+[ここから最新のものをダウンロード](https://github.com/tutinoko2048/discord-mcbe/releases)して展開してください。gitからcloneしても構いません。  
 その中の`config.jsonc`ファイルを編集して必要な値を入力してください  
 [Configの内容はこちらから](#config)
 

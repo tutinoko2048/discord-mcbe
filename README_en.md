@@ -26,7 +26,7 @@ https://nodejs.org/en/
 You need discord bot account, prepare that.  
 
 ### Edit config
-[Download latest one](https://github.com/tutinoko2048/discord-mcbe/releases)and unzip it.  
+[Download latest one](https://github.com/tutinoko2048/discord-mcbe/releases)and unzip it, or clone this repo.  
 open `config.jsonc` in that and edit values you need to change in that  
 [Config descriptions are here](#config)
 
