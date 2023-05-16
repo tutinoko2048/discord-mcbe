@@ -5,8 +5,8 @@
 MinecraftBEでdiscordとチャットを繋ぐことができるDiscord Botです。バニラ環境で動きます。  
 https://youtu.be/BEv4oozeQKU  
   
-<img src="docs/minecraft.jpeg" width="80%" alt="minecraft"></br>
-<img src="docs/discord.jpeg" width="80%" alt="discord"></br>
+<img src="docs/minecraft.jpeg" width="100%" alt="minecraft"></br>
+<img src="docs/discord.jpeg" width="90%" alt="discord"></br>
   
 [Discord サポートサーバー](https://discord.gg/XGR8FcCeFc)
 
@@ -97,12 +97,12 @@ tellでメッセージをプレイヤーに送信します。周りからは見�
 ### コマンドの実行
 `/command <送信するコマンド>` または `/送信するコマンド` でワールドにコマンドを送ることができます。  
 専用ロールを作成し、configの`command_role_id`にロールIDを入力して権限を取得してください  
-<img src="docs/command.jpeg" width="80%" alt="command">
+<img src="docs/command.jpeg" width="90%" alt="command">
 
 ### ステータスパネル
 pingや人数の情報をリアルタイムで更新するパネルです  
 `/panel set` で実行したチャンネルにパネルを設置します  
-<img src="docs/panel.jpeg" width="80%" alt="panel">
+<img src="docs/panel.jpeg" width="90%" alt="panel">
 
 ### コンソール
 コンソールからコマンドを送信することができます。文字の先頭に.を付けるとコードをevalで実行します
