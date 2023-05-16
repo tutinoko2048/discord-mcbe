@@ -1,3 +1,5 @@
+> [README.md](README.md) (日本語版)はこちら
+
 # discord-mcbe
   
 <img src="https://img.shields.io/github/downloads/tutinoko2048/discord-mcbe/total?style=for-the-badge">
@@ -31,7 +33,7 @@ open `config.jsonc` in that and edit values you need to change in that
 ### Run
 > **Note**: Make sure that `Require Encrypted Websockets` is off in Minecraft settings  
   
-> **Note**: Allow loopback connection if you use this on PC [Details](#Allow-loopback)  
+> **Note**: Allow loopback connection if you use this on PC [\[Details\]](#Allow-loopback)  
 
 Run `start.cmd` to start the server  
 Next on Minecraft side  

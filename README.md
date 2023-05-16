@@ -1,4 +1,4 @@
-> [README_en.md](README_en.md) is here
+> [README_en.md](README_en.md) (English)is here
 
 # discord-mcbe
   
