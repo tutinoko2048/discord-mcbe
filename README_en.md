@@ -100,7 +100,7 @@ Create a role and put the role ID to config `command_role_id` to get permission
 <img src="docs/command.jpeg" width="90%" alt="command">
 
 ### Status panel
-A panel that shows ping and players in worlds 
+A panel that shows ping and players in worlds  
 Run `/panel set` to set up the panel
 <img src="docs/panel.jpeg" width="90%" alt="panel">
 
