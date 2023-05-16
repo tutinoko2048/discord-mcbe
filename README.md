@@ -1,3 +1,5 @@
+> [README_en.md](README_en.md) is here
+
 # discord-mcbe
   
 <img src="https://img.shields.io/github/downloads/tutinoko2048/discord-mcbe/total?style=for-the-badge">
@@ -119,3 +121,6 @@ configのscripts_entryで指定したファイルが自動で読み込まれま�
 改善点、問題点などのPull RequestやIssueは大歓迎です！  
 このBotは複数言語に対応しています。翻訳ファイル(`lang/*.lang`, `src/interactions/_localizations.json`)を編集することで他の言語に対応させることができます。  
 ※後者のlocalizationの言語のキーは[DiscordAPIのもの](https://discord.com/developers/docs/reference#locales)に従ってください
+
+## ライセンス
+MIT Licenseだよ。
