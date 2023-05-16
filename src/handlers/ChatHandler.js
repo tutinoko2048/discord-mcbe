@@ -52,7 +52,9 @@ function safeString(str, deleteColor) {
 
 
 const tnacRegex = [
+  // default
   new RegExp(`\\[(?:${scriptEngines.join('|')})\\] "\\[(?:TN-AntiCheat|TN-AC)\\] ([\\s\\S]*)"`),
+  // for STR
   new RegExp(`\\[メッセージ\\] (?:${scriptEngines.join('|')}): "\\[(?:TN-AntiCheat|TN-AC)\\] ([\\s\\S]*)"`)
 ];
 

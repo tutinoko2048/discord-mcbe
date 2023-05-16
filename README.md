@@ -39,6 +39,29 @@ discordのbotが必要なので用意してください。
 これで接続することができます
 
 ## コマンド一覧
+- /help  
+ワールドにコマンドを送信します
+
+- /ping  
+ボットとワールドの応答速度を表示します
+
+- /list  
+プレイヤーリストを表示します
+
+- /command <コマンド> [ワールド]  
+ワールドにコマンドを送信します
+
+- /tell <送り先> <メッセージ>  
+tellでメッセージをプレイヤーに送信します。周りからは見られません
+
+- /panel get  
+ステータスパネルのあるチャンネルを表示します
+
+- /panel set  
+ステータスパネルを表示するチャンネルを設定します
+
+- /panel delete  
+ステータスパネルを削除します
 
 ## ループバック接続の許可
 同じPC内で通信をするには設定が必要になる場合があります。  
@@ -47,25 +70,28 @@ discordのbotが必要なので用意してください。
 または `loopback.cmd` を実行してください(同じコマンドが入っています)
 
 ## Config
-- (必須)  
-`discord_token`: botのトークン  
-`guild_id`: このbotを使うサーバー(Guild)のID  
-`channel_id`: メッセージを送信するチャンネルのID  
+(必須)  
+- `discord_token`: botのトークン  
+- `guild_id`: このbotを使うサーバー(Guild)のID  
+- `channel_id`: メッセージを送信するチャンネルのID  
 
-- (任意)  
-`port`: websocket接続に使用するポート  
-`language`: 使用する言語 langフォルダのファイル名  
-`timezone`: 時刻表示に使うタイムゾーン  
-`command_role_id`: マイクラへのコマンドの送信を許可するロールのID  
-EX: `[ "ロールID1", "ロールID2",... ]`  
-`ready_message`: サーバー起動時に通知メッセージを送信  
-`delete_color_prefix`: discord送信時に§とその後の文字を削除するか  
-`styles_tnac`: TN-AntiCheatからのメッセージを強調する  
-`scripts_entry`: 実行するスクリプトのエントリポイント
-`command_version`: マイクラに送るコマンドのバージョン
-`debug`: デバッグログを有効化
+(任意)  
+- `port`: websocket接続に使用するポート
+- `language`: 使用する言語 langフォルダのファイル名
+- `timezone`: 時刻表示に使うタイムゾーン
+- `command_role_id`: マイクラへのコマンドの送信を許可するロールのID  
+文字の配列で指定します (EX: `[ "ロールID1", "ロールID2",... ]`)
+- `ready_message`: サーバー起動時に通知メッセージを送信
+- `delete_color_prefix`: discord送信時に§とその後の文字を削除するか
+- `scripts_entry`: 実行するスクリプトのエントリポイント
+- `command_version`: マイクラに送るコマンドのバージョン
+- `debug`: デバッグログを有効化
+- `styles_tnac`: TN-AntiCheatからのメッセージを強調する
 
 ## メッセージのカスタマイズ
 lang/[言語名].langでメッセージのテンプレートを編集できます
 
 ## Contributing & Translation
+改善点、問題点などのPull RequestやIssueは大歓迎です！  
+このBotは複数言語に対応しています。翻訳ファイル(`lang/*.lang`, `src/interactions/_localizations.json`)を編集することで他の言語に対応させることができます。  
+※後者のlocalizationの言語のキーはDiscord.jsのものに対応させる必要があります

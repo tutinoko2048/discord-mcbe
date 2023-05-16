@@ -107,7 +107,7 @@ class PanelHandler {
     try {
       await this.message.edit({ embeds: [panelEmbed] });
     } catch (e) {
-      if (e.code === 10008) this.clear();
+      if (e.code === RESTJSONErrorCodes.UnknownMessage) this.clear();
         else throw e;
     }
   }
@@ -119,6 +119,7 @@ class PanelHandler {
   }
 }
 
+/** @param {number} t1 @param {number} t2 */
 function getDuration(t1, t2) {
   const duration = moment.duration(t2 - t1);
   const hours = Math.floor(duration.asHours());
