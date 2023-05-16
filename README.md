@@ -6,7 +6,7 @@ MinecraftBEでdiscordとチャットを繋ぐことができるDiscord Botです
 https://youtu.be/BEv4oozeQKU  
   
 <img src="docs/minecraft.jpeg" width="100%" alt="minecraft"></br>
-<img src="docs/discord.jpeg" width="90%" alt="discord"></br>
+<img src="docs/discord.jpeg" width="100%" alt="discord"></br>
   
 [Discord サポートサーバー](https://discord.gg/XGR8FcCeFc)
 
