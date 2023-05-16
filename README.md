@@ -12,6 +12,11 @@ https://youtu.be/BEv4oozeQKU
   
 [Discord サポートサーバー](https://discord.gg/XGR8FcCeFc)
 
+## 動作環境
+- 基本的にはWindowsのPCでの動作を想定しています
+- MinecraftBEのシングル/マルチワールド用です。BDSなどのサーバーでは使用できません
+- 双方向のチャットするにはワールドのホスト(鯖主)が繋げる必要があります
+
 ## 使い方
 ### Nodejsをインストール
 Nodejs v16.6以上をインストールしてください  
@@ -94,4 +99,4 @@ lang/[言語名].langでメッセージのテンプレートを編集できま�
 ## Contributing & Translation
 改善点、問題点などのPull RequestやIssueは大歓迎です！  
 このBotは複数言語に対応しています。翻訳ファイル(`lang/*.lang`, `src/interactions/_localizations.json`)を編集することで他の言語に対応させることができます。  
-※後者のlocalizationの言語のキーはDiscord.jsのものに対応させる必要があります
+※後者のlocalizationの言語のキーは[DiscordAPIのもの](https://discord.com/developers/docs/reference#locales)に従ってください
