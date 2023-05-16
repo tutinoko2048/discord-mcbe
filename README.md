@@ -5,10 +5,8 @@
 MinecraftBEでdiscordとチャットを繋ぐことができるDiscord Botです。バニラ環境で動きます。  
 https://youtu.be/BEv4oozeQKU  
   
-![example2](docs/example2.jpeg)  
-![example1](docs/example1.jpeg)  
-![runCommand](docs/runCommand.jpeg)  
-![list](docs/list.jpeg)  
+<img src="docs/minecraft.jpeg" width="80%" alt="minecraft"></br>
+<img src="docs/discord.jpeg" width="80%" alt="discord"></br>
   
 [Discord サポートサーバー](https://discord.gg/XGR8FcCeFc)
 
@@ -98,17 +96,22 @@ tellでメッセージをプレイヤーに送信します。周りからは見�
 ## その他の機能
 ### コマンドの実行
 `/command <送信するコマンド>` または `/送信するコマンド` でワールドにコマンドを送ることができます。  
-専用ロールを作成し、configの`command_role_id`にロールIDを入力して権限を取得してください
+専用ロールを作成し、configの`command_role_id`にロールIDを入力して権限を取得してください  
+<img src="docs/command.jpeg" width="80%" alt="command">
+
 ### ステータスパネル
 pingや人数の情報をリアルタイムで更新するパネルです  
-`/panel set` で実行したチャンネルにパネルを設置します
+`/panel set` で実行したチャンネルにパネルを設置します  
+<img src="docs/panel.jpeg" width="80%" alt="panel">
+
 ### コンソール
 コンソールからコマンドを送信することができます。文字の先頭に.を付けるとコードをevalで実行します
-<img src="./docs/console.jpeg" width="80%" alt="console">
+
 ### カスタムスクリプト
 websocketサーバーやdiscordのbotの機能をカスタマイズできます  
 サーバーは`server` botは`client`にインスタンスが入っています。ws鯖については[SocketBEのページ](https://github.com/tutinoko2048/SocketBE)をご覧ください  
 configのscripts_entryで指定したファイルが自動で読み込まれます
+
 ### TNACとの連携
 [TN-AntiCheat](https://github.com/tutinoko2048/TNAntiCheat)からのメッセージを強調表示します(configで設定可)
 
