@@ -1,0 +1,42 @@
+minecraft.connect=§9[discord-mcbe]§r §7%0 として接続を開始しました§r
+minecraft.message=§b[Discord]§r %0: %1§r
+minecraft.attachments=§b[Discord]§r %0: §7%1§r
+minecraft.command=§a[Discord]§r %0: §o§7%1§r
+
+discord.ready=接続サーバーを起動しました
+discord.connect=%0: 接続を開始しました
+discord.disconnect=接続を終了しました
+discord.chat=<%0> %1
+discord.me= * %0 %1
+discord.say=%0
+discord.list=現在の人数: %0/%1\nプレイヤー:\n%2
+discord.join=**参加: %0  ||  %1/%2**
+discord.leave=**退出: %0  ||  %1/%2**
+
+command.error.catch=❌  Interactionの処理中にエラーが発生しました
+command.error.noworlds=ワールドに接続されていません
+command.error.nopermission=このコマンドを使用する権限がありません
+command.ping.startAt=起動時刻: %0
+command.command.sending=コマンドを送信しています...
+command.help.commands=コマンド一覧:
+command.list.fetching=取得しています...
+command.list.offline=ワールドがオフラインです
+command.panel.deleted=パネルを削除しました
+command.panel.jump=パネルにJump
+command.panel.notfound=パネルが見つかりませんでした
+command.panel.set=ステータスパネルの表示チャンネルを %0 にセットしました
+
+console.login=%0 でログインしました
+console.listening=Minecraft: "/connect %0" で接続します
+console.connect=[%0] %1: 接続を開始しました
+console.disconnect=[%0] 接続を終了しました
+console.join=参加: %0  ||  %1/%2
+console.leave=退出: %0  ||  %1/%2
+console.message=[Discord] %0: %1
+console.attachments=[Discord] %0: %1
+console.command=[Discord] %0: %1
+console.chat=<%0> %1
+console.me= * %0 %1
+console.say=%0
+
+util.duration=%0時間 %1分 %2秒

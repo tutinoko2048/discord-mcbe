@@ -1,0 +1,21 @@
+{
+  "extends": ["eslint:recommended"],
+  "plugins": [],
+  "env": {
+    "node": true,
+    "es2021": true
+  },
+  "globals": {},
+  "rules": {
+    "no-unused-vars": "warn",
+    "no-empty": "off",
+    "block-spacing": "warn",
+    "arrow-spacing": "warn",
+    "space-before-blocks": "warn",
+    "keyword-spacing": "warn",
+    "no-irregular-whitespace": "off"
+  },
+  "parserOptions": {
+    "ecmaVersion": 13
+  }
+}

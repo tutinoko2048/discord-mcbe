@@ -1,8 +1,0 @@
-{
-  "PORT": 19132,
-  "TOKEN": "DiscordBOTのtoken",
-  "CHANNEL": "メッセージを送信するチャンネルのID",
-  "PREFIX": ".",
-  "OPROLE": "管理者ロールのID",
-  "cmdResponse": true
-}
