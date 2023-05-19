@@ -76,7 +76,7 @@ class Main {
     });
     
     this.client.on('messageCreate', async message => {
-      if (message.author.bot) return;
+      if (message.author.bot || message.channel.id !== this.config.channel_id) return;
       handleMessage(this, message).catch(e => this.logger.error(e));
     });
     
