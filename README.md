@@ -19,7 +19,7 @@ https://youtu.be/BEv4oozeQKU
 
 ## 使い方
 ### Nodejsをインストール
-Nodejs v16.6以上をインストールしてください  
+Nodejs v18以上をインストールしてください  
 https://nodejs.org/ja/  
 
 ### botを作る

@@ -1,8 +1,8 @@
 {
   "name": "discord-mcbe",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "engines": {
-    "node": ">=16.6.0"
+    "node": ">=18.0.0"
   },
   "main": "src/index.js",
   "typings": "src/types/index.d.ts",
@@ -17,7 +17,7 @@
     "dotlang": "^1.1.1",
     "jsonc": "^2.0.0",
     "moment-timezone": "^0.5.43",
-    "socket-be": "^1.1.1"
+    "socket-be": "^1.2.0"
   },
   "devDependencies": {
     "eslint": "^8.37.0",

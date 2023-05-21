@@ -19,7 +19,7 @@ https://youtu.be/BEv4oozeQKU
 
 ## Installation
 ### Install Nodejs
-Requires version more than 16.6  
+Requires v18 or more  
 https://nodejs.org/en/  
 
 ### Make a bot account
