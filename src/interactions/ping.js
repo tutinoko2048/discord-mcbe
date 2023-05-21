@@ -16,14 +16,14 @@ const pingCommand = new ChatInput({
   await interaction.deferReply();
   const deltaTime = Date.now() - sentTime;
   
-  const startAt = moment(server.startTime).tz(config.timezone);
+  const startAt = moment(server.startTime).tz(config.timezone).format('MM/DD HH:mm:ss');
   
   const embed = new EmbedBuilder();
   embed.setDescription([
     'Pong!',
-    `- **Time**: ${deltaTime}ms`,
-    `- **Discord**: ${interaction.client.ws.ping}ms`,
-    ...worlds.map(w => `- **${w.name}**: ${w.ping}ms`)
+    `\- **Time**: ${deltaTime}ms`,
+    `\- **Discord**: ${interaction.client.ws.ping}ms`,
+    ...worlds.map(w => `\- **${w.name}**: ${w.ping}ms`)
   ].join('\n'));
   embed.setColor('Random');
   embed.setFooter({ text: lang.run('command.ping.startAt', [ startAt ]) });
