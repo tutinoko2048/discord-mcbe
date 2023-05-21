@@ -88,7 +88,7 @@ class PanelHandler {
         `**  |  **Ping: ${w.ping} ms`,
         `**  |  **Connected: ${connectAt}`,
         '**  |  **Players:',
-        `**  |  **${list.players.join(', ')}`
+        `**  |  **${list.players.sort().join(', ')}`
       ].join('\n');
     }));
     const messages = [

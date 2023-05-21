@@ -23,7 +23,7 @@ const listCommand = new ChatInput({
     return [
       `**${w.name} - ${list.current}/${list.max}**`,
       '**  |  **Players:',
-      `**  |  **${list.players.join(', ')}`
+      `**  |  **${list.players.sort().join(', ')}`
     ].join('\n');
   }));
 

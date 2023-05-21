@@ -17,6 +17,7 @@
     "dotlang": "^1.1.1",
     "jsonc": "^2.0.0",
     "moment-timezone": "^0.5.43",
+    "node": "^18.16.0",
     "socket-be": "^1.2.0"
   },
   "devDependencies": {
