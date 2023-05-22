@@ -19,6 +19,7 @@ export interface IConfig {
   command_role_id: string[];
   ready_message: boolean; 
   delete_color_prefix: boolean;
+  panel_update_interval: number;
   styles_tnac: boolean;
   scripts_entry: string;
   command_version: import('socket-be').VersionResolvable;

@@ -23,6 +23,8 @@ class Main {
     console.log(logo);
     console.log(`discord-mcbe v${VERSION}`);
     
+    this.version = VERSION;
+    
     this.config = getConfig();
     
     this.logger = new Logger('Discord', {
@@ -40,7 +42,8 @@ class Main {
       ],
       allowedMentions: { repliedUser: false }
     });
-    validateConfig(this.config, this.client);
+    if ('DISCORD_TOKEN' in process.env) this.config.discord_token ||= process.env.DISCORD_TOKEN;
+    //validateConfig(this.config, this.client);
     
     this.interactions = new DiscordInteractions(this.client);
     this.interactions.loadRegistries(path.resolve(__dirname, './interactions'));
@@ -66,13 +69,7 @@ class Main {
       this.updateActivity();
       setInterval(() => this.updateActivity(), 20*1000);
       
-      const panel = await this.panels.fetch()
-        .catch((e) => this.logger.error(`[PanelHandler] failed to fetch panel | code: ${e.code}`));
-      if (panel) {
-        this.logger.info('[PanelHandler] successfully fetched the panel');
-        this.panels.update();
-      }
-      setInterval(() => this.panels.message && this.panels.update(), 10*1000);
+      this.panels.startInterval();
     });
     
     this.client.on('messageCreate', async message => {

@@ -2,8 +2,7 @@ const { ChatInput } = require('@akki256/discord-interaction');
 const { EmbedBuilder } = require('discord.js');
 const localization = require('./_localizations.json');
 const { TN_ICON_URL, GITHUB_URL } = require('../util/constants');
-const { lang, interactions } = require('../index.js');
-const { version: VERSION } = require('../../package.json');
+const { lang, interactions, version } = require('../index.js');
 
 const helpCommand = new ChatInput({
   name: 'help',
@@ -14,7 +13,7 @@ const helpCommand = new ChatInput({
   const commands = [...interactions.chatInputs.values()];
 
   const embed = new EmbedBuilder();
-  embed.setAuthor({ name: `discord-mcbe v${VERSION} Help` });
+  embed.setAuthor({ name: `discord-mcbe v${version} Help` });
   embed.setDescription([
     lang.run('command.help.commands'),
     ...commands.map(c => `</${c.data.name}:${c.id}> - ${getDescription(c, interaction.locale)}`),

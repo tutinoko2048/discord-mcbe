@@ -1,5 +1,4 @@
-const { server, client } = require('discord-mcbe');
-const { version: VERSION } = require('../package.json');
+const { server, client, version } = require('discord-mcbe');
 
 console.log('[Script] loaded!');
 
@@ -13,7 +12,7 @@ server.events.on('playerChat', async ev => {
     if (command === 'help') {
       await world.sendMessage([
         `§b[discord-mcbe]§r`,
-        `§7-§f version: §e${VERSION}§r`,
+        `§7-§f version: §e${version}§r`,
         `§7-§f client: §6${world.localPlayer}§r`,
         '§7Made by RetoRuto9900K / tutinoko2048§r'
       ].join('\n'));

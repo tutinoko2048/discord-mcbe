@@ -14,11 +14,11 @@ function getConfig() {
  * @param {import('discord.js').Client} client
  */
 function validateConfig(config, client) {
-  if ('DISCORD_TOKEN' in process.env) config.discord_token ||= process.env.DISCORD_TOKEN;
   if (!config.discord_token) throw Error('Set discord_token in config');
   if (!config.guild_id) throw Error('Set guild_id in config');
   if (!config.channel_id) throw Error('Set channel_id in config');
   if (!config.language) throw Error('Set valid language name in config');
+  if (config.panel_update_interval === undefined) throw Error('Set panel_update_interval in config');
   
   if (typeof config.guild_id !== 'string') throw TypeError('The type of config.guild_id is not a string');
   if (typeof config.channel_id !== 'string') throw TypeError('The type of config.channel_id is not a string');

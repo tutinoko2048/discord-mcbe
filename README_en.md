@@ -88,6 +88,7 @@ or you can run `loopback.cmd` (same commands here)
 Array of string. (EX: `[ "RoleID1", "RoleID2",... ]`)
 - `ready_message`: Sends a message when the server(bot) starts
 - `delete_color_prefix`: Remove § and the following character
+- `panel_update_interval`: Update interval of status panel(ms)
 - `scripts_entry`: The entrypoint of scripts
 - `command_version`: The version of command to send
 - `debug`: Enables debug log
