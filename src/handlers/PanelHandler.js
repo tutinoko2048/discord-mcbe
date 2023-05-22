@@ -6,7 +6,8 @@ const moment = require('moment-timezone');
 const panelEmbed = new EmbedBuilder()
   .setAuthor({ name: 'Status Panel' })
   .setColor(colors.leave)
-  .setDescription('Awaiting update...');
+  .setDescription('Awaiting update...')
+  .setFooter({ text: 'discord-mcbe' });
 
 class PanelHandler {
   /** @param {import('../index')} main */
@@ -22,6 +23,16 @@ class PanelHandler {
     
     /** @type {import('discord.js').Message|void} */
     this.message;
+  }
+  
+  async startInterval() {
+    const panel = await this.fetch()
+      .catch((e) => this.main.logger.error(`[PanelHandler] failed to fetch panel | code: ${e.code}`));
+    if (panel) {
+      this.main.logger.info('[PanelHandler] successfully fetched the panel');
+      this.update();
+    }
+    setInterval(() => this.message && this.update(), this.main.config.panel_update_interval);
   }
   
   /**
@@ -88,7 +99,7 @@ class PanelHandler {
         `**  |  **Ping: ${w.ping} ms`,
         `**  |  **Connected: ${connectAt}`,
         '**  |  **Players:',
-        `**  |  **${list.players.join(', ')}`
+        `**  |  **${list.players.sort().join(', ')}`
       ].join('\n');
     }));
     const messages = [

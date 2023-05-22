@@ -1,5 +1,5 @@
 // discord-mcbe config 各項目の説明ははREADMEにも載せています
-// version: 1
+// version: 2
 
 {
   // required
@@ -14,6 +14,7 @@
   "command_role_id": [ "" ], // マイクラへのコマンドの送信を許可するロールのID
   "ready_message": true, // サーバー起動時に通知メッセージを送信
   "delete_color_prefix": true, // discord送信時に§とその後の文字を削除するか
+  "panel_update_interval": "10000", // パネルの更新間隔(ミリ秒単位)
   "scripts_entry": "scripts/index.js", // 実行するカスタムスクリプトのエントリポイント
   "command_version": "1.19.80", // マイクラに送るコマンドのバージョン
   "debug": false,

@@ -19,7 +19,7 @@ https://youtu.be/BEv4oozeQKU
 
 ## 使い方
 ### Nodejsをインストール
-Nodejs v16.6以上をインストールしてください  
+Nodejs v18以上をインストールしてください  
 https://nodejs.org/ja/  
 
 ### botを作る
@@ -90,6 +90,7 @@ tellでメッセージをプレイヤーに送信します。周りからは見�
 文字の配列で指定します (EX: `[ "ロールID1", "ロールID2",... ]`)
 - `ready_message`: サーバー起動時に通知メッセージを送信
 - `delete_color_prefix`: discord送信時に§とその後の文字を削除するか
+- `panel_update_interval`: ステータスパネルの更新間隔(ミリ秒単位)
 - `scripts_entry`: 実行するスクリプトのエントリポイント
 - `command_version`: マイクラに送るコマンドのバージョン
 - `debug`: デバッグログを有効化
