@@ -43,7 +43,7 @@ class Main {
       allowedMentions: { repliedUser: false }
     });
     if ('DISCORD_TOKEN' in process.env) this.config.discord_token ||= process.env.DISCORD_TOKEN;
-    //validateConfig(this.config, this.client);
+    validateConfig(this.config, this.client);
     
     this.interactions = new DiscordInteractions(this.client);
     this.interactions.loadRegistries(path.resolve(__dirname, './interactions'));
