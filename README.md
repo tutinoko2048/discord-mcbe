@@ -2,7 +2,10 @@
 
 # discord-mcbe
   
-<img src="https://img.shields.io/github/downloads/tutinoko2048/discord-mcbe/total?style=for-the-badge">
+<img src="https://img.shields.io/github/downloads/tutinoko2048/discord-mcbe/total?style=for-the-badge"> <img src="https://img.shields.io/github/downloads/tutinoko2048/discord-mcbe/latest/total?style=for-the-badge">  
+<a href="https://github.com/tutinoko2048/discord-mcbe/releases">
+  <img src="https://img.shields.io/github/v/release/tutinoko2048/discord-mcbe?display_name=tag&style=for-the-badge">
+</a>
   
 MinecraftBEでdiscordとチャットを繋ぐことができるDiscord Botです。バニラ環境で動きます。  
 https://youtu.be/BEv4oozeQKU  
@@ -116,7 +119,7 @@ websocketサーバーやdiscordのbotの機能をカスタマイズできます
 configのscripts_entryで指定したファイルが自動で読み込まれます
 
 ### TNACとの連携
-[TN-AntiCheat](https://github.com/tutinoko2048/TNAntiCheat)からのメッセージを強調表示できます(configで設定)  
+[TN-AntiCheat](https://github.com/tutinoko2048/discord-mcbe)からのメッセージを強調表示できます(configで設定)  
 TNAC側のconfig `others/sendws` もオンにしてください
 
 ## Contributing & Translation

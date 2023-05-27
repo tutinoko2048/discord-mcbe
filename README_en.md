@@ -2,7 +2,10 @@
 
 # discord-mcbe
   
-<img src="https://img.shields.io/github/downloads/tutinoko2048/discord-mcbe/total?style=for-the-badge">
+<img src="https://img.shields.io/github/downloads/tutinoko2048/discord-mcbe/total?style=for-the-badge"> <img src="https://img.shields.io/github/downloads/tutinoko2048/discord-mcbe/latest/total?style=for-the-badge">  
+<a href="https://github.com/tutinoko2048/discord-mcbe/releases">
+  <img src="https://img.shields.io/github/v/release/tutinoko2048/discord-mcbe?display_name=tag&style=for-the-badge">
+</a>
   
 This is a discord bot that can connect discord and chat on MinecraftBE.  
 https://youtu.be/BEv4oozeQKU  
