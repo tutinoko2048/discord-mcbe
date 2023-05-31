@@ -1,0 +1,42 @@
+minecraft.connect=§9[discord-mcbe]§r §7Connecté connexion en tant que %0§r
+minecraft.message=§b[Discord]§r %0: %1§r
+minecraft.attachments=§b[Discord]§r %0: §7%1§r
+minecraft.command=§a[Discord]§r %0 : %1§r
+
+discord.ready=La connexion au serveur a été établie
+discord.connect=%0 : La connexion a été établie
+discord.disconnect=La connextion a été interrompue
+discord.chat=<%0> %1
+discord.me= * %0 %1
+discord.say=%0
+discord.list=Current players: %0/%1\nJoueurs :\n%2
+discord.join=**Rejoint : %0  ||  %1/%2**
+discord.leave=**Quitté : %0  ||  %1/%2**
+
+command.error.catch=❌ Une erreur est survenue en traitant l'interaction
+command.error.noworlds=Pas connecté à un monde
+command.error.nopermission=Vous n'avez pas la permission d'utiliser cette commande
+command.ping.startAt=Temps de démarrage : %0
+command.command.sending=Envoi de la commande…
+command.help.commands=Liste des commandes :
+command.list.fetching=Récupération en cours…
+command.list.offline=Le monde est hors ligne
+command.panel.deleted=Le panneau a été supprimé
+command.panel.jump=Voir le panneau
+command.panel.notfound=Panneau non trouvé
+command.panel.set=Le salon d'affichage du panneau est désormais le suivant : %0
+
+console.login=Connecté en tant que %0
+console.listening=Minecraft : "/connect %0" pour connecter
+console.connect=[%0] %1: La connexion a été établie
+console.disconnect=[%0] La connexion a été interrompue
+console.join=Rejoint : %0  ||  %1/%2
+console.leave=Quitté : %0  ||  %1/%2
+console.message=[Discord] %0: %1
+console.attachment=[Discord] %0: %1
+console.command=[Discord] %0: %1
+console.chat=<%0> %1
+console.me= * %0 %1
+console.say=%0
+
+util.duration=%0h %1m %2s
