@@ -74,7 +74,7 @@ Deletes the status panel
 ## Allow loopback
 Communication within the same PC may require some configurations.  
 Run this command on command prompt(cmd.exe) as an **Administrator**  
-`CheckNetIsolation.exe LoopbackExempt –a –p=S-1-15-2-1958404141-86561845-1752920682-3514627264-368642714-62675701-733520436;`  
+`CheckNetIsolation LoopbackExempt -a -n="Microsoft.MinecraftUWP_8wekyb3d8bbwe"`  
 or you can run `loopback.cmd` (same commands here)
 
 ## Config

@@ -76,7 +76,7 @@ tellでメッセージをプレイヤーに送信します。周りからは見�
 ## ループバック接続の許可
 同じPC内で通信をするには設定が必要になる場合があります。  
 こちらのコマンドをコマンドプロンプトで**管理者権限**で実行してください  
-`CheckNetIsolation.exe LoopbackExempt –a –p=S-1-15-2-1958404141-86561845-1752920682-3514627264-368642714-62675701-733520436;`  
+`CheckNetIsolation LoopbackExempt -a -n="Microsoft.MinecraftUWP_8wekyb3d8bbwe"`  
 または `loopback.cmd` を実行してください(同じコマンドが入っています)
 
 ## Config
