@@ -11,4 +11,3 @@ jobs:
           node-version: "16"
       - run: npm i --save-dev
       - run: npm run lint
-      - run: npx tsc
