@@ -9,9 +9,9 @@
     "noEmit": true,
     "target": "ES2022",
     "allowSyntheticDefaultImports": true,
-    "moduleResolution": "node",
+    "moduleResolution": "Node",
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "module": "commonjs"
+    "module": "CommonJS"
   }
 }
