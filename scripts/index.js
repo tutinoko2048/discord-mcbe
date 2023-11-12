@@ -4,10 +4,10 @@ console.log('[Script] loaded!');
 
 const PREFIX = '.';
 server.events.on('playerChat', async ev => {
-  const { message, sender, world } = ev;
+  const { message, world } = ev;
   
   if (message.startsWith(PREFIX)) { // チャットの擬似コマンドのサンプル
-    const [ command, ...args ] = message.slice(PREFIX.length).split(' ');
+    const [ command ] = message.slice(PREFIX.length).split(' ');
     
     if (command === 'help') {
       await world.sendMessage([

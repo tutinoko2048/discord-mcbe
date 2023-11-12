@@ -7,8 +7,7 @@ const { TimeoutError } = require('socket-be');
 const panelEmbed = new EmbedBuilder()
   .setAuthor({ name: 'Status Panel' })
   .setColor(colors.leave)
-  .setDescription('Awaiting update...')
-  .setFooter({ text: 'discord-mcbe' });
+  .setDescription('Awaiting update...');
 
 class PanelHandler {
   /** @type {Message|undefined} */
@@ -33,7 +32,10 @@ class PanelHandler {
       this.main.logger.info('[PanelHandler] successfully fetched the panel');
       this.update();
     }
-    setInterval(() => this.message && this.update(), this.main.config.panel_update_interval);
+    setInterval(
+      () => this.message && this.update(),
+      this.main.config.panel_update_interval
+    );
   }
   
   /**
@@ -54,7 +56,7 @@ class PanelHandler {
       
     } catch (e) {
       if (e.code === RESTJSONErrorCodes.UnknownMessage) this.clear();
-        else throw e;
+      else throw e;
     }
   }
   
@@ -100,7 +102,6 @@ class PanelHandler {
       }
       if (!list) return;
       const connectAt = `<t:${String(w.connectedAt).slice(0, 10)}:T>`;
-     
       return [
         `\n**${w.name} - ${list.current}/${list.max}**`,
         `**  |  **Host: \`${w.localPlayer ?? '-'}\``,
@@ -122,6 +123,7 @@ class PanelHandler {
       [...messages, ...info].join('\n')
     );
     panelEmbed.setColor(worlds.length > 0 ? colors.join : colors.leave);
+    panelEmbed.setFooter({ text: `discord-mcbe v${this.main.version}` });
     
     try {
       await this.message.edit({ embeds: [panelEmbed] });

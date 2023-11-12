@@ -1,6 +1,6 @@
 {
   "extends": ["eslint:recommended"],
-  "plugins": [],
+  "plugins": ["jsdoc"],
   "env": {
     "node": true,
     "es2021": true
@@ -14,7 +14,8 @@
     "space-before-blocks": "warn",
     "keyword-spacing": "warn",
     "no-irregular-whitespace": "off",
-    "no-useless-escape": "off"
+    "no-useless-escape": "off",
+    "jsdoc/no-undefined-types": 1
   },
   "parserOptions": {
     "ecmaVersion": 13

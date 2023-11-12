@@ -11,9 +11,8 @@ function getConfig() {
 
 /**
  * @param {import('../types').IConfig} config
- * @param {import('discord.js').Client} client
  */
-function validateConfig(config, client) {
+function validateConfig(config) {
   if (!config.discord_token) throw Error('Set discord_token in config');
   if (!config.guild_id) throw Error('Set guild_id in config');
   if (!config.channel_id) throw Error('Set channel_id in config');
