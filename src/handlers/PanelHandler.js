@@ -1,7 +1,8 @@
 const util = require('../util/util');
-const { EmbedBuilder, RESTJSONErrorCodes } = require('discord.js');
+const { EmbedBuilder, RESTJSONErrorCodes, Message } = require('discord.js');
 const { colors } = require('../embeds');
 const moment = require('moment-timezone');
+const { TimeoutError } = require('socket-be');
 
 const panelEmbed = new EmbedBuilder()
   .setAuthor({ name: 'Status Panel' })
@@ -10,6 +11,9 @@ const panelEmbed = new EmbedBuilder()
   .setFooter({ text: 'discord-mcbe' });
 
 class PanelHandler {
+  /** @type {Message|undefined} */
+  message;
+
   /** @param {import('../index')} main */
   constructor(main) {
     this.main = main;
@@ -20,9 +24,6 @@ class PanelHandler {
     
     /** @type {string} */
     this.messageId = util.getData('panel_message');
-    
-    /** @type {import('discord.js').Message|void} */
-    this.message;
   }
   
   async startInterval() {
@@ -36,7 +37,7 @@ class PanelHandler {
   }
   
   /**
-   * @returns {Promise<import('discord.js').Message|void>}
+   * @returns {Promise<Message|undefined>}
    */
   async fetch() {
     const channelId = util.getData('panel_channel');
@@ -90,9 +91,16 @@ class PanelHandler {
     
     const worlds = this.main.server.getWorlds();
     const info = await Promise.all(worlds.map(async w => {
-      const list = await w.getPlayerList();
+      /** @type {import('socket-be').PlayerList} */
+      let list;
+      try {
+        list = await w.getPlayerList();
+      } catch (e) {
+        if (!(e instanceof TimeoutError)) throw e;
+      }
+      if (!list) return;
       const connectAt = `<t:${String(w.connectedAt).slice(0, 10)}:T>`;
-      
+     
       return [
         `\n**${w.name} - ${list.current}/${list.max}**`,
         `**  |  **Host: \`${w.localPlayer ?? '-'}\``,
@@ -101,7 +109,7 @@ class PanelHandler {
         '**  |  **Players:',
         `**  |  **${list.players.sort().join(', ')}`
       ].join('\n');
-    }));
+    }).filter(Boolean));
     const messages = [
       '**Server**',
       `**  |  **Ping: ${this.main.client.ws.ping} ms`,
