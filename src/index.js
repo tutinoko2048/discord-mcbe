@@ -178,7 +178,7 @@ class Main {
     const channel = this.client.channels.cache.get(channelId);
     if (!channel) throw Error('Failed to get channel');
     
-    if (channel.isTextBased()) return await channel.send(message);
+    if (channel.isSendable()) return await channel.send(message);
   }
   
   async updateActivity() {

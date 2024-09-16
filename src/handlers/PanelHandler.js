@@ -63,7 +63,7 @@ class PanelHandler {
   /** @param {string} channelId */
   async create(channelId) {
     const channel = await this.client.channels.fetch(channelId);
-    if (!channel?.isTextBased()) throw Error('Channel not found or is not a TextBased channel');
+    if (!channel?.isSendable()) throw Error('Channel not found or is not a TextBased channel');
     
     await this.delete().catch(e => console.error(`[PanelHandler] failed to delete old panel | code: ${e.code}`));
     

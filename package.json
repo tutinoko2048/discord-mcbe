@@ -13,11 +13,11 @@
   "dependencies": {
     "@akki256/discord-interaction": "^3.1.1",
     "discord-mcbe": "file:src",
-    "discord.js": "^14.13.0",
+    "discord.js": "^14.16.2",
     "dotlang": "^1.1.1",
     "jsonc": "^2.0.0",
-    "moment-timezone": "^0.5.43",
-    "socket-be": "^1.2.2"
+    "moment-timezone": "^0.5.45",
+    "socket-be": "^1.2.4"
   },
   "devDependencies": {
     "eslint": "^8.53.0",
@@ -26,6 +26,6 @@
     "typescript": "^5.2.2"
   },
   "overrides": {
-    "discord-api-types": "0.37.63"
+    "discord-api-types": "0.37.100"
   }
 }
