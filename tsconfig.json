@@ -1,17 +1,15 @@
 {
-  "include": [ "src/", "scripts/" ],
-  "exclude": [ "node_modules/" ],
-  "files": [ "src/types/index.d.ts"],
+  "include": ["src-server", "scripts/"],
   "compilerOptions": {
-    "allowJs": true,
-    "checkJs": true,
-    "declaration": true,
-    "noEmit": true,
-    "target": "ES2022",
-    "allowSyntheticDefaultImports": true,
-    "moduleResolution": "Node",
+    "strict": true,
+    "target": "ES2023",
+    "module": "Node18",
+    "moduleResolution": "node16",
     "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
-    "module": "CommonJS"
+    "noEmit": true,
+    "allowJs": true,
+    "checkJs": false,
   }
 }

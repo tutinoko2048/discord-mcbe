@@ -1,0 +1,96 @@
+{
+  "type": "object",
+  "properties": {
+    "discord_token": {
+      "type": "string",
+      "description": "Token of the bot"
+    },
+    "guild_id": {
+      "type": "string",
+      "description": "ID of the guild that use the bot"
+    },
+    "channel_id": {
+      "type": "string",
+      "description": "ID of the channel that messages will be sent"
+    },
+    "port": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "description": "Port used to connect the bot"
+    },
+    "language": {
+      "type": "string",
+      "description": "Language (File name in `lang` folder)"
+    },
+    "timezoneOffset": {
+      "type": "integer",
+      "description": "Timezone used to display the time"
+    },
+    "command_role_id": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Role ids that are allowed to use commands to minecraft"
+    },
+    "ready_message": {
+      "type": "boolean",
+      "description": "Whether to send messages when ready"
+    },
+    "strip_color_prefix": {
+      "type": "boolean",
+      "description": "Whether to delete § in messages sent from minecraft"
+    },
+    "panel_update_interval": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "description": "The interval to update StatusPanel"
+    },
+    "styles_tnac": {
+      "type": "boolean",
+      "description": "TN-AntiCheatからのメッセージを強調表示するか"
+    },
+    "scripts_entry": {
+      "type": "string",
+      "description": "The entry file for custom scripts"
+    },
+    "command_version": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ]
+        }
+      ],
+      "description": "The format version(mc) to be used for sending commands"
+    },
+    "debug": {
+      "type": "boolean",
+      "description": "debug."
+    }
+  },
+  "required": [
+    "discord_token",
+    "guild_id",
+    "channel_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
