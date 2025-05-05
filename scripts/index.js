@@ -1,4 +1,4 @@
-import { App } from '../src-server';
+import { App } from '../server/src';
 
 /** 
  * @param {App} app

@@ -7,6 +7,8 @@ import { ScriptPlayer } from './player';
 export class ScriptWorld {
   private readonly bridge: BridgeServer;
   public readonly session: Session;
+
+  public readonly players = new Map<string, ScriptPlayer>();
   
   constructor(bridge: BridgeServer, session: Session) {
     this.bridge = bridge;

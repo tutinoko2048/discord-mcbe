@@ -8,7 +8,7 @@ import { Logger, _t, loadConfig, logo } from './util';
 import { StartupEvent } from './events';
 
 import * as embeds from './embeds';
-import { version as VERSION } from '../package.json';
+import { version as VERSION } from '../../package.json';
 
 
 // const { handleMessage } = require('./handlers/MessageHandler');

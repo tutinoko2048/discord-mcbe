@@ -1,5 +1,5 @@
 {
-  "include": ["src-server", "scripts/"],
+  "include": ["server/src", "scripts/"],
   "compilerOptions": {
     "strict": true,
     "target": "ES2023",
