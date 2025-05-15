@@ -1,0 +1,32 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "discord-mcbe client",
+    "description": "pack.description",
+    "uuid": "b305bd82-a533-4595-9486-517f49e82941",
+    "version": [ 0, 1, 0 ],
+    "min_engine_version": [ 1, 21, 80 ]
+  },
+  "modules": [
+    {
+      "version": [ 0, 0, 1 ],
+      "type": "data",
+      "uuid": "1a5b8786-8000-419a-96a1-714c71477e94",
+      "description": "data module"
+    },
+    {
+      "version": [ 0, 0, 1 ],
+      "type": "script",
+      "language": "javascript",
+      "entry": "scripts/index.js",
+      "uuid": "195cf53c-ae53-4437-82d9-a84e08694ffc",
+      "description": "script module"
+    }
+  ],
+  "dependencies": [
+    {
+      "module_name": "@minecraft/server",
+      "version": "1.0.0-beta"
+    }
+  ]
+}
