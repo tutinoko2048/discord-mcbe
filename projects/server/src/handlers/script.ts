@@ -1,13 +1,15 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { App } from '../main';
+import { Application } from '../main';
 import { Logger } from '../util';
 
 export class ScriptHandler {
   private readonly logger: Logger;
 
-  constructor(private readonly app: App) {
+  constructor(private readonly app: Application) {
     this.logger = new Logger('Script', this.app.config);
+
+    this.logger.debug('Initialized');
   }
   
   async load() {

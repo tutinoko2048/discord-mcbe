@@ -2,7 +2,7 @@ const { ChatInput } = require('@akki256/discord-interaction');
 const { EmbedBuilder } = require('discord.js');
 const { colors } = require('../embeds');
 const localization = require('./_localizations.json');
-const { lang, server } = require('../index.js');
+const { lang, server } = require('../../index.js');
 
 const listCommand = new ChatInput({
   name: 'list',

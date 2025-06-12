@@ -1,6 +1,6 @@
 const { ButtonBuilder, ActionRowBuilder, ButtonStyle } = require('discord.js');
 const embeds = require('../../embeds');
-const { panels, lang } = require('../../index.js');
+const { panels, lang } = require('../../../index.js');
 
 /** @param {import('discord.js').ChatInputCommandInteraction} interaction */
 async function getPanel(interaction) {

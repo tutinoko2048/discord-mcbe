@@ -13,47 +13,54 @@ export class Logger {
   ) {}
 
   public log(...message: any[]): void {
-    const formattedMessage = this.formatMessage(message);
     console.log(
-      color.gray(`${this.getTime()} [LOG] [${this.name}] ${formattedMessage}`)
+      color.gray(color.dim(this.getTime())),
+      color.gray(`[${color.bold('LOG')}] [${this.name}] ${this.formatMessage(message)}`),
     );
   }
 
   public info(...message: any[]): void {
-    const formattedMessage = this.formatMessage(message);
-    console.log(
-      color.whiteBright(`${this.getTime()} [INFO] [${this.name}] ${formattedMessage}`)
+    console.info(
+      color.gray(color.dim(this.getTime())),
+      color.cyanBright(`[${color.bold('INFO')}]`),
+      `[${this.name}]`,
+      this.formatMessage(message)
     );
   }
 
   public warn(...message: any[]): void {
-    const formattedMessage = this.formatMessage(message);
     console.warn(
-      color.yellow(`${this.getTime()} [WARN] [${this.name}] ${formattedMessage}`)
+      color.gray(color.dim(this.getTime())),
+      color.yellow(`[${color.bold('WARN')}] [${this.name}] ${this.formatMessage(message)}`),
     );
   }
 
   public error(...message: any[]): void {
-    const formattedMessage = this.formatMessage(message);
     console.error(
-      color.red(`${this.getTime()} [ERROR] [${this.name}] ${formattedMessage}`)
+      color.gray(color.dim(this.getTime())),
+      color.red(`[${color.bold('ERROR')}] [${this.name}] ${this.formatMessage(message)}`),
     );
   }
 
   public debug(...message: any[]): void {
     if (!this.options.debug) return;
-    const formattedMessage = this.formatMessage(message);
-    console.log(
-      color.cyan(`${this.getTime()} [DEBUG] [${this.name}] ${formattedMessage}`)
+    console.debug(
+      color.gray(color.dim(this.getTime())),
+      color.magenta(`[${color.bold('DEBUG')}]`),
+      `[${this.name}]`,
+      this.formatMessage(message)
     );
   }
 
   private formatMessage(message: any[]): string {
     return message.map((msg) => {
-      if (typeof msg === 'object') {
+      if (msg instanceof Error) {
+        return msg.stack ?? msg;
+      } else if (typeof msg !== 'string') {
         return inspect(msg, { depth: 2, colors: true });
+      } else {
+        return msg;
       }
-      return msg;
     }).join(' ');
   }
 

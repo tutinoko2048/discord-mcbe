@@ -2,7 +2,7 @@
 ## ディレクトリ構成
 - `projects/`
   - `server/` サーバーとDiscord bot
-  - `addon/` BDS連携用のアドオン
+  - `addon/` BDS連携用のアドオン(基本はclientを包むだけ)
 - `packages/`
   - `client/` アドオンで使うクライアント(配布可能)
   - `shared/` 共有するコードを置く

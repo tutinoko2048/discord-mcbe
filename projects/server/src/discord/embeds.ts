@@ -21,7 +21,7 @@ export const connect = (text: string, worldName: string) => {
     .setDescription(text);
 }
 
-export const disconnect = (desc, worldName) => {
+export const disconnect = (desc: string, worldName: string) => {
   return new EmbedBuilder()
     .setColor(colors.success)
     .setTimestamp(Date.now())
@@ -29,7 +29,7 @@ export const disconnect = (desc, worldName) => {
     .setDescription(desc);
 }
 
-export const join = (desc, worldName) => {
+export const join = (desc: string, worldName: string) => {
   const embed = new EmbedBuilder()
     .setColor(colors.join)
     .setDescription(desc);
@@ -37,7 +37,7 @@ export const join = (desc, worldName) => {
   return embed;
 }
 
-export const leave = (desc, worldName) => {
+export const leave = (desc: string, worldName: string) => {
   const embed = new EmbedBuilder()
     .setColor(colors.leave)
     .setDescription(desc);
@@ -45,14 +45,14 @@ export const leave = (desc, worldName) => {
   return embed;
 }
 
-export const error = (desc) => {
+export const error = (desc: string) => {
   return new EmbedBuilder()
     .setColor(colors.error)
     .setDescription(desc)
     .setAuthor({ name: '❌  Error' });
 }
 
-export const tnac = (desc) => {
+export const tnac = (desc: string) => {
   return new EmbedBuilder()
     .setColor(0xFF7043)
     .setDescription(desc)

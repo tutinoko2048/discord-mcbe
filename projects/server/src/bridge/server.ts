@@ -1,12 +1,16 @@
 import { ScriptBridgeServer, Session } from '@script-bridge/server';
 import { DisconnectReason } from '@script-bridge/protocol';
-import { App } from '../main';
+import { Application } from '../main';
 import { ScriptWorld } from './world';
 import { Logger } from '../util';
 
-type ServerOptions = ConstructorParameters<typeof ScriptBridgeServer>[0];
+import {
+  ActionId,
+  type PlayerJoinAction,
+  type PlayerLeaveAction,
+} from '@discord-mcbe/shared';
 
-export const BRIDGE_PORT = 23191; 
+// type ServerOptions = ConstructorParameters<typeof ScriptBridgeServer>[0];
 
 /** ScriptBridge wrapper */
 export class BridgeServer {
@@ -15,13 +19,31 @@ export class BridgeServer {
 
   public readonly worlds = new Map<Session, ScriptWorld>();
 
-  constructor(private readonly app: App) {
+  constructor(private readonly app: Application) {
     this.logger = new Logger('BridgeServer', this.app.config);
-    this.server = new ScriptBridgeServer({ port: BRIDGE_PORT });
+    this.server = new ScriptBridgeServer({ port: this.app.config.bridge_port });
 
     this.server.on('clientConnect', this.onClientConnect.bind(this));
     this.server.on('clientDisconnect', this.onClientDisconnect.bind(this));
     this.server.on('error', this.onError.bind(this));
+
+    this.server.registerHandler<PlayerJoinAction>(ActionId.PlayerJoin, (action) => {
+      const world = this.getWorldBySession(action.session);
+      if (!world) throw new Error(`World not found: ${action.session.id}`);
+      world.onPlayerJoin(action.data.player);
+      action.respond();
+    });
+
+    this.server.registerHandler<PlayerLeaveAction>(ActionId.PlayerLeave, (action) => {
+      const world = this.getWorldBySession(action.session);
+      if (!world) throw new Error(`World not found: ${action.session.id}`);
+      world.onPlayerLeave(action.data.playerUniqueId);
+      action.respond();
+    });
+  }
+
+  async start(): Promise<void> {
+    await this.server.start();
   }
 
   getWorlds(): ScriptWorld[] {

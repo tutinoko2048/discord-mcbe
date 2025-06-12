@@ -1,5 +1,16 @@
 {
   "name": "@discord-mcbe/client",
   "version": "0.1.0",
-  "scripts": {}
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsdown",
+    "watch": "tsdown --watch"
+  },
+  "dependencies": {
+    "@discord-mcbe/shared": "workspace:*",
+    "@minecraft/server": "2.0.0-beta.1.21.84-stable",
+    "@script-bridge/client": "^0.3.0"
+  }
 }

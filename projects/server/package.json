@@ -6,15 +6,17 @@
     "node": ">=18.0.0"
   },
   "scripts": {
-    "start": "node server/dist/index.js",
-    "lint": "tsc",
+    "start": "pnpm build && node --enable-source-maps ./dist/main.js",
+    "dev": "bun --watch ./src/main.ts",
+    "build": "tsc",
     "generate-schema": "bun ./generate-schema.ts"
   },
   "dependencies": {
     "@akki256/discord-interaction": "^3.1.1",
+    "@discord-mcbe/shared": "workspace:*",
     "@minecraft/server": "1.18.0",
-    "@script-bridge/protocol": "^0.2.2",
-    "@script-bridge/server": "^0.2.2",
+    "@script-bridge/protocol": "^0.3.0",
+    "@script-bridge/server": "^0.3.0",
     "colorette": "^2.0.20",
     "discord.js": "^14.18.0",
     "dotlang": "^1.1.1",

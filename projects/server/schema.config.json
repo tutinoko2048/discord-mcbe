@@ -16,7 +16,12 @@
     "port": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "description": "Port used to connect the bot"
+      "description": "Port used for websocket connection"
+    },
+    "bridge_port": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "description": "Port used for ScriptBridge(BDS) connection"
     },
     "language": {
       "type": "string",
@@ -84,6 +89,10 @@
     "debug": {
       "type": "boolean",
       "description": "debug."
+    },
+    "disable_encryption": {
+      "type": "boolean",
+      "description": "Disable encryption for WebSocket connection"
     }
   },
   "required": [

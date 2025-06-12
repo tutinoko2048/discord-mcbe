@@ -1,12 +1,12 @@
-import fs from 'node:fs';
-import path from 'node:path';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import { jsonc } from 'jsonc';
 import { Config, configSchema } from '../types';
 
+const MAIN_DIR = path.join(__dirname, '../../../../');
 const DATA_DIR = '.discord-mcbe';
-const DATA_FILE = 'data.json';
-const DATA_PATH = path.join(DATA_DIR, DATA_FILE);
-const CONFIG_FILE = 'config.jsonc';
+const DATA_PATH = path.join(MAIN_DIR, DATA_DIR, 'data.json');
+const CONFIG_FILE = path.join(MAIN_DIR, 'config.jsonc');
 
 export function loadConfig(): Config {
   const parsed: Config = jsonc.parse(fs.readFileSync(CONFIG_FILE, 'utf-8'));
@@ -14,7 +14,13 @@ export function loadConfig(): Config {
   // inject DISCORD_TOKEN from env if exists
   if ('DISCORD_TOKEN' in process.env) parsed['discord_token'] ||= process.env.DISCORD_TOKEN!;
   
-  return configSchema.parse(parsed);
+  try {
+    return configSchema.parse(parsed);
+  } catch (e) {
+    console.error('Failed to load config.jsonc');
+    console.error(e);
+    process.exit(1);
+  }
 }
 
 function fetchData(): Record<string, any> {

@@ -2,7 +2,7 @@ const { ChatInput } = require('@akki256/discord-interaction');
 const { EmbedBuilder } = require('discord.js');
 const moment = require('moment-timezone');
 const localization = require('./_localizations.json');
-const { server, config, lang } = require('../index.js');
+const { server, config, lang } = require('../../index.js');
 
 const pingCommand = new ChatInput({
   name: 'ping',

@@ -2,7 +2,7 @@
   "json.schemas": [
     {
       "fileMatch": ["config.jsonc", "sample.config.jsonc"],
-      "url": "../projects/server/schema.config.json"
+      "url": "./projects/server/schema.config.json"
     }
   ]
 }

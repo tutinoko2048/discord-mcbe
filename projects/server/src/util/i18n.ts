@@ -1,4 +1,4 @@
-import dotlang from 'dotlang';
+import * as dotlang from 'dotlang';
 
 let defaultTemplates: Map<string, string>;
 let templates: Map<string, string>;

@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
-const { panels, lang } = require('../../index.js');
+const { panels, lang } = require('../../../index.js');
 
 /** @param {import('discord.js').ChatInputCommandInteraction} interaction */
 async function deletePanel(interaction) {

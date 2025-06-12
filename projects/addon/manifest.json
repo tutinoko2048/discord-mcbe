@@ -18,7 +18,7 @@
       "version": [ 0, 0, 1 ],
       "type": "script",
       "language": "javascript",
-      "entry": "scripts/index.js",
+      "entry": "scripts/main.js",
       "uuid": "195cf53c-ae53-4437-82d9-a84e08694ffc",
       "description": "script module"
     }
@@ -26,7 +26,7 @@
   "dependencies": [
     {
       "module_name": "@minecraft/server",
-      "version": "1.0.0-beta"
+      "version": "2.0.0-beta"
     }
   ]
 }

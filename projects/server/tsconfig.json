@@ -1,15 +1,17 @@
 {
-  "include": ["./src", "../scripts/", "generate-schema.ts"],
+  "include": ["src"],
   "compilerOptions": {
     "strict": true,
     "target": "ES2023",
-    "module": "Node18",
-    "moduleResolution": "node16",
+    "module": "commonjs",
+    "moduleResolution": "node",
     "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true,
+    // "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
-    "noEmit": true,
     "allowJs": true,
-    "checkJs": false,
+    // "checkJs": true,
+    "sourceMap": true,
+    "outDir": "./dist",
+    "rootDir": "./src"
   }
 }

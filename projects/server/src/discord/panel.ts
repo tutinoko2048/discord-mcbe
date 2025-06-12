@@ -1,11 +1,12 @@
-import moment from 'moment-timezone';
-import { App } from '../main';
+import * as moment from 'moment-timezone';
+import { Application } from '../main';
 import * as util from '../util/util';
 import { Client, EmbedBuilder, RESTJSONErrorCodes, Message, TextBasedChannel } from 'discord.js';
-import { colors } from '../embeds';
+import { colors } from './embeds';
 import { Config } from '../types';
 import { _t, Logger } from '../util';
 import { PlayerList, RequestTimeoutError, World } from 'socket-be';
+import { ScriptWorld } from '../bridge';
 
 interface PanelData {
   channelId: string;
@@ -23,9 +24,9 @@ export class PanelHandler {
   
   private message: Message | null = null;
 
-  constructor(private readonly app: App) {
+  constructor(private readonly app: Application) {
     this.logger = new Logger('PanelHandler', this.app.config);
-    this.client = app.discord.client;
+    this.client = app.bot.client;
   }
   
   async startInterval(): Promise<void> {
@@ -90,22 +91,28 @@ export class PanelHandler {
       this.message = fetchedMessage;
     }
     
-    const uptime = _t('util.duration', getDuration(this.app.server.startTime, Date.now()));
+    const uptime = _t('util.duration', ...getDuration(this.app.initializedAt, Date.now()));
     
-    const worlds = this.app.server.getWorlds();
-    const info = await Promise.all(worlds.map(async (w: World) => {
+    const worlds = this.app.minecraft.getWorlds();
+    const info = await Promise.all(worlds.map(async (w) => {
+      const isBDS = w instanceof ScriptWorld;
       let list: PlayerList | undefined;
       try {
-        list = await w.getPlayerList();
+        if (isBDS) {
+          const players = w.getPlayers();
+          list = { current: players.length, max: -1, players: players.map(p => p.name) };
+        } else {
+          list = await w.getPlayerList()
+        }
       } catch (e) {
         if (!(e instanceof RequestTimeoutError)) throw e;
-        return undefined;
+        return;
       }
-      if (!list) return undefined;
+      if (!list) return;
       const connectAt = `<t:${String(w.connectedAt).slice(0, 10)}:T>`;
       return [
         `\n**${w.name} - ${list.current}/${list.max}**`,
-        `**  |  **Host: \`${w.localPlayer ?? '-'}\``,
+        `**  |  **Host: \`${isBDS ? 'Bedrock Server' : w.localPlayer ?? '-'}\``,
         `**  |  **Ping: ${w.averagePing} ms`,
         `**  |  **Connected: ${connectAt}`,
         '**  |  **Players:',

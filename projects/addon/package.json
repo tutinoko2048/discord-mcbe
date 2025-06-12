@@ -2,7 +2,13 @@
   "name": "@discord-mcbe/addon",
   "version": "0.1.0",
   "description": "",
+  "type": "module",
   "private": true,
-  "scripts": {},
-  "dependencies": {}
+  "scripts": {
+    "build": "tsdown",
+    "watch": "tsdown --watch"
+  },
+  "dependencies": {
+    "@discord-mcbe/client": "workspace:*"
+  }
 }

@@ -1,14 +1,12 @@
-import * as fs from 'node:fs';
-import * as readline from 'node:readline';
-import { ExtendedEmitter, MinecraftCommandVersion, Server as SocketBEServer, ServerEvent } from 'socket-be';
+import { ExtendedEmitter, MinecraftCommandVersion } from 'socket-be';
 
-import { DiscordHandler, ScriptHandler } from './handlers';
+import { CommandLineHandler, MinecraftHandler, ScriptHandler } from './handlers';
 import { Config, ExtractOptional } from './types';
 import { Logger, _t, loadConfig, logo } from './util';
 import { StartupEvent } from './events';
 
-import * as embeds from './embeds';
-import { version as VERSION } from '../../../package.json';
+import { version as VERSION } from '../package.json';
+import { DiscordBot } from './discord';
 
 
 // const { handleMessage } = require('./handlers/MessageHandler');
@@ -16,6 +14,7 @@ import { version as VERSION } from '../../../package.json';
 
 const defaultConfig: ExtractOptional<Config> = {
   port: 8000,
+  bridge_port: 23191,
   language: 'en_US',
   timezoneOffset: 0,
   command_role_id: [],
@@ -26,20 +25,24 @@ const defaultConfig: ExtractOptional<Config> = {
   scripts_entry: '',
   command_version: MinecraftCommandVersion.Latest,
   debug: false,
+  disable_encryption: false,
 }
 
-interface AppEvents {
+interface ApplicationEvents {
   'startup': [StartupEvent];
 }
 
-export class App extends ExtendedEmitter<AppEvents> {
+export class Application extends ExtendedEmitter<ApplicationEvents> {
   public readonly config: Required<Config>;
   public readonly version: string;
   public readonly logger: Logger;
   
-  public readonly discord: DiscordHandler;
-  public readonly server: SocketBEServer;
+  public readonly bot: DiscordBot;
+  public readonly minecraft: MinecraftHandler;
+  public readonly cli: CommandLineHandler;
   public readonly scripts: ScriptHandler;
+
+  public readonly initializedAt: number = Date.now();
 
   constructor() {
     super();
@@ -53,106 +56,87 @@ export class App extends ExtendedEmitter<AppEvents> {
     
     this.logger = new Logger('App', this.config);
     
-    this.discord = new DiscordHandler(this);
+    this.bot = new DiscordBot(this);
     
-    this.server = new SocketBEServer({
-      port: this.config.port,
-      commandVersion: this.config.command_version,
-      debug: this.config.debug
-    });
+    this.minecraft = new MinecraftHandler(this);
+
+    this.cli = new CommandLineHandler(this);
     
     this.scripts = new ScriptHandler(this);
     
     this.emit('startup', new StartupEvent(this));
+    this.logger.debug('Application initialized');
+
+    this.start().catch(e => this.logger.error('Failed to start application\n', e));
   }
 
   async start() {
-    this.discord.start();
+    await this.minecraft.start();
+    await this.bot.start();
 
-    this.server.on(ServerEvent.Open, () => {
-      this.logger.info(this.lang.run('console.listening', [ `${this.server.ip}:${this.config.port}` ]));
-    });
+    // this.server.on(ServerEvent.Open, () => {
+    //   this.logger.info(_t('console.listening', `${this.server.ip}:${this.config.port}`));
+    // });
     
-    this.server.on(ServerEvent.WorldInitialize, async ({ world }) => {
-      const host = await world.getLocalPlayer();
+    // this.server.on(ServerEvent.WorldInitialize, async ({ world }) => {
+    //   const host = await world.getLocalPlayer();
       
-      this.server.logger.info(this.lang.run('console.connect', [ world.name, host ]));
-      const embed = embeds.connect(this.lang.run('discord.connect', [ host ]), world.name);
+    //   this.logger.info(_t('console.connect', world.name, host.name));
+    //   const embed = embeds.connect(_t('discord.connect', host.name), world.name);
       
-      this.sendDiscord({ embeds: [ embed ] });
-      world.sendMessage(this.lang.run('minecraft.connect', [ world.name ]));
+    //   this.sendDiscord({ embeds: [ embed ] });
+    //   world.sendMessage(_t('minecraft.connect', world.name));
       
-      this.updateActivity();
-    });
+    //   this.updateActivity();
+    // });
     
-    this.server.on(ServerEvent.WorldRemove, async ({ world }) => {
-      this.server.logger.info(this.lang.run('console.disconnect', [ world.name ]));
-      const embed = embeds.disconnect(this.lang.run('discord.disconnect'), world.name);
+    // this.server.on(ServerEvent.WorldRemove, async ({ world }) => {
+    //   this.logger.info(_t('console.disconnect', world.name));
+    //   const embed = embeds.disconnect(_t('discord.disconnect'), world.name);
       
-      this.sendDiscord({ embeds: [ embed ] });
+    //   this.sendDiscord({ embeds: [ embed ] });
       
-      this.updateActivity();
-    });
+    //   this.updateActivity();
+    // });
     
-    this.server.on(ServerEvent.PlayerJoin, async ev => {
-      const { players, world, world: { lastPlayers, maxPlayers } } = ev;
+    // this.server.on(ServerEvent.PlayerJoin, async ev => {
+    //   const { players, world, world: { lastPlayers, maxPlayers } } = ev;
       
-      world.logger.log(this.lang.run('console.join', [ players.join(', '), lastPlayers.length, maxPlayers ]));
+    //   world.logger.log(_t('console.join', players.join(', '), lastPlayers.length, maxPlayers));
       
-      const embed = embeds.join(
-        this.lang.run('discord.join', [ players.join(', '), lastPlayers.length, maxPlayers ]),
-        this.server.getWorlds().length > 1 ? world.name : null
-      );
-      await this.sendDiscord({ embeds: [ embed ] });
+    //   const embed = embeds.join(
+    //     _t('discord.join', players.join(', '), lastPlayers.length, maxPlayers),
+    //     this.server.getWorlds().length > 1 ? world.name : null
+    //   );
+    //   await this.sendDiscord({ embeds: [ embed ] });
       
-      this.updateActivity();
-    });
+    //   this.updateActivity();
+    // });
     
-    this.server.on(ServerEvent.PlayerLeave, async ev => {
-      const { players, world, world: { lastPlayers, maxPlayers } } = ev;
+    // this.server.on(ServerEvent.PlayerLeave, async ev => {
+    //   const { players, world, world: { lastPlayers, maxPlayers } } = ev;
       
-      world.logger.log(this.lang.run('console.leave', [ players.join(', '), lastPlayers.length, maxPlayers ]));
+    //   world.logger.log(_t('console.leave', players.join(', '), lastPlayers.length, maxPlayers));
       
-      const embed = embeds.leave(
-        this.lang.run('discord.leave', [ players.join(', '), lastPlayers.length, maxPlayers ]),
-        this.server.getWorlds().length > 1 ? world.name : null
-      );
-      await this.sendDiscord({ embeds: [ embed ] });
+    //   const embed = embeds.leave(
+    //     _t('discord.leave', players.join(', '), lastPlayers.length, maxPlayers),
+    //     this.server.getWorlds().length > 1 ? world.name : null
+    //   );
+    //   await this.sendDiscord({ embeds: [ embed ] });
       
-      this.updateActivity();
-    });
+    //   this.updateActivity();
+    // });
     
-    this.server.on(ServerEvent.PlayerChat, async ev => {
-      handleChat(this, ev).catch(e => this.logger.error(e));
-    });
-    
-    const reader = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout
-    });
-    reader.on('line', (line) => {
-      if (line.startsWith('.')) {
-        try {
-          const res = eval(line.slice(1));
-          console.log('<', res);
-        } catch (e) {
-          console.error('<', e);
-        }
-      } else {
-        const command = line.replace(/^\/*/, '');
-        this.server.broadcastCommand(command).then(res => console.log(res));
-      }
-    });
-    
-    this.discord.on('error', console.error);
-    
-    this.discord.login(this.config.discord_token);
+    // this.server.on(ServerEvent.PlayerChat, async ev => {
+    //   handleChat(this, ev).catch(e => this.logger.error(e));
+    // });
 
-    await this.scripts.load();
+    // await this.scripts.load();
+    this.logger.debug('Application started');
   }
 }
 
-new App();
+new Application();
 
 process.on('unhandledRejection', (err) => {
   console.error('unhandledRejection:', err);

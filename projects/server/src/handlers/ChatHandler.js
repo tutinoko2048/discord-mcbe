@@ -1,4 +1,4 @@
-const embeds = require('../embeds');
+const embeds = require('../discord/embeds');
 
 const scriptEngines = [ 'スクリプト エンジン', 'Script Engine' ];
 

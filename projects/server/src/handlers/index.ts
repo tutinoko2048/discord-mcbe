@@ -1,3 +1,3 @@
-export * from './discord';
+export * from './cli';
 export * from './minecraft';
-export * from './ScriptHandler';
+export * from './script';

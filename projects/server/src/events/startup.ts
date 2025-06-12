@@ -1,12 +1,12 @@
-import type { App } from '../main';
+import { ServerOptions } from 'socket-be';
+import { Application } from '../main';
 
 export class StartupEvent {
   constructor(
-    public readonly app: App,
+    public readonly app: Application,
   ) {}
 
-  setPlayerNameFormatter(formatter: (name: string) => string): void {
-    this.app.server.options.formatter ??= {};
-    this.app.server.options.formatter.playerName = formatter;
+  get formatter(): ServerOptions['formatter'] {
+    return this.app.minecraft.socket.options.formatter;
   }
 }

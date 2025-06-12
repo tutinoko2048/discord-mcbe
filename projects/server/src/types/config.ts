@@ -9,7 +9,10 @@ export const configSchema = z.object({
     .describe('ID of the channel that messages will be sent'),
   port: z.number().int().positive()
     .optional()
-    .describe('Port used to connect the bot'),
+    .describe('Port used for websocket connection'),
+  bridge_port: z.number().int().positive()
+    .optional()
+    .describe('Port used for ScriptBridge(BDS) connection'),
   language: z.string()
     .optional()
     .describe('Language (File name in `lang` folder)'),
@@ -42,7 +45,10 @@ export const configSchema = z.object({
     .describe('The format version(mc) to be used for sending commands'),
   debug: z.boolean()
     .optional()
-    .describe('debug.')
+    .describe('debug.'),
+  disable_encryption: z.boolean()
+    .optional()
+    .describe('Disable encryption for WebSocket connection'),
 });
 
 export type Config = z.infer<typeof configSchema>;

@@ -1,8 +1,8 @@
 const { ChatInput } = require('@akki256/discord-interaction');
 const { EmbedBuilder } = require('discord.js');
 const localization = require('./_localizations.json');
-const { TN_ICON_URL, GITHUB_URL } = require('../util/constants');
-const { lang, interactions, version } = require('../index.js');
+const { TN_ICON_URL, GITHUB_URL } = require('../../util/constants');
+const { lang, interactions, version } = require('../../index.js');
 
 const helpCommand = new ChatInput({
   name: 'help',
