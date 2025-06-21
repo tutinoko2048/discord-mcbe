@@ -26,6 +26,7 @@
     "zod": "^3.24.3"
   },
   "devDependencies": {
+    "@discord-mcbe/internal-config": "workspace:*",
     "zod-to-json-schema": "^3.24.5"
   }
 }

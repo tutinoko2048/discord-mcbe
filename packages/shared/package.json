@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@minecraft/server": "1.19.0",
-    "@script-bridge/protocol": "^0.3.0"
+    "@script-bridge/protocol": "^0.3.0",
+    "@discord-mcbe/internal-config": "workspace:*"
   }
 }

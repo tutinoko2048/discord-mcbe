@@ -17,6 +17,9 @@ importers:
 
   packages/client:
     dependencies:
+      '@discord-mcbe/internal-config':
+        specifier: workspace:*
+        version: link:../internal-config
       '@discord-mcbe/shared':
         specifier: workspace:*
         version: link:../shared
@@ -27,8 +30,13 @@ importers:
         specifier: ^0.3.0
         version: 0.3.0
 
+  packages/internal-config: {}
+
   packages/shared:
     dependencies:
+      '@discord-mcbe/internal-config':
+        specifier: workspace:*
+        version: link:../internal-config
       '@minecraft/server':
         specifier: 1.19.0
         version: 1.19.0(@minecraft/vanilla-data@1.21.70)
@@ -41,6 +49,9 @@ importers:
       '@discord-mcbe/client':
         specifier: workspace:*
         version: link:../../packages/client
+      '@discord-mcbe/internal-config':
+        specifier: workspace:*
+        version: link:../../packages/internal-config
 
   projects/server:
     dependencies:
@@ -81,6 +92,9 @@ importers:
         specifier: ^3.24.3
         version: 3.24.4
     devDependencies:
+      '@discord-mcbe/internal-config':
+        specifier: workspace:*
+        version: link:../../packages/internal-config
       zod-to-json-schema:
         specifier: ^3.24.5
         version: 3.24.5(zod@3.24.4)

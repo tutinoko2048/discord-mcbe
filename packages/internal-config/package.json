@@ -1,0 +1,14 @@
+{
+  "name": "@discord-mcbe/internal-config",
+  "version": "0.1.0",
+  "private": true,
+  "exports": {
+    "./tsdown": {
+      "import": "./tsdown/tsdown.config.base.mjs",
+      "types": "./tsdown/tsdown.config.base.d.ts"
+    },
+    "./typescript": {
+      "default": "./typescript/tsconfig.base.json"
+    }
+  }
+}

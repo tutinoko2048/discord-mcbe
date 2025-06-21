@@ -1,17 +1,18 @@
 {
+  "extends": "@discord-mcbe/internal-config/typescript",
   "include": ["src"],
   "compilerOptions": {
-    "strict": true,
-    "target": "ES2023",
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "target": "ESNext",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+
+    "noEmit": false,
+    "outDir": "./dist",
+    "rootDir": "./src",
     "resolveJsonModule": true,
-    // "allowSyntheticDefaultImports": true,
-    "skipLibCheck": true,
+    "sourceMap": true,
+
     "allowJs": true,
     // "checkJs": true,
-    "sourceMap": true,
-    "outDir": "./dist",
-    "rootDir": "./src"
   }
 }

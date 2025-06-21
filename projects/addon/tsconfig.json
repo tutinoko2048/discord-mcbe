@@ -1,10 +1,4 @@
 {
+  "extends": "@discord-mcbe/internal-config/typescript",
   "include": ["src"],
-  "compilerOptions": {
-    "strict": true,
-    "target": "ES2023",
-    "moduleResolution": "bundler",
-    "noEmit": true,
-    "outDir": "dist"
-  }
 }

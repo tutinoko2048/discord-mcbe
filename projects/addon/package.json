@@ -9,6 +9,7 @@
     "watch": "tsdown --watch"
   },
   "dependencies": {
-    "@discord-mcbe/client": "workspace:*"
+    "@discord-mcbe/client": "workspace:*",
+    "@discord-mcbe/internal-config": "workspace:*"
   }
 }

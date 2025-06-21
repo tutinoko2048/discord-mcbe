@@ -1,9 +1,10 @@
-import { defineConfig } from 'tsdown';
+import { defineConfig, type Options } from 'tsdown';
+import defaultConfig from '@discord-mcbe/internal-config/tsdown';
 
-export default defineConfig({
-  entry: "src/index.ts",
+export default defineConfig((options: Options) => ({
+  ...defaultConfig,
+
   format: ['esm'],
-  external: [
-    /^@minecraft\/(?!vanilla-data|math)[\w-\/]+$/
-  ],
-});
+  
+  ...options,
+}));

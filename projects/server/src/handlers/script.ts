@@ -24,13 +24,14 @@ export class ScriptHandler {
     try {
       //TODO - tsならトランスパイルしてから実行する
       
-      const script = await import(`../../${entry}`);
-      if (typeof script.default !== 'function') {
-        this.logger.error(`Failed to load script:\nEntrypoint must export default function`);
-        return;
-      }
+      
+      // const script = await import(`../../${entry}`);
+      // if (typeof script.default !== 'function') {
+      //   this.logger.error(`Failed to load script:\nEntrypoint must export default function`);
+      //   return;
+      // }
 
-      await script.default(this.app);
+      // await script.default(this.app);
 
       this.logger.info('Loaded!');
     } catch (e) {

@@ -1,3 +1,3 @@
-import { Client } from '@discord-mcbe/client';
+import { BridgeClient } from '@discord-mcbe/client';
 
-new Client();
+new BridgeClient();

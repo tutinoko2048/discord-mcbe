@@ -19,7 +19,7 @@ export { translate as _t };
 function replaceTemplates(text: string, values: (string | number)[]): string {
   let result = text;
   for (const index in values) {
-    result = result.replace(new RegExp(`%${index}`, 'g'), values[index].toString());
+    result = result.replace(new RegExp(`%${index}`, 'g'), values[index]!.toString());
   }
   return result;
 }
