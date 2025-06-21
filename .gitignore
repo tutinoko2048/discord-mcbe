@@ -5,3 +5,4 @@ yarn-error.log
 .discord-mcbe/
 config.jsonc
 dist
+.turbo
