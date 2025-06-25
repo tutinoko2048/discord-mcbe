@@ -6,6 +6,7 @@ export type SendMessageAction = BaseAction<
   ActionId.SendMessage,
   {
     message: string | RawMessage | (string | RawMessage)[];
+    playerUniqueId?: string;
   },
   void
 >;
