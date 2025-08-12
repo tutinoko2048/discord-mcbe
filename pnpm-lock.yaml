@@ -27,8 +27,8 @@ importers:
         specifier: workspace:*
         version: link:../shared
       '@minecraft/server':
-        specifier: 2.0.0-beta.1.21.84-stable
-        version: 2.0.0-beta.1.21.84-stable(@minecraft/vanilla-data@1.21.70)
+        specifier: 2.2.0-beta.1.21.100-stable
+        version: 2.2.0-beta.1.21.100-stable(@minecraft/vanilla-data@1.21.70)
       '@script-bridge/client':
         specifier: ^0.3.0
         version: 0.3.0
@@ -41,8 +41,8 @@ importers:
         specifier: workspace:*
         version: link:../internal-config
       '@minecraft/server':
-        specifier: 1.19.0
-        version: 1.19.0(@minecraft/vanilla-data@1.21.70)
+        specifier: 2.1.0
+        version: 2.1.0(@minecraft/vanilla-data@1.21.70)
       '@script-bridge/protocol':
         specifier: ^0.3.0
         version: 0.3.0
@@ -65,8 +65,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/shared
       '@minecraft/server':
-        specifier: 1.18.0
-        version: 1.18.0(@minecraft/vanilla-data@1.21.70)
+        specifier: 2.1.0
+        version: 2.1.0(@minecraft/vanilla-data@1.21.70)
       '@script-bridge/protocol':
         specifier: ^0.3.0
         version: 0.3.0
@@ -92,8 +92,8 @@ importers:
         specifier: ^0.2.1
         version: 0.2.1
       socket-be:
-        specifier: ^2.1.0
-        version: 2.1.0(@minecraft/vanilla-data@1.21.70)
+        specifier: ^2.2.0
+        version: 2.2.0(@minecraft/vanilla-data@1.21.70)
       zod:
         specifier: ^3.24.3
         version: 3.24.4
@@ -193,18 +193,13 @@ packages:
   '@minecraft/common@1.2.0':
     resolution: {integrity: sha512-JdmEq4P3Z/FtoBzhLijFgMSVFnFRrUoLwY8DHHrgtFo0mfLTOLTB1RErYjLMsA6b7BGVNxkX/pfFRiH7QZ0XwQ==}
 
-  '@minecraft/server@1.18.0':
-    resolution: {integrity: sha512-X3HKKezj3ZeUCBay6FJOtUq56rq8fnYRpgKaW7PgRcOJyIaLatuq/Ml01mQdUtxlKdMxZdkDS3w0SnENVfaudA==}
+  '@minecraft/server@2.1.0':
+    resolution: {integrity: sha512-yT7MH47hqhJ3C208Y3g7bEo52aT5q9DZApxH5y3+qQ9voqazF35t3FeTd6aw2S7C07HA6yZOmNZ7p79b3PCJXg==}
     peerDependencies:
       '@minecraft/vanilla-data': '>=1.20.70'
 
-  '@minecraft/server@1.19.0':
-    resolution: {integrity: sha512-Nq42tLYRcH8AIxpBq1F9/sXia75Vp7k7SXnV+t+yaFNKHwE7LZIfJ3TSbQ4THWTbf1VjwnbSUfJ0qVb3aTDCug==}
-    peerDependencies:
-      '@minecraft/vanilla-data': '>=1.20.70'
-
-  '@minecraft/server@2.0.0-beta.1.21.84-stable':
-    resolution: {integrity: sha512-v4EHs+SDyimXhI9eDgr/sUDFI54+d1j9WUoUXvvZ3JTEQhn9DLd1KywIQtJzzyOw2eaNO3nSV+oy13g8SkVqoA==}
+  '@minecraft/server@2.2.0-beta.1.21.100-stable':
+    resolution: {integrity: sha512-X6W841dcMqIPK6xar+GowUyXDwCUPnJpVRrwT3+Vwt/VylVZqOhk7Xr0rnViGKKxCO49YvN1NF4pmK2ISE57oQ==}
     peerDependencies:
       '@minecraft/vanilla-data': '>=1.20.70'
 
@@ -979,8 +974,8 @@ packages:
     resolution: {integrity: sha512-bSiSngZ/jWeX93BqeIAbImyTbEihizcwNjFoRUIY/T1wWQsfsm2Vw1agPKylXvQTU7iASGdHhyqRlqQzfz+Htg==}
     engines: {node: '>=18'}
 
-  socket-be@2.1.0:
-    resolution: {integrity: sha512-YRz6GCUTOV/YO3rZ0WXuYszRGEA/sVvEBHN62shU1C3SG5q1NocrYrTknannON51H/0kyoboZ24aMZr/fatULw==}
+  socket-be@2.2.0:
+    resolution: {integrity: sha512-v1phzNWsSIoX7mIfy+cqynzvpjkajKI6T8vHKtna2/PFfwOJx43uenOGtma+7FAmCz/a5p5mXFycJUMMpPgjsA==}
 
   stack-utils@2.0.6:
     resolution: {integrity: sha512-XlkWvfIm6RmsWtNJx+uqtKLS8eqFbxUg0ZzLXqY0caEy9l7hruX8IpiDnjsLavoBgqCCR71TqWO8MaXYheJ3RQ==}
@@ -1281,17 +1276,12 @@ snapshots:
 
   '@minecraft/common@1.2.0': {}
 
-  '@minecraft/server@1.18.0(@minecraft/vanilla-data@1.21.70)':
+  '@minecraft/server@2.1.0(@minecraft/vanilla-data@1.21.70)':
     dependencies:
       '@minecraft/common': 1.2.0
       '@minecraft/vanilla-data': 1.21.70
 
-  '@minecraft/server@1.19.0(@minecraft/vanilla-data@1.21.70)':
-    dependencies:
-      '@minecraft/common': 1.2.0
-      '@minecraft/vanilla-data': 1.21.70
-
-  '@minecraft/server@2.0.0-beta.1.21.84-stable(@minecraft/vanilla-data@1.21.70)':
+  '@minecraft/server@2.2.0-beta.1.21.100-stable(@minecraft/vanilla-data@1.21.70)':
     dependencies:
       '@minecraft/common': 1.2.0
       '@minecraft/vanilla-data': 1.21.70
@@ -2069,9 +2059,9 @@ snapshots:
       ansi-styles: 6.2.1
       is-fullwidth-code-point: 5.0.0
 
-  socket-be@2.1.0(@minecraft/vanilla-data@1.21.70):
+  socket-be@2.2.0(@minecraft/vanilla-data@1.21.70):
     dependencies:
-      '@minecraft/server': 1.18.0(@minecraft/vanilla-data@1.21.70)
+      '@minecraft/server': 2.1.0(@minecraft/vanilla-data@1.21.70)
       '@serenityjs/emitter': 0.5.2
       ws: 8.18.2
     transitivePeerDependencies:

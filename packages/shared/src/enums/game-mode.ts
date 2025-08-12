@@ -8,7 +8,7 @@ export enum GameMode {
      * not be manipulated.
      *
      */
-    adventure = 'adventure',
+    Adventure = 'Adventure',
     /**
      * @remarks
      * World is in a full creative mode. In creative mode, the
@@ -20,7 +20,7 @@ export enum GameMode {
      * disappear.
      *
      */
-    creative = 'creative',
+    Creative = 'Creative',
     /**
      * @remarks
      * World is in spectator mode. In spectator mode, spectators
@@ -32,7 +32,7 @@ export enum GameMode {
      * transparent floating head.
      *
      */
-    spectator = 'spectator',
+    Spectator = 'Spectator',
     /**
      * @remarks
      * World is in a survival mode, where players can take damage
@@ -42,5 +42,5 @@ export enum GameMode {
      * time, chip away at player health and hunger bar.
      *
      */
-    survival = 'survival',
+    Survival = 'Survival',
 }

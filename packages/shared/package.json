@@ -9,7 +9,7 @@
     "watch": "tsdown --watch"
   },
   "dependencies": {
-    "@minecraft/server": "1.19.0",
+    "@minecraft/server": "2.1.0",
     "@script-bridge/protocol": "^0.3.0",
     "@discord-mcbe/internal-config": "workspace:*"
   }
