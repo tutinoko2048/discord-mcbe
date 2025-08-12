@@ -2,14 +2,16 @@ import { Session } from '@script-bridge/server';
 import { ResponseErrorReason } from '@script-bridge/protocol';
 import { BridgeServer } from './server';
 import { ScriptPlayer } from './player';
-
 import type { RawMessage } from '@minecraft/server';
 import {
   ActionId,
   type SendMessageAction,
   type RunCommandAction,
+  type ChatSendAction,
   PlayerDescriptor,
 } from '@discord-mcbe/shared';
+import { PlayerChatEvent, PlayerJoinEvent, PlayerLeaveEvent } from '../events';
+import { createPlayer, createWorld } from '../handlers';
 
 export class ScriptWorld {
   private readonly bridge: BridgeServer;
@@ -52,13 +54,39 @@ export class ScriptWorld {
   onPlayerJoin(player: PlayerDescriptor) {
     const scriptPlayer = new ScriptPlayer(this, player);
     this.players.set(player.uniqueId, scriptPlayer);
+    
+    new PlayerJoinEvent(
+      this.bridge.app,
+      createWorld(this),
+      createPlayer(scriptPlayer)
+    ).emit();
   }
 
   onPlayerLeave(uniqueId: string) {
     const scriptPlayer = this.players.get(uniqueId);
     if (!scriptPlayer) throw new Error(`Player not found: ${uniqueId}`);
+    
+    new PlayerLeaveEvent(
+      this.bridge.app,
+      createWorld(this),
+      createPlayer(scriptPlayer)
+    ).emit();
+    
     this.players.delete(uniqueId);
   }
+  
+  onChatSend(data: ChatSendAction['request']) {
+    const { senderName, senderUniqueId, message } = data;
+    const player = this.players.get(senderUniqueId);
+    if (!player) throw new Error(`Player not found: ${senderName} (${senderUniqueId})`);
+    
+    new PlayerChatEvent(
+      this.bridge.app,
+      createWorld(this),
+      createPlayer(player),
+      message
+    ).emit();
 
-  onChatSend() {}
+    console.log(`[${this.name}] [onChatSend] ${player.name}: ${message}`);
+  }
 }

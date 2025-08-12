@@ -5,6 +5,7 @@ import {
   ActionId,
   type PlayerJoinAction,
   type PlayerLeaveAction,
+  type ChatSendAction,
 } from '@discord-mcbe/shared';
 
 export function registerEvents(bridge: ScriptBridgeClient) {
@@ -19,6 +20,14 @@ export function registerEvents(bridge: ScriptBridgeClient) {
   world.afterEvents.playerLeave.subscribe(ev => {
     bridge.send<PlayerLeaveAction>(ActionId.PlayerLeave, {
       playerUniqueId: ev.playerId,
+    });
+  });
+  
+  world.afterEvents.chatSend.subscribe(ev => {
+    bridge.send<ChatSendAction>(ActionId.ChatSend, {
+      senderName: ev.sender.name,
+      senderUniqueId: ev.sender.id,
+      message: ev.message,
     });
   });
 }

@@ -1,5 +1,5 @@
 import * as path from 'node:path';
-import { Client, codeBlock, GatewayIntentBits, Message, MessageCreateOptions } from 'discord.js';
+import { Client, codeBlock, Events, GatewayIntentBits, Message, MessageCreateOptions } from 'discord.js';
 import { DiscordInteractions } from '@akki256/discord-interaction';
 import { Application } from '../main';
 
@@ -18,7 +18,7 @@ export class DiscordBot {
   constructor(
     private readonly app: Application,
   ) {
-    this.logger = new Logger('DiscordBot', this.app.config);
+    this.logger = new Logger('Discord', this.app.config);
     this.client = new Client({
       intents: [
         GatewayIntentBits.Guilds,
@@ -36,12 +36,10 @@ export class DiscordBot {
     this.logger.debug('Initialized');
   }
 
-  async start() {
-    await this.client.login(this.app.config.discord_token);
-    
-    this.client.once('ready', this.onReady.bind(this));
-    
-    this.client.on('messageCreate', message => {
+  async start() {    
+    this.client.once(Events.ClientReady, this.onReady.bind(this));
+
+    this.client.on(Events.MessageCreate, message => {
       if (message.author.bot || message.channel.id !== this.app.config.channel_id) return;
       this.onMessageCreate(message);
     });
@@ -55,7 +53,9 @@ export class DiscordBot {
     //   });
     // });
 
-    this.client.on('error', this.onError.bind(this));
+    this.client.on(Events.Error, this.onError.bind(this));
+
+    await this.client.login(this.app.config.discord_token);
   }
 
   async sendMessage(options: string | MessageCreateOptions) {
@@ -88,6 +88,7 @@ export class DiscordBot {
   }
 
   private onReady() {
+    this.logger.info('Logged in as', this.client.user!.tag);
     // this.interactions.registerCommands(this.app.config.guild_id);
     // this.logger.info(_t('console.login', this.client.user!.tag));
     

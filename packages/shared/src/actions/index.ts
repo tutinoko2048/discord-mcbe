@@ -5,3 +5,4 @@ export * from './send-message';
 export * from './get-entity-location';
 export * from './get-game-mode';
 export * from './set-game-mode';
+export * from './chat-send';

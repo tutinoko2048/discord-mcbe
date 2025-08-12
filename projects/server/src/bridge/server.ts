@@ -8,9 +8,8 @@ import {
   ActionId,
   type PlayerJoinAction,
   type PlayerLeaveAction,
+  type ChatSendAction,
 } from '@discord-mcbe/shared';
-
-// type ServerOptions = ConstructorParameters<typeof ScriptBridgeServer>[0];
 
 /** ScriptBridge wrapper */
 export class BridgeServer {
@@ -19,7 +18,7 @@ export class BridgeServer {
 
   public readonly worlds = new Map<Session, ScriptWorld>();
 
-  constructor(private readonly app: Application) {
+  constructor(public readonly app: Application) {
     this.logger = new Logger('BridgeServer', this.app.config);
     this.server = new ScriptBridgeServer({ port: this.app.config.bridge_port });
 
@@ -38,6 +37,13 @@ export class BridgeServer {
       const world = this.getWorldBySession(action.session);
       if (!world) throw new Error(`World not found: ${action.session.id}`);
       world.onPlayerLeave(action.data.playerUniqueId);
+      action.respond();
+    });
+
+    this.server.registerHandler<ChatSendAction>(ActionId.ChatSend, (action) => {
+      const world = this.getWorldBySession(action.session);
+      if (!world) throw new Error(`World not found: ${action.session.id}`);
+      world.onChatSend(action.data);
       action.respond();
     });
   }

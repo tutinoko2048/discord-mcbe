@@ -1,9 +1,10 @@
 import { ExtendedEmitter, MinecraftCommandVersion } from 'socket-be';
-
+import { ExtractOptional } from '@discord-mcbe/shared';
 import { CommandLineHandler, MinecraftHandler, ScriptHandler } from './handlers';
-import { Config, ExtractOptional } from './types';
-import { Logger, _t, loadConfig, logo } from './util';
+import { ApplicationEvents, Config } from './types';
+import { Logger, _t, loadConfig } from './util';
 import { StartupEvent } from './events';
+import { renderFilled as renderLogo } from 'oh-my-logo';
 
 import { version as VERSION } from '../package.json';
 import { DiscordBot } from './discord';
@@ -28,10 +29,6 @@ const defaultConfig: ExtractOptional<Config> = {
   disable_encryption: false,
 }
 
-interface ApplicationEvents {
-  'startup': [StartupEvent];
-}
-
 export class Application extends ExtendedEmitter<ApplicationEvents> {
   public readonly config: Required<Config>;
   public readonly version: string;
@@ -47,8 +44,7 @@ export class Application extends ExtendedEmitter<ApplicationEvents> {
   constructor() {
     super();
     
-    console.log(logo);
-    console.log(`discord-mcbe v${VERSION}`);
+    console.log(`Loading discord-mcbe v${VERSION}...`);
     
     this.version = VERSION;
     
@@ -132,9 +128,19 @@ export class Application extends ExtendedEmitter<ApplicationEvents> {
     // });
 
     // await this.scripts.load();
+    
+    this.on('playerChat', (ev) => {
+      const type = ev.world.isSocket ? 'Socket' : 'Script';
+      this.logger.info(`[${type}] [${ev.world.name}] ${ev.sender.name}: ${ev.message}`);
+      // Handle chat event here (e.g., send to Discord)
+      this.bot.sendMessage(`[${type}] [${ev.world.name}] ${ev.sender.name}: ${ev.message}`);
+    });
+    
     this.logger.debug('Application started');
   }
 }
+
+await renderLogo('DISCORD-MCBE');
 
 new Application();
 

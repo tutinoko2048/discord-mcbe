@@ -5,6 +5,7 @@
   "engines": {
     "node": ">=18.0.0"
   },
+  "type": "module",
   "scripts": {
     "start": "pnpm build && node --enable-source-maps ./dist/main.js",
     "dev": "bun --watch ./src/main.ts",
@@ -23,7 +24,8 @@
     "jsonc": "^2.0.0",
     "moment-timezone": "^0.5.48",
     "socket-be": "^2.1.0",
-    "zod": "^3.24.3"
+    "zod": "^3.24.3",
+    "oh-my-logo": "^0.2.1"
   },
   "devDependencies": {
     "@discord-mcbe/internal-config": "workspace:*",

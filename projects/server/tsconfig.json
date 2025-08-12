@@ -3,8 +3,8 @@
   "include": ["src"],
   "compilerOptions": {
     "target": "ESNext",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
 
     "noEmit": false,
     "outDir": "./dist",
