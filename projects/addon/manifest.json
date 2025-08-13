@@ -5,7 +5,7 @@
     "description": "pack.description",
     "uuid": "b305bd82-a533-4595-9486-517f49e82941",
     "version": [ 0, 1, 0 ],
-    "min_engine_version": [ 1, 21, 80 ]
+    "min_engine_version": [ 1, 21, 100 ]
   },
   "modules": [
     {
@@ -26,7 +26,7 @@
   "dependencies": [
     {
       "module_name": "@minecraft/server",
-      "version": "2.0.0-beta"
+      "version": "2.2.0-beta"
     }
   ]
 }

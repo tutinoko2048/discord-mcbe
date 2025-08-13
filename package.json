@@ -9,9 +9,9 @@
     "shared": "pnpm -C ./packages/shared"
   },
   "devDependencies": {
-    "tsdown": "^0.12.7",
-    "typescript": "^5.8.3",
-    "turbo": "^2.5.4"
+    "tsdown": "^0.14.1",
+    "turbo": "^2.5.5",
+    "typescript": "^5.9.2"
   },
   "packageManager": "pnpm@10.8.1"
 }
