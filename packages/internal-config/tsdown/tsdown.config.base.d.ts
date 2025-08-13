@@ -1,5 +1,5 @@
-import { Options } from 'tsdown';
+import { Options, UserConfigFn } from 'tsdown';
 
-declare const config: Options;
+declare const defaultConfig: Options;
 
-export default config;
+declare function defineConfig(options: Options): UserConfigFn;

@@ -1,13 +1,9 @@
-import { defineConfig, type Options } from 'tsdown';
-import defaultConfig from '@discord-mcbe/internal-config/tsdown';
+import { defineConfig } from '@discord-mcbe/internal-config/tsdown';
 
-export default defineConfig((options: Options) => ({
-  ...defaultConfig,
-
+export default defineConfig({
   entry: 'src/main.ts',
   outDir: 'scripts',
-  format: ['esm'],
+  format: 'esm',
   sourcemap: true,
-
-  ...options,
-}));
+  noExternal: ['@discord-mcbe/client'],
+});

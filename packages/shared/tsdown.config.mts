@@ -1,10 +1,5 @@
-import { defineConfig, type Options } from 'tsdown'
-import defaultConfig from '@discord-mcbe/internal-config/tsdown'
+import { defineConfig } from '@discord-mcbe/internal-config/tsdown'
 
-export default defineConfig((options: Options) => ({
-  ...defaultConfig,
-
+export default defineConfig({
   format: ['esm', 'cjs'],
-  
-  ...options,
-}))
+});
