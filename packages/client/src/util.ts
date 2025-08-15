@@ -6,5 +6,6 @@ export function toDescriptor(player: Player): PlayerDescriptor {
     name: player.name,
     nameTag: player.nameTag,
     uniqueId: player.id,
+    platformType: player.clientSystemInfo.platformType,
   };
 }

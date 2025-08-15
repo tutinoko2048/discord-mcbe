@@ -6,6 +6,7 @@ import {
   type GetEntityLocationAction,
   type GetGameModeAction,
   type SetGameModeAction,
+  RunCommandAction,
 } from '@discord-mcbe/shared';
 
 export function registerHandlers(bridge: ScriptBridgeClient) {
@@ -21,6 +22,14 @@ export function registerHandlers(bridge: ScriptBridgeClient) {
     }
 
     action.respond();
+  });
+
+  bridge.registerHandler<RunCommandAction>(ActionId.RunCommand, (action) => {
+    const { command } = action.data;
+
+    const overworld = world.getDimension('overworld');
+    const { successCount } = overworld.runCommand(command);
+    action.respond({ successCount });
   });
 
   bridge.registerHandler<GetEntityLocationAction>(ActionId.GetEntityLocation, (action) => {

@@ -1,5 +1,5 @@
 export * from './bridge';
-export * from './discord/embeds';
+export * from './discord';
 export * from './events';
 export * from './handlers';
 export * from './main';

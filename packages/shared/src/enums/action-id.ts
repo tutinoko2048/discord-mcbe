@@ -1,4 +1,5 @@
 export enum ActionId {
+  WorldInitialize = 'dm:world_initialize',
   SendMessage = 'dm:send_message',
   RunCommand = 'dm:run_command',
   GetPlayers = 'dm:get_players',

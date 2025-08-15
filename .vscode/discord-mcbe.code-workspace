@@ -1,23 +1,23 @@
 {
   "folders": [
     {
-      "name": "Server",
+      "name": "🖥️ Server",
       "path": "../projects/server"
     },
     {
-      "name": "Addon",
-      "path": "../projects/addon"
-    },
-    {
-      "name": "Client",
+      "name": "📱 Client",
       "path": "../packages/client"
     },
     {
-      "name": "Shared",
+      "name": "📦 Shared",
       "path": "../packages/shared"
     },
     {
-      "name": "Repository",
+      "name": "🧩 Addon",
+      "path": "../projects/addon"
+    },
+    {
+      "name": "📁 Repository",
       "path": ".."
     },
   ]

@@ -9,6 +9,7 @@ import {
   type RunCommandAction,
   type ChatSendAction,
   PlayerDescriptor,
+  WorldInitializeAction,
 } from '@discord-mcbe/shared';
 import { PlayerChatEvent, PlayerJoinEvent, PlayerLeaveEvent } from '../events';
 import { createPlayer, createWorld } from '../handlers';
@@ -18,6 +19,7 @@ export class ScriptWorld {
 
   public readonly session: Session;
 
+  /** { [uniqueId]: ScriptPlayer } */
   public readonly players = new Map<string, ScriptPlayer>();
 
   public readonly connectedAt: number = Date.now();
@@ -42,7 +44,6 @@ export class ScriptWorld {
   async runCommand(command: string): Promise<{ successCount: number }> {
     const res = await this.session.send<RunCommandAction>(ActionId.RunCommand, { command });
     if (res.error) throw new Error(`[${ResponseErrorReason[res.errorReason]}] ${res.message}`);
-
     return res.data;
   }
 
@@ -51,14 +52,19 @@ export class ScriptWorld {
     if (res.error) throw new Error(`[${ResponseErrorReason[res.errorReason]}] ${res.message}`);
   }
 
-  onPlayerJoin(player: PlayerDescriptor) {
-    const scriptPlayer = new ScriptPlayer(this, player);
-    this.players.set(player.uniqueId, scriptPlayer);
+  onInitialize(data: WorldInitializeAction['request']) {
+    for (const player of data.players) {
+      this.initializePlayer(player);
+    }
+  }
+
+  onPlayerJoin(descriptor: PlayerDescriptor) {
+    const player = this.initializePlayer(descriptor);
     
     new PlayerJoinEvent(
       this.bridge.app,
       createWorld(this),
-      createPlayer(scriptPlayer)
+      createPlayer(player)
     ).emit();
   }
 
@@ -88,5 +94,14 @@ export class ScriptWorld {
     ).emit();
 
     console.log(`[${this.name}] [onChatSend] ${player.name}: ${message}`);
+  }
+
+  /**
+   * Create ScriptPlayer and bind it to the world.
+   */
+  private initializePlayer(descriptor: PlayerDescriptor): ScriptPlayer {
+    const player = new ScriptPlayer(this, descriptor);
+    this.players.set(descriptor.uniqueId, player);
+    return player;
   }
 }

@@ -28,6 +28,10 @@ export class ScriptPlayer {
     this.uniqueId = descriptor.uniqueId;
   }
 
+  get isValid() {
+    return this.world.players.has(this.uniqueId);
+  }
+
   async sendMessage(message: string | RawMessage | (string | RawMessage)[]): Promise<void> {
     const res = await this.world.session.send<SendMessageAction>(ActionId.SendMessage, {
       message,

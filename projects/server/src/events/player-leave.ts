@@ -3,6 +3,8 @@ import type { Application } from '../main';
 import { IPlayer, IWorld } from '../handlers';
 
 export class PlayerLeaveEvent extends ApplicationEvent {
+  public static readonly identifier = 'playerLeave';
+  
   public readonly world: IWorld;
   public readonly player: IPlayer;
 

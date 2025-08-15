@@ -32,7 +32,15 @@ export class CommandLineHandler {
       }
     } else {
       const command = line.replace(/^\/*/, '');
-      this.app.minecraft.broadcastCommand(command).then(res => console.log(res));
+      if (command.trim() === '') return;
+      this.app.minecraft.getWorlds().map(async (world) => {
+        try {
+          const result = await world.runCommand(command);
+          console.log(`[${world.name}]`, result);
+        } catch (err: any) {
+          console.error(`[${world.name}] Error: ${err.message}`);
+        }
+      });
     }
   }
 }

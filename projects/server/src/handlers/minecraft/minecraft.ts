@@ -1,13 +1,14 @@
-import { Server, ServerEvent, Server as SocketServer, World as SocketWorld } from 'socket-be';
-import { BridgeServer, ScriptWorld } from '../../bridge';
+import { ServerEvent, Server as SocketServer } from 'socket-be';
+import type { RawMessage } from '@minecraft/server';
+import { BridgeServer } from '../../bridge';
 import { Application } from '../../main';
 import { Logger } from '../../util';
 import { PlayerChatEvent, PlayerJoinEvent, PlayerLeaveEvent } from '../../events';
-import { createPlayer, createWorld } from './models';
+import { createPlayer, createWorld, IWorld } from './models';
 
 export class MinecraftHandler {
   private readonly logger: Logger;
-  
+
   public readonly socket: SocketServer;
 
   public readonly bridge: BridgeServer;
@@ -26,31 +27,24 @@ export class MinecraftHandler {
       this.logger.info('WebSocket server is listening on port', this.socket.options.port);
     });
 
+    this.socket.on(ServerEvent.WorldInitialize, (ev) => {
+      this.logger.debug(`[WorldInitialize] ${ev.world.name} initialized`);
+    });
+
     this.socket.on(ServerEvent.PlayerChat, (ev) => {
-      new PlayerChatEvent(
-        this.app,
-        createWorld(ev.world),
-        createPlayer(ev.sender),
-        ev.message
-      ).emit();
+      new PlayerChatEvent(this.app, createWorld(ev.world), createPlayer(ev.sender), ev.message).emit();
     });
 
     this.socket.on(ServerEvent.PlayerJoin, (ev) => {
-      new PlayerJoinEvent(
-        this.app,
-        createWorld(ev.world),
-        createPlayer(ev.player)
-      ).emit();
+      this.logger.debug(`[PlayerJoin] ${ev.player.name} joined ${ev.world.name}`);
+      new PlayerJoinEvent(this.app, createWorld(ev.world), createPlayer(ev.player)).emit();
     });
 
     this.socket.on(ServerEvent.PlayerLeave, (ev) => {
-      new PlayerLeaveEvent(
-        this.app,
-        createWorld(ev.world),
-        createPlayer(ev.player)
-      ).emit();
+      this.logger.debug(`[PlayerLeave] ${ev.player.name} left ${ev.world.name}`);
+      new PlayerLeaveEvent(this.app, createWorld(ev.world), createPlayer(ev.player)).emit();
     });
-    
+
     this.logger.debug('Initialized');
   }
 
@@ -59,17 +53,15 @@ export class MinecraftHandler {
     this.logger.info('Bridge server is listening on port', this.bridge.server.port);
   }
 
-  getWorlds(): (SocketWorld | ScriptWorld)[] {
-    return [
-      ...this.socket.getWorlds(),
-      ...this.bridge.getWorlds()
-    ];
+  getWorlds(): IWorld[] {
+    return [...this.socket.getWorlds(), ...this.bridge.getWorlds()].map(createWorld);
   }
 
-  async broadcastCommand(command: string): Promise<void> {
-    const worlds = [...this.bridge.getWorlds(), ...this.socket.getWorlds()];
-    await Promise.all(
-      worlds.map(world => world.runCommand(command))
-    );
+  async broadcastCommand(command: string) {
+    return await Promise.allSettled(this.getWorlds().map((world) => world.runCommand(command)));
+  }
+
+  async broadcastMessage(message: string | RawMessage | (string | RawMessage)[]): Promise<void> {
+    await Promise.allSettled(this.getWorlds().map((world) => world.sendMessage(message)));
   }
 }

@@ -128,12 +128,27 @@ export class Application extends ExtendedEmitter<ApplicationEvents> {
     // });
 
     // await this.scripts.load();
-    
+
+    this.on('playerJoin', (ev) => {
+      const { player, world } = ev;
+      this.logger.info(`[PlayerJoin] ${player.name} joined ${world.name}`);
+    });
+
+    this.on('playerLeave', (ev) => {
+      const { player, world } = ev;
+      this.logger.info(`[PlayerLeave] ${player.name} left ${world.name}`);
+    });
+
     this.on('playerChat', (ev) => {
       const type = ev.world.isSocket ? 'Socket' : 'Script';
       this.logger.info(`[${type}] [${ev.world.name}] ${ev.sender.name}: ${ev.message}`);
       // Handle chat event here (e.g., send to Discord)
       this.bot.sendMessage(`[${type}] [${ev.world.name}] ${ev.sender.name}: ${ev.message}`);
+
+      for (const world of this.minecraft.getWorlds()) {
+        if (world === ev.world) continue;
+        world.sendMessage(`[${type}] [${ev.world.name}] ${ev.sender.name}: ${ev.message}`);
+      }
     });
     
     this.logger.debug('Application started');
