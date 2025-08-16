@@ -9,6 +9,5 @@ export type GetEntityLocationAction = BaseAction<
   },
   {
     location: Vector3;
-    dimensionId: string;
   }
 >;

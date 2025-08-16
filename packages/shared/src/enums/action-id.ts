@@ -4,6 +4,7 @@ export enum ActionId {
   RunCommand = 'dm:run_command',
   GetPlayers = 'dm:get_players',
   GetEntityLocation = 'dm:get_entity_location',
+  GetEntityDimension = 'dm:get_entity_dimension',
   GetGameMode = 'dm:get_game_mode',
   SetGameMode = 'dm:set_game_mode',
   SetTitle = 'dm:set_title',

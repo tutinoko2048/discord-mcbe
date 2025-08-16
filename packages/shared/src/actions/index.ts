@@ -1,4 +1,5 @@
 export * from './chat-send';
+export * from './get-entity-dimension';
 export * from './get-entity-location';
 export * from './get-game-mode';
 export * from './kick-player';

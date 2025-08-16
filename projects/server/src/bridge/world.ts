@@ -13,16 +13,22 @@ import {
 } from '@discord-mcbe/shared';
 import { PlayerChatEvent, PlayerJoinEvent, PlayerLeaveEvent } from '../events';
 import { createPlayer, createWorld } from '../handlers';
+import { ScriptDimension } from './dimension';
 
 export class ScriptWorld {
   private readonly bridge: BridgeServer;
 
   public readonly session: Session;
 
+  public readonly connectedAt: number = Date.now();
+
   /** { [uniqueId]: ScriptPlayer } */
   public readonly players = new Map<string, ScriptPlayer>();
 
-  public readonly connectedAt: number = Date.now();
+  /** { [dimensionId]: ScriptDimension } */
+  public readonly _dimensions = new Map<string, ScriptDimension>();
+
+  //TODO: Scoreboard API
   
   constructor(bridge: BridgeServer, session: Session) {
     this.bridge = bridge;

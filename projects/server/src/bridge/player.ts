@@ -3,6 +3,7 @@ import {
   ActionId,
   type SendMessageAction,
   type GetEntityLocationAction,
+  type GetEntityDimensionAction,
   type GetGameModeAction,
   type SetGameModeAction,
   type KickPlayerAction,
@@ -13,6 +14,7 @@ import { ScriptWorld } from './world';
 import { ScreenDisplay } from './screen-display';
 
 import type { RawMessage, Vector3 } from '@minecraft/server';
+import { ScriptDimension } from './dimension';
 
 export class ScriptPlayer {
   public readonly world: ScriptWorld;
@@ -45,13 +47,27 @@ export class ScriptPlayer {
     if (res.error) throw new Error(`[${ResponseErrorReason[res.errorReason]}] ${res.message}`);
   }
 
-  async getLocation(): Promise<{ location: Vector3; dimensionId: string }> {
+  async getLocation(): Promise<Vector3> {
     const res = await this.world.session.send<GetEntityLocationAction>(ActionId.GetEntityLocation, {
       entityUniqueId: this.uniqueId,
     });
     if (res.error) throw new Error(`[${ResponseErrorReason[res.errorReason]}] ${res.message}`);
 
-    return res.data;
+    return res.data.location;
+  }
+
+  async getDimension(): Promise<ScriptDimension> {
+    const res = await this.world.session.send<GetEntityDimensionAction>(ActionId.GetEntityDimension, {
+      entityUniqueId: this.uniqueId,
+    });
+    if (res.error) throw new Error(`[${ResponseErrorReason[res.errorReason]}] ${res.message}`);
+
+    const dimensionId = res.data.dimension.id;
+    if (!this.world._dimensions.has(dimensionId)) {
+      this.world._dimensions.set(dimensionId, new ScriptDimension(this.world, res.data.dimension));
+    }
+
+    return this.world._dimensions.get(dimensionId)!;
   }
 
   async getGameMode(): Promise<GameMode> {

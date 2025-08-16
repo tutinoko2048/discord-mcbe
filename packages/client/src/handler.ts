@@ -4,6 +4,7 @@ import {
   ActionId,
   type SendMessageAction,
   type GetEntityLocationAction,
+  type GetEntityDimensionAction,
   type GetGameModeAction,
   type SetGameModeAction,
   type SetTitleAction,
@@ -18,9 +19,9 @@ export function registerHandlers(bridge: ScriptBridgeClient) {
     const { message, playerUniqueId } = action.data;
 
     if (playerUniqueId) {
-      const entity = world.getEntity(playerUniqueId);
-      if (!(entity instanceof Player)) throw new Error('Player not found');
-      entity.sendMessage(message);
+      const player = world.getEntity(playerUniqueId);
+      if (!(player instanceof Player)) throw new Error('Player not found');
+      player.sendMessage(message);
     } else {
       world.sendMessage(message);
     }
@@ -44,68 +45,81 @@ export function registerHandlers(bridge: ScriptBridgeClient) {
 
     action.respond({
       location: entity.location,
-      dimensionId: entity.dimension.id,
+    });
+  });
+
+  bridge.registerHandler<GetEntityDimensionAction>(ActionId.GetEntityDimension, (action) => {
+    const { entityUniqueId } = action.data;
+
+    const entity = world.getEntity(entityUniqueId);
+    if (!entity) throw new Error('Entity not found');
+
+    action.respond({
+      dimension: {
+        id: entity.dimension.id,
+        heightRange: entity.dimension.heightRange,
+      },
     });
   });
 
   bridge.registerHandler<GetGameModeAction>(ActionId.GetGameMode, (action) => {
     const { playerUniqueId } = action.data;
 
-    const entity = world.getEntity(playerUniqueId);
-    if (!(entity instanceof Player)) throw new Error('Player not found');
+    const player = world.getEntity(playerUniqueId);
+    if (!(player instanceof Player)) throw new Error('Player not found');
 
     action.respond({
-      gameMode: entity.getGameMode(),
+      gameMode: player.getGameMode(),
     });
   });
 
   bridge.registerHandler<SetGameModeAction>(ActionId.SetGameMode, (action) => {
     const { playerUniqueId, gameMode } = action.data;
 
-    const entity = world.getEntity(playerUniqueId);
-    if (!(entity instanceof Player)) throw new Error('Player not found');
+    const player = world.getEntity(playerUniqueId);
+    if (!(player instanceof Player)) throw new Error('Player not found');
 
-    entity.setGameMode(gameMode);
+    player.setGameMode(gameMode);
     action.respond();
   });
 
   bridge.registerHandler<SetTitleAction>(ActionId.SetTitle, (action) => {
     const { playerUniqueId, title, options } = action.data;
 
-    const entity = world.getEntity(playerUniqueId);
-    if (!(entity instanceof Player)) throw new Error('Player not found');
+    const player = world.getEntity(playerUniqueId);
+    if (!(player instanceof Player)) throw new Error('Player not found');
 
-    entity.onScreenDisplay.setTitle(title, options);
+    player.onScreenDisplay.setTitle(title, options);
     action.respond();
   });
 
   bridge.registerHandler<UpdateSubtitleAction>(ActionId.UpdateSubtitle, (action) => {
     const { playerUniqueId, subtitle } = action.data;
 
-    const entity = world.getEntity(playerUniqueId);
-    if (!(entity instanceof Player)) throw new Error('Player not found');
+    const player = world.getEntity(playerUniqueId);
+    if (!(player instanceof Player)) throw new Error('Player not found');
 
-    entity.onScreenDisplay.updateSubtitle(subtitle);
+    player.onScreenDisplay.updateSubtitle(subtitle);
     action.respond();
   });
 
   bridge.registerHandler<SetActionBarAction>(ActionId.SetActionBar, (action) => {
     const { playerUniqueId, text } = action.data;
 
-    const entity = world.getEntity(playerUniqueId);
-    if (!(entity instanceof Player)) throw new Error('Player not found');
+    const player = world.getEntity(playerUniqueId);
+    if (!(player instanceof Player)) throw new Error('Player not found');
 
-    entity.onScreenDisplay.setActionBar(text);
+    player.onScreenDisplay.setActionBar(text);
     action.respond();
   });
 
   bridge.registerHandler<KickPlayerAction>(ActionId.KickPlayer, (action) => {
     const { playerUniqueId, reason } = action.data;
 
-    const entity = world.getEntity(playerUniqueId);
-    if (!(entity instanceof Player)) throw new Error('Player not found');
+    const player = world.getEntity(playerUniqueId);
+    if (!(player instanceof Player)) throw new Error('Player not found');
 
-    entity.runCommand(`kick @s ${reason ? reason : ''}`);
+    player.runCommand(`kick @s ${reason ? reason : ''}`);
     action.respond();
   });
 }
