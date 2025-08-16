@@ -9,6 +9,7 @@ export enum ActionId {
   SetTitle = 'dm:set_title',
   UpdateSubtitle = 'dm:update_subtitle',
   SetActionBar = 'dm:set_action_bar',
+  KickPlayer = 'dm:kick_player',
   PlayerJoin = 'dm:player_join',
   PlayerLeave = 'dm:player_leave',
   ChatSend = 'dm:chat_send',

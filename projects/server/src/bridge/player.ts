@@ -5,6 +5,7 @@ import {
   type GetEntityLocationAction,
   type GetGameModeAction,
   type SetGameModeAction,
+  type KickPlayerAction,
   type GameMode,
 } from '@discord-mcbe/shared';
 import { ResponseErrorReason } from '@script-bridge/protocol';
@@ -66,6 +67,14 @@ export class ScriptPlayer {
     const res = await this.world.session.send<SetGameModeAction>(ActionId.SetGameMode, {
       playerUniqueId: this.uniqueId,
       gameMode,
+    });
+    if (res.error) throw new Error(`[${ResponseErrorReason[res.errorReason]}] ${res.message}`);
+  }
+
+  async kick(reason?: string): Promise<void> {
+    const res = await this.world.session.send<KickPlayerAction>(ActionId.KickPlayer, {
+      playerUniqueId: this.uniqueId,
+      reason,
     });
     if (res.error) throw new Error(`[${ResponseErrorReason[res.errorReason]}] ${res.message}`);
   }

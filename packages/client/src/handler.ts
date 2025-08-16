@@ -10,6 +10,7 @@ import {
   type UpdateSubtitleAction,
   type SetActionBarAction,
   type RunCommandAction,
+  KickPlayerAction,
 } from '@discord-mcbe/shared';
 
 export function registerHandlers(bridge: ScriptBridgeClient) {
@@ -95,6 +96,16 @@ export function registerHandlers(bridge: ScriptBridgeClient) {
     if (!(entity instanceof Player)) throw new Error('Player not found');
 
     entity.onScreenDisplay.setActionBar(text);
+    action.respond();
+  });
+
+  bridge.registerHandler<KickPlayerAction>(ActionId.KickPlayer, (action) => {
+    const { playerUniqueId, reason } = action.data;
+
+    const entity = world.getEntity(playerUniqueId);
+    if (!(entity instanceof Player)) throw new Error('Player not found');
+
+    entity.runCommand(`kick @s ${reason ? reason : ''}`);
     action.respond();
   });
 }
