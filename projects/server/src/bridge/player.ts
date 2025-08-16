@@ -9,11 +9,12 @@ import {
 } from '@discord-mcbe/shared';
 import { ResponseErrorReason } from '@script-bridge/protocol';
 import { ScriptWorld } from './world';
+import { ScreenDisplay } from './screen-display';
 
 import type { RawMessage, Vector3 } from '@minecraft/server';
 
 export class ScriptPlayer {
-  private readonly world: ScriptWorld;
+  public readonly world: ScriptWorld;
   
   public readonly name: string;
 
@@ -21,11 +22,14 @@ export class ScriptPlayer {
 
   public readonly uniqueId: string;
 
+  public readonly onScreenDisplay: ScreenDisplay;
+
   constructor(world: ScriptWorld, descriptor: PlayerDescriptor) {
     this.world = world;
     this.name = descriptor.name;
     this.nameTag = descriptor.nameTag;
     this.uniqueId = descriptor.uniqueId;
+    this.onScreenDisplay = new ScreenDisplay(this);
   }
 
   get isValid() {

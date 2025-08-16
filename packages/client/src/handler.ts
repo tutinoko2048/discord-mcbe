@@ -6,7 +6,10 @@ import {
   type GetEntityLocationAction,
   type GetGameModeAction,
   type SetGameModeAction,
-  RunCommandAction,
+  type SetTitleAction,
+  type UpdateSubtitleAction,
+  type SetActionBarAction,
+  type RunCommandAction,
 } from '@discord-mcbe/shared';
 
 export function registerHandlers(bridge: ScriptBridgeClient) {
@@ -62,6 +65,36 @@ export function registerHandlers(bridge: ScriptBridgeClient) {
     if (!(entity instanceof Player)) throw new Error('Player not found');
 
     entity.setGameMode(gameMode);
+    action.respond();
+  });
+
+  bridge.registerHandler<SetTitleAction>(ActionId.SetTitle, (action) => {
+    const { playerUniqueId, title, options } = action.data;
+
+    const entity = world.getEntity(playerUniqueId);
+    if (!(entity instanceof Player)) throw new Error('Player not found');
+
+    entity.onScreenDisplay.setTitle(title, options);
+    action.respond();
+  });
+
+  bridge.registerHandler<UpdateSubtitleAction>(ActionId.UpdateSubtitle, (action) => {
+    const { playerUniqueId, subtitle } = action.data;
+
+    const entity = world.getEntity(playerUniqueId);
+    if (!(entity instanceof Player)) throw new Error('Player not found');
+
+    entity.onScreenDisplay.updateSubtitle(subtitle);
+    action.respond();
+  });
+
+  bridge.registerHandler<SetActionBarAction>(ActionId.SetActionBar, (action) => {
+    const { playerUniqueId, text } = action.data;
+
+    const entity = world.getEntity(playerUniqueId);
+    if (!(entity instanceof Player)) throw new Error('Player not found');
+
+    entity.onScreenDisplay.setActionBar(text);
     action.respond();
   });
 }
