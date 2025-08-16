@@ -1,7 +1,7 @@
 import { ExtendedEmitter, MinecraftCommandVersion } from 'socket-be';
-import { ExtractOptional } from '@discord-mcbe/shared';
+import type { ExtractOptional } from '@discord-mcbe/shared';
 import { CommandLineHandler, MinecraftHandler, ScriptHandler } from './handlers';
-import { ApplicationEvents, Config } from './types';
+import type { ApplicationEvents, Config } from './types';
 import { Logger, _t, loadConfig } from './util';
 import { StartupEvent } from './events';
 import { renderFilled as renderLogo } from 'oh-my-logo';

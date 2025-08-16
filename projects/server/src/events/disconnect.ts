@@ -1,6 +1,6 @@
 import { ApplicationEvent } from './app';
 import type { Application } from '../main';
-import { IWorld } from '../handlers';
+import type { IWorld } from '../handlers';
 
 export class DisconnectEvent extends ApplicationEvent {
   public static readonly identifier = 'disconnect';

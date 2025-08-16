@@ -1,5 +1,5 @@
 import type { Application } from '../main';
-import { ApplicationEvents } from '../types';
+import type { ApplicationEvents } from '../types';
 
 export class ApplicationEvent {
   public static readonly identifier: keyof ApplicationEvents;

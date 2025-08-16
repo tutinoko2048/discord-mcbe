@@ -1,5 +1,5 @@
 import { Player as SocketPlayer, World as SocketWorld } from 'socket-be';
-import { ScriptPlayer, ScriptWorld } from '../../bridge';
+import type { ScriptPlayer, ScriptWorld } from '../../bridge';
 
 export type IPlayer = ({ isSocket: true } & SocketPlayer) | ({ isSocket: false } & ScriptPlayer);
 

@@ -1,5 +1,5 @@
-import { DimensionDescriptor } from '@discord-mcbe/shared';
-import { ScriptWorld } from './world';
+import type { DimensionDescriptor } from '@discord-mcbe/shared';
+import type { ScriptWorld } from './world';
 
 export class ScriptDimension {
   private readonly world: ScriptWorld;

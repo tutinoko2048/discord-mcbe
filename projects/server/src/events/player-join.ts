@@ -1,6 +1,6 @@
 import { ApplicationEvent } from './app';
 import type { Application } from '../main';
-import { IPlayer, IWorld } from '../handlers';
+import type { IPlayer, IWorld } from '../handlers';
 
 export class PlayerJoinEvent extends ApplicationEvent {
   public static readonly identifier = 'playerJoin';

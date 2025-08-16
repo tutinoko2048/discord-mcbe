@@ -1,10 +1,10 @@
 import { ServerEvent, Server as SocketServer } from 'socket-be';
 import type { RawMessage } from '@minecraft/server';
 import { BridgeServer } from '../../bridge';
-import { Application } from '../../main';
+import type { Application } from '../../main';
 import { Logger } from '../../util';
 import { PlayerChatEvent, PlayerJoinEvent, PlayerLeaveEvent } from '../../events';
-import { createPlayer, createWorld, IWorld } from './models';
+import { createPlayer, createWorld, type IWorld } from './models';
 
 export class MinecraftHandler {
   private readonly logger: Logger;

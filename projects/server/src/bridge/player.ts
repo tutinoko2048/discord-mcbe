@@ -1,5 +1,5 @@
 import {
-  PlayerDescriptor,
+  type PlayerDescriptor,
   ActionId,
   type SendMessageAction,
   type GetEntityLocationAction,
@@ -10,7 +10,7 @@ import {
   type GameMode,
 } from '@discord-mcbe/shared';
 import { ResponseErrorReason } from '@script-bridge/protocol';
-import { ScriptWorld } from './world';
+import type { ScriptWorld } from './world';
 import { ScreenDisplay } from './screen-display';
 
 import type { RawMessage, Vector3 } from '@minecraft/server';

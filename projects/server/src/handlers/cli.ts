@@ -1,5 +1,5 @@
 import * as readline from 'node:readline';
-import { Application } from '../main';
+import type { Application } from '../main';
 import { Logger } from '../util';
 
 export class CommandLineHandler {

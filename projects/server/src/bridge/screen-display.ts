@@ -1,5 +1,5 @@
-import { RawMessage } from '@minecraft/server';
-import { ScriptPlayer } from './player';
+import type { RawMessage } from '@minecraft/server';
+import type { ScriptPlayer } from './player';
 import {
   ActionId,
   type SetTitleAction,

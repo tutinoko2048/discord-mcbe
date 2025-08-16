@@ -1,11 +1,11 @@
 import * as moment from 'moment-timezone';
-import { Application } from '../main';
+import type { Application } from '../main';
 import * as util from '../util/util';
-import { Client, EmbedBuilder, RESTJSONErrorCodes, Message, TextBasedChannel } from 'discord.js';
+import { type Client, EmbedBuilder, RESTJSONErrorCodes, type Message, TextBasedChannel } from 'discord.js';
 import { colors } from './embeds';
 import { Config } from '../types';
 import { _t, Logger } from '../util';
-import { PlayerList, RequestTimeoutError, World } from 'socket-be';
+import { type PlayerList, RequestTimeoutError, World } from 'socket-be';
 import { ScriptWorld } from '../bridge';
 
 interface PanelData {

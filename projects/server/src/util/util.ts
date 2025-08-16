@@ -1,7 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { jsonc } from 'jsonc';
-import { Config, configSchema } from '../types';
+import { type Config, configSchema } from '../types';
 
 const MAIN_DIR = path.join(__dirname, '../../../../');
 const DATA_DIR = '.discord-mcbe';

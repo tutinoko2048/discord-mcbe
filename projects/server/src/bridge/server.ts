@@ -1,6 +1,6 @@
-import { ScriptBridgeServer, Session } from '@script-bridge/server';
+import { ScriptBridgeServer, type Session } from '@script-bridge/server';
 import { DisconnectReason } from '@script-bridge/protocol';
-import { Application } from '../main';
+import type { Application } from '../main';
 import { ScriptWorld } from './world';
 import { Logger } from '../util';
 import { ConnectEvent, DisconnectEvent } from '../events';
@@ -10,7 +10,7 @@ import {
   type PlayerJoinAction,
   type PlayerLeaveAction,
   type ChatSendAction,
-  WorldInitializeAction,
+  type WorldInitializeAction,
 } from '@discord-mcbe/shared';
 
 /** ScriptBridge wrapper */

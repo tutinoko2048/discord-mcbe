@@ -1,5 +1,5 @@
-import { ServerOptions } from 'socket-be';
-import { Application } from '../main';
+import type { ServerOptions } from 'socket-be';
+import type { Application } from '../main';
 
 export class StartupEvent {
   public static readonly identifier = 'startup';

@@ -1,6 +1,6 @@
-import { Session } from '@script-bridge/server';
+import type { Session } from '@script-bridge/server';
 import { ResponseErrorReason } from '@script-bridge/protocol';
-import { BridgeServer } from './server';
+import type { BridgeServer } from './server';
 import { ScriptPlayer } from './player';
 import type { RawMessage } from '@minecraft/server';
 import {
@@ -10,12 +10,12 @@ import {
   type SendScriptEventAction,
   type GetTPSAction,
   type ChatSendAction,
-  PlayerDescriptor,
-  WorldInitializeAction,
+  type PlayerDescriptor,
+  type WorldInitializeAction,
 } from '@discord-mcbe/shared';
 import { PlayerChatEvent, PlayerJoinEvent, PlayerLeaveEvent } from '../events';
 import { createPlayer, createWorld } from '../handlers';
-import { ScriptDimension } from './dimension';
+import type { ScriptDimension } from './dimension';
 
 export class ScriptWorld {
   private readonly bridge: BridgeServer;

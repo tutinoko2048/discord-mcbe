@@ -4,11 +4,11 @@ import {
   codeBlock,
   Events,
   GatewayIntentBits,
-  Message,
-  MessageCreateOptions,
+  type Message,
+  type MessageCreateOptions,
 } from 'discord.js';
 import { DiscordInteractions } from '@akki256/discord-interaction';
-import { Application } from '../main';
+import type { Application } from '../main';
 
 import { PanelHandler } from './panel';
 
