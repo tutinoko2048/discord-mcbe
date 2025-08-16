@@ -3,6 +3,8 @@ import { DisconnectReason } from '@script-bridge/protocol';
 import { Application } from '../main';
 import { ScriptWorld } from './world';
 import { Logger } from '../util';
+import { ConnectEvent, DisconnectEvent } from '../events';
+import { createWorld } from '../handlers';
 import {
   ActionId,
   type PlayerJoinAction,
@@ -74,9 +76,16 @@ export class BridgeServer {
     const world = new ScriptWorld(this, session);
     this.worlds.set(session, world);
     this.logger.debug(`Client connected: ${session.id}`);
+    
+    new ConnectEvent(this.app, createWorld(world)).emit();
   }
 
   private onClientDisconnect(session: Session, reason: DisconnectReason) {
+    const world = this.worlds.get(session);
+    if (world) {
+      new DisconnectEvent(this.app, createWorld(world)).emit();
+    }
+    
     this.worlds.delete(session);
     this.logger.debug(`Client disconnected: ${session.id} (${DisconnectReason[reason]})`);
   }
