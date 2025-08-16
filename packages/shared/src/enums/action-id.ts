@@ -2,6 +2,7 @@ export enum ActionId {
   WorldInitialize = 'dm:world_initialize',
   SendMessage = 'dm:send_message',
   RunCommand = 'dm:run_command',
+  SendScriptEvent = 'dm:send_script_event',
   GetPlayers = 'dm:get_players',
   GetEntityLocation = 'dm:get_entity_location',
   GetEntityDimension = 'dm:get_entity_dimension',

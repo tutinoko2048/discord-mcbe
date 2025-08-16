@@ -1,4 +1,4 @@
-import { world, Player } from '@minecraft/server';
+import { world, Player, system } from '@minecraft/server';
 import type { ScriptBridgeClient } from '@script-bridge/client';
 import {
   ActionId,
@@ -11,6 +11,7 @@ import {
   type UpdateSubtitleAction,
   type SetActionBarAction,
   type RunCommandAction,
+  type SendScriptEventAction,
   KickPlayerAction,
 } from '@discord-mcbe/shared';
 
@@ -35,6 +36,13 @@ export function registerHandlers(bridge: ScriptBridgeClient) {
     const overworld = world.getDimension('overworld');
     const { successCount } = overworld.runCommand(command);
     action.respond({ successCount });
+  });
+
+  bridge.registerHandler<SendScriptEventAction>(ActionId.SendScriptEvent, (action) => {
+    const { id, message } = action.data;
+
+    system.sendScriptEvent(id, message);
+    action.respond();
   });
 
   bridge.registerHandler<GetEntityLocationAction>(ActionId.GetEntityLocation, (action) => {

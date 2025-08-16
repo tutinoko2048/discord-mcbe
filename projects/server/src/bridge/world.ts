@@ -7,6 +7,7 @@ import {
   ActionId,
   type SendMessageAction,
   type RunCommandAction,
+  type SendScriptEventAction,
   type ChatSendAction,
   PlayerDescriptor,
   WorldInitializeAction,
@@ -55,6 +56,11 @@ export class ScriptWorld {
 
   async sendMessage(message: string | RawMessage | (string | RawMessage)[]): Promise<void> {
     const res = await this.session.send<SendMessageAction>(ActionId.SendMessage, { message });
+    if (res.error) throw new Error(`[${ResponseErrorReason[res.errorReason]}] ${res.message}`);
+  }
+
+  async sendScriptEvent(id: string, message: string): Promise<void> {
+    const res = await this.session.send<SendScriptEventAction>(ActionId.SendScriptEvent, { id, message });
     if (res.error) throw new Error(`[${ResponseErrorReason[res.errorReason]}] ${res.message}`);
   }
 
