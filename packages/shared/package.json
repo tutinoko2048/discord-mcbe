@@ -6,7 +6,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsdown",
-    "watch": "tsdown --watch"
+    "watch": "tsdown --watch",
+    "format": "biome format --write ./src"
   },
   "dependencies": {
     "@discord-mcbe/internal-config": "workspace:*",

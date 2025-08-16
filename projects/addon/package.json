@@ -6,7 +6,8 @@
   "private": true,
   "scripts": {
     "build": "tsdown",
-    "watch": "tsdown --watch"
+    "watch": "tsdown --watch",
+    "format": "biome format --write ./src"
   },
   "dependencies": {
     "@discord-mcbe/client": "workspace:*",

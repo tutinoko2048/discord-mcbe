@@ -10,6 +10,7 @@
     "start": "pnpm build && node --enable-source-maps ./dist/main.js",
     "dev": "bun --watch ./src/main.ts",
     "build": "tsc",
+    "format": "biome format --write ./src",
     "generate-schema": "bun ./generate-schema.ts"
   },
   "dependencies": {
