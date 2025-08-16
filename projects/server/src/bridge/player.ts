@@ -18,7 +18,7 @@ import { ScriptDimension } from './dimension';
 
 export class ScriptPlayer {
   public readonly world: ScriptWorld;
-  
+
   public readonly name: string;
 
   public readonly nameTag: string;

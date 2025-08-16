@@ -1,9 +1,7 @@
 import { Player as SocketPlayer, World as SocketWorld } from 'socket-be';
 import { ScriptPlayer, ScriptWorld } from '../../bridge';
 
-export type IPlayer = 
-  | ({ isSocket: true } & SocketPlayer)
-  | ({ isSocket: false } & ScriptPlayer);
+export type IPlayer = ({ isSocket: true } & SocketPlayer) | ({ isSocket: false } & ScriptPlayer);
 
 export function createPlayer(player: SocketPlayer | ScriptPlayer): IPlayer {
   if (player instanceof SocketPlayer) {
@@ -14,9 +12,7 @@ export function createPlayer(player: SocketPlayer | ScriptPlayer): IPlayer {
   return player as IPlayer;
 }
 
-export type IWorld =
-  | ({ isSocket: true } & SocketWorld)
-  | ({ isSocket: false } & ScriptWorld);
+export type IWorld = ({ isSocket: true } & SocketWorld) | ({ isSocket: false } & ScriptWorld);
 
 export function createWorld(world: SocketWorld | ScriptWorld): IWorld {
   if (world instanceof SocketWorld) {

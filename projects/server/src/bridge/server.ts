@@ -24,7 +24,7 @@ export class BridgeServer {
     this.logger = new Logger('BridgeServer', this.app.config);
     this.server = new ScriptBridgeServer({
       port: this.app.config.bridge_port,
-      timeoutThresholdMultiplier: 10
+      timeoutThresholdMultiplier: 10,
     });
 
     this.server.on('clientConnect', this.onClientConnect.bind(this));
@@ -76,7 +76,7 @@ export class BridgeServer {
     const world = new ScriptWorld(this, session);
     this.worlds.set(session, world);
     this.logger.debug(`Client connected: ${session.id}`);
-    
+
     new ConnectEvent(this.app, createWorld(world)).emit();
   }
 
@@ -85,7 +85,7 @@ export class BridgeServer {
     if (world) {
       new DisconnectEvent(this.app, createWorld(world)).emit();
     }
-    
+
     this.worlds.delete(session);
     this.logger.debug(`Client disconnected: ${session.id} (${DisconnectReason[reason]})`);
   }
@@ -94,4 +94,3 @@ export class BridgeServer {
     this.logger.error(error);
   }
 }
-

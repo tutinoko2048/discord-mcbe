@@ -1,11 +1,11 @@
 import { RawMessage } from '@minecraft/server';
 import { ScriptPlayer } from './player';
-import { 
+import {
   ActionId,
   type SetTitleAction,
   type UpdateSubtitleAction,
   type SetActionBarAction,
-  type TitleDisplayOptions
+  type TitleDisplayOptions,
 } from '@discord-mcbe/shared';
 import { ResponseErrorReason } from '@script-bridge/protocol';
 
@@ -20,7 +20,10 @@ export class ScreenDisplay {
     return this.player.isValid;
   }
 
-  async setTitle(title: string | RawMessage | (string | RawMessage)[], options?: TitleDisplayOptions): Promise<void> {
+  async setTitle(
+    title: string | RawMessage | (string | RawMessage)[],
+    options?: TitleDisplayOptions
+  ): Promise<void> {
     const res = await this.player.world.session.send<SetTitleAction>(ActionId.SetTitle, {
       playerUniqueId: this.player.uniqueId,
       title,

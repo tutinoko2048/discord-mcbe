@@ -31,7 +31,7 @@ export class ScriptWorld {
   public readonly _dimensions = new Map<string, ScriptDimension>();
 
   //TODO: Scoreboard API
-  
+
   constructor(bridge: BridgeServer, session: Session) {
     this.bridge = bridge;
     this.session = session;
@@ -79,38 +79,25 @@ export class ScriptWorld {
 
   onPlayerJoin(descriptor: PlayerDescriptor) {
     const player = this.initializePlayer(descriptor);
-    
-    new PlayerJoinEvent(
-      this.bridge.app,
-      createWorld(this),
-      createPlayer(player)
-    ).emit();
+
+    new PlayerJoinEvent(this.bridge.app, createWorld(this), createPlayer(player)).emit();
   }
 
   onPlayerLeave(uniqueId: string) {
     const scriptPlayer = this.players.get(uniqueId);
     if (!scriptPlayer) throw new Error(`Player not found: ${uniqueId}`);
-    
-    new PlayerLeaveEvent(
-      this.bridge.app,
-      createWorld(this),
-      createPlayer(scriptPlayer)
-    ).emit();
-    
+
+    new PlayerLeaveEvent(this.bridge.app, createWorld(this), createPlayer(scriptPlayer)).emit();
+
     this.players.delete(uniqueId);
   }
-  
+
   onChatSend(data: ChatSendAction['request']) {
     const { senderName, senderUniqueId, message } = data;
     const player = this.players.get(senderUniqueId);
     if (!player) throw new Error(`Player not found: ${senderName} (${senderUniqueId})`);
-    
-    new PlayerChatEvent(
-      this.bridge.app,
-      createWorld(this),
-      createPlayer(player),
-      message
-    ).emit();
+
+    new PlayerChatEvent(this.bridge.app, createWorld(this), createPlayer(player), message).emit();
 
     console.log(`[${this.name}] [onChatSend] ${player.name}: ${message}`);
   }

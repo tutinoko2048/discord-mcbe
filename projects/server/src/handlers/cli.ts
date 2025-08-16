@@ -9,19 +9,18 @@ export class CommandLineHandler {
 
   private readonly reader: readline.Interface;
 
-
   constructor(app: Application) {
     this.app = app;
     this.logger = new Logger('CommandLine', this.app.config);
     this.reader = readline.createInterface({
       input: process.stdin,
-      output: process.stdout
+      output: process.stdout,
     });
     this.reader.on('line', this.handleLine.bind(this));
 
     this.logger.debug('Initialized');
   }
-  
+
   private handleLine(line: string): void {
     if (line.startsWith('.')) {
       try {
