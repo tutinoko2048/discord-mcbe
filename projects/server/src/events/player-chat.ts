@@ -9,12 +9,7 @@ export class PlayerChatEvent extends ApplicationEvent {
   public readonly sender: IPlayer;
   public readonly message: string;
 
-  constructor(
-    app: Application,
-    world: IWorld,
-    sender: IPlayer,
-    message: string,
-  ) {
+  constructor(app: Application, world: IWorld, sender: IPlayer, message: string) {
     super(app);
     this.world = world;
     this.sender = sender;

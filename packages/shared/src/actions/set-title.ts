@@ -1,4 +1,7 @@
-import type { RawMessage, TitleDisplayOptions as MinecraftTitleDisplayOptions } from '@minecraft/server';
+import type {
+  RawMessage,
+  TitleDisplayOptions as MinecraftTitleDisplayOptions,
+} from '@minecraft/server';
 import type { BaseAction } from '@script-bridge/protocol';
 import type { ActionId } from '../enums';
 

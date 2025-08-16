@@ -22,7 +22,7 @@ export class ScreenDisplay {
 
   async setTitle(
     title: string | RawMessage | (string | RawMessage)[],
-    options?: TitleDisplayOptions
+    options?: TitleDisplayOptions,
   ): Promise<void> {
     const res = await this.player.world.session.send<SetTitleAction>(ActionId.SetTitle, {
       playerUniqueId: this.player.uniqueId,
@@ -33,10 +33,13 @@ export class ScreenDisplay {
   }
 
   async updateSubtitle(subtitle: string | RawMessage | (string | RawMessage)[]): Promise<void> {
-    const res = await this.player.world.session.send<UpdateSubtitleAction>(ActionId.UpdateSubtitle, {
-      playerUniqueId: this.player.uniqueId,
-      subtitle,
-    });
+    const res = await this.player.world.session.send<UpdateSubtitleAction>(
+      ActionId.UpdateSubtitle,
+      {
+        playerUniqueId: this.player.uniqueId,
+        subtitle,
+      },
+    );
     if (res.error) throw new Error(`[${ResponseErrorReason[res.errorReason]}] ${res.message}`);
   }
 

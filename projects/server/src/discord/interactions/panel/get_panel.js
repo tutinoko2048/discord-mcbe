@@ -6,12 +6,12 @@ const { panels, lang } = require('../../../index.js');
 async function getPanel(interaction) {
   await interaction.deferReply({ ephemeral: true });
   const panel = await panels.fetch();
-  
+
   const options = {
     components: [],
     embeds: [],
-  }
-  
+  };
+
   if (panel) {
     const button = new ButtonBuilder()
       .setStyle(ButtonStyle.Link)
@@ -21,7 +21,7 @@ async function getPanel(interaction) {
   } else {
     options.embeds[0] = embeds.error(lang.run('command.panel.notfound'));
   }
-  
+
   await interaction.followUp(options);
 }
 

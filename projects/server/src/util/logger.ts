@@ -9,7 +9,7 @@ interface LoggerOptions {
 export class Logger {
   constructor(
     private readonly name: string,
-    private readonly options: LoggerOptions = {}
+    private readonly options: LoggerOptions = {},
   ) {}
 
   public log(...message: any[]): void {
@@ -24,7 +24,7 @@ export class Logger {
       color.gray(color.dim(this.getTime())),
       color.cyanBright(`[${color.bold('INFO')}]`),
       `[${this.name}]`,
-      this.formatMessage(message)
+      this.formatMessage(message),
     );
   }
 
@@ -48,20 +48,22 @@ export class Logger {
       color.gray(color.dim(this.getTime())),
       color.magenta(`[${color.bold('DEBUG')}]`),
       `[${this.name}]`,
-      this.formatMessage(message)
+      this.formatMessage(message),
     );
   }
 
   private formatMessage(message: any[]): string {
-    return message.map((msg) => {
-      if (msg instanceof Error) {
-        return msg.stack ?? msg;
-      } else if (typeof msg !== 'string') {
-        return inspect(msg, { depth: 2, colors: true });
-      } else {
-        return msg;
-      }
-    }).join(' ');
+    return message
+      .map((msg) => {
+        if (msg instanceof Error) {
+          return msg.stack ?? msg;
+        } else if (typeof msg !== 'string') {
+          return inspect(msg, { depth: 2, colors: true });
+        } else {
+          return msg;
+        }
+      })
+      .join(' ');
   }
 
   private getTime(): string {

@@ -57,9 +57,12 @@ export class ScriptPlayer {
   }
 
   async getDimension(): Promise<ScriptDimension> {
-    const res = await this.world.session.send<GetEntityDimensionAction>(ActionId.GetEntityDimension, {
-      entityUniqueId: this.uniqueId,
-    });
+    const res = await this.world.session.send<GetEntityDimensionAction>(
+      ActionId.GetEntityDimension,
+      {
+        entityUniqueId: this.uniqueId,
+      },
+    );
     if (res.error) throw new Error(`[${ResponseErrorReason[res.errorReason]}] ${res.message}`);
 
     const dimensionId = res.data.dimension.id;

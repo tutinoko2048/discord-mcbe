@@ -13,7 +13,7 @@ export function loadConfig(): Config {
 
   // inject DISCORD_TOKEN from env if exists
   if ('DISCORD_TOKEN' in process.env) parsed['discord_token'] ||= process.env.DISCORD_TOKEN!;
-  
+
   try {
     return configSchema.parse(parsed);
   } catch (e) {

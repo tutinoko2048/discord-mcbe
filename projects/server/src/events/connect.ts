@@ -7,10 +7,7 @@ export class ConnectEvent extends ApplicationEvent {
 
   public readonly world: IWorld;
 
-  constructor(
-    app: Application,
-    world: IWorld,
-  ) {
+  constructor(app: Application, world: IWorld) {
     super(app);
     this.world = world;
   }

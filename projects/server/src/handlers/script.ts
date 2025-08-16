@@ -11,7 +11,7 @@ export class ScriptHandler {
 
     this.logger.debug('Initialized');
   }
-  
+
   async load() {
     const entry = this.app.config.scripts_entry;
     if (!entry) return;
@@ -23,8 +23,7 @@ export class ScriptHandler {
 
     try {
       //TODO - tsならトランスパイルしてから実行する
-      
-      
+
       // const script = await import(`../../${entry}`);
       // if (typeof script.default !== 'function') {
       //   this.logger.error(`Failed to load script:\nEntrypoint must export default function`);

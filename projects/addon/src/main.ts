@@ -7,4 +7,4 @@ world.afterEvents.worldLoad.subscribe(() => {
   client.start().catch((error) => {
     console.error(error);
   });
-})
+});

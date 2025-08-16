@@ -1,5 +1,12 @@
 import * as path from 'node:path';
-import { Client, codeBlock, Events, GatewayIntentBits, Message, MessageCreateOptions } from 'discord.js';
+import {
+  Client,
+  codeBlock,
+  Events,
+  GatewayIntentBits,
+  Message,
+  MessageCreateOptions,
+} from 'discord.js';
 import { DiscordInteractions } from '@akki256/discord-interaction';
 import { Application } from '../main';
 
@@ -8,24 +15,21 @@ import { PanelHandler } from './panel';
 import { _t, Logger } from '../util';
 import * as embeds from './embeds';
 
-
 export class DiscordBot {
   private readonly logger: Logger;
   public readonly client: Client;
   // public readonly interactions: DiscordInteractions;
   // public readonly panels: PanelHandler;
 
-  constructor(
-    private readonly app: Application,
-  ) {
+  constructor(private readonly app: Application) {
     this.logger = new Logger('Discord', this.app.config);
     this.client = new Client({
       intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent
+        GatewayIntentBits.MessageContent,
       ],
-      allowedMentions: { repliedUser: false }
+      allowedMentions: { repliedUser: false },
     });
 
     // this.interactions = new DiscordInteractions(this.client);
@@ -36,14 +40,14 @@ export class DiscordBot {
     this.logger.debug('Initialized');
   }
 
-  async start() {    
+  async start() {
     this.client.once(Events.ClientReady, this.onReady.bind(this));
 
-    this.client.on(Events.MessageCreate, message => {
+    this.client.on(Events.MessageCreate, (message) => {
       if (message.author.bot || message.channel.id !== this.app.config.channel_id) return;
       this.onMessageCreate(message);
     });
-    
+
     // this.client.on('interactionCreate', interaction => {
     //   this.interactions.run(interaction).catch(e => {
     //     this.logger.error(e);
@@ -67,7 +71,7 @@ export class DiscordBot {
 
   // updateActivity() {
   //   const worlds = this.app.server.getWorlds();
-    
+
   //   let info;
   //   if (worlds.length > 1) {
   //     const sum = worlds.map(w => w.players.size).reduce((a, b) => a + b);
@@ -77,7 +81,7 @@ export class DiscordBot {
   //   } else {
   //     info = 'Players: OFFLINE';
   //   }
-    
+
   //   this.client.user?.setPresence({
   //     activities: [{ name: `${info} | /help` }]
   //   });
@@ -91,13 +95,13 @@ export class DiscordBot {
     this.logger.info('Logged in as', this.client.user!.tag);
     // this.interactions.registerCommands(this.app.config.guild_id);
     // this.logger.info(_t('console.login', this.client.user!.tag));
-    
+
     // const embed = embeds.ready().setFooter({ text: _t('discord.ready') });
     // if (this.app.config.ready_message) this.sendMessage({ embeds: [ embed ] });
-    
+
     // // void this.updateActivity();
     // // setInterval(() => this.updateActivity(), 20_000);
-    
+
     // this.panels.startInterval();
   }
 

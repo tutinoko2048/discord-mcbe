@@ -8,11 +8,7 @@ export class PlayerJoinEvent extends ApplicationEvent {
   public readonly world: IWorld;
   public readonly player: IPlayer;
 
-  constructor(
-    app: Application,
-    world: IWorld,
-    player: IPlayer,
-  ) {
+  constructor(app: Application, world: IWorld, player: IPlayer) {
     super(app);
     this.world = world;
     this.player = player;

@@ -61,7 +61,10 @@ export class ScriptWorld {
   }
 
   async sendScriptEvent(id: string, message: string): Promise<void> {
-    const res = await this.session.send<SendScriptEventAction>(ActionId.SendScriptEvent, { id, message });
+    const res = await this.session.send<SendScriptEventAction>(ActionId.SendScriptEvent, {
+      id,
+      message,
+    });
     if (res.error) throw new Error(`[${ResponseErrorReason[res.errorReason]}] ${res.message}`);
   }
 

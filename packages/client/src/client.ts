@@ -30,7 +30,7 @@ export class BridgeClient {
 
     this.bridge = new ScriptBridgeClient({
       url: `http://${this.options.host}:${this.options.port}`,
-      clientId: this.options.clientId
+      clientId: this.options.clientId,
     });
 
     // handle actions from server
@@ -52,10 +52,12 @@ export class BridgeClient {
 
   private onConnect() {
     const players = world.getPlayers();
-    this.bridge.send<WorldInitializeAction>(ActionId.WorldInitialize, {
-      players: players.map(createPlayerDescriptor)
-    }).catch((error) => {
-      console.error('[BridgeClient] Failed to send WorldInitializeAction:', error);
-    });
+    this.bridge
+      .send<WorldInitializeAction>(ActionId.WorldInitialize, {
+        players: players.map(createPlayerDescriptor),
+      })
+      .catch((error) => {
+        console.error('[BridgeClient] Failed to send WorldInitializeAction:', error);
+      });
   }
 }

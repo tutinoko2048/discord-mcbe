@@ -5,7 +5,7 @@ import type { PlayerDescriptor } from '../types';
 export type WorldInitializeAction = BaseAction<
   ActionId.WorldInitialize,
   {
-    players: PlayerDescriptor[],
+    players: PlayerDescriptor[];
   },
   void
 >;
