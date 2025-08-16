@@ -8,6 +8,7 @@ import {
   type SendMessageAction,
   type RunCommandAction,
   type SendScriptEventAction,
+  type GetTPSAction,
   type ChatSendAction,
   PlayerDescriptor,
   WorldInitializeAction,
@@ -62,6 +63,12 @@ export class ScriptWorld {
   async sendScriptEvent(id: string, message: string): Promise<void> {
     const res = await this.session.send<SendScriptEventAction>(ActionId.SendScriptEvent, { id, message });
     if (res.error) throw new Error(`[${ResponseErrorReason[res.errorReason]}] ${res.message}`);
+  }
+
+  async getTPS(): Promise<number> {
+    const res = await this.session.send<GetTPSAction>(ActionId.GetTPS);
+    if (res.error) throw new Error(`[${ResponseErrorReason[res.errorReason]}] ${res.message}`);
+    return res.data.tps;
   }
 
   onInitialize(data: WorldInitializeAction['request']) {

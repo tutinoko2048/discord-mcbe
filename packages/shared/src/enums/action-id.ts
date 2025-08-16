@@ -3,6 +3,7 @@ export enum ActionId {
   SendMessage = 'dm:send_message',
   RunCommand = 'dm:run_command',
   SendScriptEvent = 'dm:send_script_event',
+  GetTPS = 'dm:get_tps',
   GetPlayers = 'dm:get_players',
   GetEntityLocation = 'dm:get_entity_location',
   GetEntityDimension = 'dm:get_entity_dimension',

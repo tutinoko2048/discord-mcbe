@@ -2,6 +2,7 @@ export * from './chat-send';
 export * from './get-entity-dimension';
 export * from './get-entity-location';
 export * from './get-game-mode';
+export * from './get-tps';
 export * from './kick-player';
 export * from './player-join';
 export * from './player-leave';

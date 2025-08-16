@@ -1,5 +1,5 @@
 import { world } from '@minecraft/server';
-import { toDescriptor } from './util';
+import { createPlayerDescriptor } from './util';
 import type { ScriptBridgeClient } from '@script-bridge/client';
 import {
   ActionId,
@@ -13,7 +13,7 @@ export function registerEvents(bridge: ScriptBridgeClient) {
     if (!ev.initialSpawn) return;
     
     bridge.send<PlayerJoinAction>(ActionId.PlayerJoin, {
-      player: toDescriptor(ev.player),
+      player: createPlayerDescriptor(ev.player),
     });
   });
 

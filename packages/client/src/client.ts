@@ -3,7 +3,7 @@ import { ScriptBridgeClient } from '@script-bridge/client';
 import { registerHandlers } from './handler';
 import { registerEvents } from './event';
 import { world } from '@minecraft/server';
-import { toDescriptor } from './util';
+import { createPlayerDescriptor } from './util';
 
 export interface ClientOptions {
   host?: string;
@@ -53,7 +53,7 @@ export class BridgeClient {
   private onConnect() {
     const players = world.getPlayers();
     this.bridge.send<WorldInitializeAction>(ActionId.WorldInitialize, {
-      players: players.map(toDescriptor)
+      players: players.map(createPlayerDescriptor)
     }).catch((error) => {
       console.error('[BridgeClient] Failed to send WorldInitializeAction:', error);
     });

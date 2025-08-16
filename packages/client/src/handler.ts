@@ -12,8 +12,10 @@ import {
   type SetActionBarAction,
   type RunCommandAction,
   type SendScriptEventAction,
+  type GetTPSAction,
   KickPlayerAction,
 } from '@discord-mcbe/shared';
+import { getTPS } from './util';
 
 export function registerHandlers(bridge: ScriptBridgeClient) {
   bridge.registerHandler<SendMessageAction>(ActionId.SendMessage, (action) => {
@@ -43,6 +45,11 @@ export function registerHandlers(bridge: ScriptBridgeClient) {
 
     system.sendScriptEvent(id, message);
     action.respond();
+  });
+
+  bridge.registerHandler<GetTPSAction>(ActionId.GetTPS, (action) => {
+    const tps = getTPS();
+    action.respond({ tps });
   });
 
   bridge.registerHandler<GetEntityLocationAction>(ActionId.GetEntityLocation, (action) => {
