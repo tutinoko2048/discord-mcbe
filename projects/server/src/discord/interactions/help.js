@@ -18,9 +18,7 @@ const helpCommand = new ChatInput(
     embed.setDescription(
       [
         lang.run('command.help.commands'),
-        ...commands.map(
-          (c) => `</${c.data.name}:${c.id}> - ${getDescription(c, interaction.locale)}`,
-        ),
+        ...commands.map((c) => `</${c.data.name}:${c.id}> - ${getDescription(c, interaction.locale)}`),
         `[More Info](${GITHUB_URL})`,
       ].join('\n'),
     );

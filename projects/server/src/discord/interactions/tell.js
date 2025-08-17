@@ -33,12 +33,10 @@ const tellCommand = new ChatInput(
   async (interaction) => {
     const member = /** @type {import('discord.js').GuildMember} */ (interaction.member);
 
-    const embed = new EmbedBuilder()
-      .setDescription(main.lang.run('command.command.sending'))
-      .setFooter({
-        text: `Requested by ${member?.displayName ?? interaction.user.tag}`,
-        iconURL: interaction.user.displayAvatarURL(),
-      });
+    const embed = new EmbedBuilder().setDescription(main.lang.run('command.command.sending')).setFooter({
+      text: `Requested by ${member?.displayName ?? interaction.user.tag}`,
+      iconURL: interaction.user.displayAvatarURL(),
+    });
     await interaction.reply({ embeds: [embed], ephemeral: true });
 
     const target = interaction.options.getString('target');

@@ -32,12 +32,7 @@ export class MinecraftHandler {
     });
 
     this.socket.on(ServerEvent.PlayerChat, (ev) => {
-      new PlayerChatEvent(
-        this.app,
-        createWorld(ev.world),
-        createPlayer(ev.sender),
-        ev.message,
-      ).emit();
+      new PlayerChatEvent(this.app, createWorld(ev.world), createPlayer(ev.sender), ev.message).emit();
     });
 
     this.socket.on(ServerEvent.PlayerJoin, (ev) => {

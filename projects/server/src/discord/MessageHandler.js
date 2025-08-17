@@ -20,12 +20,10 @@ async function handleMessage(main, message) {
     const command = content.replace(/^\/*/, '');
     content = command;
 
-    const embed = new EmbedBuilder()
-      .setDescription(main.lang.run('command.command.sending'))
-      .setFooter({
-        text: `Requested by ${message.member.displayName}`,
-        iconURL: message.author.displayAvatarURL(),
-      });
+    const embed = new EmbedBuilder().setDescription(main.lang.run('command.command.sending')).setFooter({
+      text: `Requested by ${message.member.displayName}`,
+      iconURL: message.author.displayAvatarURL(),
+    });
     const msg = await message.reply({ embeds: [embed] });
 
     const res = await sendCommand(main, command, embed);
@@ -35,24 +33,16 @@ async function handleMessage(main, message) {
 
   const langKey = isCommand ? 'command' : 'message';
   main.logger.log(
-    main.lang.run(`console.${langKey}`, [
-      message.member?.displayName,
-      isCommand ? `/${content}` : content,
-    ]),
+    main.lang.run(`console.${langKey}`, [message.member?.displayName, isCommand ? `/${content}` : content]),
   );
 
   main.server.sendMessage(
-    main.lang.run(`minecraft.${langKey}`, [
-      message.member?.displayName,
-      isCommand ? `/${content}` : content,
-    ]),
+    main.lang.run(`minecraft.${langKey}`, [message.member?.displayName, isCommand ? `/${content}` : content]),
   );
 
   if (message.attachments.size > 0) {
     const attachMessage = formatAttachments(message.attachments);
-    main.logger.log(
-      main.lang.run('console.attachments', [message.member?.displayName, attachMessage]),
-    );
+    main.logger.log(main.lang.run('console.attachments', [message.member?.displayName, attachMessage]));
 
     main.server.sendMessage(
       main.lang.run('minecraft.attachments', [message.member?.displayName, attachMessage]),
@@ -82,11 +72,7 @@ async function sendCommand(main, command, embed, options) {
   main.logger.log(`Broadcasting command... ${JSON.stringify(`/${command}`)}`);
   const promiseResult = await Promise.allSettled(worlds.map((w) => w.runCommand(command)));
   const results = promiseResult.map((x) =>
-    x.status === 'fulfilled'
-      ? onlyMessage
-        ? x.value?.statusMessage
-        : x.value
-      : { error: x.reason },
+    x.status === 'fulfilled' ? (onlyMessage ? x.value?.statusMessage : x.value) : { error: x.reason },
   );
 
   const resultMessage = JSON.stringify(results.length > 1 ? results : results[0], null, 2);

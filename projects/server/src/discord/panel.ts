@@ -64,9 +64,7 @@ export class PanelHandler {
     const channel = await this.client.channels.fetch(channelId);
     if (!channel?.isSendable()) throw new Error('Channel not found or is not a sendable channel');
 
-    await this.delete().catch((e: any) =>
-      this.logger.error(`Failed to delete old panel | code: ${e.code}`),
-    );
+    await this.delete().catch((e: any) => this.logger.error(`Failed to delete old panel | code: ${e.code}`));
 
     const panel = await channel.send({ embeds: [panelEmbed] });
     this.message = panel;
@@ -125,11 +123,7 @@ export class PanelHandler {
     );
     const filteredInfo = info.filter((item): item is string => Boolean(item));
 
-    const messages = [
-      '**Server**',
-      `**  |  **Ping: ${this.client.ws.ping} ms`,
-      `**  |  **Uptime: ${uptime}`,
-    ];
+    const messages = ['**Server**', `**  |  **Ping: ${this.client.ws.ping} ms`, `**  |  **Uptime: ${uptime}`];
     if (worlds.length === 0) messages.push(`\n${_t('command.list.offline')}`);
 
     panelEmbed.setTimestamp(Date.now());

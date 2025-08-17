@@ -24,11 +24,7 @@ export class DiscordBot {
   constructor(private readonly app: Application) {
     this.logger = new Logger('Discord', this.app.config);
     this.client = new Client({
-      intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent,
-      ],
+      intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent],
       allowedMentions: { repliedUser: false },
     });
 

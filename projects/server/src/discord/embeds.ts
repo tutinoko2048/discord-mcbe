@@ -40,10 +40,7 @@ export const leave = (desc: string, worldName: string) => {
 };
 
 export const error = (desc: string) => {
-  return new EmbedBuilder()
-    .setColor(colors.error)
-    .setDescription(desc)
-    .setAuthor({ name: '❌  Error' });
+  return new EmbedBuilder().setColor(colors.error).setDescription(desc).setAuthor({ name: '❌  Error' });
 };
 
 export const tnac = (desc: string) => {

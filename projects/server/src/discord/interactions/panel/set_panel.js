@@ -5,9 +5,7 @@ const { panels, lang } = require('../../../index.js');
 async function setPanel(interaction) {
   const embed = new EmbedBuilder()
     .setAuthor({ name: 'Status Panel' })
-    .setDescription(
-      [lang.run('command.panel.set', [channelMention(interaction.channelId)])].join('\n'),
-    );
+    .setDescription([lang.run('command.panel.set', [channelMention(interaction.channelId)])].join('\n'));
   await interaction.reply({ embeds: [embed], ephemeral: true });
 
   // パネル作成, 保存

@@ -55,9 +55,7 @@ const tnacRegex = [
   // default
   new RegExp(`\\[(?:${scriptEngines.join('|')})\\] "\\[(?:TN-AntiCheat|TN-AC)\\] ([\\s\\S]*)"`),
   // for STR
-  new RegExp(
-    `\\[メッセージ\\] (?:${scriptEngines.join('|')}): "\\[(?:TN-AntiCheat|TN-AC)\\] ([\\s\\S]*)"`,
-  ),
+  new RegExp(`\\[メッセージ\\] (?:${scriptEngines.join('|')}): "\\[(?:TN-AntiCheat|TN-AC)\\] ([\\s\\S]*)"`),
 ];
 
 /** @param {string} message */

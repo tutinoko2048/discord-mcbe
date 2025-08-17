@@ -48,12 +48,10 @@ const runCommand = new ChatInput(
         ephemeral: true,
       });
 
-    const embed = new EmbedBuilder()
-      .setDescription(main.lang.run('command.command.sending'))
-      .setFooter({
-        text: `Requested by ${member?.displayName}`,
-        iconURL: interaction.user.displayAvatarURL(),
-      });
+    const embed = new EmbedBuilder().setDescription(main.lang.run('command.command.sending')).setFooter({
+      text: `Requested by ${member?.displayName}`,
+      iconURL: interaction.user.displayAvatarURL(),
+    });
     await interaction.reply({ embeds: [embed] });
 
     const command = interaction.options.getString('command') ?? '';
@@ -82,9 +80,7 @@ const runCommand = new ChatInput(
     });
 
     if (res.error) return;
-    main.server.sendMessage(
-      main.lang.run('minecraft.command', [member?.displayName, `/${command}`]),
-    );
+    main.server.sendMessage(main.lang.run('minecraft.command', [member?.displayName, `/${command}`]));
   },
   async (interaction) => {
     const focused = interaction.options.getFocused(true);
