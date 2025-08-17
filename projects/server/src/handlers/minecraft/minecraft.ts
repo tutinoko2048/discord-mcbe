@@ -1,9 +1,15 @@
-import { ServerEvent, Server as SocketServer } from 'socket-be';
+import { Player as SocketPlayer, ServerEvent, Server as SocketServer, World as SocketWorld } from 'socket-be';
 import type { RawMessage } from '@minecraft/server';
-import { BridgeServer } from '../../bridge';
+import { BridgeServer, ScriptPlayer, ScriptWorld } from '../../bridge';
 import type { Application } from '../../main';
 import { Logger } from '../../util';
-import { PlayerChatEvent, PlayerJoinEvent, PlayerLeaveEvent } from '../../events';
+import {
+  ConnectEvent,
+  DisconnectEvent,
+  PlayerChatEvent,
+  PlayerJoinEvent,
+  PlayerLeaveEvent,
+} from '../../events';
 import { createPlayer, createWorld, type IWorld } from './models';
 
 export class MinecraftHandler {
@@ -27,23 +33,15 @@ export class MinecraftHandler {
       this.logger.info('WebSocket server is listening on port', this.socket.options.port);
     });
 
-    this.socket.on(ServerEvent.WorldInitialize, (ev) => {
-      this.logger.debug(`[WorldInitialize] ${ev.world.name} initialized`);
-    });
+    this.socket.on(ServerEvent.WorldInitialize, (ev) => this.onConnect(ev.world));
 
-    this.socket.on(ServerEvent.PlayerChat, (ev) => {
-      new PlayerChatEvent(this.app, createWorld(ev.world), createPlayer(ev.sender), ev.message).emit();
-    });
+    this.socket.on(ServerEvent.WorldRemove, (ev) => this.onDisconnect(ev.world));
 
-    this.socket.on(ServerEvent.PlayerJoin, (ev) => {
-      this.logger.debug(`[PlayerJoin] ${ev.player.name} joined ${ev.world.name}`);
-      new PlayerJoinEvent(this.app, createWorld(ev.world), createPlayer(ev.player)).emit();
-    });
+    this.socket.on(ServerEvent.PlayerChat, (ev) => this.onPlayerChat(ev.world, ev.sender, ev.message));
 
-    this.socket.on(ServerEvent.PlayerLeave, (ev) => {
-      this.logger.debug(`[PlayerLeave] ${ev.player.name} left ${ev.world.name}`);
-      new PlayerLeaveEvent(this.app, createWorld(ev.world), createPlayer(ev.player)).emit();
-    });
+    this.socket.on(ServerEvent.PlayerLoad, (ev) => this.onPlayerJoin(ev.world, ev.player));
+
+    this.socket.on(ServerEvent.PlayerLeave, (ev) => this.onPlayerLeave(ev.world, ev.player));
 
     this.logger.debug('Initialized');
   }
@@ -63,5 +61,39 @@ export class MinecraftHandler {
 
   async broadcastMessage(message: string | RawMessage | (string | RawMessage)[]): Promise<void> {
     await Promise.allSettled(this.getWorlds().map((world) => world.sendMessage(message)));
+  }
+
+  onConnect(world: SocketWorld | ScriptWorld) {
+    this.logger.debug(`[Connect] ${world.name} connected`);
+
+    new ConnectEvent(this.app, createWorld(world)).emit();
+  }
+
+  onDisconnect(world: SocketWorld | ScriptWorld, reason?: string) {
+    this.logger.debug(`[Disconnect] ${world.name} disconnected`);
+
+    new DisconnectEvent(this.app, createWorld(world), reason).emit();
+  }
+
+  onPlayerJoin(world: SocketWorld | ScriptWorld, player: SocketPlayer | ScriptPlayer) {
+    this.logger.debug(`[PlayerJoin] ${player.name} joined ${world.name}`);
+
+    new PlayerJoinEvent(this.app, createWorld(world), createPlayer(player)).emit();
+  }
+
+  onPlayerLeave(world: SocketWorld | ScriptWorld, player: SocketPlayer | ScriptPlayer) {
+    this.logger.debug(`[PlayerLeave] ${player.name} left ${world.name}`);
+
+    new PlayerLeaveEvent(this.app, createWorld(world), createPlayer(player)).emit();
+  }
+
+  onPlayerChat(world: SocketWorld | ScriptWorld, sender: SocketPlayer | ScriptPlayer, message: string) {
+    this.logger.debug(`[PlayerChat] [${world.name}] <${sender.name}> ${message}`);
+
+    const event = new PlayerChatEvent(this.app, createWorld(world), createPlayer(sender), message);
+    if (!event.emit()) return;
+
+    // send to discord
+    this.app.bot.sendMessage(`[${world.name}] **${sender.name}**: ${message}`);
   }
 }

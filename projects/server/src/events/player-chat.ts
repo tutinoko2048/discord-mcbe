@@ -2,12 +2,15 @@ import { ApplicationEvent } from './app';
 import type { Application } from '../main';
 import type { IPlayer, IWorld } from '../handlers';
 
+/**
+ * Cancellable.
+ */
 export class PlayerChatEvent extends ApplicationEvent {
   public static readonly identifier = 'playerChat';
 
   public readonly world: IWorld;
   public readonly sender: IPlayer;
-  public readonly message: string;
+  public message: string;
 
   constructor(app: Application, world: IWorld, sender: IPlayer, message: string) {
     super(app);

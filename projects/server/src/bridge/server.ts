@@ -3,8 +3,6 @@ import { DisconnectReason } from '@script-bridge/protocol';
 import type { Application } from '../main';
 import { ScriptWorld } from './world';
 import { Logger } from '../util';
-import { ConnectEvent, DisconnectEvent } from '../events';
-import { createWorld } from '../handlers';
 import {
   ActionId,
   type PlayerJoinAction,
@@ -55,7 +53,13 @@ export class BridgeServer {
     this.server.registerHandler<ChatSendAction>(ActionId.ChatSend, (action) => {
       const world = this.getWorldBySession(action.session);
       if (!world) throw new Error(`World not found: ${action.session.id}`);
-      world.onChatSend(action.data);
+
+      const { senderUniqueId, message } = action.data;
+
+      const sender = world.players.get(senderUniqueId);
+      if (!sender) throw new Error(`Player not found: ${senderUniqueId}`);
+
+      this.app.minecraft.onPlayerChat(world, sender, message);
       action.respond();
     });
   }
@@ -75,19 +79,13 @@ export class BridgeServer {
   private onClientConnect(session: Session) {
     const world = new ScriptWorld(this, session);
     this.worlds.set(session, world);
-    this.logger.debug(`Client connected: ${session.id}`);
-
-    new ConnectEvent(this.app, createWorld(world)).emit();
+    this.app.minecraft.onConnect(world);
   }
 
   private onClientDisconnect(session: Session, reason: DisconnectReason) {
-    const world = this.worlds.get(session);
-    if (world) {
-      new DisconnectEvent(this.app, createWorld(world)).emit();
-    }
-
+    const world = this.worlds.get(session)!;
+    this.app.minecraft.onDisconnect(world, DisconnectReason[reason]);
     this.worlds.delete(session);
-    this.logger.debug(`Client disconnected: ${session.id} (${DisconnectReason[reason]})`);
   }
 
   private onError(error: Error) {

@@ -7,8 +7,11 @@ export class DisconnectEvent extends ApplicationEvent {
 
   public readonly world: IWorld;
 
-  constructor(app: Application, world: IWorld) {
+  public readonly reason?: string;
+
+  constructor(app: Application, world: IWorld, reason?: string) {
     super(app);
     this.world = world;
+    this.reason = reason;
   }
 }
