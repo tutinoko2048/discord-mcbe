@@ -3,7 +3,7 @@ import * as path from 'node:path';
 import { jsonc } from 'jsonc';
 import { type Config, configSchema } from '../types';
 
-const MAIN_DIR = path.join(__dirname, '../../../../');
+const MAIN_DIR = path.join(process.cwd(), '../../');
 const DATA_DIR = '.discord-mcbe';
 const DATA_PATH = path.join(MAIN_DIR, DATA_DIR, 'data.json');
 const CONFIG_FILE = path.join(MAIN_DIR, 'config.jsonc');

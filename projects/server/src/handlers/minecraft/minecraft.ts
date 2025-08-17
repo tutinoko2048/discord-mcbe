@@ -94,6 +94,9 @@ export class MinecraftHandler {
     if (!event.emit()) return;
 
     // send to discord
-    this.app.bot.sendMessage(`[${world.name}] **${sender.name}**: ${message}`);
+    const worlds = this.getWorlds();
+    this.app.bot
+      .sendMessage(`${worlds.length > 1 ? `[${world.name}] ` : ''}**${sender.name}**: ${message}`)
+      .catch((err) => this.logger.error(`[PlayerChat] [${world.name}] <${sender.name}> ${message}`, err));
   }
 }
