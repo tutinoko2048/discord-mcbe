@@ -4,4 +4,4 @@ clear
 cd .
 
 echo installing packages...
-npm i
+pnpm i

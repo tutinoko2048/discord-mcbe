@@ -1,3 +1,3 @@
 cd /d %~dp0
 echo installing packages...
-npm i
+pnpm i

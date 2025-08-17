@@ -8,4 +8,6 @@ if [ ! -d "node_modules" ]; then
 fi
 
 echo starting...
-npm run start
+
+cd projects/server
+pnpm run start
