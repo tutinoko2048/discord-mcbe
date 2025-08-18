@@ -1,15 +1,21 @@
 import * as dotlang from 'dotlang';
 
-let defaultTemplates: Map<string, string>;
+const FALLBACK_LANG = 'en_US';
+
+let fallbackTemplates: Map<string, string>;
 let templates: Map<string, string>;
 
 export function initialize(lang: string) {
-  defaultTemplates = dotlang.parse('lang/en_US.lang');
+  fallbackTemplates = dotlang.parse(`lang/${FALLBACK_LANG}.lang`);
   templates = dotlang.parse(`lang/${lang}.lang`);
 }
 
 function translate(key: string, ...values: (string | number)[]): string {
-  const value = templates.get(key) ?? defaultTemplates.get(key);
+  if (!fallbackTemplates || !templates) {
+    throw new Error('Language templates are not initialized. Call initialize() first.');
+  }
+
+  const value = templates.get(key) ?? fallbackTemplates.get(key);
   if (!value) return key;
 
   return replaceTemplates(value, values);
