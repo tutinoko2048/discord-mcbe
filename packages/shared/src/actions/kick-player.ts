@@ -1,10 +1,11 @@
 import type { BaseAction } from '@script-bridge/protocol';
 import type { ActionId } from '../enums';
+import { UniqueId } from '../types';
 
 export type KickPlayerAction = BaseAction<
   ActionId.KickPlayer,
   {
-    playerUniqueId: string;
+    playerUniqueId: UniqueId;
     reason?: string;
   },
   void

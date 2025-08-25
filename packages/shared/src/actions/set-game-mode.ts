@@ -1,10 +1,11 @@
 import type { BaseAction } from '@script-bridge/protocol';
 import type { ActionId, GameMode } from '../enums';
+import { UniqueId } from '../types';
 
 export type SetGameModeAction = BaseAction<
   ActionId.SetGameMode,
   {
-    playerUniqueId: string;
+    playerUniqueId: UniqueId;
     gameMode: GameMode;
   },
   void

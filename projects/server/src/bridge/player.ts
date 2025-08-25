@@ -8,6 +8,7 @@ import {
   type SetGameModeAction,
   type KickPlayerAction,
   type GameMode,
+  UniqueId,
 } from '@discord-mcbe/shared';
 import { ResponseErrorReason } from '@script-bridge/protocol';
 import type { ScriptWorld } from './world';
@@ -23,7 +24,7 @@ export class ScriptPlayer {
 
   public readonly nameTag: string;
 
-  public readonly uniqueId: string;
+  public readonly uniqueId: UniqueId;
 
   public readonly onScreenDisplay: ScreenDisplay;
 
