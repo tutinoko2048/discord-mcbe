@@ -5,5 +5,5 @@ export default defineConfig({
   outDir: 'scripts',
   format: 'esm',
   sourcemap: true,
-  noExternal: ['@discord-mcbe/client-bds'],
+  noExternal: ['@discord-mcbe/client'],
 });

@@ -10,7 +10,7 @@
     "format": "biome format --write ./src"
   },
   "dependencies": {
-    "@discord-mcbe/client-bds": "workspace:*",
+    "@discord-mcbe/client": "workspace:*",
     "@discord-mcbe/internal-config": "workspace:*"
   },
   "devDependencies": {

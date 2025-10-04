@@ -5,8 +5,8 @@
       "path": "../projects/server"
     },
     {
-      "name": "📱 Client (BDS)",
-      "path": "../packages/client-bds"
+      "name": "📱 Client",
+      "path": "../packages/client"
     },
     {
       "name": "📦 Shared",
