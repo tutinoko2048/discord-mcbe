@@ -1,5 +1,5 @@
 {
-  "name": "@discord-mcbe/addon",
+  "name": "@discord-mcbe/addon-bds",
   "version": "0.1.0",
   "description": "",
   "type": "module",
@@ -10,7 +10,7 @@
     "format": "biome format --write ./src"
   },
   "dependencies": {
-    "@discord-mcbe/client": "workspace:*",
+    "@discord-mcbe/client-bds": "workspace:*",
     "@discord-mcbe/internal-config": "workspace:*"
   },
   "devDependencies": {

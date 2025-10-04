@@ -21,7 +21,7 @@ importers:
         specifier: ^5.9.2
         version: 5.9.2
 
-  packages/client:
+  packages/client-bds:
     dependencies:
       '@discord-mcbe/internal-config':
         specifier: workspace:*
@@ -52,9 +52,9 @@ importers:
 
   projects/addon:
     dependencies:
-      '@discord-mcbe/client':
+      '@discord-mcbe/client-bds':
         specifier: workspace:*
-        version: link:../../packages/client
+        version: link:../../packages/client-bds
       '@discord-mcbe/internal-config':
         specifier: workspace:*
         version: link:../../packages/internal-config

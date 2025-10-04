@@ -5,16 +5,16 @@
       "path": "../projects/server"
     },
     {
-      "name": "📱 Client",
-      "path": "../packages/client"
+      "name": "📱 Client (BDS)",
+      "path": "../packages/client-bds"
     },
     {
       "name": "📦 Shared",
       "path": "../packages/shared"
     },
     {
-      "name": "🧩 Addon",
-      "path": "../projects/addon"
+      "name": "🧩 Addon (BDS)",
+      "path": "../projects/addon-bds"
     },
     {
       "name": "📁 Repository",
