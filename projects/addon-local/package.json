@@ -1,0 +1,19 @@
+{
+  "name": "@discord-mcbe/addon-local",
+  "version": "0.1.0",
+  "description": "",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "tsdown",
+    "watch": "tsdown --watch",
+    "format": "biome format --write ./src"
+  },
+  "dependencies": {
+    "@discord-mcbe/client": "workspace:*",
+    "@discord-mcbe/internal-config": "workspace:*"
+  },
+  "devDependencies": {
+    "@minecraft/server": "2.2.0-beta.1.21.100-stable"
+  }
+}

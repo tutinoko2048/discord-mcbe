@@ -8,7 +8,7 @@
   "channel_id": "", // メッセージを送信するチャンネルのID
   
   // optional
-  "port": 19132, // websocketをlistenするポート
+  "socket_port": 8192, // websocketをlistenするポート
   "language": "ja_JP", // 使用する言語 langフォルダのファイル名
   "timezoneOffset": 9, // 時刻表示に使うタイムゾーン
   "command_role_id": [""], // マイクラへのコマンドの送信を許可するロールのID

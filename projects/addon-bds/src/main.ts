@@ -1,5 +1,5 @@
 import { world } from '@minecraft/server';
-import { BridgeClient } from '@discord-mcbe/client';
+import { BridgeClient } from '@discord-mcbe/client/bds';
 
 const client = new BridgeClient();
 

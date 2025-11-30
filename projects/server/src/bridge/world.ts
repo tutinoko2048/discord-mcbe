@@ -1,6 +1,5 @@
 import type { Session } from '@script-bridge/server';
-import { ResponseErrorReason } from '@script-bridge/protocol';
-import type { BridgeServer } from './server';
+import { DisconnectReason, ResponseErrorReason } from '@script-bridge/protocol';
 import { ScriptPlayer } from './player';
 import type { RawMessage } from '@minecraft/server';
 import {
@@ -13,11 +12,17 @@ import {
   type WorldInitializeAction,
 } from '@discord-mcbe/shared';
 import type { ScriptDimension } from './dimension';
+import { ISession } from './transport';
+import { ChatSendEvent, PlayerJoinEvent, PlayerLeaveEvent } from '../events';
+import { Application } from '../main';
+import { Logger } from '../util';
 
 export class ScriptWorld {
-  private readonly bridge: BridgeServer;
+  private readonly app: Application;
 
-  public readonly session: Session;
+  public readonly session: ISession;
+
+  public readonly logger: Logger;
 
   public readonly connectedAt: number = Date.now();
 
@@ -29,9 +34,10 @@ export class ScriptWorld {
 
   //TODO: Scoreboard API
 
-  constructor(bridge: BridgeServer, session: Session) {
-    this.bridge = bridge;
+  constructor(app: Application, session: ISession) {
+    this.app = app;
     this.session = session;
+    this.logger = new Logger(this.name, this.app.config);
   }
 
   get name(): string {
@@ -71,6 +77,10 @@ export class ScriptWorld {
     return res.data.tps;
   }
 
+  async disconnect(reason?: DisconnectReason) {
+    return await this.session.disconnect(reason);
+  }
+
   onInitialize(data: WorldInitializeAction['request']) {
     for (const player of data.players) {
       this.initializePlayer(player);
@@ -80,16 +90,23 @@ export class ScriptWorld {
   onPlayerJoin(descriptor: PlayerDescriptor) {
     const player = this.initializePlayer(descriptor);
 
-    this.bridge.app.minecraft.onPlayerJoin(this, player);
+    new PlayerJoinEvent(this.app, this, player).emit();
   }
 
-  onPlayerLeave(uniqueId: string) {
-    const scriptPlayer = this.players.get(uniqueId);
-    if (!scriptPlayer) throw new Error(`Player not found: ${uniqueId}`);
+  onPlayerLeave(playerUniqueId: string) {
+    const player = this.players.get(playerUniqueId);
+    if (!player) throw new Error(`Player not found: ${playerUniqueId}`);
 
-    this.bridge.app.minecraft.onPlayerLeave(this, scriptPlayer);
+    new PlayerLeaveEvent(this.app, this, player).emit();
 
-    this.players.delete(uniqueId);
+    this.players.delete(playerUniqueId);
+  }
+
+  onChatSend(senderUniqueId: string, message: string) {
+    const sender = this.players.get(senderUniqueId);
+    if (!sender) throw new Error(`Player not found: ${senderUniqueId}`);
+
+    new ChatSendEvent(this.app, this, sender, message).emit();
   }
 
   /**

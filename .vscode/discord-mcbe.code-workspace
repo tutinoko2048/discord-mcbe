@@ -17,6 +17,10 @@
       "path": "../projects/addon-bds"
     },
     {
+      "name": "🧩 Addon (Local)",
+      "path": "../projects/addon-local"
+    },
+    {
       "name": "📁 Repository",
       "path": ".."
     },

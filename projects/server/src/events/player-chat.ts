@@ -1,18 +1,20 @@
 import { ApplicationEvent } from './app';
 import type { Application } from '../main';
-import type { IPlayer, IWorld } from '../handlers';
+import { ScriptWorld, ScriptPlayer } from '../bridge';
 
 /**
  * Cancellable.
  */
-export class PlayerChatEvent extends ApplicationEvent {
-  public static readonly identifier = 'playerChat';
+export class ChatSendEvent extends ApplicationEvent {
+  public static readonly identifier = 'chatSend';
 
-  public readonly world: IWorld;
-  public readonly sender: IPlayer;
+  public readonly world: ScriptWorld;
+
+  public readonly sender: ScriptPlayer;
+
   public message: string;
 
-  constructor(app: Application, world: IWorld, sender: IPlayer, message: string) {
+  constructor(app: Application, world: ScriptWorld, sender: ScriptPlayer, message: string) {
     super(app);
     this.world = world;
     this.sender = sender;

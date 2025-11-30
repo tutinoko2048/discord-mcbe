@@ -7,7 +7,7 @@ export const configSchema = z.object({
     .describe('ID of the guild that use the bot'),
   channel_id: z.string()
     .describe('ID of the channel that messages will be sent'),
-  port: z.number().int().positive()
+  socket_port: z.number().int().positive()
     .optional()
     .describe('Port used for websocket connection'),
   bridge_port: z.number().int().positive()

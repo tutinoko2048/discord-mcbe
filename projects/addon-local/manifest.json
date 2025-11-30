@@ -1,9 +1,9 @@
 {
   "format_version": 2,
   "header": {
-    "name": "discord-mcbe client",
+    "name": "discord-mcbe local client",
     "description": "pack.description",
-    "uuid": "b305bd82-a533-4595-9486-517f49e82941",
+    "uuid": "842dcb2d-8154-41f8-8333-31e23b123f4d",
     "version": [ 0, 1, 0 ],
     "min_engine_version": [ 1, 21, 100 ]
   },
@@ -11,7 +11,7 @@
     {
       "version": [ 0, 0, 1 ],
       "type": "data",
-      "uuid": "1a5b8786-8000-419a-96a1-714c71477e94",
+      "uuid": "a64e526e-7820-4b72-b339-1bb2289396d2",
       "description": "data module"
     },
     {
@@ -19,17 +19,13 @@
       "type": "script",
       "language": "javascript",
       "entry": "scripts/main.js",
-      "uuid": "195cf53c-ae53-4437-82d9-a84e08694ffc",
+      "uuid": "5f3a92fe-7fef-4ae0-aaa7-b4b2414951cd",
       "description": "script module"
     }
   ],
   "dependencies": [
     {
       "module_name": "@minecraft/server",
-      "version": "beta"
-    },
-    {
-      "module_name": "@minecraft/server-net",
       "version": "beta"
     }
   ]

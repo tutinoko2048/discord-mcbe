@@ -1,17 +1,21 @@
 import type {
-  PlayerChatEvent,
+  ChatSendEvent,
   PlayerJoinEvent,
   PlayerLeaveEvent,
   StartupEvent,
-  ConnectEvent,
-  DisconnectEvent,
+  WorldConnectEvent,
+  WorldDisconnectEvent,
+  ShutdownEvent,
+  WorldLoadEvent,
 } from '../../events';
 
 export interface ApplicationEvents {
   startup: [StartupEvent];
-  connect: [ConnectEvent];
-  disconnect: [DisconnectEvent];
-  playerChat: [PlayerChatEvent];
+  shutdown: [ShutdownEvent];
+  worldConnect: [WorldConnectEvent];
+  worldLoad: [WorldLoadEvent];
+  worldDisconnect: [WorldDisconnectEvent];
+  chatSend: [ChatSendEvent];
   playerJoin: [PlayerJoinEvent];
   playerLeave: [PlayerLeaveEvent];
 }

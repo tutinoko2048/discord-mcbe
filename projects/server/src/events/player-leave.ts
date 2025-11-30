@@ -1,14 +1,15 @@
 import { ApplicationEvent } from './app';
 import type { Application } from '../main';
-import type { IPlayer, IWorld } from '../handlers';
+import type { ScriptWorld, ScriptPlayer } from '../bridge';
 
 export class PlayerLeaveEvent extends ApplicationEvent {
   public static readonly identifier = 'playerLeave';
 
-  public readonly world: IWorld;
-  public readonly player: IPlayer;
+  public readonly world: ScriptWorld;
 
-  constructor(app: Application, world: IWorld, player: IPlayer) {
+  public readonly player: ScriptPlayer;
+
+  constructor(app: Application, world: ScriptWorld, player: ScriptPlayer) {
     super(app);
     this.world = world;
     this.player = player;

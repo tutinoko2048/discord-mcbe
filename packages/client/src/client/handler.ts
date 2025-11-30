@@ -1,5 +1,4 @@
 import { world, Player, system } from '@minecraft/server';
-import type { ScriptBridgeClient } from '@script-bridge/client';
 import {
   ActionId,
   type SendMessageAction,
@@ -16,8 +15,9 @@ import {
   KickPlayerAction,
 } from '@discord-mcbe/shared';
 import { getTPS } from './util';
+import { IBridgeClient } from '../transport';
 
-export function registerHandlers(bridge: ScriptBridgeClient) {
+export function registerHandlers(bridge: IBridgeClient) {
   bridge.registerHandler<SendMessageAction>(ActionId.SendMessage, (action) => {
     const { message, playerUniqueId } = action.data;
 

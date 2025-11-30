@@ -13,7 +13,7 @@ import { DiscordBot } from './discord';
 // const { handleChat } = require('./handlers/ChatHandler');
 
 const defaultConfig: ExtractOptional<Config> = {
-  port: 8000,
+  socket_port: 8000,
   bridge_port: 23191,
   language: 'en_US',
   timezoneOffset: 0,
@@ -138,15 +138,14 @@ export class Application extends ExtendedEmitter<ApplicationEvents> {
       this.logger.info(`[PlayerLeave] ${player.name} left ${world.name}`);
     });
 
-    this.on('playerChat', (ev) => {
-      const type = ev.world.isSocket ? 'Socket' : 'Script';
-      this.logger.info(`[${type}] [${ev.world.name}] ${ev.sender.name}: ${ev.message}`);
+    this.on('chatSend', (ev) => {
+      this.logger.info(`[${ev.world.name}] ${ev.sender.name}: ${ev.message}`);
       // Handle chat event here (e.g., send to Discord)
-      this.bot.sendMessage(`[${type}] [${ev.world.name}] ${ev.sender.name}: ${ev.message}`);
+      this.bot.sendMessage(`[${ev.world.name}] ${ev.sender.name}: ${ev.message}`);
 
       for (const world of this.minecraft.getWorlds()) {
         if (world === ev.world) continue;
-        world.sendMessage(`[${type}] [${ev.world.name}] ${ev.sender.name}: ${ev.message}`);
+        world.sendMessage(`[${ev.world.name}] ${ev.sender.name}: ${ev.message}`);
       }
     });
 

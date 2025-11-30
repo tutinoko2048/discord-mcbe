@@ -1,12 +1,5 @@
-import type { ServerOptions } from 'socket-be';
-import type { Application } from '../main';
+import { ApplicationEvent } from './app';
 
-export class StartupEvent {
+export class StartupEvent extends ApplicationEvent {
   public static readonly identifier = 'startup';
-
-  constructor(public readonly app: Application) {}
-
-  get formatter(): ServerOptions['formatter'] {
-    return this.app.minecraft.socket.options.formatter;
-  }
 }

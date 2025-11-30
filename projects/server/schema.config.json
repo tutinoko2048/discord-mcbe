@@ -13,7 +13,7 @@
       "type": "string",
       "description": "ID of the channel that messages will be sent"
     },
-    "port": {
+    "socket_port": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "description": "Port used for websocket connection"
