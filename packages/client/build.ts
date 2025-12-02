@@ -7,6 +7,9 @@ const isWatch = process.argv.includes('--watch');
 const config: Options = {
   ...defaultConfig,
   ...(isDev ? sourceMapConfig : {}),
+  define: {
+    __DEV__: String(isDev),
+  }
 }
 
 

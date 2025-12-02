@@ -1,5 +1,5 @@
 import { world } from '@minecraft/server';
-import { createPlayerDescriptor } from './util';
+import { createPlayerDescriptor } from './descriptors';
 import {
   ActionId,
   type PlayerJoinAction,
@@ -34,4 +34,6 @@ export function registerEvents(bridge: IBridgeClient) {
       message: ev.message,
     });
   });
+
+  if (__DEV__) console.log('[discord-mcbe] Successfully registered events.');
 }

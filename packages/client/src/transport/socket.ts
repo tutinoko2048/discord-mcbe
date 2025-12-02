@@ -5,14 +5,17 @@ import {
   CustomCommandResult,
   CustomCommandStatus,
   system,
+  world,
 } from '@minecraft/server';
 import { SocketBridge, ClientRequest, ClientResponse, ConnectionResponse, ServerRequest, ServerResponse, QueryResponse } from '@discord-mcbe/shared';
 import type { ActionHandler } from '@script-bridge/client';
 import { BaseAction, DisconnectReason, PayloadType, ResponseErrorReason } from '@script-bridge/protocol';
 import { IBridgeClient, IResponse } from './interfaces';
-import { Emitter } from './emitter';
+import { Emitter } from '../utils/emitter';
+import { Logger } from '../utils';
 
 export interface SocketEvents {
+  ready: {};
   connect: {
     sessionId: string;
   };
@@ -36,6 +39,8 @@ export class SocketBridgeClient extends Emitter<SocketEvents> implements IBridge
   private readonly actionHandlers = new Map<string, ActionHandler<BaseAction>>();
   private readonly deltaTimes: number[] = [];
 
+  private readonly logger = new Logger('discord-mcbe');
+
   private previousRequestId = 0;
   private currentSessionId: string | null = null;
   private lastQueryReceivedAt: number | null = null;
@@ -46,9 +51,8 @@ export class SocketBridgeClient extends Emitter<SocketEvents> implements IBridge
     this.clientId = options.clientId;
 
     system.beforeEvents.startup.subscribe((event) => {
-      console.log('[SocketBridge] Registering commands...');
-
       this.registerCommands(event.customCommandRegistry);
+      this.logger.info('Successfully registered custom commands.');
     });
 
     system.afterEvents.scriptEventReceive.subscribe(
@@ -59,6 +63,10 @@ export class SocketBridgeClient extends Emitter<SocketEvents> implements IBridge
         namespaces: ['bridge'],
       }
     );
+
+    world.afterEvents.worldLoad.subscribe(() => {
+      this.emit('ready', {});
+    });
   }
 
   get isConnected(): boolean {

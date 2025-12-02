@@ -27,9 +27,9 @@ export class BridgeClient extends BaseClient<ScriptBridgeClient> {
   }
 
   async start(): Promise<void> {
-    console.log('[BridgeClient] Connecting to discord-mcbe server...');
+    console.log('[discord-mcbe] Connecting to discord-mcbe server...');
     const requestedAt = Date.now();
     await this.bridge.connect();
-    console.log(`[BridgeClient] Connection established! (${Date.now() - requestedAt}ms)`);
+    console.log(`[discord-mcbe] Connection established! (${Date.now() - requestedAt}ms)`);
   }
 }

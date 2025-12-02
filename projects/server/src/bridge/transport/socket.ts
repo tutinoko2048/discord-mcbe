@@ -29,7 +29,7 @@ export class SocketBridgeServer extends EventEmitter<ServerEvents> {
     this.server = new SocketServer(serverOptions);
 
     this.server.on(ServerEvent.Open, () => {
-      this.logger.info('[Local] SocketBridge server is listening on port', this.server.options.port);
+      this.logger.info(`[Local] SocketBridge server is listening on port ${this.server.options.port}. Type "/connect localhost:${this.server.options.port}" in Minecraft to connect.`);
     });
 
     this.server.on(ServerEvent.WorldInitialize, (ev) => {

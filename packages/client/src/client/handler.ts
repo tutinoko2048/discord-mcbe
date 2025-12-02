@@ -16,6 +16,7 @@ import {
 } from '@discord-mcbe/shared';
 import { getTPS } from './util';
 import { IBridgeClient } from '../transport';
+import { createDimensionDescriptor } from './descriptors';
 
 export function registerHandlers(bridge: IBridgeClient) {
   bridge.registerHandler<SendMessageAction>(ActionId.SendMessage, (action) => {
@@ -70,10 +71,7 @@ export function registerHandlers(bridge: IBridgeClient) {
     if (!entity) throw new Error('Entity not found');
 
     action.respond({
-      dimension: {
-        id: entity.dimension.id,
-        heightRange: entity.dimension.heightRange,
-      },
+      dimension: createDimensionDescriptor(entity.dimension),
     });
   });
 
@@ -137,4 +135,6 @@ export function registerHandlers(bridge: IBridgeClient) {
     player.runCommand(`kick @s ${reason ? reason : ''}`);
     action.respond();
   });
+
+  if (__DEV__) console.log('[discord-mcbe] Successfully registered handlers.');
 }

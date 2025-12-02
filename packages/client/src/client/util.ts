@@ -1,14 +1,4 @@
-import { PlayerDescriptor } from '@discord-mcbe/shared';
-import { Player, system } from '@minecraft/server';
-
-export function createPlayerDescriptor(player: Player): PlayerDescriptor {
-  return {
-    name: player.name,
-    nameTag: player.nameTag,
-    uniqueId: player.id,
-    platformType: player.clientSystemInfo.platformType,
-  };
-}
+import { system } from '@minecraft/server';
 
 let lastTick: number | undefined;
 let deltaTimes: number[] = [];

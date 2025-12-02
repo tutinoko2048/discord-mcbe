@@ -17,6 +17,12 @@ export class BridgeClient extends BaseClient<SocketBridgeClient> {
     const bridge = new SocketBridgeClient(mergedOptions);
     super(bridge);
 
-    console.log('[BridgeClient] Listening connection from discord-mcbe server...');
+    bridge.on('ready', () => {
+      console.log('[discord-mcbe] Listening connection from discord-mcbe server...');
+    });
+
+    bridge.on('connect', () => {
+      console.log('[discord-mcbe] Connection established!');
+    });
   }
 }
