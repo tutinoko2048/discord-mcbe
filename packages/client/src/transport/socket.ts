@@ -52,7 +52,7 @@ export class SocketBridgeClient extends Emitter<SocketEvents> implements IBridge
 
     system.beforeEvents.startup.subscribe((event) => {
       this.registerCommands(event.customCommandRegistry);
-      this.logger.info('Successfully registered custom commands.');
+      this.logger.info('- Successfully registered custom commands.');
     });
 
     system.afterEvents.scriptEventReceive.subscribe(
@@ -213,7 +213,7 @@ export class SocketBridgeClient extends Emitter<SocketEvents> implements IBridge
 
   /** Process incoming messages from server */
   private onMessage(rawMessage: string): void {
-    console.log('Received message from bridge:', rawMessage);
+    // console.log('Received message from bridge:', rawMessage);
 
     let message: ServerRequest | ServerResponse;
     try {

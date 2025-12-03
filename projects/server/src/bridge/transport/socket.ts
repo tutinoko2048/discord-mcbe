@@ -7,6 +7,7 @@ import { CommandStatusCode, ServerEvent, ServerOptions, Server as SocketServer, 
 import { Logger } from '../../util';
 import { ClientActionHandler } from './types';
 import { NamespaceRequiredError } from '@script-bridge/server';
+import { AddonNotInstalledError } from './errors';
 
 interface ConnectionState {
   previousSessionId?: string;
@@ -20,7 +21,7 @@ export class SocketBridgeServer extends EventEmitter<ServerEvents> {
   readonly sessions = new Set<SocketSession>();
   private readonly actionHandlers = new Map<string, ClientActionHandler<BaseAction>>();
 
-  private readonly logger = new Logger('SocketBridge');
+  private readonly logger: Logger;
   private readonly maxReconnectAttempts = 10;
 
   constructor(serverOptions: ServerOptions) {
@@ -28,23 +29,13 @@ export class SocketBridgeServer extends EventEmitter<ServerEvents> {
 
     this.server = new SocketServer(serverOptions);
 
-    this.server.on(ServerEvent.Open, () => {
-      this.logger.info(`[Local] SocketBridge server is listening on port ${this.server.options.port}. Type "/connect localhost:${this.server.options.port}" in Minecraft to connect.`);
-    });
+    this.logger = new Logger('SocketBridgeServer', serverOptions);
 
-    this.server.on(ServerEvent.WorldInitialize, (ev) => {
-      this.connect(ev.world).catch((e) => {
-        this.logger.error('Failed to connect world:', e);
-      });
-    });
-
-    this.server.on(ServerEvent.WorldRemove, (ev) => {
-      const session = this.getSessionByWorld(ev.world);
-      if (session) {
-        session.destroy();
-        this.sessions.delete(session);
-      }
-    });
+    this.server.on(ServerEvent.Open, () => this.emit('open'));
+    this.server.on(ServerEvent.WorldInitialize, this.onWorldInitialize.bind(this));
+    this.server.on(ServerEvent.WorldRemove, this.onWorldRemove.bind(this));
+    this.server.on(ServerEvent.PlayerLoad, this.onPlayerLoad.bind(this));
+    this.server.on(ServerEvent.PlayerLeave, this.onPlayerLeave.bind(this));
   }
 
   connect(world: SocketWorld, state: ConnectionState = {}) {
@@ -58,13 +49,16 @@ export class SocketBridgeServer extends EventEmitter<ServerEvents> {
         this.emit('clientConnect', session);
         resolve();
       } catch (e: any) {
-        //FIXME - 普通の通信エラーのみを対象にしたい
+        if (e instanceof AddonNotInstalledError) {
+          return reject(e);
+        }
+
         // this.isReconnecting = false;
         this.logger.error('Failed to create session:', e.message);
 
         if (state.attemptCount >= this.maxReconnectAttempts) {
           this.logger.error('Max reconnect attempts reached, giving up');
-          reject(new Error('Max reconnect attempts reached'));
+          reject(new Error('Failed to connect: Max reconnect attempts reached'));
           return;
         }
 
@@ -105,8 +99,8 @@ export class SocketBridgeServer extends EventEmitter<ServerEvents> {
     sessionId: string = randomUUID()
   ): Promise<SocketSession> {
     const response = await world.runCommand(`bridge:connect ${SocketBridgeServer.PROTOCOL_VERSION} ${sessionId}`);
-    if (response.statusCode === CommandStatusCode.CommandNotFound) {
-      throw new Error('/bridge:connect command not found. Please install the addon.');
+    if (response.statusCode === CommandStatusCode.FailedToParseCommand) {
+      throw new AddonNotInstalledError();
     } else if (response.statusCode < CommandStatusCode.Success) {
       throw new Error(`Failed to create session: ${response.statusMessage}`);
     }
@@ -122,9 +116,58 @@ export class SocketBridgeServer extends EventEmitter<ServerEvents> {
 
     return new SocketSession(this, world, sessionId, body.clientId);
   }
+
+  private async onWorldInitialize(ev: { world: SocketWorld }) {
+    this.logger.debug('Established websocket connection. Connecting to bridge client...');
+
+    const requestedAt = Date.now();
+    try {
+      await this.connect(ev.world);
+      this.logger.info(`Connection established! (${Date.now() - requestedAt}ms)`);
+
+    } catch (e: any) {
+      this.logger.error(e.message);
+      if (e instanceof AddonNotInstalledError) {
+        await ev.world.disconnect();
+      }
+    }
+  }
+
+  private onWorldRemove(ev: { world: SocketWorld }) {
+    const session = this.getSessionByWorld(ev.world);
+    if (session) {
+      session.destroy();
+      this.sessions.delete(session);
+      this.logger.info(`Disconnected session "${session.clientId}" as websocket closed.`);
+    }
+  }
+
+  private async onPlayerLoad(ev: { world: SocketWorld }) {
+    const session = this.getSessionByWorld(ev.world);
+    if (ev.world.players.size === 1 && !session) {
+      try {
+        await this.connect(ev.world);
+        this.logger.info('Reconnected!');
+
+      } catch (e: any) {
+        this.logger.error(e.message);
+        await ev.world.disconnect();
+      }
+    }
+  }
+
+  private onPlayerLeave(ev: { world: SocketWorld }) {
+    const session = this.getSessionByWorld(ev.world);
+    if (session && ev.world.maxPlayers === 0) {
+      session.destroy();
+      this.logger.info(`Disconnected session "${session.clientId}" as player left the world.`);
+    }
+  }
 }
 
 interface ServerEvents {
+  open: [];
   clientConnect: [session: SocketSession];
   clientDisconnect: [session: SocketSession, reason: DisconnectReason];
+  sessionDestroy: [session: SocketSession];
 }

@@ -12,6 +12,8 @@ const defaultOptions: ExtractOptional<BridgeClientOptions> = {
 
 export class BridgeClient extends BaseClient<SocketBridgeClient> {
   constructor(options: BridgeClientOptions = {}) {
+    if (__DEV__) console.log('[discord-mcbe] Initializing bridge client...');
+
     const mergedOptions = { ...defaultOptions, ...options };
 
     const bridge = new SocketBridgeClient(mergedOptions);

@@ -16,6 +16,7 @@ import { ClientActionHandler, ISession, SocketBridgeServer } from '../../bridge/
 import { ScriptBridgeServer } from '@script-bridge/server';
 import { ActionId, ChatSendAction, PlayerJoinAction, PlayerLeaveAction, WorldInitializeAction } from '@discord-mcbe/shared';
 import { BaseAction, DisconnectReason } from '@script-bridge/protocol';
+import { green } from 'colorette';
 
 export class MinecraftHandler {
   private readonly logger: Logger;
@@ -40,8 +41,11 @@ export class MinecraftHandler {
 
     this.socket.on('clientConnect', this.onClientConnect.bind(this));
     this.socket.on('clientDisconnect', this.onClientDisconnect.bind(this));
+    this.socket.on('sessionDestroy', this.onSessionDestroy.bind(this));
     this.script.on('clientConnect', this.onClientConnect.bind(this));
     this.script.on('clientDisconnect', this.onClientDisconnect.bind(this));
+    this.script.on('sessionDestroy', this.onSessionDestroy.bind(this));
+    this.socket.on('open', this.onOpen.bind(this));
     this.script.on('error', this.onError.bind(this));
 
     this.registerHandler<WorldInitializeAction>(ActionId.WorldInitialize, (action) => {
@@ -81,7 +85,7 @@ export class MinecraftHandler {
 
   async start(): Promise<void> {
     await this.script.start();
-    this.logger.info('[BDS] Bridge server is listening on port', this.script.port);
+    this.logger.info(`[BDS] ScriptBridge server is listening on port: ${this.script.port}`);
   }
 
   getWorlds(): ScriptWorld[] {
@@ -131,6 +135,7 @@ export class MinecraftHandler {
   // }
 
   private onClientConnect(session: ISession) {
+    this.logger.debug('onClientConnect');
     const world = new ScriptWorld(this.app, session);
     this.worlds.set(session, world);
     const signal = new WorldConnectEvent(this.app, world);
@@ -140,9 +145,19 @@ export class MinecraftHandler {
   }
 
   private onClientDisconnect(session: ISession, reason: DisconnectReason) {
+    this.logger.debug('onClientDisconnect');
     const world = this.worlds.get(session)!;
     new WorldDisconnectEvent(this.app, world, reason).emit();
+  }
+
+  private onSessionDestroy(session: ISession) {
+    this.logger.debug('onSessionDestroy');
     this.worlds.delete(session);
+  }
+
+  private onOpen() {
+    this.logger.info(`[Local] SocketBridge server is listening on port: ${this.app.config.socket_port}.`);
+    this.logger.info(`[Local] Type ${green(`/connect localhost:${this.app.config.socket_port}`)} in Minecraft to connect.`);
   }
 
   private onError(error: Error) {

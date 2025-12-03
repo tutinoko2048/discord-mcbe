@@ -15,8 +15,6 @@ export class BaseClient<T extends IBridgeClient = IBridgeClient> {
   constructor(bridge: T) {
     this.bridge = bridge;
 
-    this.logger.info(`Initializing bridge client. `);
-
     // handle actions from server
     registerHandlers(this.bridge);
     // register events to send to server

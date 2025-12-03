@@ -25,7 +25,7 @@
     "jsonc": "^2.0.0",
     "moment-timezone": "^0.5.48",
     "oh-my-logo": "^0.2.1",
-    "socket-be": "^2.2.0",
+    "socket-be": "^2.4.0",
     "zod": "^3.24.3"
   },
   "devDependencies": {

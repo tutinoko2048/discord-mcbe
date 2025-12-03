@@ -5,6 +5,7 @@ import { NamespaceRequiredError } from '@script-bridge/server';
 import { ISession } from './interfaces';
 import { SocketBridgeServer } from './socket';
 import { Logger } from '../../util';
+import { AddonNotInstalledError } from './errors';
 
 export class SocketSession implements ISession {
   private readonly server: SocketBridgeServer;
@@ -17,8 +18,7 @@ export class SocketSession implements ISession {
 
   readonly _awaitingResponses = new Map<number, (response: ClientResponse) => void>();
 
-  private readonly logger = new Logger('SocketSession');
-  // private readonly sendQueue: (ServerRequest | ServerResponse)[] = [];
+  private readonly logger: Logger;
   private readonly deltaTimes: number[] = [];
   private readonly requestInterval: number = 500;
   private previousRequestId = 0;
@@ -37,6 +37,7 @@ export class SocketSession implements ISession {
     this.world = world;
     this.id = id;
     this.clientId = clientId;
+    this.logger = new Logger('SocketSession', this.server.server.options);
     this.server.sessions.add(this);
 
     this.startInterval(this.requestInterval);
@@ -51,6 +52,8 @@ export class SocketSession implements ISession {
     this.previousRequestId = 0;
     this.isReconnecting = false;
     this.failCount = 0;
+    this.logger.debug('Session destroyed');
+    this.server.emit('sessionDestroy', this);
   }
 
   async disconnect(reason: DisconnectReason = DisconnectReason.Disconnect): Promise<void> {
@@ -90,7 +93,7 @@ export class SocketSession implements ISession {
       data,
     };
 
-    await this._sendMessage(payload);
+    await this.sendPayload(payload);
 
     const sentAt = Date.now();
 
@@ -123,7 +126,7 @@ export class SocketSession implements ISession {
     return this.deltaTimes.reduce((a, b) => a + b, 0) / this.deltaTimes.length;
   }
 
-  private async _sendMessage(payload: ServerRequest | ServerResponse) {
+  private async sendPayload(payload: ServerRequest | ServerResponse) {
     const res = await this.world.runCommand(`scriptevent bridge:message ${JSON.stringify(payload)}`);
     if (res.statusCode < CommandStatusCode.Success) throw new Error(res.statusMessage);
   }
@@ -188,6 +191,10 @@ export class SocketSession implements ISession {
     if (!this.world.isValid) return [];
 
     const res = await this.world.runCommand(`bridge:query ${this.id}`);
+    if (res.statusCode === CommandStatusCode.FailedToParseCommand) {
+      // コマンドが見つからない=ワールドから退出しているはずなのでいったん無視する
+      return [];
+    }
     if (res.statusCode < CommandStatusCode.Success) throw new Error(res.statusMessage);
 
     let body: QueryResponse;
@@ -200,7 +207,7 @@ export class SocketSession implements ISession {
 
     if (body.error) {
       if (body.errorReason === ResponseErrorReason.InvalidSession) {
-        this.logger.error('Invalid session, creating new session...');
+        this.logger.error('Invalid session. Creating new session...');
         this.scheduleReconnect();
       } else {
         this.logger.error('[query] Unexpected error:', ResponseErrorReason[body.errorReason]);
@@ -223,8 +230,14 @@ export class SocketSession implements ISession {
         requests = await this.queryData();
         this.failCount = 0;
       } catch (e: any) {
+        if (e instanceof AddonNotInstalledError) {
+          this.logger.error(e.message);
+          return;
+        }
+
         this.logger.error(`[query] fetch failed:`, e.message || e);
-        // this.http.cancelAll('Request timeout');
+
+        //TODO: abort current pending requests
 
         this.failCount++;
         if (this.failCount >= 3) {
@@ -240,7 +253,7 @@ export class SocketSession implements ISession {
         } else if (request.type === PayloadType.Request) {
           const response = await this.handleRequest(request);
           try {
-            await this._sendMessage(response);
+            await this.sendPayload(response);
           } catch (e: any) {
             this.logger.error('Failed to send response:', e.message);
           }

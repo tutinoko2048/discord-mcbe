@@ -115,8 +115,8 @@ importers:
         specifier: ^0.2.1
         version: 0.2.1
       socket-be:
-        specifier: ^2.2.0
-        version: 2.2.0(@minecraft/vanilla-data@1.21.70)
+        specifier: ^2.4.0
+        version: 2.4.0(@minecraft/vanilla-data@1.21.70)
       zod:
         specifier: ^3.24.3
         version: 3.24.4
@@ -847,8 +847,8 @@ packages:
     resolution: {integrity: sha512-bSiSngZ/jWeX93BqeIAbImyTbEihizcwNjFoRUIY/T1wWQsfsm2Vw1agPKylXvQTU7iASGdHhyqRlqQzfz+Htg==}
     engines: {node: '>=18'}
 
-  socket-be@2.2.0:
-    resolution: {integrity: sha512-v1phzNWsSIoX7mIfy+cqynzvpjkajKI6T8vHKtna2/PFfwOJx43uenOGtma+7FAmCz/a5p5mXFycJUMMpPgjsA==}
+  socket-be@2.4.0:
+    resolution: {integrity: sha512-BsnFYYz3eGYlfCrAs6riz0DHX/wiOGTEhHa7g4E4wtzDBloOPSdBQ4cY5yhmCIj0dsNc32la48L4itgMUXLuxg==}
 
   stack-utils@2.0.6:
     resolution: {integrity: sha512-XlkWvfIm6RmsWtNJx+uqtKLS8eqFbxUg0ZzLXqY0caEy9l7hruX8IpiDnjsLavoBgqCCR71TqWO8MaXYheJ3RQ==}
@@ -1681,7 +1681,7 @@ snapshots:
       ansi-styles: 6.2.1
       is-fullwidth-code-point: 5.0.0
 
-  socket-be@2.2.0(@minecraft/vanilla-data@1.21.70):
+  socket-be@2.4.0(@minecraft/vanilla-data@1.21.70):
     dependencies:
       '@minecraft/server': 2.1.0(@minecraft/vanilla-data@1.21.70)
       '@serenityjs/emitter': 0.5.2

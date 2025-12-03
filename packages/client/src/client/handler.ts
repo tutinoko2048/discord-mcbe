@@ -136,5 +136,5 @@ export function registerHandlers(bridge: IBridgeClient) {
     action.respond();
   });
 
-  if (__DEV__) console.log('[discord-mcbe] Successfully registered handlers.');
+  if (__DEV__) console.log('[discord-mcbe] - Successfully registered handlers.');
 }
