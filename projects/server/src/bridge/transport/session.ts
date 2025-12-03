@@ -224,7 +224,7 @@ export class SocketSession implements ISession {
         this.failCount = 0;
       } catch (e: any) {
         this.logger.error(`[query] fetch failed:`, e.message || e);
-        // this.http.cancelAll('Request timeout');
+        this.clearResponses();
 
         this.failCount++;
         if (this.failCount >= 3) {
