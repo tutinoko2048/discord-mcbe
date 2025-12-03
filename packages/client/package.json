@@ -18,10 +18,12 @@
     "format": "biome format --write ./src"
   },
   "dependencies": {
-    "@discord-mcbe/internal-config": "workspace:*",
     "@discord-mcbe/shared": "workspace:*",
     "@minecraft/server": "2.2.0-beta.1.21.100-stable",
     "@script-bridge/client": "^0.4.8",
     "@script-bridge/protocol": "^0.4.8"
+  },
+  "devDependencies": {
+    "@discord-mcbe/internal-config": "workspace:*"
   }
 }

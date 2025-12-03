@@ -14,5 +14,8 @@
 
     "allowJs": true,
     // "checkJs": true,
-  }
+  },
+  "references": [
+    { "path": "../../packages/shared" }
+  ]
 }

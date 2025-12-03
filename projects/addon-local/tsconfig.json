@@ -1,4 +1,7 @@
 {
   "extends": "@discord-mcbe/internal-config/typescript",
   "include": ["src"],
+  "references": [
+    { "path": "../../packages/client" }
+  ]
 }

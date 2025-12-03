@@ -10,10 +10,10 @@
     "format": "biome format --write ./src"
   },
   "dependencies": {
-    "@discord-mcbe/client": "workspace:*",
-    "@discord-mcbe/internal-config": "workspace:*"
+    "@discord-mcbe/client": "workspace:*"
   },
   "devDependencies": {
+    "@discord-mcbe/internal-config": "workspace:*",
     "@minecraft/server": "2.2.0-beta.1.21.100-stable"
   }
 }

@@ -6,6 +6,7 @@ export const defaultConfig = {
   entry: 'src/index.ts',
   outDir: 'dist',
   external: [/^@minecraft\/(?!vanilla-data|math)[\w-\/]+$/],
+  tsconfig: true,
 };
 
 /** @type {import('tsdown').Options} */
