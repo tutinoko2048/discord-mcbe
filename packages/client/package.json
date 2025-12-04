@@ -19,9 +19,9 @@
   },
   "dependencies": {
     "@discord-mcbe/shared": "workspace:*",
-    "@minecraft/server": "2.2.0-beta.1.21.100-stable",
-    "@script-bridge/client": "^0.4.8",
-    "@script-bridge/protocol": "^0.4.8"
+    "@minecraft/server": "catalog:",
+    "@script-bridge/client": "catalog:",
+    "@script-bridge/protocol": "catalog:"
   },
   "devDependencies": {
     "@discord-mcbe/internal-config": "workspace:*"

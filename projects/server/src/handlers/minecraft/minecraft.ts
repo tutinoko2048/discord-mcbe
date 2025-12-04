@@ -162,7 +162,7 @@ export class MinecraftHandler {
   }
 
   private onOpen() {
-    this.logger.info(`[Local] SocketBridge server is listening on port: ${this.app.config.socket_port}.`);
+    this.logger.info(`[Local] SocketBridge server is listening on port: ${this.app.config.socket_port}`);
     this.logger.info(
       `[Local] Type ${green(`/connect localhost:${this.app.config.socket_port}`)} in Minecraft to connect.`,
     );

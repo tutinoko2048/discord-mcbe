@@ -10,8 +10,8 @@
     "format": "biome format --write ./src"
   },
   "dependencies": {
-    "@minecraft/server": "2.1.0",
-    "@script-bridge/protocol": "^0.3.0"
+    "@minecraft/server": "catalog:",
+    "@script-bridge/protocol": "catalog:"
   },
   "devDependencies": {
     "@discord-mcbe/internal-config": "workspace:*"

@@ -7,7 +7,7 @@
   },
   "type": "module",
   "scripts": {
-    "start": "pnpm build && node --enable-source-maps ./dist/main.js",
+    "start": "pnpm build --silent && node --enable-source-maps ./dist/main.js",
     "dev": "bun --watch ./src/main.ts",
     "build": "tsdown",
     "format": "biome format --write ./src",
@@ -16,20 +16,20 @@
   "dependencies": {
     "@akki256/discord-interaction": "^3.1.1",
     "@discord-mcbe/shared": "workspace:*",
-    "@minecraft/server": "2.1.0",
-    "@script-bridge/protocol": "^0.4.8",
-    "@script-bridge/server": "^0.4.8",
+    "@minecraft/server": "catalog:",
+    "@script-bridge/protocol": "catalog:",
+    "@script-bridge/server": "catalog:",
     "colorette": "^2.0.20",
-    "discord.js": "^14.18.0",
+    "discord.js": "^14.25.1",
     "dotlang": "^1.1.1",
     "jsonc": "^2.0.0",
     "moment-timezone": "^0.5.48",
     "oh-my-logo": "^0.2.1",
     "socket-be": "^2.4.0",
-    "zod": "^3.24.3"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@discord-mcbe/internal-config": "workspace:*",
-    "zod-to-json-schema": "^3.24.5"
+    "zod-to-json-schema": "^3.25.0"
   }
 }
