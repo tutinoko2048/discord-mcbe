@@ -1,6 +1,19 @@
 import { CommandStatusCode, ServerEvent, World as SocketWorld } from 'socket-be';
-import { ClientRequest, ClientResponse, QueryResponse, ServerRequest, ServerResponse } from '@discord-mcbe/shared';
-import { BaseAction, DisconnectReason, InternalAction, InternalActions, PayloadType, ResponseErrorReason } from '@script-bridge/protocol';
+import {
+  ClientRequest,
+  ClientResponse,
+  QueryResponse,
+  ServerRequest,
+  ServerResponse,
+} from '@discord-mcbe/shared';
+import {
+  BaseAction,
+  DisconnectReason,
+  InternalAction,
+  InternalActions,
+  PayloadType,
+  ResponseErrorReason,
+} from '@script-bridge/protocol';
 import { NamespaceRequiredError } from '@script-bridge/server';
 import { ISession } from './interfaces';
 import { SocketBridgeServer } from './socket';
@@ -27,12 +40,7 @@ export class SocketSession implements ISession {
   /** Number of failed query requests */
   private failCount = 0;
 
-  constructor(
-    server: SocketBridgeServer,
-    world: SocketWorld,
-    id: string,
-    clientId: string
-  ) {
+  constructor(server: SocketBridgeServer, world: SocketWorld, id: string, clientId: string) {
     this.server = server;
     this.world = world;
     this.id = id;
@@ -106,7 +114,7 @@ export class SocketSession implements ISession {
           errorReason: ResponseErrorReason.Timeout,
           message: 'Request timed out',
           sessionId: this.id,
-          requestId
+          requestId,
         });
       }, timeout);
 
@@ -160,11 +168,10 @@ export class SocketSession implements ISession {
         session: this,
         respond: (data) => {
           response.data = data;
-        }
+        },
       });
 
       return response;
-
     } catch (err: any) {
       this.logger.error('Error while handling request:', channelId, err);
       return {

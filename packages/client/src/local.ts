@@ -8,7 +8,7 @@ export interface BridgeClientOptions {
 
 const defaultOptions: ExtractOptional<BridgeClientOptions> = {
   clientId: 'discord-mcbe-local',
-}
+};
 
 export class BridgeClient extends BaseClient<SocketBridgeClient> {
   constructor(options: BridgeClientOptions = {}) {

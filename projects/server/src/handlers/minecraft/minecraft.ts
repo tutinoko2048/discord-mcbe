@@ -14,7 +14,13 @@ import {
 } from '../../events';
 import { ClientActionHandler, ISession, SocketBridgeServer } from '../../bridge/transport';
 import { ScriptBridgeServer } from '@script-bridge/server';
-import { ActionId, ChatSendAction, PlayerJoinAction, PlayerLeaveAction, WorldInitializeAction } from '@discord-mcbe/shared';
+import {
+  ActionId,
+  ChatSendAction,
+  PlayerJoinAction,
+  PlayerLeaveAction,
+  WorldInitializeAction,
+} from '@discord-mcbe/shared';
 import { BaseAction, DisconnectReason } from '@script-bridge/protocol';
 import { green } from 'colorette';
 
@@ -157,7 +163,9 @@ export class MinecraftHandler {
 
   private onOpen() {
     this.logger.info(`[Local] SocketBridge server is listening on port: ${this.app.config.socket_port}.`);
-    this.logger.info(`[Local] Type ${green(`/connect localhost:${this.app.config.socket_port}`)} in Minecraft to connect.`);
+    this.logger.info(
+      `[Local] Type ${green(`/connect localhost:${this.app.config.socket_port}`)} in Minecraft to connect.`,
+    );
   }
 
   private onError(error: Error) {

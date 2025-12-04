@@ -6,7 +6,6 @@ import { createPlayerDescriptor } from './descriptors';
 import { IBridgeClient } from '../transport';
 import { Logger } from '../utils';
 
-
 export class BaseClient<T extends IBridgeClient = IBridgeClient> {
   public readonly bridge: T;
 

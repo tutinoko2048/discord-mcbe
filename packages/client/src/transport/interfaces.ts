@@ -4,20 +4,22 @@ import type { BaseAction, DisconnectReason } from '@script-bridge/protocol';
 
 type Listener<T> = (data: T) => void;
 
-export type IResponse<T = unknown> = {
-  error?: false,
-  data: T,
-} | {
-  error: true,
-  message: string,
-}
+export type IResponse<T = unknown> =
+  | {
+      error?: false;
+      data: T;
+    }
+  | {
+      error: true;
+      message: string;
+    };
 
 export interface IBridgeClient {
   isConnected: boolean;
 
   send<T extends BaseAction = BaseAction>(
     channelId: ActionId,
-    data?: T['request']
+    data?: T['request'],
   ): Promise<IResponse<T['response']>>;
 
   registerHandler<A extends BaseAction = BaseAction>(channelId: A['id'], handler: ActionHandler<A>): void;

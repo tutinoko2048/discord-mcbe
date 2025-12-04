@@ -7,7 +7,15 @@ import {
   system,
   world,
 } from '@minecraft/server';
-import { SocketBridge, ClientRequest, ClientResponse, ConnectionResponse, ServerRequest, ServerResponse, QueryResponse } from '@discord-mcbe/shared';
+import {
+  SocketBridge,
+  ClientRequest,
+  ClientResponse,
+  ConnectionResponse,
+  ServerRequest,
+  ServerResponse,
+  QueryResponse,
+} from '@discord-mcbe/shared';
 import type { ActionHandler } from '@script-bridge/client';
 import { BaseAction, DisconnectReason, PayloadType, ResponseErrorReason } from '@script-bridge/protocol';
 import { IBridgeClient, IResponse } from './interfaces';
@@ -61,7 +69,7 @@ export class SocketBridgeClient extends Emitter<SocketEvents> implements IBridge
       },
       {
         namespaces: ['bridge'],
-      }
+      },
     );
 
     world.afterEvents.worldLoad.subscribe(() => {
@@ -75,7 +83,7 @@ export class SocketBridgeClient extends Emitter<SocketEvents> implements IBridge
 
   async send<A extends BaseAction = BaseAction>(
     channelId: A['id'],
-    data?: A['request']
+    data?: A['request'],
   ): Promise<IResponse<A['response']>> {
     if (!this.currentSessionId) throw new Error('No active session');
 
@@ -247,7 +255,7 @@ export class SocketBridgeClient extends Emitter<SocketEvents> implements IBridge
           },
         ],
       },
-      (_, sessionId: string) => this.onQuery(sessionId)
+      (_, sessionId: string) => this.onQuery(sessionId),
     );
 
     registry.registerCommand(
@@ -266,7 +274,7 @@ export class SocketBridgeClient extends Emitter<SocketEvents> implements IBridge
           },
         ],
       },
-      (_, protocolVersion: number, sessionId: string) => this.handleConnection(protocolVersion, sessionId)
+      (_, protocolVersion: number, sessionId: string) => this.handleConnection(protocolVersion, sessionId),
     );
   }
 }

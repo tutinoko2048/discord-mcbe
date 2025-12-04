@@ -27,7 +27,10 @@ export class Emitter<T> {
   public off<K extends keyof T>(event: K, listener: Listener<T[K]>): void {
     const currentListeners = this.listeners.get(event);
     if (currentListeners) {
-      this.listeners.set(event, currentListeners.filter(l => l !== listener));
+      this.listeners.set(
+        event,
+        currentListeners.filter((l) => l !== listener),
+      );
     }
   }
 

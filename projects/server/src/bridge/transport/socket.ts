@@ -3,7 +3,13 @@ import { randomUUID } from 'node:crypto';
 import { ConnectionResponse, SocketBridge } from '@discord-mcbe/shared';
 import { BaseAction, DisconnectReason } from '@script-bridge/protocol';
 import { SocketSession } from './session';
-import { CommandStatusCode, ServerEvent, ServerOptions, Server as SocketServer, World as SocketWorld } from 'socket-be';
+import {
+  CommandStatusCode,
+  ServerEvent,
+  ServerOptions,
+  Server as SocketServer,
+  World as SocketWorld,
+} from 'socket-be';
 import { Logger } from '../../util';
 import { ClientActionHandler } from './types';
 import { NamespaceRequiredError } from '@script-bridge/server';
@@ -65,7 +71,9 @@ export class SocketBridgeServer extends EventEmitter<ServerEvents> {
         const backoffSeconds = Math.min(Math.pow(2, state.attemptCount), 60);
 
         state.attemptCount++;
-        this.logger.error(`Reconnect after ${backoffSeconds} seconds... (attempt ${state.attemptCount}/${this.maxReconnectAttempts})`);
+        this.logger.error(
+          `Reconnect after ${backoffSeconds} seconds... (attempt ${state.attemptCount}/${this.maxReconnectAttempts})`,
+        );
 
         setTimeout(() => {
           this.connect(world, state).then(resolve).catch(reject);
@@ -94,11 +102,10 @@ export class SocketBridgeServer extends EventEmitter<ServerEvents> {
     return this.actionHandlers.get(channelId);
   }
 
-  private async createSession(
-    world: SocketWorld,
-    sessionId: string = randomUUID()
-  ): Promise<SocketSession> {
-    const response = await world.runCommand(`bridge:connect ${SocketBridgeServer.PROTOCOL_VERSION} ${sessionId}`);
+  private async createSession(world: SocketWorld, sessionId: string = randomUUID()): Promise<SocketSession> {
+    const response = await world.runCommand(
+      `bridge:connect ${SocketBridgeServer.PROTOCOL_VERSION} ${sessionId}`,
+    );
     if (response.statusCode === CommandStatusCode.FailedToParseCommand) {
       throw new AddonNotInstalledError();
     } else if (response.statusCode < CommandStatusCode.Success) {
@@ -124,7 +131,6 @@ export class SocketBridgeServer extends EventEmitter<ServerEvents> {
     try {
       await this.connect(ev.world);
       this.logger.info(`Connection established! (${Date.now() - requestedAt}ms)`);
-
     } catch (e: any) {
       this.logger.error(e.message);
       if (e instanceof AddonNotInstalledError) {
@@ -148,7 +154,6 @@ export class SocketBridgeServer extends EventEmitter<ServerEvents> {
       try {
         await this.connect(ev.world);
         this.logger.info('Reconnected!');
-
       } catch (e: any) {
         this.logger.error(e.message);
         await ev.world.disconnect();
