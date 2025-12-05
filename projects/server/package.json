@@ -12,7 +12,8 @@
     "build": "tsdown",
     "compile": "bun build --define __BUN_EXE__=true ./src/main.ts --compile --outfile=./build/discord-mcbe-server",
     "format": "biome format --write ./src",
-    "generate-schema": "bun ./generate-schema.ts"
+    "generate-schema": "bun ./scripts/generate-schema.ts",
+    "generate-logo": "bun ./scripts/generate-logo.ts"
   },
   "dependencies": {
     "@akki256/discord-interaction": "^3.1.1",

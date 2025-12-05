@@ -2,9 +2,8 @@ import { ExtendedEmitter, MinecraftCommandVersion } from 'socket-be';
 import type { ExtractOptional } from '@discord-mcbe/shared';
 import { CommandLineHandler, MinecraftHandler, ScriptHandler } from './handlers';
 import type { ApplicationEvents, Config } from './types';
-import { Logger, _t, loadConfig } from './util';
+import { Logger, _t, loadConfig, renderLogo } from './util';
 import { StartupEvent } from './events';
-import { renderFilled as renderLogo } from 'oh-my-logo';
 
 import { version as VERSION } from '../package.json';
 import { DiscordBot } from './discord';
@@ -153,7 +152,7 @@ export class Application extends ExtendedEmitter<ApplicationEvents> {
   }
 }
 
-await renderLogo('DISCORD-MCBE');
+renderLogo();
 
 new Application();
 

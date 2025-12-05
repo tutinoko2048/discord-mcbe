@@ -2,7 +2,13 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { jsonc } from 'jsonc';
 import { type Config, configSchema } from '../types';
-console.log('__BUN_EXE__:', __BUN_EXE__);
+import logo from '../assets/logo.json' with { type: 'json' };
+
+export function renderLogo() {
+  const decodedLogo = Buffer.from(logo.data, 'base64').toString('utf-8');
+  console.log(decodedLogo);
+}
+
 const ROOT_DIR = __BUN_EXE__
   ? path.join(process.cwd())
   : path.join(process.cwd(), '../../');
