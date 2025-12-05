@@ -8,8 +8,9 @@
   "type": "module",
   "scripts": {
     "start": "pnpm build --silent && node --enable-source-maps ./dist/main.js",
-    "dev": "bun --watch ./src/main.ts",
+    "dev": "bun --define __BUN_EXE__=false ./src/main.ts --watch",
     "build": "tsdown",
+    "compile": "bun build --define __BUN_EXE__=true ./src/main.ts --compile --outfile=./build/discord-mcbe-server",
     "format": "biome format --write ./src",
     "generate-schema": "bun ./generate-schema.ts"
   },
@@ -30,6 +31,7 @@
   },
   "devDependencies": {
     "@discord-mcbe/internal-config": "workspace:*",
+    "react-devtools-core": "4.19.1",
     "zod-to-json-schema": "^3.25.0"
   }
 }

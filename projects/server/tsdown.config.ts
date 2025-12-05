@@ -5,4 +5,7 @@ export default defineConfig({
   format: ['esm'],
   noExternal: ['@script-bridge/protocol'], // 実行時のエラー回避のため
   sourcemap: true,
+  define: {
+    __BUN_EXE__: 'false',
+  }
 });

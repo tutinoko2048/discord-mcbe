@@ -1,3 +1,0 @@
-cd /d %~dp0
-echo installing packages...
-pnpm i

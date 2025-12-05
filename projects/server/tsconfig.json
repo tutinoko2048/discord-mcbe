@@ -2,6 +2,7 @@
   "extends": "@discord-mcbe/internal-config/typescript",
   "include": ["src"],
   "compilerOptions": {
+    "types": ["./src/global.d.ts"],
     "target": "ESNext",
     "module": "esnext",
     "moduleResolution": "bundler",

@@ -7,3 +7,4 @@ config.jsonc
 dist
 .turbo
 todo.md
+build/

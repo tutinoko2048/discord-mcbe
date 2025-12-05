@@ -244,8 +244,6 @@ export class SocketSession implements ISession {
 
         this.logger.error(`[query] fetch failed:`, e.message || e);
 
-        //TODO: abort current pending requests
-
         this.failCount++;
         if (this.failCount >= 3) {
           this.logger.error('Multiple timeouts detected, reconnecting...');

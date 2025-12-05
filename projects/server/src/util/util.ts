@@ -2,11 +2,13 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { jsonc } from 'jsonc';
 import { type Config, configSchema } from '../types';
-
-const MAIN_DIR = path.join(process.cwd(), '../../');
-const DATA_DIR = '.discord-mcbe';
-const DATA_PATH = path.join(MAIN_DIR, DATA_DIR, 'data.json');
-const CONFIG_FILE = path.join(MAIN_DIR, 'config.jsonc');
+console.log('__BUN_EXE__:', __BUN_EXE__);
+const ROOT_DIR = __BUN_EXE__
+  ? path.join(process.cwd())
+  : path.join(process.cwd(), '../../');
+const DATA_DIR = path.join(ROOT_DIR, '.discord-mcbe');
+const DATA_PATH = path.join(DATA_DIR, 'data.json');
+const CONFIG_FILE = path.join(ROOT_DIR, 'config.jsonc');
 
 export function loadConfig(): Config {
   const parsed: Config = jsonc.parse(fs.readFileSync(CONFIG_FILE, 'utf-8'));

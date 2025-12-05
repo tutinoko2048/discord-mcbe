@@ -1,13 +1,10 @@
 #!/bin/sh
-clear
-
-cd .
+set -e
 
 if [ ! -d "node_modules" ]; then
-  ./setup.sh
+    echo "[INFO] node_modules not found. Installing dependencies..."
+    pnpm install
 fi
-
-echo starting...
 
 cd projects/server
 pnpm run start
