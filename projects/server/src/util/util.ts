@@ -9,9 +9,7 @@ export function renderLogo() {
   console.log(decodedLogo);
 }
 
-const ROOT_DIR = __BUN_EXE__
-  ? path.join(process.cwd())
-  : path.join(process.cwd(), '../../');
+const ROOT_DIR = __BUN_EXE__ ? path.join(process.cwd()) : path.join(process.cwd(), '../../');
 const DATA_DIR = path.join(ROOT_DIR, '.discord-mcbe');
 const DATA_PATH = path.join(DATA_DIR, 'data.json');
 const CONFIG_FILE = path.join(ROOT_DIR, 'config.jsonc');
