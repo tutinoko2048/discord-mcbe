@@ -13,8 +13,8 @@
     }
   },
   "scripts": {
-    "build": "bun build.ts",
-    "watch": "bun build.ts --watch",
+    "build": "tsdown",
+    "watch": "tsdown --watch",
     "format": "biome format --write ./src"
   },
   "dependencies": {
