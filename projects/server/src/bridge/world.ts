@@ -1,4 +1,4 @@
-import type { Session } from '@script-bridge/server';
+import type { Session as ScriptSession } from '@script-bridge/server';
 import { DisconnectReason, ResponseErrorReason } from '@script-bridge/protocol';
 import { ScriptPlayer } from './player';
 import type { RawMessage } from '@minecraft/server';
@@ -12,15 +12,15 @@ import {
   type WorldInitializeAction,
 } from '@discord-mcbe/shared';
 import type { ScriptDimension } from './dimension';
-import { ISession } from './transport';
+import { ISession, SocketSession } from './transport';
 import { ChatSendEvent, PlayerJoinEvent, PlayerLeaveEvent } from '../events';
 import { Application } from '../main';
 import { Logger } from '../util';
 
-export class ScriptWorld {
+export class ScriptWorld<S extends ISession = ISession> {
   private readonly app: Application;
 
-  public readonly session: ISession;
+  public readonly session: S;
 
   public readonly logger: Logger;
 
@@ -32,11 +32,14 @@ export class ScriptWorld {
   /** { [dimensionId]: ScriptDimension } */
   public readonly _dimensions = new Map<string, ScriptDimension>();
 
+  private readonly _isWebSocket: boolean;
+
   //TODO: Scoreboard API
 
-  constructor(app: Application, session: ISession) {
+  constructor(app: Application, session: S, isWebSocket: boolean) {
     this.app = app;
     this.session = session;
+    this._isWebSocket = isWebSocket;
     this.logger = new Logger(this.name, this.app.config);
   }
 
@@ -79,6 +82,14 @@ export class ScriptWorld {
 
   async disconnect(reason?: DisconnectReason) {
     return await this.session.disconnect(reason);
+  }
+
+  isLocal(): this is ScriptWorld<SocketSession> {
+    return this._isWebSocket;
+  }
+
+  isServer(): this is ScriptWorld<ScriptSession> {
+    return !this._isWebSocket;
   }
 
   onInitialize(data: WorldInitializeAction['request']) {

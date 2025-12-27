@@ -15,9 +15,9 @@ import { PanelHandler } from './panel';
 import { _t, Logger } from '../util';
 import * as embeds from './embeds';
 
-export class DiscordBot {
+export class DiscordBot<READY extends boolean = false> {
   private readonly logger: Logger;
-  public readonly client: Client;
+  public readonly client: Client<READY>;
   // public readonly interactions: DiscordInteractions;
   // public readonly panels: PanelHandler;
 
@@ -36,13 +36,31 @@ export class DiscordBot {
     this.logger.debug('Initialized');
   }
 
+  isReady(): this is DiscordBot<true> {
+    return this.client.isReady();
+  }
+
+  awaitReady(timeout = 20_000): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (this.isReady()) return resolve();
+
+      const timer = setTimeout(() => {
+        this.client.off(Events.ClientReady, onReady);
+        reject(new Error('Discord client ready timeout'));
+      }, timeout);
+
+      const onReady = () => {
+        clearTimeout(timer);
+        resolve();
+      };
+      this.client.once(Events.ClientReady, onReady);
+    });
+  }
+
   async start() {
     this.client.once(Events.ClientReady, this.onReady.bind(this));
 
-    this.client.on(Events.MessageCreate, (message) => {
-      if (message.author.bot || message.channel.id !== this.app.config.channel_id) return;
-      this.onMessageCreate(message);
-    });
+    this.client.on(Events.MessageCreate, this.onMessageCreate.bind(this));
 
     // this.client.on('interactionCreate', interaction => {
     //   this.interactions.run(interaction).catch(e => {
@@ -87,8 +105,8 @@ export class DiscordBot {
     this.logger.error(error);
   }
 
-  private onReady() {
-    this.logger.info('Logged in as', this.client.user!.tag);
+  private onReady(client: Client<true>) {
+    this.logger.info('Logged in as', client.user.tag);
     // this.interactions.registerCommands(this.app.config.guild_id);
     // this.logger.info(_t('console.login', this.client.user!.tag));
 
@@ -102,6 +120,8 @@ export class DiscordBot {
   }
 
   private onMessageCreate(message: Message) {
+    if (message.author.bot || message.channel.id !== this.app.config.channel_id) return;
+
     this.logger.log('messageCreate', message.content, message.author.tag);
   }
 }

@@ -12,7 +12,7 @@ import {
   StartupEvent,
   WorldLoadEvent,
 } from '../../events';
-import { ClientActionHandler, ISession, SocketBridgeServer } from '../../bridge/transport';
+import { ClientActionHandler, ISession, SocketBridgeServer, SocketSession } from '../../bridge/transport';
 import { ScriptBridgeServer } from '@script-bridge/server';
 import {
   ActionId,
@@ -142,7 +142,7 @@ export class MinecraftHandler {
 
   private onClientConnect(session: ISession) {
     this.logger.debug('onClientConnect');
-    const world = new ScriptWorld(this.app, session);
+    const world = new ScriptWorld(this.app, session, session instanceof SocketSession);
     this.worlds.set(session, world);
     const signal = new WorldConnectEvent(this.app, world);
     if (!signal.emit()) {
