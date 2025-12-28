@@ -3,11 +3,7 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
-    "format": "turbo run format",
-    "server": "pnpm -C ./projects/server",
-    "addon": "pnpm -C ./projects/addon",
-    "client": "pnpm -C ./packages/client",
-    "shared": "pnpm -C ./packages/shared"
+    "format": "turbo run format"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.0",

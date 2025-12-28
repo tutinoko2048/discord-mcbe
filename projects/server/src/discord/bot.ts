@@ -4,6 +4,7 @@ import {
   codeBlock,
   Events,
   GatewayIntentBits,
+  Interaction,
   type Message,
   type MessageCreateOptions,
 } from 'discord.js';
@@ -59,8 +60,8 @@ export class DiscordBot<READY extends boolean = false> {
 
   async start() {
     this.client.once(Events.ClientReady, this.onReady.bind(this));
-
     this.client.on(Events.MessageCreate, this.onMessageCreate.bind(this));
+    this.client.on(Events.InteractionCreate, this.onInteractionCreate.bind(this));
 
     // this.client.on('interactionCreate', interaction => {
     //   this.interactions.run(interaction).catch(e => {
@@ -123,5 +124,9 @@ export class DiscordBot<READY extends boolean = false> {
     if (message.author.bot || message.channel.id !== this.app.config.channel_id) return;
 
     this.logger.log('messageCreate', message.content, message.author.tag);
+  }
+
+  private onInteractionCreate(interaction: Interaction) {
+    this.logger.log('interactionCreate', interaction.user.tag);
   }
 }

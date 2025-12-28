@@ -2,7 +2,7 @@ import { ExtendedEmitter, MinecraftCommandVersion } from 'socket-be';
 import type { ExtractOptional } from '@discord-mcbe/shared';
 import { CommandLineHandler, MinecraftHandler, ScriptHandler } from './handlers';
 import type { ApplicationEvents, Config } from './types';
-import { Logger, _t, loadConfig, renderLogo } from './util';
+import { Logger, _t, initialize as initializeLang, loadConfig, renderLogo } from './util';
 import { StartupEvent } from './events';
 
 import { version as VERSION } from '../package.json';
@@ -14,7 +14,7 @@ import { DiscordBot } from './discord';
 const defaultConfig: ExtractOptional<Config> = {
   socket_port: 8000,
   bridge_port: 23191,
-  language: 'en_US',
+  language: 'ja_JP',
   timezoneOffset: 0,
   command_role_id: [],
   ready_message: true,
@@ -47,6 +47,8 @@ export class Application extends ExtendedEmitter<ApplicationEvents> {
     this.version = VERSION;
 
     this.config = Object.assign(defaultConfig, loadConfig());
+
+    initializeLang(this.config.language);
 
     this.logger = new Logger('App', this.config);
 
