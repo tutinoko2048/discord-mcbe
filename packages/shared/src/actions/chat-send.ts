@@ -1,6 +1,6 @@
 import type { BaseAction } from '@script-bridge/protocol';
 import type { ActionId } from '../enums';
-import { UniqueId } from '../types';
+import type { UniqueId } from '../types';
 
 export type ChatSendAction = BaseAction<
   ActionId.ChatSend,

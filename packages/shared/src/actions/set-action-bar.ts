@@ -1,7 +1,7 @@
 import type { RawMessage } from '@minecraft/server';
 import type { BaseAction } from '@script-bridge/protocol';
 import type { ActionId } from '../enums';
-import { UniqueId } from '../types';
+import type { UniqueId } from '../types';
 
 export type SetActionBarAction = BaseAction<
   ActionId.SetActionBar,
