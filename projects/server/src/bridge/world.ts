@@ -18,7 +18,7 @@ import { Logger } from '../util';
 import type { Session as ScriptSession } from '@script-bridge/server';
 import type { RawMessage } from '@minecraft/server';
 import type { ScriptDimension } from './dimension';
-import type { Application } from '../main';
+import type { Application } from '../application';
 
 export class ScriptWorld<S extends ISession = ISession> {
   private readonly app: Application;

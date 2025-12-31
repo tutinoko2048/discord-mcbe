@@ -62,8 +62,6 @@ export class Application extends ExtendedEmitter<ApplicationEvents> {
 
     this.emit('startup', new StartupEvent(this));
     this.logger.debug('Application initialized');
-
-    this.start().catch((e) => this.logger.error('Failed to start application\n', e));
   }
 
   async start() {
@@ -153,11 +151,3 @@ export class Application extends ExtendedEmitter<ApplicationEvents> {
     this.logger.debug('Application started');
   }
 }
-
-renderLogo();
-
-new Application();
-
-process.on('unhandledRejection', (err) => {
-  console.error('unhandledRejection:', err);
-});

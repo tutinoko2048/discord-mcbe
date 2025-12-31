@@ -1,4 +1,4 @@
-import type { Application } from '../main';
+import type { Application } from '../application';
 import type { ApplicationEvents } from '../types';
 
 export class ApplicationEvent {

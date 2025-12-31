@@ -1,5 +1,5 @@
 import { ApplicationEvent } from './app';
-import type { Application } from '../main';
+import type { Application } from '../application';
 import type { ScriptWorld, ScriptPlayer } from '../bridge';
 
 export class PlayerJoinEvent extends ApplicationEvent {

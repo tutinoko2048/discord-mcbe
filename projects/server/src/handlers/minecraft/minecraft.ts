@@ -1,6 +1,6 @@
 import type { RawMessage } from '@minecraft/server';
 import { ScriptWorld, ClientActionHandler, ISession, SocketBridgeServer, SocketSession } from '../../bridge';
-import type { Application } from '../../main';
+import type { Application } from '../../application';
 import { Logger } from '../../util';
 import { WorldConnectEvent, WorldDisconnectEvent, StartupEvent } from '../../events';
 import { ScriptBridgeServer } from '@script-bridge/server';

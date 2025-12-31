@@ -1,4 +1,4 @@
-import type { Application } from '../main';
+import type { Application } from '../application';
 import { ApplicationEvent } from './app';
 
 export class ShutdownEvent extends ApplicationEvent {

@@ -1,6 +1,6 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import type { Application } from '../main';
+import type { Application } from '../application';
 import { Logger } from '../util';
 
 export class ScriptHandler {

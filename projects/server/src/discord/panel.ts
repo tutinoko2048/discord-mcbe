@@ -1,5 +1,5 @@
 import * as moment from 'moment-timezone';
-import type { Application } from '../main';
+import type { Application } from '../application';
 import * as util from '../util/util';
 import { type Client, EmbedBuilder, RESTJSONErrorCodes, type Message, TextBasedChannel, time } from 'discord.js';
 import { colors } from './embeds';

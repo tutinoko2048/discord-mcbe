@@ -9,7 +9,7 @@ import {
   type MessageCreateOptions,
 } from 'discord.js';
 import { DiscordInteractions } from '@akki256/discord-interaction';
-import type { Application } from '../main';
+import type { Application } from '../application';
 
 import { PanelHandler } from './panel';
 
