@@ -8,6 +8,7 @@ import {
   type TitleDisplayOptions,
 } from '@discord-mcbe/shared';
 import { ResponseErrorReason } from '@script-bridge/protocol';
+import { BridgeActionError } from './errors';
 
 export class ScreenDisplay {
   private readonly player: ScriptPlayer;
@@ -29,7 +30,7 @@ export class ScreenDisplay {
       title,
       options,
     });
-    if (res.error) throw new Error(`[${ResponseErrorReason[res.errorReason]}] ${res.message}`);
+    if (res.error) throw new BridgeActionError(res);
   }
 
   async updateSubtitle(subtitle: string | RawMessage | (string | RawMessage)[]): Promise<void> {
@@ -37,7 +38,7 @@ export class ScreenDisplay {
       playerUniqueId: this.player.uniqueId,
       subtitle,
     });
-    if (res.error) throw new Error(`[${ResponseErrorReason[res.errorReason]}] ${res.message}`);
+    if (res.error) throw new BridgeActionError(res);
   }
 
   async setActionBar(text: string | RawMessage | (string | RawMessage)[]): Promise<void> {
@@ -45,6 +46,6 @@ export class ScreenDisplay {
       playerUniqueId: this.player.uniqueId,
       text,
     });
-    if (res.error) throw new Error(`[${ResponseErrorReason[res.errorReason]}] ${res.message}`);
+    if (res.error) throw new BridgeActionError(res);
   }
 }

@@ -1,7 +1,7 @@
 import * as moment from 'moment-timezone';
 import type { Application } from '../main';
 import * as util from '../util/util';
-import { type Client, EmbedBuilder, RESTJSONErrorCodes, type Message, TextBasedChannel } from 'discord.js';
+import { type Client, EmbedBuilder, RESTJSONErrorCodes, type Message, TextBasedChannel, time } from 'discord.js';
 import { colors } from './embeds';
 import { Config } from '../types';
 import { _t, Logger } from '../util';
@@ -96,24 +96,28 @@ export class PanelHandler {
     const worlds = this.app.minecraft.getWorlds();
     const info = await Promise.all(
       worlds.map(async (w) => {
-        const isBDS = w instanceof ScriptWorld;
         let list: PlayerList | undefined;
-        try {
-          if (isBDS) {
-            const players = w.getPlayers();
-            list = { current: players.length, max: -1, players: players.map((p) => p.name) };
-          } else {
-            list = await w.getPlayerList();
+        let host: string | undefined;
+        if (w.isServer()) {
+          host = 'Bedrock Server';
+          const players = w.getPlayers();
+          list = { current: players.length, max: -1, players: players.map((p) => p.name) };
+
+        } else if (w.isLocal()) {
+          host = w.session.world.localPlayer?.name;
+          try {
+            list = await w.session.world.getPlayerList();
+          } catch (e) {
+            if (!(e instanceof RequestTimeoutError)) throw e;
           }
-        } catch (e) {
-          if (!(e instanceof RequestTimeoutError)) throw e;
-          return;
         }
         if (!list) return;
-        const connectAt = `<t:${String(w.connectedAt).slice(0, 10)}:T>`;
+
+        const connectAt = time(new Date(w.connectedAt), 'T');
+
         return [
           `\n**${w.name} - ${list.current}/${list.max}**`,
-          `**  |  **Host: \`${isBDS ? 'Bedrock Server' : (w.localPlayer ?? '-')}\``,
+          `**  |  **Host: \`${host ?? '-'}\``,
           `**  |  **Ping: ${w.averagePing} ms`,
           `**  |  **Connected: ${connectAt}`,
           '**  |  **Players:',

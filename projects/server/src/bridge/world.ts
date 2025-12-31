@@ -1,7 +1,4 @@
-import type { Session as ScriptSession } from '@script-bridge/server';
-import { DisconnectReason, ResponseErrorReason } from '@script-bridge/protocol';
-import { ScriptPlayer } from './player';
-import type { RawMessage } from '@minecraft/server';
+import { DisconnectReason } from '@script-bridge/protocol';
 import {
   ActionId,
   type SendMessageAction,
@@ -10,13 +7,18 @@ import {
   type GetTPSAction,
   type PlayerDescriptor,
   type WorldInitializeAction,
+  type UniqueId,
 } from '@discord-mcbe/shared';
-import type { ScriptDimension } from './dimension';
+import { ScriptPlayer } from './player';
 import { ISession, SocketSession } from './transport';
-import { ChatSendEvent, PlayerJoinEvent, PlayerLeaveEvent } from '../events';
-import { Application } from '../main';
-import { Logger } from '../util';
 import { ScriptScoreboard } from './scoreboard';
+import { BridgeActionError } from './errors';
+import { ChatSendEvent, PlayerJoinEvent, PlayerLeaveEvent, WorldLoadEvent } from '../events';
+import { Logger } from '../util';
+import type { Session as ScriptSession } from '@script-bridge/server';
+import type { RawMessage } from '@minecraft/server';
+import type { ScriptDimension } from './dimension';
+import type { Application } from '../main';
 
 export class ScriptWorld<S extends ISession = ISession> {
   private readonly app: Application;
@@ -29,7 +31,7 @@ export class ScriptWorld<S extends ISession = ISession> {
   public readonly connectedAt: number = Date.now();
 
   /** { [uniqueId]: ScriptPlayer } */
-  public readonly players = new Map<string, ScriptPlayer>();
+  public readonly players = new Map<UniqueId, ScriptPlayer>();
 
   /** { [dimensionId]: ScriptDimension } */
   public readonly _dimensions = new Map<string, ScriptDimension>();
@@ -58,13 +60,13 @@ export class ScriptWorld<S extends ISession = ISession> {
 
   async runCommand(command: string): Promise<{ successCount: number }> {
     const res = await this.session.send<RunCommandAction>(ActionId.RunCommand, { command });
-    if (res.error) throw new Error(`[${ResponseErrorReason[res.errorReason]}] ${res.message}`);
+    if (res.error) throw new BridgeActionError(res);
     return res.data;
   }
 
   async sendMessage(message: string | RawMessage | (string | RawMessage)[]): Promise<void> {
     const res = await this.session.send<SendMessageAction>(ActionId.SendMessage, { message });
-    if (res.error) throw new Error(`[${ResponseErrorReason[res.errorReason]}] ${res.message}`);
+    if (res.error) throw new BridgeActionError(res);
   }
 
   async sendScriptEvent(id: string, message: string): Promise<void> {
@@ -72,12 +74,12 @@ export class ScriptWorld<S extends ISession = ISession> {
       id,
       message,
     });
-    if (res.error) throw new Error(`[${ResponseErrorReason[res.errorReason]}] ${res.message}`);
+    if (res.error) throw new BridgeActionError(res);
   }
 
   async getTPS(): Promise<number> {
     const res = await this.session.send<GetTPSAction>(ActionId.GetTPS);
-    if (res.error) throw new Error(`[${ResponseErrorReason[res.errorReason]}] ${res.message}`);
+    if (res.error) throw new BridgeActionError(res);
     return res.data.tps;
   }
 
@@ -97,6 +99,10 @@ export class ScriptWorld<S extends ISession = ISession> {
     for (const player of data.players) {
       this.initializePlayer(player);
     }
+
+    new WorldLoadEvent(this.app, this).emit();
+
+    this.logger.debug(`World initialized: ${this.name}`);
   }
 
   onPlayerJoin(descriptor: PlayerDescriptor) {
@@ -105,7 +111,7 @@ export class ScriptWorld<S extends ISession = ISession> {
     new PlayerJoinEvent(this.app, this, player).emit();
   }
 
-  onPlayerLeave(playerUniqueId: string) {
+  onPlayerLeave(playerUniqueId: UniqueId) {
     const player = this.players.get(playerUniqueId);
     if (!player) throw new Error(`Player not found: ${playerUniqueId}`);
 
@@ -114,7 +120,7 @@ export class ScriptWorld<S extends ISession = ISession> {
     this.players.delete(playerUniqueId);
   }
 
-  onChatSend(senderUniqueId: string, message: string) {
+  onChatSend(senderUniqueId: UniqueId, message: string) {
     const sender = this.players.get(senderUniqueId);
     if (!sender) throw new Error(`Player not found: ${senderUniqueId}`);
 

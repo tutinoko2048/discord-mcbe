@@ -2,7 +2,7 @@ import type { RawMessage } from '@minecraft/server';
 import { ScriptWorld, ClientActionHandler, ISession, SocketBridgeServer, SocketSession } from '../../bridge';
 import type { Application } from '../../main';
 import { Logger } from '../../util';
-import { WorldConnectEvent, WorldDisconnectEvent, StartupEvent, WorldLoadEvent } from '../../events';
+import { WorldConnectEvent, WorldDisconnectEvent, StartupEvent } from '../../events';
 import { ScriptBridgeServer } from '@script-bridge/server';
 import {
   ActionId,
@@ -48,8 +48,7 @@ export class MinecraftHandler {
       const world = this.getWorldBySession(action.session);
       if (!world) throw new Error(`World not found: ${action.session.id}`);
       world.onInitialize(action.data);
-      new WorldLoadEvent(this.app, world).emit();
-      this.logger.debug(`World initialized: ${world.name}`);
+      action.respond();
     });
 
     this.registerHandler<PlayerJoinAction>(ActionId.PlayerJoin, (action) => {

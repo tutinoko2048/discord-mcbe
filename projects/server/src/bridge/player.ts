@@ -16,6 +16,7 @@ import { ScreenDisplay } from './screen-display';
 
 import type { RawMessage, Vector3 } from '@minecraft/server';
 import { ScriptDimension } from './dimension';
+import { BridgeActionError } from './errors';
 
 export class ScriptPlayer {
   public readonly world: ScriptWorld;
@@ -45,14 +46,14 @@ export class ScriptPlayer {
       message,
       playerUniqueId: this.uniqueId,
     });
-    if (res.error) throw new Error(`[${ResponseErrorReason[res.errorReason]}] ${res.message}`);
+    if (res.error) throw new BridgeActionError(res);
   }
 
   async getLocation(): Promise<Vector3> {
     const res = await this.world.session.send<GetEntityLocationAction>(ActionId.GetEntityLocation, {
       entityUniqueId: this.uniqueId,
     });
-    if (res.error) throw new Error(`[${ResponseErrorReason[res.errorReason]}] ${res.message}`);
+    if (res.error) throw new BridgeActionError(res);
 
     return res.data.location;
   }
@@ -61,7 +62,7 @@ export class ScriptPlayer {
     const res = await this.world.session.send<GetEntityDimensionAction>(ActionId.GetEntityDimension, {
       entityUniqueId: this.uniqueId,
     });
-    if (res.error) throw new Error(`[${ResponseErrorReason[res.errorReason]}] ${res.message}`);
+    if (res.error) throw new BridgeActionError(res);
 
     const dimensionId = res.data.dimension.id;
     if (!this.world._dimensions.has(dimensionId)) {
@@ -75,7 +76,7 @@ export class ScriptPlayer {
     const res = await this.world.session.send<GetGameModeAction>(ActionId.GetGameMode, {
       playerUniqueId: this.uniqueId,
     });
-    if (res.error) throw new Error(`[${ResponseErrorReason[res.errorReason]}] ${res.message}`);
+    if (res.error) throw new BridgeActionError(res);
 
     return res.data.gameMode;
   }
@@ -85,7 +86,7 @@ export class ScriptPlayer {
       playerUniqueId: this.uniqueId,
       gameMode,
     });
-    if (res.error) throw new Error(`[${ResponseErrorReason[res.errorReason]}] ${res.message}`);
+    if (res.error) throw new BridgeActionError(res);
   }
 
   async kick(reason?: string): Promise<void> {
@@ -93,6 +94,6 @@ export class ScriptPlayer {
       playerUniqueId: this.uniqueId,
       reason,
     });
-    if (res.error) throw new Error(`[${ResponseErrorReason[res.errorReason]}] ${res.message}`);
+    if (res.error) throw new BridgeActionError(res);
   }
 }
