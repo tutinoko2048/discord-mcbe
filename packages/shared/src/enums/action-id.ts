@@ -16,4 +16,12 @@ export enum ActionId {
   PlayerJoin = 'dm:player_join',
   PlayerLeave = 'dm:player_leave',
   ChatSend = 'dm:chat_send',
+  GetScore = 'dm:get_score',
+  UpdateScore = 'dm:update_score',
+  GetAllScores = 'dm:get_all_scores',
+  RemoveParticipant = 'dm:remove_participant',
+  GetObjective = 'dm:get_objective',
+  GetAllObjectives = 'dm:get_all_objectives',
+  UpdateObjective = 'dm:update_objective',
+  SetObjectiveDisplay = 'dm:set_objective_display',
 }

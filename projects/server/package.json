@@ -8,7 +8,7 @@
   "type": "module",
   "scripts": {
     "start": "pnpm build --silent && node --enable-source-maps ./dist/main.js",
-    "dev": "bun --define __BUN_EXE__=false ./src/main.ts --watch",
+    "dev": "bun --define __BUN_EXE__=false --watch ./src/main.ts",
     "build": "tsdown",
     "compile": "bun build --define __BUN_EXE__=true ./src/main.ts --compile --outfile=./build/discord-mcbe-server",
     "format": "biome format --write ./src",

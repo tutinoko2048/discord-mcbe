@@ -1,4 +1,4 @@
-import { world, Player, system } from '@minecraft/server';
+import { world, Player, system, ScoreboardObjective, ObjectiveSortOrder } from '@minecraft/server';
 import {
   ActionId,
   type SendMessageAction,
@@ -12,11 +12,23 @@ import {
   type RunCommandAction,
   type SendScriptEventAction,
   type GetTPSAction,
-  KickPlayerAction,
+  type KickPlayerAction,
+  type GetAllObjectivesAction,
+  type GetScoreAction,
+  type UpdateScoreAction,
+  type RemoveParticipantAction,
+  type GetObjectiveAction,
+  type UpdateObjectiveAction,
+  type SetObjectiveDisplayAction,
+  type GetAllScoresAction,
 } from '@discord-mcbe/shared';
+import {
+  createDimensionDescriptor,
+  createScoreboardObjectiveDescriptor,
+  createScoreboardScoreInfoDescriptor,
+} from './descriptors';
 import { getTPS } from './util';
 import { IBridgeClient } from '../transport';
-import { createDimensionDescriptor } from './descriptors';
 
 export function registerHandlers(bridge: IBridgeClient) {
   bridge.registerHandler<SendMessageAction>(ActionId.SendMessage, (action) => {
@@ -133,6 +145,110 @@ export function registerHandlers(bridge: IBridgeClient) {
     if (!(player instanceof Player)) throw new Error('Player not found');
 
     player.runCommand(`kick @s ${reason ? reason : ''}`);
+    action.respond();
+  });
+
+  bridge.registerHandler<GetScoreAction>(ActionId.GetScore, (action) => {
+    const { objectiveId, participant } = action.data;
+
+    const objective = world.scoreboard.getObjective(objectiveId);
+    if (!objective) throw new Error(`Objective '${objectiveId}' not found`);
+
+    const target = participant.uniqueId ? world.getEntity(participant.uniqueId) : participant.fakePlayer;
+    if (!target) throw new Error(`Participant '${participant.uniqueId}' not found`);
+
+    action.respond({
+      value: target ? objective.getScore(target) ?? null : null,
+    });
+  });
+
+  bridge.registerHandler<UpdateScoreAction>(ActionId.UpdateScore, (action) => {
+    const { objectiveId, participant, type, score } = action.data;
+
+    const objective = world.scoreboard.getObjective(objectiveId);
+    if (!objective) throw new Error(`Objective '${objectiveId}' not found`);
+
+    const target = participant.uniqueId ? world.getEntity(participant.uniqueId) : participant.fakePlayer;
+    if (!target) throw new Error(`Participant '${participant.uniqueId}' not found`);
+
+    let newScore: number = score;
+    if (type === 'set') {
+      objective.setScore(target, score);
+    } else if (type === 'add') {
+      newScore = objective.addScore(target, score);
+    }
+
+    action.respond({ value: newScore });
+  });
+
+  bridge.registerHandler<GetAllScoresAction>(ActionId.GetAllScores, (action) => {
+    const { objectiveId } = action.data;
+
+    const objective = world.scoreboard.getObjective(objectiveId);
+    if (!objective) throw new Error(`Objective '${objectiveId}' not found`);
+
+    const scores = objective.getScores().map(createScoreboardScoreInfoDescriptor);
+    action.respond({ scores });
+  });
+
+  bridge.registerHandler<RemoveParticipantAction>(ActionId.RemoveParticipant, (action) => {
+    const { objectiveId, participant } = action.data;
+
+    const objective = world.scoreboard.getObjective(objectiveId);
+    if (!objective) throw new Error(`Objective '${objectiveId}' not found`);
+
+    const target = participant.uniqueId ? world.getEntity(participant.uniqueId) : participant.fakePlayer;
+    if (!target) throw new Error(`Participant '${participant.uniqueId}' not found`);
+
+    action.respond({ result: objective.removeParticipant(target) });
+  });
+
+  bridge.registerHandler<GetObjectiveAction>(ActionId.GetObjective, (action) => {
+    const { objectiveId } = action.data;
+
+    const objective = world.scoreboard.getObjective(objectiveId);
+
+    action.respond({
+      objective: objective ? createScoreboardObjectiveDescriptor(objective) : undefined,
+    });
+  });
+
+  bridge.registerHandler<GetAllObjectivesAction>(ActionId.GetAllObjectives, (action) => {
+    const objectives = world.scoreboard.getObjectives();
+    const objectiveDescriptors = objectives.map(createScoreboardObjectiveDescriptor);
+    action.respond({ objectives: objectiveDescriptors });
+  });
+
+  bridge.registerHandler<UpdateObjectiveAction>(ActionId.UpdateObjective, (action) => {
+    const { type, objectiveId, displayName } = action.data;
+
+    let objective: ScoreboardObjective | undefined;
+    if (type === 'add') {
+      objective = world.scoreboard.addObjective(objectiveId, displayName);
+    } else if (type === 'remove') {
+      world.scoreboard.removeObjective(objectiveId);
+    }
+
+    action.respond({
+      objective: objective ? createScoreboardObjectiveDescriptor(objective) : undefined,
+    });
+  });
+
+  bridge.registerHandler<SetObjectiveDisplayAction>(ActionId.SetObjectiveDisplay, (action) => {
+    const { displaySlotId, objectiveId, sortOrder } = action.data;
+
+    if (objectiveId) {
+      const objective = world.scoreboard.getObjective(objectiveId);
+      if (!objective) throw new Error(`Objective '${objectiveId}' not found`);
+
+      world.scoreboard.setObjectiveAtDisplaySlot(displaySlotId, {
+        objective,
+        sortOrder: sortOrder ? ObjectiveSortOrder[sortOrder] : undefined,
+      });
+    } else {
+      world.scoreboard.clearObjectiveAtDisplaySlot(displaySlotId);
+    }
+
     action.respond();
   });
 

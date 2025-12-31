@@ -16,9 +16,11 @@ import { ISession, SocketSession } from './transport';
 import { ChatSendEvent, PlayerJoinEvent, PlayerLeaveEvent } from '../events';
 import { Application } from '../main';
 import { Logger } from '../util';
+import { ScriptScoreboard } from './scoreboard';
 
 export class ScriptWorld<S extends ISession = ISession> {
   private readonly app: Application;
+  private readonly _isWebSocket: boolean;
 
   public readonly session: S;
 
@@ -32,15 +34,14 @@ export class ScriptWorld<S extends ISession = ISession> {
   /** { [dimensionId]: ScriptDimension } */
   public readonly _dimensions = new Map<string, ScriptDimension>();
 
-  private readonly _isWebSocket: boolean;
-
-  //TODO: Scoreboard API
+  public readonly scoreboard: ScriptScoreboard;
 
   constructor(app: Application, session: S, isWebSocket: boolean) {
     this.app = app;
     this.session = session;
     this._isWebSocket = isWebSocket;
     this.logger = new Logger(this.name, this.app.config);
+    this.scoreboard = new ScriptScoreboard(this.session);
   }
 
   get name(): string {
