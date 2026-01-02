@@ -5,8 +5,8 @@ import type { Application } from '../application';
 /**
  * Cancellable.
  */
-export class ChatSendEvent extends ApplicationEvent {
-  public static readonly identifier = 'chatSend';
+export class MinecraftMessageEvent extends ApplicationEvent {
+  public static readonly identifier = 'minecraftMessage';
 
   public readonly world: ScriptWorld;
 

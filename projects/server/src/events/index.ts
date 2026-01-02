@@ -1,6 +1,6 @@
 export * from './app';
 export * from './discord-message';
-export * from './player-chat';
+export * from './minecraft-message';
 export * from './player-join';
 export * from './player-leave';
 export * from './shutdown';

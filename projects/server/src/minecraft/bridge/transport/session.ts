@@ -17,7 +17,7 @@ import {
 import { NamespaceRequiredError } from '@script-bridge/server';
 import { ISession } from './interfaces';
 import { SocketBridgeServer } from './socket';
-import { Logger } from '../../util';
+import { Logger } from '../../../util';
 import { AddonNotInstalledError } from './errors';
 
 export class SocketSession implements ISession {

@@ -13,7 +13,7 @@ import { ScriptPlayer } from './player';
 import { ISession, SocketSession } from './transport';
 import { ScriptScoreboard } from './scoreboard';
 import { BridgeActionError } from './errors';
-import { ChatSendEvent, PlayerJoinEvent, PlayerLeaveEvent, WorldLoadEvent } from '../../events';
+import { MinecraftMessageEvent, PlayerJoinEvent, PlayerLeaveEvent, WorldLoadEvent } from '../../events';
 import { Logger } from '../../util';
 import type { Session as ScriptSession } from '@script-bridge/server';
 import type { RawMessage } from '@minecraft/server';
@@ -124,7 +124,7 @@ export class ScriptWorld<S extends ISession = ISession> {
     const sender = this.players.get(senderUniqueId);
     if (!sender) throw new Error(`Player not found: ${senderUniqueId}`);
 
-    new ChatSendEvent(this.app, this, sender, message).emit();
+    new MinecraftMessageEvent(this.app, this, sender, message).emit();
   }
 
   /**

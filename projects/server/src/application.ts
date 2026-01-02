@@ -1,15 +1,14 @@
 import { ExtendedEmitter, MinecraftCommandVersion } from 'socket-be';
 import type { ExtractOptional } from '@discord-mcbe/shared';
-import { CommandLineHandler, MinecraftHandler, ScriptHandler } from './handlers';
+import { DiscordBot } from './discord';
+import { MinecraftHandler } from './minecraft';
+import { MessageSyncHandler, CommandLineHandler, ScriptHandler } from './handlers';
 import type { ApplicationEvents, Config } from './types';
 import { Logger, _t, initialize as initializeLang, loadConfig, renderLogo } from './util';
 import { StartupEvent } from './events';
 
 import { version as VERSION } from '../package.json';
-import { DiscordBot } from './discord';
 
-// const { handleMessage } = require('./handlers/MessageHandler');
-// const { handleChat } = require('./handlers/ChatHandler');
 
 const defaultConfig: ExtractOptional<Config> = {
   socket_port: 8000,
@@ -34,6 +33,7 @@ export class Application extends ExtendedEmitter<ApplicationEvents> {
 
   public readonly bot: DiscordBot;
   public readonly minecraft: MinecraftHandler;
+  public readonly messageSync: MessageSyncHandler;
   public readonly cli: CommandLineHandler;
   public readonly scripts: ScriptHandler;
 
@@ -55,6 +55,8 @@ export class Application extends ExtendedEmitter<ApplicationEvents> {
     this.bot = new DiscordBot(this);
 
     this.minecraft = new MinecraftHandler(this);
+
+    this.messageSync = new MessageSyncHandler(this);
 
     this.cli = new CommandLineHandler(this);
 
@@ -137,7 +139,7 @@ export class Application extends ExtendedEmitter<ApplicationEvents> {
       this.logger.info(`[PlayerLeave] ${player.name} left ${world.name}`);
     });
 
-    this.on('chatSend', (ev) => {
+    this.on('minecraftMessage', (ev) => {
       this.logger.info(`[${ev.world.name}] ${ev.sender.name}: ${ev.message}`);
       // Handle chat event here (e.g., send to Discord)
       this.bot.sendMessage(`[${ev.world.name}] ${ev.sender.name}: ${ev.message}`);

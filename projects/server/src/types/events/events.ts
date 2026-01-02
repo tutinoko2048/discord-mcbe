@@ -1,5 +1,5 @@
 import type {
-  ChatSendEvent,
+  MinecraftMessageEvent,
   PlayerJoinEvent,
   PlayerLeaveEvent,
   StartupEvent,
@@ -16,7 +16,7 @@ export interface ApplicationEvents {
   worldConnect: [WorldConnectEvent];
   worldLoad: [WorldLoadEvent];
   worldDisconnect: [WorldDisconnectEvent];
-  chatSend: [ChatSendEvent];
+  minecraftMessage: [MinecraftMessageEvent];
   discordMessage: [DiscordMessageEvent];
   playerJoin: [PlayerJoinEvent];
   playerLeave: [PlayerLeaveEvent];

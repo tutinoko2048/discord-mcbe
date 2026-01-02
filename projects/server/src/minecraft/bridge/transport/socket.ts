@@ -10,7 +10,7 @@ import {
   Server as SocketServer,
   World as SocketWorld,
 } from 'socket-be';
-import { Logger } from '../../util';
+import { Logger } from '../../../util';
 import { ClientActionHandler } from './types';
 import { NamespaceRequiredError } from '@script-bridge/server';
 import { AddonNotInstalledError } from './errors';
