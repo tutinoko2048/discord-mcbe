@@ -1,6 +1,6 @@
 import { ApplicationEvent } from './app';
 import type { Application } from '../application';
-import type { ScriptWorld, ScriptPlayer } from '../bridge';
+import type { ScriptWorld, ScriptPlayer } from '../minecraft';
 
 export class PlayerLeaveEvent extends ApplicationEvent {
   public static readonly identifier = 'playerLeave';

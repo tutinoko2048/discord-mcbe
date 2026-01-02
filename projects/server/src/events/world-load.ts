@@ -1,6 +1,6 @@
 import { ApplicationEvent } from './app';
+import { ScriptWorld } from '../minecraft';
 import type { Application } from '../application';
-import { ScriptWorld } from '../bridge';
 
 export class WorldLoadEvent extends ApplicationEvent {
   public static readonly identifier = 'worldLoad';

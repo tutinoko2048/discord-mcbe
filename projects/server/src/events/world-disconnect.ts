@@ -1,7 +1,7 @@
+import { DisconnectReason } from '@script-bridge/protocol';
 import { ApplicationEvent } from './app';
 import type { Application } from '../application';
-import type { ScriptWorld } from '../bridge';
-import { DisconnectReason } from '@script-bridge/protocol';
+import type { ScriptWorld } from '../minecraft';
 
 export class WorldDisconnectEvent extends ApplicationEvent {
   public static readonly identifier = 'worldDisconnect';

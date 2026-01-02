@@ -1,6 +1,6 @@
 import { ApplicationEvent } from './app';
+import { ScriptWorld, ScriptPlayer } from '../minecraft';
 import type { Application } from '../application';
-import { ScriptWorld, ScriptPlayer } from '../bridge';
 
 /**
  * Cancellable.
