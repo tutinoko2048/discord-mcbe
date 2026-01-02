@@ -4,7 +4,7 @@ import { DiscordBot } from './discord';
 import { MinecraftHandler } from './minecraft';
 import { MessageSyncHandler, CommandLineHandler, ScriptHandler } from './handlers';
 import type { ApplicationEvents, Config } from './types';
-import { Logger, _t, initialize as initializeLang, loadConfig, renderLogo } from './util';
+import { Logger, PropertyManager, _t, initialize as initializeLang, loadConfig, renderLogo } from './util';
 import { StartupEvent } from './events';
 
 import { version as VERSION } from '../package.json';
@@ -30,6 +30,7 @@ export class Application extends ExtendedEmitter<ApplicationEvents> {
   public readonly config: Required<Config>;
   public readonly version: string;
   public readonly logger: Logger;
+  public readonly properties: PropertyManager;
 
   public readonly bot: DiscordBot;
   public readonly minecraft: MinecraftHandler;
@@ -45,6 +46,8 @@ export class Application extends ExtendedEmitter<ApplicationEvents> {
     console.log(`Loading discord-mcbe v${VERSION}...`);
 
     this.version = VERSION;
+
+    this.properties = new PropertyManager();
 
     this.config = Object.assign(defaultConfig, loadConfig());
 

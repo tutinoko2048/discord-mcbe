@@ -8,11 +8,11 @@
   "type": "module",
   "scripts": {
     "start": "pnpm build --silent && node --enable-source-maps ./dist/main.js",
-    "dev": "bun --define __BUN_EXE__=false --watch ./src/main.ts",
+    "dev": "bun --watch ./src/main.ts",
     "build": "tsdown",
     "compile": "bun build --define __BUN_EXE__=true ./src/main.ts --compile --outfile=./build/discord-mcbe-server",
     "format": "biome format --write ./src",
-    "test": "bun --define __BUN_EXE__=false ./tests/test.ts",
+    "test": "bun ./tests/test.ts",
     "generate-schema": "bun ./scripts/generate-schema.ts",
     "generate-logo": "bun ./scripts/generate-logo.ts",
     "generate-lang-types": "bun ./scripts/generate-lang-types.ts"
