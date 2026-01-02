@@ -1,4 +1,5 @@
 export * from './app';
+export * from './discord-message';
 export * from './player-chat';
 export * from './player-join';
 export * from './player-leave';

@@ -15,6 +15,7 @@ import { PanelHandler } from './panel';
 
 import { _t, Logger } from '../util';
 import * as embeds from './embeds';
+import { DiscordMessageEvent } from '../events';
 
 export class DiscordBot<READY extends boolean = false> {
   private readonly logger: Logger;
@@ -108,6 +109,8 @@ export class DiscordBot<READY extends boolean = false> {
 
   private onReady(client: Client<true>) {
     this.logger.info('Logged in as', client.user.tag);
+
+    this.validateChannel();
     // this.interactions.registerCommands(this.app.config.guild_id);
     // this.logger.info(_t('console.login', this.client.user!.tag));
 
@@ -121,12 +124,30 @@ export class DiscordBot<READY extends boolean = false> {
   }
 
   private onMessageCreate(message: Message) {
-    if (message.author.bot || message.channel.id !== this.app.config.channel_id) return;
+    if (message.author.bot) return;
 
-    this.logger.log('messageCreate', message.content, message.author.tag);
+    this.logger.debug('messageCreate', message.content, message.author.tag);
+    if (message.channel.id === this.app.config.channel_id) {
+      if (!message.inGuild()) {
+        return this.logger.warn(`Received a message from invalid channel (ID: ${message.channel.id})`);
+      }
+
+      new DiscordMessageEvent(this.app, message).emit();
+    }
   }
 
   private onInteractionCreate(interaction: Interaction) {
-    this.logger.log('interactionCreate', interaction.user.tag);
+    this.logger.debug('interactionCreate', interaction.user.tag);
+  }
+
+  private validateChannel() {
+    const channel = this.client.channels.cache.get(this.app.config.channel_id);
+    if (!channel) {
+      throw new Error(`Failed to find the channel (ID: ${this.app.config.channel_id})`);
+    }
+
+    if (!channel.isTextBased()) {
+      throw new Error(`Channel '${channel.name}' (ID: ${channel.id}) is not a text channel`);
+    }
   }
 }
