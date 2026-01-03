@@ -1,18 +1,15 @@
 import { DisconnectReason } from '@script-bridge/protocol';
-import { ApplicationEvent } from './app';
+import { MinecraftEvent } from './minecraft';
 import type { Application } from '../application';
 import type { ScriptWorld } from '../minecraft';
 
-export class WorldDisconnectEvent extends ApplicationEvent {
+export class WorldDisconnectEvent extends MinecraftEvent {
   public static readonly identifier = 'worldDisconnect';
-
-  public readonly world: ScriptWorld;
 
   public readonly reason?: DisconnectReason;
 
   constructor(app: Application, world: ScriptWorld, reason?: DisconnectReason) {
-    super(app);
-    this.world = world;
+    super(app, world);
     this.reason = reason;
   }
 }

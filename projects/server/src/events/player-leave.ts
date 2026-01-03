@@ -1,17 +1,14 @@
-import { ApplicationEvent } from './app';
+import { MinecraftEvent } from './minecraft';
 import type { Application } from '../application';
 import type { ScriptWorld, ScriptPlayer } from '../minecraft';
 
-export class PlayerLeaveEvent extends ApplicationEvent {
+export class PlayerLeaveEvent extends MinecraftEvent {
   public static readonly identifier = 'playerLeave';
-
-  public readonly world: ScriptWorld;
 
   public readonly player: ScriptPlayer;
 
   constructor(app: Application, world: ScriptWorld, player: ScriptPlayer) {
-    super(app);
-    this.world = world;
+    super(app, world);
     this.player = player;
   }
 }

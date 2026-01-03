@@ -1,7 +1,7 @@
 import type { Application } from '../application';
 import type { ApplicationEvents } from '../types';
 
-export class ApplicationEvent {
+export abstract class ApplicationEvent {
   public static readonly identifier: keyof ApplicationEvents;
   public readonly identifier = (this.constructor as typeof ApplicationEvent).identifier;
 
