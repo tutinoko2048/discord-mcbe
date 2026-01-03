@@ -1,21 +1,18 @@
-import * as path from 'node:path';
 import {
   Client,
-  codeBlock,
   Events,
   GatewayIntentBits,
   Interaction,
   type Message,
   type MessageCreateOptions,
 } from 'discord.js';
-import { DiscordInteractions } from '@akki256/discord-interaction';
+// import { DiscordInteractions } from '@akki256/discord-interaction';
 import type { Application } from '../application';
 
-import { PanelHandler } from './panel';
+// import { PanelHandler } from './panel';
 
 import { _t, Logger } from '../util';
-import * as embeds from './embeds';
-import { DiscordMessageEvent } from '../events';
+import { DiscordMessageEvent, DiscordReadyEvent } from '../events';
 
 export class DiscordBot<READY extends boolean = false> {
   private readonly logger: Logger;
@@ -108,25 +105,23 @@ export class DiscordBot<READY extends boolean = false> {
   }
 
   private onReady(client: Client<true>) {
-    this.logger.info('Logged in as', client.user.tag);
+    this.logger.info(_t('console.login', client.user.tag));
 
     this.validateChannel();
     // this.interactions.registerCommands(this.app.config.guild_id);
-    // this.logger.info(_t('console.login', this.client.user!.tag));
-
-    // const embed = embeds.ready().setFooter({ text: _t('discord.ready') });
-    // if (this.app.config.ready_message) this.sendMessage({ embeds: [ embed ] });
 
     // // void this.updateActivity();
     // // setInterval(() => this.updateActivity(), 20_000);
 
     // this.panels.startInterval();
+    new DiscordReadyEvent(this.app, client).emit();
   }
 
   private onMessageCreate(message: Message) {
     if (message.author.bot) return;
 
-    this.logger.debug('messageCreate', message.content, message.author.tag);
+    // this.logger.debug('messageCreate', message.content, message.author.tag);
+
     if (message.channel.id === this.app.config.channel_id) {
       if (!message.inGuild()) {
         return this.logger.warn(`Received a message from invalid channel (ID: ${message.channel.id})`);

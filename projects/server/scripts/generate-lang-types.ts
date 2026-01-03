@@ -1,33 +1,33 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { parseDir } from 'dotlang';
+import { parse } from 'dotlang';
 
 const langDir = path.resolve(__dirname, '../../../lang');
 const targetPath = path.resolve(__dirname, '../src/types/lang.generated.ts');
 
 console.log(`🚧 Generating lang types from ${langDir}...`);
-const langMaps = parseDir(langDir);
-
+const FALLBACK_LANG = 'en_US';
+const langMap = parse(path.join(langDir, `${FALLBACK_LANG}.lang`));
 
 /** "%0", "%1" ... の最大値 + 1 */
 function countArgs(text: string): number {
   const matches = [...text.matchAll(/%(\d+)/g)];
   if (matches.length === 0) return 0;
-  return Math.max(...matches.map(m => Number(m[1]))) + 1;
+  return Math.max(...matches.map((m) => Number(m[1]))) + 1;
 }
 
 /* ---------- Locale ---------- */
-const locales = [...langMaps.keys()].sort();
+const locales = fs.readdirSync(langDir)
+  .filter((file) => file.endsWith('.lang'))
+  .map((file) => file.slice(0, -5));
 
 /* ---------- flatten: key -> max arg count ---------- */
 const argCountByKey = new Map<string, number>();
 
-for (const [, langMap] of langMaps) {
-  for (const [key, value] of langMap) {
-    const count = countArgs(value);
-    const prev = argCountByKey.get(key) ?? 0;
-    argCountByKey.set(key, Math.max(prev, count));
-  }
+for (const [key, value] of langMap) {
+  const count = countArgs(value);
+  const prev = argCountByKey.get(key) ?? 0;
+  argCountByKey.set(key, Math.max(prev, count));
 }
 
 const keys = [...argCountByKey.keys()].sort();
@@ -35,32 +35,27 @@ const keys = [...argCountByKey.keys()].sort();
 /* ---------- Locale type ---------- */
 const localeType = `
 export type Locale =
-${locales.map(l => `  | "${l}"`).join("\n")};
+${locales.map((l) => `  | '${l}'`).join('\n')};
 `;
 
 /* ---------- LangArgs ---------- */
 const langArgsType = `
 export type LangArgs = {
 ${keys
-  .map(key => {
+  .map((key) => {
     const count = argCountByKey.get(key)!;
-    const tuple =
-      count === 0
-        ? "[]"
-        : `[${Array(count).fill("Arg").join(", ")}]`;
-    return `  "${key}": ${tuple};`;
+    const tuple = count === 0 ? '[]' : `[${Array(count).fill('Arg').join(', ')}]`;
+    return `  '${key}': ${tuple};`;
   })
-  .join("\n")}
+  .join('\n')}
 };
 `;
-
 
 const output = `
 // ⚠️ AUTO-GENERATED FILE
 // DO NOT EDIT MANUALLY
 
-/* eslint-disable */
-/* prettier-ignore */
+/* biome-ignore */
 
 export type Arg = string | number;
 

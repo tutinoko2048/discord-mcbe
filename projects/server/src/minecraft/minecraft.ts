@@ -1,7 +1,7 @@
 import type { RawMessage } from '@minecraft/server';
 import { ScriptWorld, ClientActionHandler, ISession, SocketBridgeServer, SocketSession } from './bridge';
 import type { Application } from '../application';
-import { Logger } from '../util';
+import { _t, Logger } from '../util';
 import { WorldConnectEvent, WorldDisconnectEvent, StartupEvent } from '../events';
 import { ScriptBridgeServer } from '@script-bridge/server';
 import {
@@ -80,7 +80,7 @@ export class MinecraftHandler {
 
   async start(): Promise<void> {
     await this.script.start();
-    this.logger.info(`[BDS] ScriptBridge server is listening on port: ${this.script.port}`);
+    this.logger.info(_t('console.script.ready', this.script.port));
   }
 
   getWorlds(): ScriptWorld[] {
@@ -104,31 +104,6 @@ export class MinecraftHandler {
     await Promise.allSettled(this.getWorlds().map((world) => world.sendMessage(message)));
   }
 
-  // onPlayerJoin(world: SocketWorld | ScriptWorld, player: SocketPlayer | ScriptPlayer) {
-  //   this.logger.debug(`[PlayerJoin] ${player.name} joined ${world.name}`);
-
-  //   new PlayerJoinEvent(this.app, createWorld(world), createPlayer(player)).emit();
-  // }
-
-  // onPlayerLeave(world: SocketWorld | ScriptWorld, player: SocketPlayer | ScriptPlayer) {
-  //   this.logger.debug(`[PlayerLeave] ${player.name} left ${world.name}`);
-
-  //   new PlayerLeaveEvent(this.app, createWorld(world), createPlayer(player)).emit();
-  // }
-
-  // onPlayerChat(world: SocketWorld | ScriptWorld, sender: SocketPlayer | ScriptPlayer, message: string) {
-  //   this.logger.debug(`[PlayerChat] [${world.name}] <${sender.name}> ${message}`);
-
-  //   const event = new PlayerChatEvent(this.app, createWorld(world), createPlayer(sender), message);
-  //   if (!event.emit()) return;
-
-  //   // send to discord
-  //   const worlds = this.getWorlds();
-  //   this.app.bot
-  //     .sendMessage(`${worlds.length > 1 ? `[${world.name}] ` : ''}**${sender.name}**: ${message}`)
-  //     .catch((err) => this.logger.error(`[PlayerChat] [${world.name}] <${sender.name}> ${message}`, err));
-  // }
-
   private onClientConnect(session: ISession) {
     this.logger.debug('onClientConnect');
     const world = new ScriptWorld(this.app, session, session instanceof SocketSession);
@@ -151,9 +126,9 @@ export class MinecraftHandler {
   }
 
   private onOpen() {
-    this.logger.info(`[Local] SocketBridge server is listening on port: ${this.app.config.socket_port}`);
+    this.logger.info(_t('console.socket.ready', this.app.config.socket_port));
     this.logger.info(
-      `[Local] Type ${green(`/connect localhost:${this.app.config.socket_port}`)} in Minecraft to connect.`,
+      _t('console.socket.command', green(`/connect localhost:${this.app.config.socket_port}`)),
     );
   }
 

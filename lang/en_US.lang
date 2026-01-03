@@ -1,17 +1,15 @@
 minecraft.connect=§9[discord-mcbe]§r §7Started connection as %0§r
-minecraft.message=§b[Discord]§r %0: %1§r
-minecraft.attachments=§b[Discord]§r %0: §7%1§r
-minecraft.command=§a[Discord]§r %0: %1§r
+minecraft.message=§9[Discord]§r %0: %1§r
+minecraft.withAttachments=§9[Discord]§r %0: §o§7%1 file(s)§r
 
 discord.ready=Connection server has started
 discord.connect=%0: Connection has started
 discord.disconnect=Connection has closed
 discord.chat=<%0> %1
-discord.me= * %0 %1
-discord.say=%0
+discord.chat.multipleWorlds=[%0] <%1> %2
+discord.join=%0 joined the game
+discord.leave=%0 left the game
 discord.list=Current players: %0/%1\nPlayers:\n%2
-discord.join=**Joined: %0  ||  %1/%2**
-discord.leave=**Left: %0  ||  %1/%2**
 
 command.error.catch=❌ An error has occurred while processing Interaction
 command.error.noworlds=Not connected to world
@@ -27,16 +25,16 @@ command.panel.notfound=Panel not found
 command.panel.set=Status panel display channel has set to %0
 
 console.login=Logged in as %0
-console.listening=Minecraft: "/connect %0" to connect
+console.socket.ready=[Local] SocketBridge server is listening on port: %0
+console.socket.command=[Local] Type %0 in Minecraft to connect.
+console.script.ready=[BDS] ScriptBridge server is listening on port: %0
 console.connect=[%0] %1: Connection has started
 console.disconnect=[%0] Connection has closed
-console.join=Joined: %0  ||  %1/%2
-console.leave=Left: %0  ||  %1/%2
-console.message=[Discord] %0: %1
-console.attachment=[Discord] %0: %1
-console.command=[Discord] %0: %1
-console.chat=<%0> %1
-console.me= * %0 %1
-console.say=%0
+console.join=[%0] %1 joined the game
+console.leave=[%0] %1 left the game
+console.message=[Discord | %0] <%1> %2
+console.withAttachments=[Discord | %0] <%1> (%2 files)
+console.command=[Discord | %0] <%1> %2
+console.chat=[%0] <%1> %2
 
 util.duration=%0h %1m %2s

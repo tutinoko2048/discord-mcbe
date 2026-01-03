@@ -1,12 +1,10 @@
 import * as moment from 'moment-timezone';
 import type { Application } from '../application';
 import * as util from '../util/util';
-import { type Client, EmbedBuilder, RESTJSONErrorCodes, type Message, TextBasedChannel, time } from 'discord.js';
-import { colors } from './embeds';
-import { Config } from '../types';
+import { type Client, EmbedBuilder, RESTJSONErrorCodes, type Message, time } from 'discord.js';
+import { Palette } from './embeds';
 import { _t, Logger } from '../util';
 import { type PlayerList, RequestTimeoutError, World } from 'socket-be';
-import { ScriptWorld } from '../bridge';
 
 interface PanelData {
   channelId: string;
@@ -15,7 +13,7 @@ interface PanelData {
 
 const panelEmbed = new EmbedBuilder()
   .setAuthor({ name: 'Status Panel' })
-  .setColor(colors.leave)
+  .setColor(Palette.Discord)
   .setDescription('Awaiting update...');
 
 export class PanelHandler {
