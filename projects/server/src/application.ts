@@ -2,7 +2,7 @@ import { ExtendedEmitter, MinecraftCommandVersion } from 'socket-be';
 import type { ExtractOptional } from '@discord-mcbe/shared';
 import { DiscordBot } from './discord';
 import { MinecraftHandler } from './minecraft';
-import { MessageSyncHandler, CommandLineHandler, ScriptHandler } from './handlers';
+import { EventHandler, CommandLineHandler, ScriptHandler } from './handlers';
 import type { ApplicationEvents, Config } from './types';
 import { Logger, PropertyManager, _t, initialize as initializeLang, loadConfig, renderLogo } from './util';
 import { StartupEvent } from './events';
@@ -31,12 +31,11 @@ export class Application extends ExtendedEmitter<ApplicationEvents> {
   public readonly version: string;
   public readonly logger: Logger;
   public readonly properties: PropertyManager;
-
   public readonly bot: DiscordBot;
   public readonly minecraft: MinecraftHandler;
-  public readonly messageSync: MessageSyncHandler;
-  public readonly cli: CommandLineHandler;
-  public readonly scripts: ScriptHandler;
+  private readonly cli: CommandLineHandler;
+  private readonly scripts: ScriptHandler;
+  private readonly events: EventHandler;
 
   public readonly initializedAt: number = Date.now();
 
@@ -59,19 +58,21 @@ export class Application extends ExtendedEmitter<ApplicationEvents> {
 
     this.minecraft = new MinecraftHandler(this);
 
-    this.messageSync = new MessageSyncHandler(this);
-
     this.cli = new CommandLineHandler(this);
 
     this.scripts = new ScriptHandler(this);
+
+    this.events = new EventHandler(this);
 
     this.emit('startup', new StartupEvent(this));
     this.logger.debug('Application initialized');
   }
 
   async start() {
+    this.events.start();
     await this.minecraft.start();
     await this.bot.start();
+    this.cli.start();
 
     // this.server.on(ServerEvent.Open, () => {
     //   this.logger.info(_t('console.listening', `${this.server.ip}:${this.config.port}`));
@@ -140,17 +141,6 @@ export class Application extends ExtendedEmitter<ApplicationEvents> {
     this.on('playerLeave', (ev) => {
       const { player, world } = ev;
       this.logger.info(`[PlayerLeave] ${player.name} left ${world.name}`);
-    });
-
-    this.on('minecraftMessage', (ev) => {
-      this.logger.info(`[${ev.world.name}] ${ev.sender.name}: ${ev.message}`);
-      // Handle chat event here (e.g., send to Discord)
-      this.bot.sendMessage(`[${ev.world.name}] ${ev.sender.name}: ${ev.message}`);
-
-      for (const world of this.minecraft.getWorlds()) {
-        if (world === ev.world) continue;
-        world.sendMessage(`[${ev.world.name}] ${ev.sender.name}: ${ev.message}`);
-      }
     });
 
     this.logger.debug('Application started');

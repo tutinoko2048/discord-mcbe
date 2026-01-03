@@ -16,9 +16,12 @@ export class CommandLineHandler {
       input: process.stdin,
       output: process.stdout,
     });
-    this.reader.on('line', this.handleLine.bind(this));
 
     this.logger.debug('Initialized');
+  }
+
+  start() {
+    this.reader.on('line', this.handleLine.bind(this));
   }
 
   private handleLine(line: string): void {

@@ -1,3 +1,3 @@
-export * from './message-sync';
+export * from './event';
 export * from './cli';
 export * from './script';

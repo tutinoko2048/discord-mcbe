@@ -2,19 +2,21 @@ import { Logger } from '../util';
 import type { Application } from '../application';
 import { DiscordMessageEvent, MinecraftMessageEvent } from '../events';
 
-export class MessageSyncHandler {
+export class EventHandler {
   private readonly app: Application;
 
   private readonly logger: Logger;
 
   constructor(app: Application) {
     this.app = app;
-    this.logger = new Logger('MessageSync', this.app.config);
-
-    this.app.on('minecraftMessage', this.onMinecraftMessage.bind(this));
-    this.app.on('discordMessage', this.onDiscordMessage.bind(this));
+    this.logger = new Logger('Event', this.app.config);
 
     this.logger.debug('Initialized');
+  }
+
+  start() {
+    this.app.on('minecraftMessage', this.onMinecraftMessage.bind(this));
+    this.app.on('discordMessage', this.onDiscordMessage.bind(this));
   }
 
   private async onMinecraftMessage(event: MinecraftMessageEvent) {
