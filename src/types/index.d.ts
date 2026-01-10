@@ -8,6 +8,24 @@ declare module 'config.jsonc' {
   export default config;
 }
 
+export interface LengthFilter {
+  /** Action to take when content exceeds max length or lines */
+  on_fail: 'cancel' | 'shorten';
+  /** Maximum character length of the content */
+  max_content_length?: number;
+  /** Maximum number of lines in the content */
+  max_lines?: number;
+}
+
+export interface RegexFilter {
+  /** Action to take when content matches the regex */
+  on_fail: 'cancel' | 'hide';
+  /** Regular expression to ignore certain content */
+  ignore_content_regex?: string;
+}
+
+export type MessageFilter = LengthFilter | RegexFilter;
+
 export interface IConfig {
   /** Token of the bot */
   discord_token: string; 
@@ -37,4 +55,6 @@ export interface IConfig {
   command_version: string | number | number[];
   /** debug. */
   debug?: boolean;
+  /** Filters for Discord messages */
+  discord_message_filters?: MessageFilter | MessageFilter[];
 }

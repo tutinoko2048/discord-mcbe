@@ -96,6 +96,7 @@ Array of string. (EX: `[ "RoleID1", "RoleID2",... ]`)
 - `command_version`: The version of command to send
 - `debug`: Enables debug log
 - `styles_tnac`: Highlights messages from TN-AntiCheat
+- `discord_message_filters`: Filters for Discord messages (See [here](https://github.com/tutinoko2048/discord-mcbe/wiki/Discord%E3%83%A1%E3%83%83%E3%82%BB%E3%83%BC%E3%82%B8%E3%81%AE%E3%83%95%E3%82%A3%E3%83%AB%E3%82%BF%E3%83%AA%E3%83%B3%E3%82%B0%E6%A9%9F%E8%83%BD%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6) for details)
 
 ## Other features
 ### Run commands

@@ -8,12 +8,14 @@
   "typings": "src/types/index.d.ts",
   "scripts": {
     "start": "node src/index.js",
-    "lint": "eslint src/ scripts/ & tsc"
+    "lint": "eslint src/ scripts/ && npm run typecheck",
+    "typecheck": "tsc --noEmit",
+    "generate-schema": "node src/generate_schema.js"
   },
   "dependencies": {
     "@akki256/discord-interaction": "^3.1.1",
     "discord-mcbe": "file:src",
-    "discord.js": "^14.16.2",
+    "discord.js": "^14.25.1",
     "dotlang": "^1.1.1",
     "jsonc": "^2.0.0",
     "moment-timezone": "^0.5.45",

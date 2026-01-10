@@ -31,6 +31,19 @@ async function handleMessage(main, message) {
     await msg.edit({ embeds: [res.embed], files: res.files });
     if (res.files) fs.unlinkSync(res.files[0]);
   }
+
+  if (!isCommand && main.config.discord_message_filters) {
+    let filters = main.config.discord_message_filters;
+    if (!Array.isArray(filters)) filters = [ filters ];
+
+    for (const filter of filters) {
+      const result = applyMessageFilter(content, filter);
+      if (result.action === 'cancel') return;
+      if (result.action === 'update' && result.updatedContent) {
+        content = result.updatedContent;
+      }
+    }
+  }
   
   const langKey = isCommand ? 'command' : 'message';
   main.logger.log(main.lang.run(`console.${langKey}`, [
@@ -116,6 +129,52 @@ function formatAttachments(attachments) {
     return `[${safeString(names.join('.'), 12)}.${extension}]`;
   });
   return files.slice(0, maxFileMessages).join(', ').concat(files.length > maxFileMessages ? '...' : '');
+}
+
+/**
+ * @param {string} content
+ * @param {import('../types').MessageFilter} filter
+ * @returns {{ action: 'none' | 'cancel' | 'update', updatedContent?: string }} False if the message should be ignored
+ */
+function applyMessageFilter(content, filter) {
+  let updatedContent = content;
+  let isChanged = false;
+  
+  if ('max_content_length' in filter && updatedContent.length > filter.max_content_length) {
+    if (filter.on_fail === 'cancel') return { action: 'cancel' };
+    if (filter.on_fail === 'shorten') {
+      updatedContent = updatedContent.slice(0, filter.max_content_length) + '..';
+      isChanged = true;
+    }
+  }
+
+  if ('max_lines' in filter) {
+    const lines = updatedContent.split('\n');
+    if (lines.length > filter.max_lines) {
+      if (filter.on_fail === 'cancel') return { action: 'cancel' };
+      if (filter.on_fail === 'shorten') {
+        updatedContent = lines.slice(0, filter.max_lines).join('\n') + '..';
+        isChanged = true;
+      }
+    }
+  }
+
+  if ('ignore_content_regex' in filter && filter.ignore_content_regex) {
+    const regex = new RegExp(filter.ignore_content_regex, 'g');
+    if (regex.test(updatedContent)) {
+      if (filter.on_fail === 'cancel') return { action: 'cancel' };
+      if (filter.on_fail === 'hide') {
+        updatedContent = updatedContent.replaceAll(regex, '***');
+        isChanged = true;
+      }
+    }
+  }
+
+  if (isChanged) {
+    return { action: 'update', updatedContent };
+  }
+
+  return { action: 'none' };
 }
 
 module.exports = { handleMessage, sendCommand }

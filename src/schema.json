@@ -76,6 +76,20 @@
         "debug": {
           "type": "boolean",
           "description": "debug."
+        },
+        "discord_message_filters": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/MessageFilter"
+            },
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/MessageFilter"
+              }
+            }
+          ],
+          "description": "Filters for Discord messages"
         }
       },
       "required": [
@@ -91,6 +105,62 @@
         "panel_update_interval",
         "styles_tnac",
         "command_version"
+      ],
+      "additionalProperties": false
+    },
+    "MessageFilter": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/LengthFilter"
+        },
+        {
+          "$ref": "#/definitions/RegexFilter"
+        }
+      ]
+    },
+    "LengthFilter": {
+      "type": "object",
+      "properties": {
+        "on_fail": {
+          "type": "string",
+          "enum": [
+            "cancel",
+            "shorten"
+          ],
+          "description": "Action to take when content exceeds max length or lines"
+        },
+        "max_content_length": {
+          "type": "number",
+          "description": "Maximum character length of the content"
+        },
+        "max_lines": {
+          "type": "number",
+          "description": "Maximum number of lines in the content"
+        }
+      },
+      "required": [
+        "on_fail"
+      ],
+      "additionalProperties": false
+    },
+    "RegexFilter": {
+      "type": "object",
+      "properties": {
+        "on_fail": {
+          "type": "string",
+          "enum": [
+            "cancel",
+            "hide"
+          ],
+          "description": "Action to take when content matches the regex"
+        },
+        "ignore_content_regex": {
+          "type": "string",
+          "description": "Regular expression to ignore certain content"
+        }
+      },
+      "required": [
+        "on_fail"
       ],
       "additionalProperties": false
     }

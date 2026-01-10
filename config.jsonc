@@ -1,5 +1,5 @@
 // discord-mcbe config 各項目の説明ははREADMEにも載せています
-// version: 2
+// version: 3
 
 {
   // required
@@ -18,6 +18,12 @@
   "scripts_entry": "scripts/index.js", // 実行するカスタムスクリプトのエントリポイント
   "command_version": "1.19.80", // マイクラに送るコマンドのバージョン
   "debug": false,
-  
-  "styles_tnac": true // TN-AntiCheatからのメッセージを強調する
+
+  "styles_tnac": true, // TN-AntiCheatからのメッセージを強調する
+
+  "discord_message_filters": {
+    "on_fail": "shorten",
+    "max_content_length": 50,
+    "max_lines": 5
+  }
 }
