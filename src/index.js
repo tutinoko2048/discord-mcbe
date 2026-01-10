@@ -2,7 +2,7 @@
 
 const path = require('path');
 const fs = require('fs');
-const { Client, GatewayIntentBits, codeBlock } = require('discord.js');
+const { Client, GatewayIntentBits, codeBlock, Events } = require('discord.js');
 const { DiscordInteractions } = require('@akki256/discord-interaction');
 const { Server, Logger } = require('socket-be');
 const readline = require('readline');
@@ -59,7 +59,7 @@ class Main {
     
     this.scripts = new ScriptHandler(this);
     
-    this.client.once('ready', async () => {
+    this.client.once(Events.ClientReady, async () => {
       this.interactions.registerCommands(this.config.guild_id);
       this.logger.info(this.lang.run('console.login', [ this.client.user?.tag ]));
       
@@ -72,12 +72,12 @@ class Main {
       this.panels.startInterval();
     });
     
-    this.client.on('messageCreate', async message => {
+    this.client.on(Events.MessageCreate, async message => {
       if (message.author.bot || message.channel.id !== this.config.channel_id) return;
       handleMessage(this, message).catch(e => this.logger.error(e));
     });
     
-    this.client.on('interactionCreate', interaction => {
+    this.client.on(Events.InteractionCreate, interaction => {
       // @ts-ignore
       this.interactions.run(interaction).catch(e => {
         this.logger.error(e);
