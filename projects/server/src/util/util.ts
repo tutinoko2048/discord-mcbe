@@ -1,16 +1,17 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { jsonc } from 'jsonc';
+import { ROOT_DIR } from './environment';
 import { type Config, configSchema } from '../types';
+
 import logo from '../assets/logo.json' with { type: 'json' };
-import { PropertyManager } from './property-manager';
 
 export function renderLogo() {
   const decodedLogo = Buffer.from(logo.data, 'base64').toString('utf-8');
   console.log(decodedLogo);
 }
 
-export const CONFIG_FILE = path.join(PropertyManager.ROOT_DIR, 'config.jsonc');
+export const CONFIG_FILE = path.join(ROOT_DIR, 'config.jsonc');
 
 export function loadConfig(): Config {
   const parsed: Config = jsonc.parse(fs.readFileSync(CONFIG_FILE, 'utf-8'));

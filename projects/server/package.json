@@ -12,6 +12,7 @@
     "build": "tsdown",
     "compile": "bun build --define __BUN_EXE__=true ./src/main.ts --compile --outfile=./build/discord-mcbe-server",
     "format": "biome format --write ./src",
+    "typecheck": "tsc --noEmit",
     "test": "bun ./tests/test.ts",
     "generate-schema": "bun ./scripts/generate-schema.ts",
     "generate-logo": "bun ./scripts/generate-logo.ts",

@@ -96,7 +96,9 @@ export class EventHandler {
 
     this.logger.info(_t('console.join', world.name, player.name));
 
-    const embed = new EmbedBuilder().setColor(0x66bb6a).setDescription(_t('discord.join', player.name));
+    const embed = new EmbedBuilder();
+    embed.setColor(0x66bb6a);
+    embed.setDescription(_t('discord.join', player.name));
     if (app.minecraft.getWorlds().length > 2) embed.setFooter({ text: world.name });
 
     try {
@@ -111,7 +113,9 @@ export class EventHandler {
 
     this.logger.info(_t('console.leave', world.name, player.name));
 
-    const embed = new EmbedBuilder().setColor(0xef5350).setDescription(_t('discord.leave', player.name));
+    const embed = new EmbedBuilder();
+    embed.setColor(0xef5350);
+    embed.setDescription(_t('discord.leave', player.name));
     if (app.minecraft.getWorlds().length > 2) embed.setFooter({ text: world.name });
 
     try {

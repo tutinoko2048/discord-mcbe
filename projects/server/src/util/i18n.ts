@@ -1,8 +1,8 @@
 import * as dotlang from 'dotlang';
 import * as path from 'node:path';
-import { Arg, LangArgs, LangKey } from '../types/lang.generated';
 import { Locale, LocalizationMap } from 'discord.js';
-import { PropertyManager } from './property-manager';
+import { ROOT_DIR } from './environment';
+import type { Arg, LangArgs, LangKey } from '../types/lang.generated';
 
 const FALLBACK_LANG = 'en_US';
 
@@ -11,7 +11,7 @@ let fallbackTemplates: Map<string, string>;
 let templates: Map<string, string>;
 
 export function initialize(lang: string) {
-  const langDir = path.join(PropertyManager.ROOT_DIR, 'lang');
+  const langDir = path.join(ROOT_DIR, 'lang');
   //TODO - Discord.jsのLocaleに合わせる
   templateMap = dotlang.parseDir(langDir);
 

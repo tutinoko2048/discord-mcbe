@@ -1,10 +1,9 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { ROOT_DIR } from './environment';
 
 export class PropertyManager {
-  static readonly ROOT_DIR =
-    typeof __BUN_EXE__ === 'undefined' ? path.join(process.cwd(), '../../') : path.join(process.cwd());
-  static readonly DATA_DIR = path.join(PropertyManager.ROOT_DIR, '.discord-mcbe');
+  static readonly DATA_DIR = path.join(ROOT_DIR, '.discord-mcbe');
   static readonly DATA_PATH = path.join(PropertyManager.DATA_DIR, 'data.json');
 
   private readonly cache = new Map<string, any>();
