@@ -55,8 +55,8 @@ export class Logger {
   private formatMessage(message: any[]): string {
     return message
       .map((msg) => {
-        if (msg instanceof Error) {
-          return msg.stack ?? msg;
+        if (Error.isError(msg)) {
+          return inspect(msg);
         } else if (typeof msg !== 'string') {
           return inspect(msg, { depth: 2, colors: true });
         } else {

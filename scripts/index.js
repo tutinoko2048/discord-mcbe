@@ -1,12 +1,11 @@
-import { App } from '../projects/server';
+import { Application } from '../projects/server/src';
 
 /** 
- * @param {App} app
+ * @param {Application} app
  */
 export default function main(app) {
   console.log('[Script] loaded!');
-
-  app;
+  throw new Error('Test error from script')
 }
 
 // const PREFIX = '.';

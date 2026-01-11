@@ -2,7 +2,7 @@ import type { RawMessage } from '@minecraft/server';
 import { ScriptWorld, ClientActionHandler, ISession, SocketBridgeServer, SocketSession } from './bridge';
 import type { Application } from '../application';
 import { _t, Logger } from '../util';
-import { WorldConnectEvent, WorldDisconnectEvent, StartupEvent } from '../events';
+import { WorldConnectEvent, WorldDisconnectEvent } from '../events';
 import { ScriptBridgeServer } from '@script-bridge/server';
 import {
   ActionId,
@@ -74,13 +74,16 @@ export class MinecraftHandler {
     });
 
     this.logger.debug('Initialized');
-
-    new StartupEvent(this.app).emit();
   }
 
   async start(): Promise<void> {
     await this.script.start();
     this.logger.info(_t('console.script.ready', this.script.port));
+  }
+
+  async stop() {
+    await this.socket.server.stop();
+    await this.script.stop();
   }
 
   getWorlds(): ScriptWorld[] {

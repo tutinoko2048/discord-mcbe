@@ -24,6 +24,10 @@ export class CommandLineHandler {
     this.reader.on('line', this.handleLine.bind(this));
   }
 
+  stop() {
+    this.reader.close();
+  }
+
   private handleLine(line: string): void {
     if (line.startsWith('.')) {
       try {

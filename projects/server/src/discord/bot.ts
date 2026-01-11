@@ -75,6 +75,10 @@ export class DiscordBot<READY extends boolean = false> {
     await this.client.login(this.app.config.discord_token);
   }
 
+  async stop() {
+    await this.client.destroy();
+  }
+
   async sendMessage(options: string | MessageCreateOptions) {
     const channel = this.client.channels.cache.get(this.app.config.channel_id);
     if (!channel?.isSendable()) return;

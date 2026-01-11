@@ -1,7 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import type { Application } from '../application';
-import { Logger } from '../util';
+import { Logger, ROOT_DIR } from '../util';
 
 export class ScriptHandler {
   private readonly logger: Logger;
@@ -12,29 +12,33 @@ export class ScriptHandler {
     this.logger.debug('Initialized');
   }
 
-  async load() {
+  async start() {
     const entry = this.app.config.scripts_entry;
     if (!entry) return;
-    const exists = fs.existsSync(path.resolve(__dirname, `../../${entry}`));
+    const entryPath = path.resolve(ROOT_DIR, entry);
+    this.logger.debug(`Loading script from "${entryPath}"...`);
+
+    const exists = fs.existsSync(entryPath);
     if (!exists) {
       this.logger.error(`Failed to load script:\nEntrypoint "${entry}" not found.`);
       return;
     }
 
+    let script: any;
     try {
       //TODO - tsならトランスパイルしてから実行する
-
-      // const script = await import(`../../${entry}`);
-      // if (typeof script.default !== 'function') {
-      //   this.logger.error(`Failed to load script:\nEntrypoint must export default function`);
-      //   return;
-      // }
-
-      // await script.default(this.app);
-
-      this.logger.info('Loaded!');
+      script = await import(`file://${entryPath}`);
     } catch (e) {
-      this.logger.error(e);
+      this.logger.error('Failed to load script:');
+      console.error(e);
+      return;
     }
+
+    if (typeof script.default !== 'function') {
+      this.logger.error('Entrypoint must export default function');
+      return;
+    }
+
+    await Promise.try(script.default, this.app);
   }
 }

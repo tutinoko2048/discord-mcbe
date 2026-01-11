@@ -4,7 +4,7 @@ import { DiscordBot } from './discord';
 import { MinecraftHandler } from './minecraft';
 import { EventHandler, CommandLineHandler, ScriptHandler } from './handlers';
 import type { ApplicationEvents, Config } from './types';
-import { Logger, PropertyManager, _t, initialize as initializeLang, loadConfig, renderLogo } from './util';
+import { Logger, PropertyManager, _t, initialize as initializeLang, loadConfig } from './util';
 import { StartupEvent } from './events';
 
 import { version as VERSION } from '../package.json';
@@ -64,7 +64,6 @@ export class Application extends ExtendedEmitter<ApplicationEvents> {
 
     this.events = new EventHandler(this);
 
-    this.emit('startup', new StartupEvent(this));
     this.logger.debug('Application initialized');
   }
 
@@ -73,6 +72,7 @@ export class Application extends ExtendedEmitter<ApplicationEvents> {
     await this.minecraft.start();
     await this.bot.start();
     this.cli.start();
+    await this.scripts.start();
 
     // this.server.on(ServerEvent.Open, () => {
     //   this.logger.info(_t('console.listening', `${this.server.ip}:${this.config.port}`));
@@ -99,50 +99,15 @@ export class Application extends ExtendedEmitter<ApplicationEvents> {
     //   this.updateActivity();
     // });
 
-    // this.server.on(ServerEvent.PlayerJoin, async ev => {
-    //   const { players, world, world: { lastPlayers, maxPlayers } } = ev;
-
-    //   world.logger.log(_t('console.join', players.join(', '), lastPlayers.length, maxPlayers));
-
-    //   const embed = embeds.join(
-    //     _t('discord.join', players.join(', '), lastPlayers.length, maxPlayers),
-    //     this.server.getWorlds().length > 1 ? world.name : null
-    //   );
-    //   await this.sendDiscord({ embeds: [ embed ] });
-
-    //   this.updateActivity();
-    // });
-
-    // this.server.on(ServerEvent.PlayerLeave, async ev => {
-    //   const { players, world, world: { lastPlayers, maxPlayers } } = ev;
-
-    //   world.logger.log(_t('console.leave', players.join(', '), lastPlayers.length, maxPlayers));
-
-    //   const embed = embeds.leave(
-    //     _t('discord.leave', players.join(', '), lastPlayers.length, maxPlayers),
-    //     this.server.getWorlds().length > 1 ? world.name : null
-    //   );
-    //   await this.sendDiscord({ embeds: [ embed ] });
-
-    //   this.updateActivity();
-    // });
-
-    // this.server.on(ServerEvent.PlayerChat, async ev => {
-    //   handleChat(this, ev).catch(e => this.logger.error(e));
-    // });
-
-    // await this.scripts.load();
-
-    this.on('playerJoin', (ev) => {
-      const { player, world } = ev;
-      this.logger.info(`[PlayerJoin] ${player.name} joined ${world.name}`);
-    });
-
-    this.on('playerLeave', (ev) => {
-      const { player, world } = ev;
-      this.logger.info(`[PlayerLeave] ${player.name} left ${world.name}`);
-    });
+    new StartupEvent(this).emit();
 
     this.logger.debug('Application started');
+  }
+
+  async stop() {
+    this.cli.stop();
+    await this.minecraft.stop();
+    await this.bot.stop();
+    this.logger.debug('Application stopped');
   }
 }
