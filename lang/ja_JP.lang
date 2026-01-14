@@ -1,10 +1,10 @@
-minecraft.connect=§9[discord-mcbe]§r §7%0 として接続を開始しました§r
+minecraft.connect=§9[discord-mcbe]§r §7%0 に接続しました§r
 minecraft.message=§9[Discord]§r %0: %1§r
 minecraft.withAttachments=§9[Discord]§r %0: §o§7%1 個のファイル§r
 
 discord.ready=接続サーバーを起動しました
-discord.connect=%0: 接続を開始しました
-discord.disconnect=接続を終了しました
+discord.connect=ワールドに接続しました
+discord.disconnect=ワールドから切断されました
 discord.chat=<%0> %1
 discord.chat.multipleWorlds=[%0] <%1> %2
 discord.join=%0がゲームに参加しました
@@ -28,8 +28,8 @@ console.login=%0 としてログインしました
 console.socket.ready=[Local] SocketBridgeサーバーはポート %0 で待機しています
 console.socket.command=[Local] Minecraftで %0 と入力して接続してください。
 console.script.ready=[BDS] ScriptBridgeサーバーはポート %0 で待機しています
-console.connect=[%0] %1: 接続を開始しました
-console.disconnect=[%0] 接続を終了しました
+console.connect=[%0] ワールドに接続しました
+console.disconnect=[%0] ワールドから切断されました
 console.join=[%0] %1がゲームに参加しました
 console.leave=[%0] %1がゲームを退出しました
 console.message=[Discord | %0] <%1> %2

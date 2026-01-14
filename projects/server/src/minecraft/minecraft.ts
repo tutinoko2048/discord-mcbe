@@ -120,6 +120,7 @@ export class MinecraftHandler {
   private onClientDisconnect(session: ISession, reason: DisconnectReason) {
     this.logger.debug('onClientDisconnect');
     const world = this.worlds.get(session)!;
+    //FIXME - ワールド退出時はdestroyされるためここは動かない
     new WorldDisconnectEvent(this.app, world, reason).emit();
   }
 

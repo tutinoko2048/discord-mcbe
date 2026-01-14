@@ -1,10 +1,10 @@
-minecraft.connect=§9[discord-mcbe]§r §7Started connection as %0§r
+minecraft.connect=§9[discord-mcbe]§r §7Connected to %0§r
 minecraft.message=§9[Discord]§r %0: %1§r
 minecraft.withAttachments=§9[Discord]§r %0: §o§7%1 file(s)§r
 
 discord.ready=Connection server has started
-discord.connect=%0: Connection has started
-discord.disconnect=Connection has closed
+discord.connect=Connected to the world
+discord.disconnect=Disconnected from the world
 discord.chat=<%0> %1
 discord.chat.multipleWorlds=[%0] <%1> %2
 discord.join=%0 joined the game
@@ -28,8 +28,8 @@ console.login=Logged in as %0
 console.socket.ready=[Local] SocketBridge server is listening on port: %0
 console.socket.command=[Local] Type %0 in Minecraft to connect.
 console.script.ready=[BDS] ScriptBridge server is listening on port: %0
-console.connect=[%0] %1: Connection has started
-console.disconnect=[%0] Connection has closed
+console.connect=[%0] Connected to the world
+console.disconnect=[%0] Disconnected from the world
 console.join=[%0] %1 joined the game
 console.leave=[%0] %1 left the game
 console.message=[Discord | %0] <%1> %2

@@ -28,7 +28,7 @@ export type LangArgs = {
   'command.ping.startAt': [Arg];
   'console.chat': [Arg, Arg, Arg];
   'console.command': [Arg, Arg, Arg];
-  'console.connect': [Arg, Arg];
+  'console.connect': [Arg];
   'console.disconnect': [Arg];
   'console.join': [Arg, Arg];
   'console.leave': [Arg, Arg];
@@ -40,7 +40,7 @@ export type LangArgs = {
   'console.withAttachments': [Arg, Arg, Arg];
   'discord.chat': [Arg, Arg];
   'discord.chat.multipleWorlds': [Arg, Arg, Arg];
-  'discord.connect': [Arg];
+  'discord.connect': [];
   'discord.disconnect': [];
   'discord.join': [Arg];
   'discord.leave': [Arg];

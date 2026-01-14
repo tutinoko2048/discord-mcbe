@@ -1,8 +1,11 @@
 import {
+  Channel,
+  ChannelType,
   Client,
   Events,
   GatewayIntentBits,
   Interaction,
+  TextChannel,
   type Message,
   type MessageCreateOptions,
 } from 'discord.js';
@@ -17,6 +20,7 @@ import { DiscordMessageEvent, DiscordReadyEvent } from '../events';
 export class DiscordBot<READY extends boolean = false> {
   private readonly logger: Logger;
   public readonly client: Client<READY>;
+
   // public readonly interactions: DiscordInteractions;
   // public readonly panels: PanelHandler;
 
@@ -33,6 +37,12 @@ export class DiscordBot<READY extends boolean = false> {
     // this.panels = new PanelHandler(this.app);
 
     this.logger.debug('Initialized');
+  }
+
+  getMainChannel(): TextChannel {
+    const channel = this.client.channels.cache.get(this.app.config.channel_id);
+    this.validateChannel(channel);
+    return channel;
   }
 
   isReady(): this is DiscordBot<true> {
@@ -80,9 +90,7 @@ export class DiscordBot<READY extends boolean = false> {
   }
 
   async sendMessage(options: string | MessageCreateOptions) {
-    const channel = this.client.channels.cache.get(this.app.config.channel_id);
-    if (!channel?.isSendable()) return;
-
+    const channel = this.getMainChannel();
     await channel.send(options);
   }
 
@@ -111,7 +119,8 @@ export class DiscordBot<READY extends boolean = false> {
   private onReady(client: Client<true>) {
     this.logger.info(_t('console.login', client.user.tag));
 
-    this.validateChannel();
+    const channel = client.channels.cache.get(this.app.config.channel_id);
+    this.validateChannel(channel);
     // this.interactions.registerCommands(this.app.config.guild_id);
 
     // // void this.updateActivity();
@@ -139,14 +148,13 @@ export class DiscordBot<READY extends boolean = false> {
     this.logger.debug('interactionCreate', interaction.user.tag);
   }
 
-  private validateChannel() {
-    const channel = this.client.channels.cache.get(this.app.config.channel_id);
+  private validateChannel(channel?: Channel): asserts channel is TextChannel {
     if (!channel) {
       throw new Error(`Failed to find the channel (ID: ${this.app.config.channel_id})`);
     }
 
-    if (!channel.isTextBased()) {
-      throw new Error(`Channel '${channel.name}' (ID: ${channel.id}) is not a text channel`);
+    if (channel.type !== ChannelType.GuildText) {
+      throw new Error(`The channel (ID: ${this.app.config.channel_id}) is not a text channel`);
     }
   }
 }
