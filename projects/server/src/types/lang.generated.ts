@@ -34,10 +34,12 @@ export type LangArgs = {
   'console.leave': [Arg, Arg];
   'console.login': [Arg];
   'console.message': [Arg, Arg, Arg];
+  'console.message.withAttachments': [Arg, Arg, Arg];
+  'console.reply': [Arg, Arg, Arg, Arg];
+  'console.reply.withAttachments': [Arg, Arg, Arg, Arg];
   'console.script.ready': [Arg];
   'console.socket.command': [Arg];
   'console.socket.ready': [Arg];
-  'console.withAttachments': [Arg, Arg, Arg];
   'discord.chat': [Arg, Arg];
   'discord.chat.multipleWorlds': [Arg, Arg, Arg];
   'discord.connect': [];
@@ -48,7 +50,9 @@ export type LangArgs = {
   'discord.ready': [];
   'minecraft.connect': [Arg];
   'minecraft.message': [Arg, Arg];
-  'minecraft.withAttachments': [Arg, Arg];
+  'minecraft.message.withAttachments': [Arg, Arg];
+  'minecraft.reply': [Arg, Arg, Arg];
+  'minecraft.reply.withAttachments': [Arg, Arg, Arg];
   'util.duration': [Arg, Arg, Arg];
 };
 

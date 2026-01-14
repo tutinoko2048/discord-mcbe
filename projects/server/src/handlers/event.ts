@@ -35,11 +35,11 @@ export class EventHandler {
   }
 
   private async onDiscordReady(_event: DiscordReadyEvent) {
-    const embed = new EmbedBuilder()
-      .setColor(Palette.Discord)
-      .setTimestamp()
-      .setDescription(_t('discord.ready'))
-      .setFooter({ text: `discord-mcbe v${this.app.version}` });
+    const embed = new EmbedBuilder();
+    embed.setColor(Palette.Discord);
+    embed.setTimestamp();
+    embed.setDescription(_t('discord.ready'));
+    embed.setFooter({ text: `discord-mcbe v${this.app.version}` });
 
     try {
       await this.app.bot.sendMessage({ embeds: [embed] }).catch((e) => this.logger.error(e));
@@ -106,28 +106,44 @@ export class EventHandler {
 
     const senderName = message.member?.displayName ?? message.author.username;
     const content = message.cleanContent;
+    const repliedUser = message.mentions.repliedUser;
+    const repliedName = repliedUser
+      ? message.guild.members.cache.get(repliedUser.id)?.displayName ?? repliedUser.username
+      : undefined;
 
     if (content.length > 0) {
-      this.logger.info(_t('console.message', message.guild.name, senderName, message.cleanContent));
+      if (repliedName) {
+        this.logger.info(_t('console.reply', message.guild.name, senderName, repliedName, content));
 
-      for (const world of this.app.minecraft.getWorlds()) {
-        world.sendMessage(_t('minecraft.message', senderName, message.cleanContent)).catch((error) => {
-          this.logger.error(`Failed to send message to Minecraft world '${world.name}':`, error);
-        });
+        await this.app.minecraft.broadcastMessage(_t('minecraft.reply', senderName, repliedName, content));
+      } else {
+        this.logger.info(_t('console.message', message.guild.name, senderName, content));
+        await this.app.minecraft.broadcastMessage(_t('minecraft.message', senderName, content));
       }
     }
 
     if (message.attachments.size > 0) {
-      this.logger.info(
-        _t('console.withAttachments', message.guild.name, senderName, message.attachments.size)
-      );
+      if (repliedName) {
+        this.logger.info(
+          _t(
+            'console.reply.withAttachments',
+            message.guild.name,
+            senderName,
+            repliedName,
+            message.attachments.size
+          )
+        );
 
-      for (const world of this.app.minecraft.getWorlds()) {
-        world
-          .sendMessage(_t('minecraft.withAttachments', senderName, message.attachments.size))
-          .catch((error) => {
-            this.logger.error(`Failed to send message to Minecraft world '${world.name}':`, error);
-          });
+        await this.app.minecraft.broadcastMessage(
+          _t('minecraft.reply.withAttachments', senderName, repliedName, message.attachments.size)
+        );
+      } else {
+        this.logger.info(
+          _t('console.message.withAttachments', message.guild.name, senderName, message.attachments.size)
+        );
+        await this.app.minecraft.broadcastMessage(
+          _t('minecraft.message.withAttachments', senderName, message.attachments.size)
+        );
       }
     }
   }

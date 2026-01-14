@@ -1,6 +1,8 @@
 minecraft.connect=§9[discord-mcbe]§r §7%0 に接続しました§r
 minecraft.message=§9[Discord]§r %0: %1§r
-minecraft.withAttachments=§9[Discord]§r %0: §o§7%1 個のファイル§r
+minecraft.message.withAttachments=§9[Discord]§r %0: §o§7%1 個のファイル§r
+minecraft.reply=§9[Discord]§r (%0 -> %1): %2§r
+minecraft.reply.withAttachments=§9[Discord]§r (%0 -> %1): §o§7%2 個のファイル§r
 
 discord.ready=接続サーバーを起動しました
 discord.connect=ワールドに接続しました
@@ -33,7 +35,9 @@ console.disconnect=[%0] ワールドから切断されました
 console.join=[%0] %1がゲームに参加しました
 console.leave=[%0] %1がゲームを退出しました
 console.message=[Discord | %0] <%1> %2
-console.withAttachments=[Discord | %0] <%1> (%2 個のファイル)
+console.message.withAttachments=[Discord | %0] <%1> (%2 個のファイル)
+console.reply=[Discord | %0] (%1 -> %2): %3
+console.reply.withAttachments=[Discord | %0] (%1 -> %2): (%3 個のファイル)
 console.command=[Discord | %0] <%1> %2
 console.chat=[%0] <%1> %2
 

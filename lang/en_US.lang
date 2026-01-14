@@ -1,6 +1,8 @@
 minecraft.connect=§9[discord-mcbe]§r §7Connected to %0§r
 minecraft.message=§9[Discord]§r %0: %1§r
-minecraft.withAttachments=§9[Discord]§r %0: §o§7%1 file(s)§r
+minecraft.message.withAttachments=§9[Discord]§r %0: §o§7%1 file(s)§r
+minecraft.reply=§9[Discord]§r (%0 -> %1): %2§r
+minecraft.reply.withAttachments=§9[Discord]§r (%0 -> %1): §o§7%2 file(s)§r
 
 discord.ready=Connection server has started
 discord.connect=Connected to the world
@@ -33,7 +35,9 @@ console.disconnect=[%0] Disconnected from the world
 console.join=[%0] %1 joined the game
 console.leave=[%0] %1 left the game
 console.message=[Discord | %0] <%1> %2
-console.withAttachments=[Discord | %0] <%1> (%2 files)
+console.message.withAttachments=[Discord | %0] <%1> (%2 files)
+console.reply=[Discord | %0] (%1 -> %2): %3
+console.reply.withAttachments=[Discord | %0] (%1 -> %2): (%3 files)
 console.command=[Discord | %0] <%1> %2
 console.chat=[%0] <%1> %2
 
