@@ -112,7 +112,7 @@ export class ScriptScoreboard {
     });
     if (res.error) throw new BridgeActionError(res);
 
-    return res.data.scores.map(info => new ScriptScoreboardScoreInfo(info));
+    return res.data.scores.map((info) => new ScriptScoreboardScoreInfo(info));
   }
 
   /**

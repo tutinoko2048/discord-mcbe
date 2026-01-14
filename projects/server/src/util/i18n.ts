@@ -16,7 +16,8 @@ export function initialize(lang: string) {
   templateMap = dotlang.parseDir(langDir);
 
   fallbackTemplates = templateMap.get(FALLBACK_LANG)!;
-  if (!fallbackTemplates) throw new Error(`Invalid fallback language: ${FALLBACK_LANG}. Report this to the developer.`);
+  if (!fallbackTemplates)
+    throw new Error(`Invalid fallback language: ${FALLBACK_LANG}. Report this to the developer.`);
 
   templates = templateMap.get(lang)!;
   if (!templates) {

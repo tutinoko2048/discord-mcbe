@@ -47,10 +47,17 @@ export class ScriptScoreboardObjective {
     return this.scoreboard.removeParticipant(player, this);
   }
 
-  [util.inspect.custom](_depth: number, options: util.InspectOptionsStylized, inspect: typeof util.inspect): string {
-    return `ScriptScoreboardObjective ${inspect({
-      id: this.id,
-      displayName: this.displayName,
-    }, options)}`;
+  [util.inspect.custom](
+    _depth: number,
+    options: util.InspectOptionsStylized,
+    inspect: typeof util.inspect,
+  ): string {
+    return `ScriptScoreboardObjective ${inspect(
+      {
+        id: this.id,
+        displayName: this.displayName,
+      },
+      options,
+    )}`;
   }
 }

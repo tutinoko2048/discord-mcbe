@@ -100,7 +100,6 @@ export class PanelHandler {
           host = 'Bedrock Server';
           const players = w.getPlayers();
           list = { current: players.length, max: -1, players: players.map((p) => p.name) };
-
         } else if (w.isLocal()) {
           host = w.session.world.localPlayer?.name;
           try {

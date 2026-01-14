@@ -9,7 +9,6 @@ import { StartupEvent } from './events';
 
 import { version as VERSION } from '../package.json';
 
-
 const defaultConfig: ExtractOptional<Config> = {
   socket_port: 8000,
   bridge_port: 23191,

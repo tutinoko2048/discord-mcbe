@@ -19,7 +19,7 @@ export class ScoreboardIdentity {
   /**
    * Returns entityUniqueId if the identity type is Entity or Player. If player is offline, returns undefined.
    * @throws Error if the identity type is FakePlayer.
-  */
+   */
   get entityUniqueId(): UniqueId | undefined {
     if (this.type === ScoreboardIdentityType.Entity || this.type === ScoreboardIdentityType.Player) {
       return this._entityUniqueId;

@@ -4,7 +4,8 @@
   "formatter": {
     "includes": [
       "**",
-      "!src/types/config.ts"
+      "!src/types/config.ts",
+      "!src/types/lang.generated.ts"
     ]
   }
 }

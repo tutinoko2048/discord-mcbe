@@ -108,7 +108,7 @@ export class EventHandler {
     const content = message.cleanContent;
     const repliedUser = message.mentions.repliedUser;
     const repliedName = repliedUser
-      ? message.guild.members.cache.get(repliedUser.id)?.displayName ?? repliedUser.username
+      ? (message.guild.members.cache.get(repliedUser.id)?.displayName ?? repliedUser.username)
       : undefined;
 
     if (content.length > 0) {
@@ -130,19 +130,19 @@ export class EventHandler {
             message.guild.name,
             senderName,
             repliedName,
-            message.attachments.size
-          )
+            message.attachments.size,
+          ),
         );
 
         await this.app.minecraft.broadcastMessage(
-          _t('minecraft.reply.withAttachments', senderName, repliedName, message.attachments.size)
+          _t('minecraft.reply.withAttachments', senderName, repliedName, message.attachments.size),
         );
       } else {
         this.logger.info(
-          _t('console.message.withAttachments', message.guild.name, senderName, message.attachments.size)
+          _t('console.message.withAttachments', message.guild.name, senderName, message.attachments.size),
         );
         await this.app.minecraft.broadcastMessage(
-          _t('minecraft.message.withAttachments', senderName, message.attachments.size)
+          _t('minecraft.message.withAttachments', senderName, message.attachments.size),
         );
       }
     }
