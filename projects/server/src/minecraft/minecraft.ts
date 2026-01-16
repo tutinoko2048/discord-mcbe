@@ -36,18 +36,19 @@ export class MinecraftHandler {
     });
 
     this.socket.on('clientConnect', this.onClientConnect.bind(this));
-    this.socket.on('clientDisconnect', this.onClientDisconnect.bind(this));
-    this.socket.on('sessionDestroy', this.onSessionDestroy.bind(this));
     this.script.on('clientConnect', this.onClientConnect.bind(this));
+    this.socket.on('clientDisconnect', this.onClientDisconnect.bind(this));
     this.script.on('clientDisconnect', this.onClientDisconnect.bind(this));
+    this.socket.on('sessionDestroy', this.onSessionDestroy.bind(this));
     this.script.on('sessionDestroy', this.onSessionDestroy.bind(this));
     this.socket.on('open', this.onOpen.bind(this));
     this.script.on('error', this.onError.bind(this));
 
     this.registerHandler<WorldInitializeAction>(ActionId.WorldInitialize, (action) => {
-      const world = this.getWorldBySession(action.session);
-      if (!world) throw new Error(`World not found: ${action.session.id}`);
+      const world = new ScriptWorld(this.app, action.session, action.session instanceof SocketSession);
+      this.worlds.set(action.session, world);
       world.onInitialize(action.data);
+      new WorldConnectEvent(this.app, world).emit();
       action.respond();
     });
 
@@ -108,24 +109,18 @@ export class MinecraftHandler {
   }
 
   private onClientConnect(session: ISession) {
-    this.logger.debug('onClientConnect');
-    const world = new ScriptWorld(this.app, session, session instanceof SocketSession);
-    this.worlds.set(session, world);
-    const signal = new WorldConnectEvent(this.app, world);
-    if (!signal.emit()) {
-      void world.disconnect();
-    }
+    this.logger.debug('onClientConnect', session.id);
   }
 
   private onClientDisconnect(session: ISession, reason: DisconnectReason) {
-    this.logger.debug('onClientDisconnect');
+    this.logger.debug('onClientDisconnect', session.id);
     const world = this.worlds.get(session)!;
     //FIXME - ワールド退出時はdestroyされるためここは動かない
     new WorldDisconnectEvent(this.app, world, reason).emit();
   }
 
   private onSessionDestroy(session: ISession) {
-    this.logger.debug('onSessionDestroy');
+    this.logger.debug('onSessionDestroy', session.id);
     this.worlds.delete(session);
   }
 

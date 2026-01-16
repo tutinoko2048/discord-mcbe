@@ -68,8 +68,8 @@ export class Application extends ExtendedEmitter<ApplicationEvents> {
 
   async start() {
     this.events.start();
-    await this.minecraft.start();
     await this.bot.start();
+    await this.minecraft.start();
     this.cli.start();
     await this.scripts.start();
 
