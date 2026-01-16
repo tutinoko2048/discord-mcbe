@@ -9,6 +9,7 @@ import type {
   WorldLoadEvent,
   DiscordMessageEvent,
   DiscordReadyEvent,
+  DiscordSendEvent,
 } from '../../events';
 
 export interface ApplicationEvents {
@@ -22,4 +23,5 @@ export interface ApplicationEvents {
   playerJoin: [PlayerJoinEvent];
   playerLeave: [PlayerLeaveEvent];
   discordReady: [DiscordReadyEvent];
+  discordSend: [DiscordSendEvent];
 }

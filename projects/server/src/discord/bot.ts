@@ -15,7 +15,7 @@ import type { Application } from '../application';
 // import { PanelHandler } from './panel';
 
 import { _t, Logger } from '../util';
-import { DiscordMessageEvent, DiscordReadyEvent } from '../events';
+import { DiscordMessageEvent, DiscordReadyEvent, DiscordSendEvent } from '../events';
 
 export class DiscordBot<READY extends boolean = false> {
   private readonly logger: Logger;
@@ -91,7 +91,17 @@ export class DiscordBot<READY extends boolean = false> {
 
   async sendMessage(options: string | MessageCreateOptions) {
     const channel = this.getMainChannel();
-    await channel.send(options);
+
+    const signal = new DiscordSendEvent(
+      this.app,
+      this.client as Client<true>,
+      channel,
+      typeof options === 'string' ? { content: options } : options,
+    );
+
+    if (!signal.emit()) return;
+
+    await signal.channel.send(signal.message);
   }
 
   // updateActivity() {

@@ -1,6 +1,7 @@
 export * from './app';
 export * from './discord-message';
 export * from './discord-ready';
+export * from './discord-send';
 export * from './discord';
 export * from './minecraft-message';
 export * from './minecraft';
