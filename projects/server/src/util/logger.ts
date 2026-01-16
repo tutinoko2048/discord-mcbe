@@ -12,14 +12,14 @@ export class Logger {
     private readonly options: LoggerOptions = {},
   ) {}
 
-  public log(...message: any[]): void {
+  public log(...message: unknown[]): void {
     console.log(
       color.gray(color.dim(this.getTime())),
       color.gray(`[${color.bold('LOG')}] [${this.name}] ${this.formatMessage(message)}`),
     );
   }
 
-  public info(...message: any[]): void {
+  public info(...message: unknown[]): void {
     console.info(
       color.gray(color.dim(this.getTime())),
       color.cyanBright(`[${color.bold('INFO')}]`),
@@ -28,21 +28,21 @@ export class Logger {
     );
   }
 
-  public warn(...message: any[]): void {
+  public warn(...message: unknown[]): void {
     console.warn(
       color.gray(color.dim(this.getTime())),
       color.yellow(`[${color.bold('WARN')}] [${this.name}] ${this.formatMessage(message)}`),
     );
   }
 
-  public error(...message: any[]): void {
+  public error(...message: unknown[]): void {
     console.error(
       color.gray(color.dim(this.getTime())),
       color.red(`[${color.bold('ERROR')}] [${this.name}] ${this.formatMessage(message)}`),
     );
   }
 
-  public debug(...message: any[]): void {
+  public debug(...message: unknown[]): void {
     if (!this.options.debug) return;
     console.debug(
       color.gray(color.dim(this.getTime())),
@@ -52,7 +52,7 @@ export class Logger {
     );
   }
 
-  private formatMessage(message: any[]): string {
+  private formatMessage(message: unknown[]): string {
     return message
       .map((msg) => {
         if (Error.isError(msg)) {

@@ -36,11 +36,12 @@ export class ScriptScoreboard {
 
     const objectives: ScriptScoreboardObjective[] = [];
     for (const descriptor of res.data.objectives) {
-      if (!this.objectives.has(descriptor.id)) {
-        const objective = new ScriptScoreboardObjective(this, descriptor);
+      let objective = this.objectives.get(descriptor.id);
+      if (!objective) {
+        objective = new ScriptScoreboardObjective(this, descriptor);
         this.objectives.set(descriptor.id, objective);
       }
-      objectives.push(this.objectives.get(descriptor.id)!);
+      objectives.push(objective);
     }
     return objectives;
   }
@@ -72,7 +73,9 @@ export class ScriptScoreboard {
     });
     if (res.error) throw new BridgeActionError(res);
 
-    const objective = new ScriptScoreboardObjective(this, res.data.objective!);
+    if (!res.data.objective) throw new Error('Objective should be returned');
+
+    const objective = new ScriptScoreboardObjective(this, res.data.objective);
     this.objectives.set(objectiveId, objective);
     return objective;
   }

@@ -1,4 +1,4 @@
-import { world, Player, system, ScoreboardObjective, ObjectiveSortOrder } from '@minecraft/server';
+import { world, Player, system, type ScoreboardObjective, ObjectiveSortOrder } from '@minecraft/server';
 import {
   ActionId,
   type SendMessageAction,
@@ -28,7 +28,7 @@ import {
   createScoreboardScoreInfoDescriptor,
 } from './descriptors';
 import { getTPS } from './util';
-import { IBridgeClient } from '../transport';
+import type { IBridgeClient } from '../transport';
 
 export function registerHandlers(bridge: IBridgeClient) {
   bridge.registerHandler<SendMessageAction>(ActionId.SendMessage, (action) => {

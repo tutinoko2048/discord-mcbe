@@ -8,6 +8,6 @@ export abstract class ApplicationEvent {
   constructor(public readonly app: Application) {}
 
   public emit(): boolean {
-    return this.app.emit(this.identifier, this as any);
+    return this.app.emit(this.identifier, this);
   }
 }

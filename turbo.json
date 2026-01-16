@@ -4,7 +4,16 @@
     "build": {
       "dependsOn": ["^build"]
     },
+    "lint": {
+      "cache": false
+    },
     "format": {
+      "cache": false
+    },
+    "format:write": {
+      "cache": false
+    },
+    "typecheck": {
       "cache": false
     }
   }

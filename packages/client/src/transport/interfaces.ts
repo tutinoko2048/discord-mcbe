@@ -1,5 +1,5 @@
-import { ActionId } from '@discord-mcbe/shared';
-import { ActionHandler } from '@script-bridge/client';
+import type { ActionId } from '@discord-mcbe/shared';
+import type { ActionHandler } from '@script-bridge/client';
 import type { BaseAction, DisconnectReason } from '@script-bridge/protocol';
 
 type Listener<T> = (data: T) => void;

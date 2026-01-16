@@ -55,7 +55,7 @@ const output = `
 // ⚠️ AUTO-GENERATED FILE
 // DO NOT EDIT MANUALLY
 
-/* biome-ignore */
+/* biome-ignore: auto-generated file. */
 
 export type Arg = string | number;
 

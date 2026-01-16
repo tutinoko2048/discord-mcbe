@@ -1,5 +1,5 @@
-import { PlatformType } from '../enums';
-import { Branded } from './util';
+import type { PlatformType } from '../enums';
+import type { Branded } from './util';
 
 export type UniqueId = Branded<string, 'UniqueId'>;
 

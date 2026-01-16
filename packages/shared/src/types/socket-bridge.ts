@@ -1,4 +1,4 @@
-import { DisconnectReason, PayloadType, ResponseErrorReason } from '@script-bridge/protocol';
+import type { DisconnectReason, PayloadType, ResponseErrorReason } from '@script-bridge/protocol';
 
 /** script→socket */
 export type ClientRequest<T = unknown> = {

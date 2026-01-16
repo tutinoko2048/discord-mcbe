@@ -1,7 +1,7 @@
 import * as util from 'node:util';
-import { ScoreboardObjectiveDescriptor } from '@discord-mcbe/shared';
-import { ScriptPlayer } from '../player';
-import { ScriptScoreboardScoreInfo } from './score-info';
+import type { ScoreboardObjectiveDescriptor } from '@discord-mcbe/shared';
+import type { ScriptPlayer } from '../player';
+import type { ScriptScoreboardScoreInfo } from './score-info';
 import type { ScriptScoreboard } from './scoreboard';
 
 export class ScriptScoreboardObjective {

@@ -4,7 +4,7 @@ import { DiscordBot } from './discord';
 import { MinecraftHandler } from './minecraft';
 import { EventHandler, CommandLineHandler, ScriptHandler } from './handlers';
 import type { ApplicationEvents, Config } from './types';
-import { Logger, PropertyManager, _t, initialize as initializeLang, loadConfig } from './util';
+import { Logger, PropertyManager, initialize as initializeLang, loadConfig } from './util';
 import { StartupEvent } from './events';
 
 import { version as VERSION } from '../package.json';

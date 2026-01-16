@@ -1,6 +1,6 @@
-import { ExtractOptional } from '@discord-mcbe/shared';
 import { BaseClient } from './client';
 import { ScriptBridgeClient } from '@script-bridge/client';
+import type { ExtractOptional } from '@discord-mcbe/shared';
 
 export interface BridgeClientOptions {
   host?: string;

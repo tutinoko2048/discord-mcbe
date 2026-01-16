@@ -1,6 +1,6 @@
-import { ExtractOptional } from '@discord-mcbe/shared';
 import { BaseClient } from './client';
 import { SocketBridgeClient } from './transport';
+import type { ExtractOptional } from '@discord-mcbe/shared';
 
 export interface BridgeClientOptions {
   clientId?: string;

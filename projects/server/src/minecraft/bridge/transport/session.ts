@@ -1,5 +1,5 @@
-import { CommandStatusCode, ServerEvent, World as SocketWorld } from 'socket-be';
-import {
+import { CommandStatusCode, type World as SocketWorld } from 'socket-be';
+import type {
   ClientRequest,
   ClientResponse,
   QueryResponse,
@@ -7,18 +7,19 @@ import {
   ServerResponse,
 } from '@discord-mcbe/shared';
 import {
-  BaseAction,
   DisconnectReason,
   InternalAction,
-  InternalActions,
   PayloadType,
   ResponseErrorReason,
+  type BaseAction,
+  type InternalActions,
 } from '@script-bridge/protocol';
 import { NamespaceRequiredError } from '@script-bridge/server';
-import { ISession } from './interfaces';
-import { SocketBridgeServer } from './socket';
-import { Logger } from '../../../util';
 import { AddonNotInstalledError } from './errors';
+import { Logger } from '../../../util';
+
+import type { ISession } from './interfaces';
+import type { SocketBridgeServer } from './socket';
 
 export class SocketSession implements ISession {
   private readonly server: SocketBridgeServer;
@@ -172,12 +173,12 @@ export class SocketSession implements ISession {
       });
 
       return response;
-    } catch (err: any) {
+    } catch (err) {
       this.logger.error('Error while handling request:', channelId, err);
       return {
         type: PayloadType.Response,
         error: true,
-        message: `An error occurred while handling the request\n${err.message}`,
+        message: `An error occurred while handling the request\n${err}`,
         errorReason: ResponseErrorReason.InternalError,
         sessionId,
         requestId,
@@ -236,13 +237,13 @@ export class SocketSession implements ISession {
       try {
         requests = await this.queryData();
         this.failCount = 0;
-      } catch (e: any) {
+      } catch (e) {
         if (e instanceof AddonNotInstalledError) {
           this.logger.error(e.message);
           return;
         }
 
-        this.logger.error(`[query] fetch failed:`, e.message || e);
+        this.logger.error(`[query] fetch failed: ${e}`);
 
         this.failCount++;
         if (this.failCount >= 3) {
@@ -259,8 +260,8 @@ export class SocketSession implements ISession {
           const response = await this.handleRequest(request);
           try {
             await this.sendPayload(response);
-          } catch (e: any) {
-            this.logger.error('Failed to send response:', e.message);
+          } catch (e) {
+            this.logger.error(`Failed to send response: ${e}`);
           }
         }
       }

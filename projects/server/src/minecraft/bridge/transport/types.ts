@@ -1,5 +1,5 @@
-import { BaseAction } from '@script-bridge/protocol';
-import { ISession } from './interfaces';
+import type { BaseAction } from '@script-bridge/protocol';
+import type { ISession } from './interfaces';
 
 export type ClientAction<A extends BaseAction> = {
   readonly data: A['request'];

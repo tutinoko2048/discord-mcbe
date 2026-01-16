@@ -1,13 +1,16 @@
 type Listener<T> = (data: T) => void;
 
 export class Emitter<T> {
+  /** biome-ignore lint: false positive */
   private listeners = new Map<keyof T, Array<Listener<any>>>();
 
   public on<K extends keyof T>(event: K, listener: Listener<T[K]>): void {
-    if (!this.listeners.has(event)) {
-      this.listeners.set(event, []);
+    let listeners = this.listeners.get(event);
+    if (!listeners) {
+      listeners = [] as Array<Listener<T[K]>>;
+      this.listeners.set(event, listeners);
     }
-    this.listeners.get(event)!.push(listener);
+    listeners.push(listener);
   }
 
   public once<K extends keyof T>(event: K, listener: Listener<T[K]>): void {

@@ -1,5 +1,5 @@
-import { ScoreboardIdentityType } from '../enums';
-import { UniqueId } from './player';
+import type { ScoreboardIdentityType } from '../enums';
+import type { UniqueId } from './player';
 
 export interface ScoreboardObjectiveDescriptor {
   id: string;

@@ -1,28 +1,30 @@
 import {
   CommandPermissionLevel,
   CustomCommandParamType,
-  CustomCommandRegistry,
-  CustomCommandResult,
   CustomCommandStatus,
   system,
   world,
+  type CustomCommandRegistry,
+  type CustomCommandResult,
 } from '@minecraft/server';
 import {
   SocketBridge,
-  ClientRequest,
-  ClientResponse,
-  ConnectionResponse,
-  ServerRequest,
-  ServerResponse,
-  QueryResponse,
+  type ClientRequest,
+  type ClientResponse,
+  type ConnectionResponse,
+  type ServerRequest,
+  type ServerResponse,
+  type QueryResponse,
 } from '@discord-mcbe/shared';
-import type { ActionHandler } from '@script-bridge/client';
-import { BaseAction, DisconnectReason, PayloadType, ResponseErrorReason } from '@script-bridge/protocol';
-import { IBridgeClient, IResponse } from './interfaces';
+import { DisconnectReason, PayloadType, ResponseErrorReason, type BaseAction } from '@script-bridge/protocol';
 import { Emitter } from '../utils/emitter';
 import { Logger } from '../utils';
 
+import type { ActionHandler } from '@script-bridge/client';
+import type { IBridgeClient, IResponse } from './interfaces';
+
 export interface SocketEvents {
+  /** biome-ignore lint: ignore */
   ready: {};
   connect: {
     sessionId: string;
@@ -69,7 +71,7 @@ export class SocketBridgeClient extends Emitter<SocketEvents> implements IBridge
       },
       {
         namespaces: ['bridge'],
-      },
+      }
     );
 
     world.afterEvents.worldLoad.subscribe(() => {
@@ -83,7 +85,7 @@ export class SocketBridgeClient extends Emitter<SocketEvents> implements IBridge
 
   async send<A extends BaseAction = BaseAction>(
     channelId: A['id'],
-    data?: A['request'],
+    data?: A['request']
   ): Promise<IResponse<A['response']>> {
     if (!this.currentSessionId) throw new Error('No active session');
 
@@ -182,13 +184,13 @@ export class SocketBridgeClient extends Emitter<SocketEvents> implements IBridge
           });
         },
       });
-    } catch (err: any) {
+    } catch (err) {
       console.error('[SocketBridge] Error while handling request:', channelId, err);
       this.sendQueue.push({
         type: PayloadType.Response,
         error: true,
         errorReason: ResponseErrorReason.InternalError,
-        message: `An error occurred while handling the request\n${err.message}`,
+        message: `An error occurred while handling the request\n${err}`,
         requestId,
         sessionId,
       });
@@ -196,8 +198,6 @@ export class SocketBridgeClient extends Emitter<SocketEvents> implements IBridge
   }
 
   private getQueue() {
-    this.lastQueryReceivedAt = Date.now();
-
     const queue = this.sendQueue.slice(); // copy the queue
     this.sendQueue.length = 0;
     return queue;
@@ -208,7 +208,13 @@ export class SocketBridgeClient extends Emitter<SocketEvents> implements IBridge
 
     if (this.currentSessionId === sessionId) {
       result = { error: false, data: this.getQueue() };
-      this.lastQueryReceivedAt = Date.now();
+
+      const now = Date.now();
+      if (this.lastQueryReceivedAt !== null) {
+        this.deltaTimes.push(now - this.lastQueryReceivedAt);
+        if (this.deltaTimes.length > 20) this.deltaTimes.shift();
+      }
+      this.lastQueryReceivedAt = now;
     } else {
       result = { error: true, errorReason: ResponseErrorReason.InvalidSession };
     }
@@ -255,7 +261,7 @@ export class SocketBridgeClient extends Emitter<SocketEvents> implements IBridge
           },
         ],
       },
-      (_, sessionId: string) => this.onQuery(sessionId),
+      (_, sessionId: string) => this.onQuery(sessionId)
     );
 
     registry.registerCommand(
@@ -274,7 +280,7 @@ export class SocketBridgeClient extends Emitter<SocketEvents> implements IBridge
           },
         ],
       },
-      (_, protocolVersion: number, sessionId: string) => this.handleConnection(protocolVersion, sessionId),
+      (_, protocolVersion: number, sessionId: string) => this.handleConnection(protocolVersion, sessionId)
     );
   }
 }

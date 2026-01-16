@@ -1,5 +1,5 @@
-import { ClientResponse as SocketClientResponse } from '@discord-mcbe/shared';
-import {
+import type { ClientResponse as SocketClientResponse } from '@discord-mcbe/shared';
+import type {
   BaseAction,
   ClientResponse as ScriptClientResponse,
   DisconnectReason,

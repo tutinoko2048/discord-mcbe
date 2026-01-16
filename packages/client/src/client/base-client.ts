@@ -1,10 +1,11 @@
-import { ActionId, WorldInitializeAction } from '@discord-mcbe/shared';
+import { ActionId, type WorldInitializeAction } from '@discord-mcbe/shared';
 import { registerHandlers } from './handler';
 import { registerEvents } from './event';
 import { world } from '@minecraft/server';
 import { createPlayerDescriptor } from './descriptors';
-import { IBridgeClient } from '../transport';
 import { Logger } from '../utils';
+
+import type { IBridgeClient } from '../transport';
 
 export class BaseClient<T extends IBridgeClient = IBridgeClient> {
   public readonly bridge: T;

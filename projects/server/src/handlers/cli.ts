@@ -29,24 +29,15 @@ export class CommandLineHandler {
   }
 
   private handleLine(line: string): void {
-    if (line.startsWith('.')) {
+    const command = line.replace(/^\/*/, '');
+    if (command.trim() === '') return;
+    this.app.minecraft.getWorlds().map(async (world) => {
       try {
-        const res = eval(line.slice(1));
-        console.log('<', res);
-      } catch (e) {
-        console.error('<', e);
+        const result = await world.runCommand(command);
+        console.log(`[${world.name}]`, result);
+      } catch (err) {
+        console.error(`[${world.name}] Error: ${err}`);
       }
-    } else {
-      const command = line.replace(/^\/*/, '');
-      if (command.trim() === '') return;
-      this.app.minecraft.getWorlds().map(async (world) => {
-        try {
-          const result = await world.runCommand(command);
-          console.log(`[${world.name}]`, result);
-        } catch (err: any) {
-          console.error(`[${world.name}] Error: ${err.message}`);
-        }
-      });
-    }
+    });
   }
 }

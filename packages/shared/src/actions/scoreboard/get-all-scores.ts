@@ -1,6 +1,6 @@
-import { BaseAction } from '@script-bridge/protocol';
-import { ActionId } from '../../enums';
-import { ScoreboardScoreInfoDescriptor } from '../../types';
+import type { BaseAction } from '@script-bridge/protocol';
+import type { ActionId } from '../../enums';
+import type { ScoreboardScoreInfoDescriptor } from '../../types';
 
 /** minecraft-bound action */
 export type GetAllScoresAction = BaseAction<

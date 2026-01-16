@@ -1,5 +1,5 @@
-import { ScoreboardScoreInfoDescriptor } from '@discord-mcbe/shared';
 import { ScoreboardIdentity } from './identity';
+import type { ScoreboardScoreInfoDescriptor } from '@discord-mcbe/shared';
 
 export class ScriptScoreboardScoreInfo {
   readonly score: number;

@@ -7,7 +7,10 @@
   "scripts": {
     "build": "tsdown",
     "watch": "tsdown --watch",
-    "format": "biome format --write ./src"
+    "lint": "biome lint ./src",
+    "format": "biome format ./src",
+    "format:write": "biome format --write ./src",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@minecraft/server": "catalog:",

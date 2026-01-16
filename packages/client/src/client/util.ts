@@ -1,7 +1,7 @@
 import { system } from '@minecraft/server';
 
 let lastTick: number | undefined;
-let deltaTimes: number[] = [];
+const deltaTimes: number[] = [];
 system.runInterval(() => {
   const now = Date.now();
   if (lastTick) {

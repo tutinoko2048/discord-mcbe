@@ -1,11 +1,11 @@
 import {
-  Player,
-  Dimension,
-  ScoreboardObjective,
-  Entity,
-  ScoreboardScoreInfo,
-  ScoreboardIdentity,
   ScoreboardIdentityType,
+  type Player,
+  type Dimension,
+  type ScoreboardObjective,
+  type Entity,
+  type ScoreboardScoreInfo,
+  type ScoreboardIdentity,
 } from '@minecraft/server';
 import type {
   PlayerDescriptor,

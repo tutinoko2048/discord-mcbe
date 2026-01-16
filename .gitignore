@@ -8,3 +8,4 @@ dist
 .turbo
 todo.md
 build/
+tsconfig.tsbuildinfo

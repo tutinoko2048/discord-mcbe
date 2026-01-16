@@ -1,11 +1,11 @@
 import {
-  Channel,
   ChannelType,
   Client,
   Events,
   GatewayIntentBits,
-  Interaction,
-  TextChannel,
+  type Channel,
+  type Interaction,
+  type TextChannel,
   type Message,
   type MessageCreateOptions,
 } from 'discord.js';

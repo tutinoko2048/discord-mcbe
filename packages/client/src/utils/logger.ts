@@ -1,24 +1,24 @@
 export class Logger {
   constructor(private readonly name: string) {}
 
-  info(...message: any[]): void {
+  info(...message: unknown[]): void {
     console.info(`[${this.name}] ${this.formatMessage(message)}`);
   }
 
-  warn(...message: any[]): void {
+  warn(...message: unknown[]): void {
     console.warn(`[${this.name}] ${this.formatMessage(message)}`);
   }
 
-  error(...message: any[]): void {
+  error(...message: unknown[]): void {
     console.error(`[${this.name}] ${this.formatMessage(message)}`);
   }
 
-  debug(...message: any[]): void {
+  debug(...message: unknown[]): void {
     if (!__DEV__) return;
     console.info(`[${this.name}] ${this.formatMessage(message)}`);
   }
 
-  private formatMessage(message: any[]): string {
+  private formatMessage(message: unknown[]): string {
     return message
       .map((msg) => {
         if (msg instanceof Error) {

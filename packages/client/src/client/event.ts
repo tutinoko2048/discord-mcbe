@@ -5,8 +5,10 @@ import {
   type PlayerJoinAction,
   type PlayerLeaveAction,
   type ChatSendAction,
+  type UniqueId,
 } from '@discord-mcbe/shared';
-import { IBridgeClient } from '../transport';
+
+import type { IBridgeClient } from '../transport';
 
 export function registerEvents(bridge: IBridgeClient) {
   world.afterEvents.playerSpawn.subscribe((ev) => {
@@ -21,7 +23,7 @@ export function registerEvents(bridge: IBridgeClient) {
     if (!bridge.isConnected) return;
 
     bridge.send<PlayerLeaveAction>(ActionId.PlayerLeave, {
-      playerUniqueId: ev.playerId,
+      playerUniqueId: ev.playerId as UniqueId,
     });
   });
 
@@ -30,7 +32,7 @@ export function registerEvents(bridge: IBridgeClient) {
 
     bridge.send<ChatSendAction>(ActionId.ChatSend, {
       senderName: ev.sender.name,
-      senderUniqueId: ev.sender.id,
+      senderUniqueId: ev.sender.id as UniqueId,
       message: ev.message,
     });
   });

@@ -1,6 +1,6 @@
 import { ScriptBridgeServer } from '@script-bridge/server';
 import { green } from 'colorette';
-import { BaseAction, DisconnectReason } from '@script-bridge/protocol';
+import { type BaseAction, DisconnectReason } from '@script-bridge/protocol';
 import {
   ActionId,
   type ChatSendAction,
@@ -8,7 +8,7 @@ import {
   type PlayerLeaveAction,
   type WorldInitializeAction,
 } from '@discord-mcbe/shared';
-import { ScriptWorld, ClientActionHandler, ISession, SocketBridgeServer, SocketSession } from './bridge';
+import { ScriptWorld, type ClientActionHandler, type ISession, SocketBridgeServer, SocketSession } from './bridge';
 import { _t, Logger } from '../util';
 import { WorldConnectEvent, WorldDisconnectEvent } from '../events';
 
@@ -119,7 +119,8 @@ export class MinecraftHandler {
 
   private onSessionDestroy(session: ISession) {
     this.logger.debug('onSessionDestroy', session.id);
-    const world = this.worlds.get(session)!;
+    const world = this.worlds.get(session);
+    if (!world) throw new Error(`World not found: ${session.id}`);
     new WorldDisconnectEvent(this.app, world).emit();
     this.worlds.delete(session);
   }

@@ -1,25 +1,25 @@
 import * as dotlang from 'dotlang';
 import * as path from 'node:path';
-import { Locale, LocalizationMap } from 'discord.js';
 import { ROOT_DIR } from './environment';
+import type { Locale, LocalizationMap } from 'discord.js';
 import type { Arg, LangArgs, LangKey } from '../types/lang.generated';
 
 const FALLBACK_LANG = 'en_US';
 
 let templateMap: Map<string, Map<string, string>>;
-let fallbackTemplates: Map<string, string>;
-let templates: Map<string, string>;
+let fallbackTemplates: Map<string, string> | undefined;
+let templates: Map<string, string> | undefined;
 
 export function initialize(lang: string) {
   const langDir = path.join(ROOT_DIR, 'lang');
   //TODO - Discord.jsのLocaleに合わせる
   templateMap = dotlang.parseDir(langDir);
 
-  fallbackTemplates = templateMap.get(FALLBACK_LANG)!;
+  fallbackTemplates = templateMap.get(FALLBACK_LANG);
   if (!fallbackTemplates)
     throw new Error(`Invalid fallback language: ${FALLBACK_LANG}. Report this to the developer.`);
 
-  templates = templateMap.get(lang)!;
+  templates = templateMap.get(lang);
   if (!templates) {
     console.warn(`Warning: Language "${lang}" not found. Falling back to ${FALLBACK_LANG}.`);
     templates = fallbackTemplates;
@@ -31,7 +31,7 @@ function translate<K extends LangKey>(key: K, ...values: LangArgs[K]): string {
     throw new Error('Language templates are not initialized. Call initialize() first.');
   }
 
-  const value = templates.get(key) ?? fallbackTemplates.get(key);
+  const value = templates?.get(key) ?? fallbackTemplates?.get(key);
   if (!value) return key;
 
   return replaceTemplates(value, values);
@@ -58,8 +58,8 @@ export { translate as _t, getTranslationMap as _tm };
 
 function replaceTemplates(text: string, values: Arg[]): string {
   let result = text;
-  for (const index in values) {
-    result = result.replace(new RegExp(`%${index}`, 'g'), values[index]!.toString());
+  for (const [index, value] of values.entries()) {
+    result = result.replace(new RegExp(`%${index}`, 'g'), value.toString());
   }
   return result;
 }

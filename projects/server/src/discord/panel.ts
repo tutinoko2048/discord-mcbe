@@ -1,10 +1,9 @@
 import * as moment from 'moment-timezone';
 import type { Application } from '../application';
-import * as util from '../util/util';
-import { type Client, EmbedBuilder, RESTJSONErrorCodes, type Message, time } from 'discord.js';
+import { type Client, EmbedBuilder, RESTJSONErrorCodes, type Message, time, DiscordAPIError } from 'discord.js';
 import { Palette } from './embeds';
 import { _t, Logger } from '../util';
-import { type PlayerList, RequestTimeoutError, World } from 'socket-be';
+import { type PlayerList, RequestTimeoutError } from 'socket-be';
 
 interface PanelData {
   channelId: string;
@@ -28,8 +27,8 @@ export class PanelHandler {
   }
 
   async startInterval(): Promise<void> {
-    const panel = await this.fetchMessage().catch((e: any) =>
-      this.logger.error(`failed to fetch panel | code: ${e.code}`),
+    const panel = await this.fetchMessage().catch((err) =>
+      this.logger.error(`failed to fetch panel | code: ${err.code}`),
     );
     if (panel) {
       this.logger.info('successfully fetched the panel');
@@ -52,9 +51,9 @@ export class PanelHandler {
       const message = await channel.messages.fetch(data.messageId);
       this.message = message;
       return message;
-    } catch (e: any) {
-      if (e.code === RESTJSONErrorCodes.UnknownMessage) this.clearPanel();
-      else throw e;
+    } catch (err) {
+      if (err instanceof DiscordAPIError && err.code === RESTJSONErrorCodes.UnknownMessage) this.clearPanel();
+      else throw err;
     }
   }
 
@@ -62,7 +61,7 @@ export class PanelHandler {
     const channel = await this.client.channels.fetch(channelId);
     if (!channel?.isSendable()) throw new Error('Channel not found or is not a sendable channel');
 
-    await this.delete().catch((e: any) => this.logger.error(`Failed to delete old panel | code: ${e.code}`));
+    await this.delete().catch((err) => this.logger.error(`Failed to delete old panel | code: ${err.code}`));
 
     const panel = await channel.send({ embeds: [panelEmbed] });
     this.message = panel;
@@ -129,33 +128,30 @@ export class PanelHandler {
 
     panelEmbed.setTimestamp(Date.now());
     panelEmbed.setDescription([...messages, ...filteredInfo].join('\n'));
-    panelEmbed.setColor(worlds.length > 0 ? colors.join : colors.leave);
+    panelEmbed.setColor(worlds.length > 0 ? Palette.Join : Palette.Leave);
     panelEmbed.setFooter({ text: `discord-mcbe v${this.app.version}` });
 
     try {
       await this.message.edit({ embeds: [panelEmbed] });
-    } catch (e: any) {
-      if (e.code === RESTJSONErrorCodes.UnknownMessage) this.clearPanel();
-      else throw e;
+    } catch (err) {
+      if (err instanceof DiscordAPIError && err.code === RESTJSONErrorCodes.UnknownMessage) this.clearPanel();
+      else throw err;
     }
   }
 
   clearPanel(): void {
-    util.setData('panel_channel', null);
-    util.setData('panel_message', null);
+    this.app.properties.delete('panel');
     this.message = null;
   }
 
   getData(): PanelData | undefined {
-    const channelId = util.getData<string>('panel_channel');
-    const messageId = util.getData<string>('panel_message');
-    if (!channelId || !messageId) return undefined;
-    return { channelId, messageId };
+    const panel = this.app.properties.get<PanelData>('panel');
+    if (!panel?.channelId || !panel?.messageId) return undefined;
+    return panel;
   }
 
   setData(channelId: string, messageId: string): void {
-    util.setData('panel_channel', channelId);
-    util.setData('panel_message', messageId);
+    this.app.properties.set<PanelData>('panel', { channelId, messageId });
   }
 }
 

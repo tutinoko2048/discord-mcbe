@@ -1,6 +1,7 @@
 import { EmbedBuilder } from 'discord.js';
 import { _t, Logger } from '../util';
-import {
+import { Palette } from '../discord';
+import type {
   DiscordMessageEvent,
   DiscordReadyEvent,
   MinecraftMessageEvent,
@@ -10,7 +11,6 @@ import {
   WorldDisconnectEvent,
 } from '../events';
 import type { Application } from '../application';
-import { Palette } from '../discord';
 
 export class EventHandler {
   private readonly app: Application;

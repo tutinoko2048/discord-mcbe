@@ -1,5 +1,5 @@
 import { ApplicationEvent } from './app';
-import { ScriptWorld } from '../minecraft';
+import type { ScriptWorld } from '../minecraft';
 import type { Application } from '../application';
 
 export abstract class MinecraftEvent extends ApplicationEvent {

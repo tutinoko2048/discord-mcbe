@@ -1,5 +1,5 @@
 import { DiscordEvent } from './discord';
-import type { Client, Message, MessageCreateOptions, TextChannel } from 'discord.js';
+import type { Client, MessageCreateOptions, TextChannel } from 'discord.js';
 import type { Application } from '../application';
 
 /**

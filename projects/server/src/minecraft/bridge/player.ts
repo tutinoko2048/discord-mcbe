@@ -1,6 +1,6 @@
 import {
-  type PlayerDescriptor,
   ActionId,
+  type PlayerDescriptor,
   type SendMessageAction,
   type GetEntityLocationAction,
   type GetEntityDimensionAction,
@@ -8,9 +8,8 @@ import {
   type SetGameModeAction,
   type KickPlayerAction,
   type GameMode,
-  UniqueId,
+  type UniqueId,
 } from '@discord-mcbe/shared';
-import { ResponseErrorReason } from '@script-bridge/protocol';
 import type { ScriptWorld } from './world';
 import { ScreenDisplay } from './screen-display';
 
@@ -65,11 +64,12 @@ export class ScriptPlayer {
     if (res.error) throw new BridgeActionError(res);
 
     const dimensionId = res.data.dimension.id;
-    if (!this.world._dimensions.has(dimensionId)) {
-      this.world._dimensions.set(dimensionId, new ScriptDimension(this.world, res.data.dimension));
+    let dimension = this.world._dimensions.get(dimensionId);
+    if (!dimension) {
+      dimension = new ScriptDimension(this.world, res.data.dimension);
+      this.world._dimensions.set(dimensionId, dimension);
     }
-
-    return this.world._dimensions.get(dimensionId)!;
+    return dimension;
   }
 
   async getGameMode(): Promise<GameMode> {

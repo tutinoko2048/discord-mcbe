@@ -6,7 +6,7 @@ export class PropertyManager {
   static readonly DATA_DIR = path.join(ROOT_DIR, '.discord-mcbe');
   static readonly DATA_PATH = path.join(PropertyManager.DATA_DIR, 'data.json');
 
-  private readonly cache = new Map<string, any>();
+  private readonly cache = new Map<string, unknown>();
 
   constructor() {
     this.load();
@@ -36,11 +36,11 @@ export class PropertyManager {
     }
   }
 
-  public get<T>(key: string): T | undefined {
-    return this.cache.get(key);
+  public get<T = unknown>(key: string): T | undefined {
+    return this.cache.get(key) as T | undefined;
   }
 
-  public set(key: string, value: any): void {
+  public set<T = unknown>(key: string, value: T): void {
     this.cache.set(key, value);
     this.save();
   }

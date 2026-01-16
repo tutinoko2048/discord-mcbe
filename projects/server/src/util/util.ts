@@ -16,9 +16,6 @@ export const CONFIG_FILE = path.join(ROOT_DIR, 'config.jsonc');
 export function loadConfig(): Config {
   const parsed: Config = jsonc.parse(fs.readFileSync(CONFIG_FILE, 'utf-8'));
 
-  // inject DISCORD_TOKEN from env if exists
-  if ('DISCORD_TOKEN' in process.env) parsed['discord_token'] ||= process.env.DISCORD_TOKEN!;
-
   try {
     return configSchema.parse(parsed);
   } catch (e) {

@@ -1,5 +1,5 @@
 import { MinecraftEvent } from './minecraft';
-import { ScriptWorld, ScriptPlayer } from '../minecraft';
+import type { ScriptWorld, ScriptPlayer } from '../minecraft';
 import type { Application } from '../application';
 
 /**

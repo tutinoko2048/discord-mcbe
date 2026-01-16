@@ -1,11 +1,18 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.2.0/schema.json",
   "extends": ["../../biome.json"],
+  "linter": {
+    "includes": [
+      "**",
+      "!src/discord/interactions/**",
+      "!src/types/config.ts"
+    ]
+  },
   "formatter": {
     "includes": [
       "**",
-      "!src/types/config.ts",
-      "!src/types/lang.generated.ts"
+      "!src/discord/interactions/**",
+      "!src/types/config.ts"
     ]
   }
 }

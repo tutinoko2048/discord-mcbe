@@ -7,7 +7,6 @@ import {
   type SetActionBarAction,
   type TitleDisplayOptions,
 } from '@discord-mcbe/shared';
-import { ResponseErrorReason } from '@script-bridge/protocol';
 import { BridgeActionError } from './errors';
 
 export class ScreenDisplay {
