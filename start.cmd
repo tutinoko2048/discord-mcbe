@@ -15,8 +15,9 @@ if not exist "node_modules" (
     )
 )
 
-cd projects/server
-call pnpm run start
+call pnpm build:silent
+
+call pnpm -F server start
 
 if %ERRORLEVEL% NEQ 0 (
     echo [ERROR] Server stopped with an error.

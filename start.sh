@@ -6,5 +6,6 @@ if [ ! -d "node_modules" ]; then
     pnpm install
 fi
 
-cd projects/server
-pnpm run start
+pnpm build:silent
+
+pnpm -F server start
