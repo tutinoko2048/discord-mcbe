@@ -1,18 +1,19 @@
-import type { RawMessage } from '@minecraft/server';
-import { ScriptWorld, ClientActionHandler, ISession, SocketBridgeServer, SocketSession } from './bridge';
-import type { Application } from '../application';
-import { _t, Logger } from '../util';
-import { WorldConnectEvent, WorldDisconnectEvent } from '../events';
 import { ScriptBridgeServer } from '@script-bridge/server';
+import { green } from 'colorette';
+import { BaseAction, DisconnectReason } from '@script-bridge/protocol';
 import {
   ActionId,
-  ChatSendAction,
-  PlayerJoinAction,
-  PlayerLeaveAction,
-  WorldInitializeAction,
+  type ChatSendAction,
+  type PlayerJoinAction,
+  type PlayerLeaveAction,
+  type WorldInitializeAction,
 } from '@discord-mcbe/shared';
-import { BaseAction, DisconnectReason } from '@script-bridge/protocol';
-import { green } from 'colorette';
+import { ScriptWorld, ClientActionHandler, ISession, SocketBridgeServer, SocketSession } from './bridge';
+import { _t, Logger } from '../util';
+import { WorldConnectEvent, WorldDisconnectEvent } from '../events';
+
+import type { RawMessage } from '@minecraft/server';
+import type { Application } from '../application';
 
 export class MinecraftHandler {
   private readonly logger: Logger;
@@ -113,14 +114,13 @@ export class MinecraftHandler {
   }
 
   private onClientDisconnect(session: ISession, reason: DisconnectReason) {
-    this.logger.debug('onClientDisconnect', session.id);
-    const world = this.worlds.get(session)!;
-    //FIXME - ワールド退出時はdestroyされるためここは動かない
-    new WorldDisconnectEvent(this.app, world, reason).emit();
+    this.logger.debug('onClientDisconnect', session.id, DisconnectReason[reason]);
   }
 
   private onSessionDestroy(session: ISession) {
     this.logger.debug('onSessionDestroy', session.id);
+    const world = this.worlds.get(session)!;
+    new WorldDisconnectEvent(this.app, world).emit();
     this.worlds.delete(session);
   }
 

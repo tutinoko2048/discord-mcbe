@@ -11,4 +11,3 @@ export * from './shutdown';
 export * from './startup';
 export * from './world-connect';
 export * from './world-disconnect';
-export * from './world-load';

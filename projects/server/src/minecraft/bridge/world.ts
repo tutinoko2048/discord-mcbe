@@ -13,7 +13,7 @@ import { ScriptPlayer } from './player';
 import { ISession, SocketSession } from './transport';
 import { ScriptScoreboard } from './scoreboard';
 import { BridgeActionError } from './errors';
-import { MinecraftMessageEvent, PlayerJoinEvent, PlayerLeaveEvent, WorldLoadEvent } from '../../events';
+import { MinecraftMessageEvent, PlayerJoinEvent, PlayerLeaveEvent } from '../../events';
 import { Logger } from '../../util';
 import type { Session as ScriptSession } from '@script-bridge/server';
 import type { RawMessage } from '@minecraft/server';
@@ -99,8 +99,6 @@ export class ScriptWorld<S extends ISession = ISession> {
     for (const player of data.players) {
       this.initializePlayer(player);
     }
-
-    new WorldLoadEvent(this.app, this).emit();
 
     this.logger.debug(`World initialized: ${this.name}`);
   }
