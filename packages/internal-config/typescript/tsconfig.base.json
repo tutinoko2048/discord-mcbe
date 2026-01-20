@@ -4,6 +4,7 @@
     "noEmit": true,
     "noUncheckedIndexedAccess": true,
     "skipLibCheck": true,
+    "module": "esnext",
     "moduleResolution": "bundler",
     "target": "ES2023",
     "lib": ["ESNext", "DOM"],

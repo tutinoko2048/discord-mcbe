@@ -1,0 +1,9 @@
+{
+  "extends": "@discord-mcbe/internal-config/typescript",
+  "include": ["src", "compile.ts"],
+  "compilerOptions": {
+    "noEmit": false,
+    "types": ["bun-types"],
+    "resolveJsonModule": true
+  }
+}

@@ -21,6 +21,10 @@
       "path": "../projects/addon-local"
     },
     {
+      "name": "🚀 Launcher",
+      "path": "../projects/launcher"
+    },
+    {
       "name": "📁 Repository",
       "path": ".."
     },

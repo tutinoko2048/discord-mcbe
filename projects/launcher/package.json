@@ -1,0 +1,22 @@
+{
+  "name": "@discord-mcbe/launcher",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "compile": "pnpm run clean && bun run compile.ts",
+    "lint": "biome lint ./src",
+    "format": "biome format ./src",
+    "format:write": "biome format ./src --write",
+    "typecheck": "tsc --noEmit",
+    "clean": "rimraf build"
+  },
+  "dependencies": {
+    "commander": "^14.0.2"
+  },
+  "devDependencies": {
+    "@discord-mcbe/internal-config": "workspace:*",
+    "@types/bun": "^1.3.6",
+    "bun-types": "^1.3.6"
+  }
+}
