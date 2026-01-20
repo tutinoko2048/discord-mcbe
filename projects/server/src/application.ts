@@ -2,14 +2,14 @@ import { ExtendedEmitter, MinecraftCommandVersion } from 'socket-be';
 import { DiscordBot } from './discord';
 import { MinecraftHandler } from './minecraft';
 import { EventHandler, CommandLineHandler, ScriptHandler } from './handlers';
-import { Logger, PropertyManager, loadConfig } from './util';
-import { initialize as initializeLang } from './i18n';
+import { Logger, PropertyManager, loadConfig, initialize as initializeLang } from './util';
 import { StartupEvent } from './events';
 
 import type { ExtractOptional } from '@discord-mcbe/shared';
 import type { ApplicationEvents, Config } from './types';
 
 import { version as VERSION } from '../package.json';
+
 
 const defaultConfig: ExtractOptional<Config> = {
   socket_port: 8000,

@@ -7,9 +7,9 @@ export type Arg = string | number;
 
 
 export type Locale =
-  | 'en_US'
-  | 'fr_FR'
-  | 'ja_JP';
+  | 'en-US'
+  | 'fr'
+  | 'ja';
 
 
 

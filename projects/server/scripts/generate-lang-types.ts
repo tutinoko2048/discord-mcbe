@@ -2,11 +2,11 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { parse } from 'dotlang';
 
-const langDir = path.resolve(__dirname, '../../../lang');
+const langDir = path.resolve(__dirname, '../src/assets/locales');
 const targetPath = path.resolve(__dirname, '../src/types/lang.generated.ts');
 
 console.log(`🚧 Generating lang types from ${langDir}...`);
-const FALLBACK_LANG = 'en_US';
+const FALLBACK_LANG = 'en-US';
 const langMap = parse(path.join(langDir, `${FALLBACK_LANG}.lang`));
 
 /** "%0", "%1" ... の最大値 + 1 */
@@ -43,6 +43,7 @@ const langArgsType = `
 export type LangArgs = {
 ${keys
   .map((key) => {
+    // biome-ignore lint/style/noNonNullAssertion: ok.
     const count = argCountByKey.get(key)!;
     const tuple = count === 0 ? '[]' : `[${Array(count).fill('Arg').join(', ')}]`;
     return `  '${key}': ${tuple};`;
