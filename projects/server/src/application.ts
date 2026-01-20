@@ -1,11 +1,13 @@
 import { ExtendedEmitter, MinecraftCommandVersion } from 'socket-be';
-import type { ExtractOptional } from '@discord-mcbe/shared';
 import { DiscordBot } from './discord';
 import { MinecraftHandler } from './minecraft';
 import { EventHandler, CommandLineHandler, ScriptHandler } from './handlers';
-import type { ApplicationEvents, Config } from './types';
-import { Logger, PropertyManager, initialize as initializeLang, loadConfig } from './util';
+import { Logger, PropertyManager, loadConfig } from './util';
+import { initialize as initializeLang } from './i18n';
 import { StartupEvent } from './events';
+
+import type { ExtractOptional } from '@discord-mcbe/shared';
+import type { ApplicationEvents, Config } from './types';
 
 import { version as VERSION } from '../package.json';
 
@@ -72,31 +74,6 @@ export class Application extends ExtendedEmitter<ApplicationEvents> {
     await this.minecraft.start();
     this.cli.start();
     await this.scripts.start();
-
-    // this.server.on(ServerEvent.Open, () => {
-    //   this.logger.info(_t('console.listening', `${this.server.ip}:${this.config.port}`));
-    // });
-
-    // this.server.on(ServerEvent.WorldInitialize, async ({ world }) => {
-    //   const host = await world.getLocalPlayer();
-
-    //   this.logger.info(_t('console.connect', world.name, host.name));
-    //   const embed = embeds.connect(_t('discord.connect', host.name), world.name);
-
-    //   this.sendDiscord({ embeds: [ embed ] });
-    //   world.sendMessage(_t('minecraft.connect', world.name));
-
-    //   this.updateActivity();
-    // });
-
-    // this.server.on(ServerEvent.WorldRemove, async ({ world }) => {
-    //   this.logger.info(_t('console.disconnect', world.name));
-    //   const embed = embeds.disconnect(_t('discord.disconnect'), world.name);
-
-    //   this.sendDiscord({ embeds: [ embed ] });
-
-    //   this.updateActivity();
-    // });
 
     new StartupEvent(this).emit();
 

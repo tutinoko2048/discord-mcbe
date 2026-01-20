@@ -1,6 +1,6 @@
 import * as dotlang from 'dotlang';
 import * as path from 'node:path';
-import { ROOT_DIR } from './environment';
+import { ROOT_DIR } from '../util';
 import type { Locale, LocalizationMap } from 'discord.js';
 import type { Arg, LangArgs, LangKey } from '../types/lang.generated';
 

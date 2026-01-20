@@ -28,5 +28,10 @@
       "name": "📁 Repository",
       "path": ".."
     },
-  ]
+  ],
+  "settings": {
+    "exportall.config.relExclusion": [
+      "/src/global.d.ts"
+    ]
+  }
 }
