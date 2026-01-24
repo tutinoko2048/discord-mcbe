@@ -251,8 +251,8 @@ export class SocketBridgeClient extends Emitter<SocketEvents> implements IBridge
   private registerCommands(registry: CustomCommandRegistry) {
     registry.registerCommand(
       {
-        name: 'bridge:query',
-        description: '[internal] query messages for SocketBridge',
+        name: 'dmc:__query__',
+        description: '§8[internal] query messages for SocketBridge',
         permissionLevel: CommandPermissionLevel.Host,
         mandatoryParameters: [
           {
@@ -266,8 +266,8 @@ export class SocketBridgeClient extends Emitter<SocketEvents> implements IBridge
 
     registry.registerCommand(
       {
-        name: 'bridge:connect',
-        description: '[internal] initialize connection for SocketBridge',
+        name: 'dmc:__connect__',
+        description: '§8[internal] initialize connection for SocketBridge',
         permissionLevel: CommandPermissionLevel.Host,
         mandatoryParameters: [
           {

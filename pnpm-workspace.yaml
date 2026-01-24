@@ -4,7 +4,8 @@ packages:
 onlyBuiltDependencies:
   - rolldown
 catalog:
-  '@minecraft/server': 2.4.0-beta.1.21.124-stable
+  '@minecraft/server': 2.5.0-beta.1.21.130-stable
+  '@minecraft/server-ui': 2.0.0
   '@script-bridge/protocol': ^0.4.8
   '@script-bridge/server': ^0.4.8
   '@script-bridge/client': ^0.4.8

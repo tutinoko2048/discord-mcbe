@@ -198,7 +198,7 @@ export class SocketSession implements ISession {
   private async queryData() {
     if (!this.world.isValid) return [];
 
-    const res = await this.world.runCommand(`bridge:query ${this.id}`);
+    const res = await this.world.runCommand(`dmc:__query__ ${this.id}`);
     if (res.statusCode === CommandStatusCode.FailedToParseCommand) {
       // コマンドが見つからない=ワールドから退出しているはずなのでいったん無視する
       return [];

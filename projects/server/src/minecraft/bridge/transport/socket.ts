@@ -94,7 +94,7 @@ export class SocketBridgeServer extends EventEmitter<ServerEvents> {
 
   private async createSession(world: SocketWorld, sessionId: string = randomUUID()): Promise<SocketSession> {
     const response = await world.runCommand(
-      `bridge:connect ${SocketBridgeServer.PROTOCOL_VERSION} ${sessionId}`,
+      `dmc:__connect__ ${SocketBridgeServer.PROTOCOL_VERSION} ${sessionId}`,
     );
     if (response.statusCode === CommandStatusCode.FailedToParseCommand) {
       throw new AddonNotInstalledError();

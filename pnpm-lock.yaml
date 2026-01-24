@@ -7,8 +7,11 @@ settings:
 catalogs:
   default:
     '@minecraft/server':
-      specifier: 2.4.0-beta.1.21.124-stable
-      version: 2.4.0-beta.1.21.124-stable
+      specifier: 2.5.0-beta.1.21.130-stable
+      version: 2.5.0-beta.1.21.130-stable
+    '@minecraft/server-ui':
+      specifier: 2.0.0
+      version: 2.0.0
     '@script-bridge/client':
       specifier: ^0.4.8
       version: 0.4.8
@@ -46,7 +49,10 @@ importers:
         version: link:../shared
       '@minecraft/server':
         specifier: 'catalog:'
-        version: 2.4.0-beta.1.21.124-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
+        version: 2.5.0-beta.1.21.130-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
+      '@minecraft/server-ui':
+        specifier: 'catalog:'
+        version: 2.0.0(@minecraft/vanilla-data@1.21.70)
       '@script-bridge/client':
         specifier: 'catalog:'
         version: 0.4.8
@@ -64,7 +70,7 @@ importers:
     dependencies:
       '@minecraft/server':
         specifier: 'catalog:'
-        version: 2.4.0-beta.1.21.124-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
+        version: 2.5.0-beta.1.21.130-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
       '@script-bridge/protocol':
         specifier: 'catalog:'
         version: 0.4.8
@@ -84,7 +90,7 @@ importers:
         version: link:../../packages/internal-config
       '@minecraft/server':
         specifier: 'catalog:'
-        version: 2.4.0-beta.1.21.124-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
+        version: 2.5.0-beta.1.21.130-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
 
   projects/addon-local:
     dependencies:
@@ -97,7 +103,7 @@ importers:
         version: link:../../packages/internal-config
       '@minecraft/server':
         specifier: 'catalog:'
-        version: 2.4.0-beta.1.21.124-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
+        version: 2.5.0-beta.1.21.130-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
 
   projects/launcher:
     dependencies:
@@ -125,7 +131,7 @@ importers:
         version: link:../../packages/shared
       '@minecraft/server':
         specifier: 'catalog:'
-        version: 2.4.0-beta.1.21.124-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
+        version: 2.5.0-beta.1.21.130-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
       '@script-bridge/protocol':
         specifier: 'catalog:'
         version: 0.4.8
@@ -317,13 +323,16 @@ packages:
   '@minecraft/common@1.2.0':
     resolution: {integrity: sha512-JdmEq4P3Z/FtoBzhLijFgMSVFnFRrUoLwY8DHHrgtFo0mfLTOLTB1RErYjLMsA6b7BGVNxkX/pfFRiH7QZ0XwQ==}
 
+  '@minecraft/server-ui@2.0.0':
+    resolution: {integrity: sha512-K1xFK1OEJSNfIgyRElaoxDTW/nbEqjBp1YnUdyPCs4kGDglwoXNyFz3wzMOkvT04CJXSifZGcTJeWda4C6OkXw==}
+
   '@minecraft/server@2.1.0':
     resolution: {integrity: sha512-yT7MH47hqhJ3C208Y3g7bEo52aT5q9DZApxH5y3+qQ9voqazF35t3FeTd6aw2S7C07HA6yZOmNZ7p79b3PCJXg==}
     peerDependencies:
       '@minecraft/vanilla-data': '>=1.20.70'
 
-  '@minecraft/server@2.4.0-beta.1.21.124-stable':
-    resolution: {integrity: sha512-T4hpLK9+A+JN6ejaDP3dbYXqNbtIzM0egcZvMahQlTb60xdhzQ9ExkS2fh1gjsqP6H0zssOWS9GH//PVfeD5fQ==}
+  '@minecraft/server@2.5.0-beta.1.21.130-stable':
+    resolution: {integrity: sha512-ljSc6OcVifiUaasy/GmFr+ydYZxAuYLi/9TSzGq9uDBPytvNpoTiUEOt/HgtDPFLtLt+eeq0zf8/PmhlhNqeGQ==}
     peerDependencies:
       '@minecraft/common': ^1.2.0
       '@minecraft/vanilla-data': '>=1.20.70'
@@ -1288,12 +1297,19 @@ snapshots:
 
   '@minecraft/common@1.2.0': {}
 
+  '@minecraft/server-ui@2.0.0(@minecraft/vanilla-data@1.21.70)':
+    dependencies:
+      '@minecraft/common': 1.2.0
+      '@minecraft/server': 2.1.0(@minecraft/vanilla-data@1.21.70)
+    transitivePeerDependencies:
+      - '@minecraft/vanilla-data'
+
   '@minecraft/server@2.1.0(@minecraft/vanilla-data@1.21.70)':
     dependencies:
       '@minecraft/common': 1.2.0
       '@minecraft/vanilla-data': 1.21.70
 
-  '@minecraft/server@2.4.0-beta.1.21.124-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)':
+  '@minecraft/server@2.5.0-beta.1.21.130-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)':
     dependencies:
       '@minecraft/common': 1.2.0
       '@minecraft/vanilla-data': 1.21.70
