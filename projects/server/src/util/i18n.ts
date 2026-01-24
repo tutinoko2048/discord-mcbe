@@ -1,52 +1,55 @@
-import * as dotlang from 'dotlang';
-import * as path from 'node:path';
 import { Locale, type LocalizationMap } from 'discord.js';
-import { ROOT_DIR } from './environment';
 import type { Arg, LangArgs, LangKey } from '../types/lang.generated';
 
-const FALLBACK_LANG = Locale.EnglishUS;
+import enUS from '../assets/locales/en-US.json';
+import ja from '../assets/locales/ja.json';
 
-let templateMap: Map<string, Map<string, string>>;
-let fallbackTemplates: Map<string, string> | undefined;
-let templates: Map<string, string> | undefined;
+const templateMap = new Map<Locale, Record<string, string>>([
+  [Locale.EnglishUS, enUS],
+  [Locale.Japanese, ja],
+]);
+
+const FALLBACK_LANG = Locale.EnglishUS;
+// biome-ignore lint/style/noNonNullAssertion: ok
+const fallbackTemplates: Record<string, string> = templateMap.get(FALLBACK_LANG)!;
+if (!fallbackTemplates)
+  throw new Error(`Invalid fallback language: ${FALLBACK_LANG}. Report this to the developer.`);
+
+let templates: Record<string, string> | undefined;
 
 export function initialize(lang: string) {
-  const langDir = path.join(ROOT_DIR, 'lang');
-  templateMap = dotlang.parseDir(langDir);
-
-  fallbackTemplates = templateMap.get(FALLBACK_LANG);
-  if (!fallbackTemplates)
-    throw new Error(`Invalid fallback language: ${FALLBACK_LANG}. Report this to the developer.`);
-
-  templates = templateMap.get(lang);
+  // load lang from internal asset
+  templates = templateMap.get(lang as Locale);
   if (!templates) {
     console.warn(`Warning: Language "${lang}" not found. Falling back to ${FALLBACK_LANG}.`);
     templates = fallbackTemplates;
   }
+
+  // TODO: load lang from external override file
 }
 
 function translate<K extends LangKey>(key: K, ...values: LangArgs[K]): string {
-  if (!templateMap) {
+  if (!templates) {
     throw new Error('Language templates are not initialized. Call initialize() first.');
   }
 
-  const value = templates?.get(key) ?? fallbackTemplates?.get(key);
+  const value = templates[key] ?? fallbackTemplates[key];
   if (!value) return key;
 
   return replaceTemplates(value, values);
 }
 
 function getTranslationMap(key: LangKey): LocalizationMap {
-  if (!templateMap) {
+  if (!templates) {
     throw new Error('Language templates are not initialized. Call initialize() first.');
   }
 
   const result: LocalizationMap = {};
 
   for (const [locale, langMap] of templateMap) {
-    const value = langMap.get(key);
+    const value = langMap[key];
     if (value) {
-      result[locale as Locale] = value;
+      result[locale] = value;
     }
   }
 
