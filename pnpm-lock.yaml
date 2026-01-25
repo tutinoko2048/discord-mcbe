@@ -6,21 +6,21 @@ settings:
 
 catalogs:
   default:
-    '@minecraft/server':
-      specifier: 2.5.0-beta.1.21.130-stable
-      version: 2.5.0-beta.1.21.130-stable
     '@minecraft/server-ui':
       specifier: 2.0.0
       version: 2.0.0
     '@script-bridge/client':
-      specifier: ^0.4.8
-      version: 0.4.8
+      specifier: ^0.5.0
+      version: 0.5.0
     '@script-bridge/protocol':
-      specifier: ^0.4.8
-      version: 0.4.8
+      specifier: ^0.5.0
+      version: 0.5.0
     '@script-bridge/server':
-      specifier: ^0.4.8
-      version: 0.4.8
+      specifier: ^0.5.0
+      version: 0.5.0
+
+overrides:
+  '@minecraft/server': 2.5.0-beta.1.21.130-stable
 
 importers:
 
@@ -48,17 +48,17 @@ importers:
         specifier: workspace:*
         version: link:../shared
       '@minecraft/server':
-        specifier: 'catalog:'
+        specifier: 2.5.0-beta.1.21.130-stable
         version: 2.5.0-beta.1.21.130-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
       '@minecraft/server-ui':
         specifier: 'catalog:'
         version: 2.0.0(@minecraft/vanilla-data@1.21.70)
       '@script-bridge/client':
         specifier: 'catalog:'
-        version: 0.4.8
+        version: 0.5.0
       '@script-bridge/protocol':
         specifier: 'catalog:'
-        version: 0.4.8
+        version: 0.5.0
     devDependencies:
       '@discord-mcbe/internal-config':
         specifier: workspace:*
@@ -69,11 +69,11 @@ importers:
   packages/shared:
     dependencies:
       '@minecraft/server':
-        specifier: 'catalog:'
+        specifier: 2.5.0-beta.1.21.130-stable
         version: 2.5.0-beta.1.21.130-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
       '@script-bridge/protocol':
         specifier: 'catalog:'
-        version: 0.4.8
+        version: 0.5.0
     devDependencies:
       '@discord-mcbe/internal-config':
         specifier: workspace:*
@@ -89,7 +89,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/internal-config
       '@minecraft/server':
-        specifier: 'catalog:'
+        specifier: 2.5.0-beta.1.21.130-stable
         version: 2.5.0-beta.1.21.130-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
 
   projects/addon-local:
@@ -102,7 +102,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/internal-config
       '@minecraft/server':
-        specifier: 'catalog:'
+        specifier: 2.5.0-beta.1.21.130-stable
         version: 2.5.0-beta.1.21.130-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
 
   projects/launcher:
@@ -130,14 +130,14 @@ importers:
         specifier: workspace:*
         version: link:../../packages/shared
       '@minecraft/server':
-        specifier: 'catalog:'
+        specifier: 2.5.0-beta.1.21.130-stable
         version: 2.5.0-beta.1.21.130-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
       '@script-bridge/protocol':
         specifier: 'catalog:'
-        version: 0.4.8
+        version: 0.5.0
       '@script-bridge/server':
         specifier: 'catalog:'
-        version: 0.4.8
+        version: 0.5.0
       colorette:
         specifier: ^2.0.20
         version: 2.0.20
@@ -155,7 +155,7 @@ importers:
         version: 0.5.48
       socket-be:
         specifier: ^2.4.0
-        version: 2.4.0(@minecraft/vanilla-data@1.21.70)
+        version: 2.4.0(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
       zod:
         specifier: ^3.25.76
         version: 3.25.76
@@ -326,11 +326,6 @@ packages:
   '@minecraft/server-ui@2.0.0':
     resolution: {integrity: sha512-K1xFK1OEJSNfIgyRElaoxDTW/nbEqjBp1YnUdyPCs4kGDglwoXNyFz3wzMOkvT04CJXSifZGcTJeWda4C6OkXw==}
 
-  '@minecraft/server@2.1.0':
-    resolution: {integrity: sha512-yT7MH47hqhJ3C208Y3g7bEo52aT5q9DZApxH5y3+qQ9voqazF35t3FeTd6aw2S7C07HA6yZOmNZ7p79b3PCJXg==}
-    peerDependencies:
-      '@minecraft/vanilla-data': '>=1.20.70'
-
   '@minecraft/server@2.5.0-beta.1.21.130-stable':
     resolution: {integrity: sha512-ljSc6OcVifiUaasy/GmFr+ydYZxAuYLi/9TSzGq9uDBPytvNpoTiUEOt/HgtDPFLtLt+eeq0zf8/PmhlhNqeGQ==}
     peerDependencies:
@@ -447,14 +442,14 @@ packages:
     resolution: {integrity: sha512-jjmJywLAFoWeBi1W7994zZyiNWPIiqRRNAmSERxyg93xRGzNYvGjlZ0gR6x0F4gPRi2+0O6S71kOZYyr3cxaIQ==}
     engines: {node: '>=v14.0.0', npm: '>=7.0.0'}
 
-  '@script-bridge/client@0.4.8':
-    resolution: {integrity: sha512-WpkNiX/8BvRSe9N15gdzvroNbnX78NMx7CDnrsy/6kwp5vwaViVN0qCAnXyv02JxDi4GdyRFAVDmZ3i+2CE8rQ==}
+  '@script-bridge/client@0.5.0':
+    resolution: {integrity: sha512-lNcXxSNNSxoAMddPT5m2u6oKCASsp0SFLEwiZcNquC86hHM1NOgD0SgLTa2xsZBNmY8bdZk0xgRSWQFEPueFxQ==}
 
-  '@script-bridge/protocol@0.4.8':
-    resolution: {integrity: sha512-MzR2320tJZ48qgMgfKhs1gMUhlypDVus7wuTybVqPPdytyGIlbNtdtr5mfK0jhsl50cpaUqOygTGsybWxNt97g==}
+  '@script-bridge/protocol@0.5.0':
+    resolution: {integrity: sha512-dY0sVkNS74zGChvknohJ4iASQvlVOMIOJiz49ilm/9ufVcBLKEbo0tdeWx+/wLsEy8NpZX6+s7uDXh74MQmucQ==}
 
-  '@script-bridge/server@0.4.8':
-    resolution: {integrity: sha512-VkKG83T3hCTfZAlkV0+8ozotOGE/LxiEJuwakbeQ62S26OYItmeZhBbMPP9dbminRDOUyyQuheYfV04sgMVYww==}
+  '@script-bridge/server@0.5.0':
+    resolution: {integrity: sha512-CtR3heW4t5e9J+A5bDJGU91fItyz5pNafI73KfMZw0/p5Dp/lDR4rl3h0jkAs7YLEiSrklIJAeDJJf3Y3NYdbA==}
 
   '@serenityjs/emitter@0.5.2':
     resolution: {integrity: sha512-x+tYqmCbOzSI0wo/0t6Scj5OU883RtTUZ6b0jfhymO0E5GEF1RkWI/4eEGcHUWMtuFDbPtb2pQynPNbt4R4XCQ==}
@@ -1300,14 +1295,9 @@ snapshots:
   '@minecraft/server-ui@2.0.0(@minecraft/vanilla-data@1.21.70)':
     dependencies:
       '@minecraft/common': 1.2.0
-      '@minecraft/server': 2.1.0(@minecraft/vanilla-data@1.21.70)
+      '@minecraft/server': 2.5.0-beta.1.21.130-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
     transitivePeerDependencies:
       - '@minecraft/vanilla-data'
-
-  '@minecraft/server@2.1.0(@minecraft/vanilla-data@1.21.70)':
-    dependencies:
-      '@minecraft/common': 1.2.0
-      '@minecraft/vanilla-data': 1.21.70
 
   '@minecraft/server@2.5.0-beta.1.21.130-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)':
     dependencies:
@@ -1384,16 +1374,16 @@ snapshots:
 
   '@sapphire/snowflake@3.5.3': {}
 
-  '@script-bridge/client@0.4.8':
+  '@script-bridge/client@0.5.0':
     dependencies:
-      '@script-bridge/protocol': 0.4.8
+      '@script-bridge/protocol': 0.5.0
 
-  '@script-bridge/protocol@0.4.8': {}
+  '@script-bridge/protocol@0.5.0': {}
 
-  '@script-bridge/server@0.4.8':
+  '@script-bridge/server@0.5.0':
     dependencies:
       '@hono/node-server': 1.19.6(hono@4.10.7)
-      '@script-bridge/protocol': 0.4.8
+      '@script-bridge/protocol': 0.5.0
       hono: 4.10.7
 
   '@serenityjs/emitter@0.5.2': {}
@@ -1871,12 +1861,13 @@ snapshots:
       ansi-styles: 6.2.1
       is-fullwidth-code-point: 5.0.0
 
-  socket-be@2.4.0(@minecraft/vanilla-data@1.21.70):
+  socket-be@2.4.0(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70):
     dependencies:
-      '@minecraft/server': 2.1.0(@minecraft/vanilla-data@1.21.70)
+      '@minecraft/server': 2.5.0-beta.1.21.130-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
       '@serenityjs/emitter': 0.5.2
       ws: 8.18.3
     transitivePeerDependencies:
+      - '@minecraft/common'
       - '@minecraft/vanilla-data'
       - bufferutil
       - utf-8-validate

@@ -35,14 +35,13 @@ export interface SocketEvents {
 }
 
 export interface ClientOptions {
-  clientId: string;
+  clientId: string | (() => string);
 }
 
 export class SocketBridgeClient extends Emitter<SocketEvents> implements IBridgeClient {
   static readonly PROTOCOL_VERSION = SocketBridge.PROTOCOL_VERSION;
 
-  /** Custom identifier for client. This will be sent to the server */
-  readonly clientId: string;
+  private readonly _clientId: string | (() => string);
 
   private readonly sendQueue: (ClientRequest | ClientResponse)[] = [];
   private readonly awaitingResponses = new Map<number, (response: ServerResponse) => void>();
@@ -58,7 +57,7 @@ export class SocketBridgeClient extends Emitter<SocketEvents> implements IBridge
   constructor(options: ClientOptions) {
     super();
 
-    this.clientId = options.clientId;
+    this._clientId = options.clientId;
 
     system.beforeEvents.startup.subscribe((event) => {
       this.registerCommands(event.customCommandRegistry);
@@ -81,6 +80,10 @@ export class SocketBridgeClient extends Emitter<SocketEvents> implements IBridge
 
   get isConnected(): boolean {
     return this.currentSessionId !== null;
+  }
+
+  get clientId(): string {
+    return typeof this._clientId === 'function' ? this._clientId() : this._clientId;
   }
 
   async send<A extends BaseAction = BaseAction>(

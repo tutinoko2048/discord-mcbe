@@ -1,13 +1,14 @@
+import { world } from '@minecraft/server';
 import { BaseClient } from './client';
 import { SocketBridgeClient } from './transport';
 import type { ExtractOptional } from '@discord-mcbe/shared';
 
 export interface BridgeClientOptions {
-  clientId?: string;
+  clientId?: string | (() => string);
 }
 
 const defaultOptions: ExtractOptional<BridgeClientOptions> = {
-  clientId: 'discord-mcbe-local',
+  clientId: () => (world.getDynamicProperty('clientId') as string) ?? 'discord-mcbe-local',
 };
 
 export class BridgeClient extends BaseClient<SocketBridgeClient> {

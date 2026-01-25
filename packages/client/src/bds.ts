@@ -1,17 +1,18 @@
 import { BaseClient } from './client';
 import { ScriptBridgeClient } from '@script-bridge/client';
 import type { ExtractOptional } from '@discord-mcbe/shared';
+import { world } from '@minecraft/server';
 
 export interface BridgeClientOptions {
   host?: string;
   port?: number;
-  clientId?: string;
+  clientId?: string | (() => string);
 }
 
 const defaultOptions: ExtractOptional<BridgeClientOptions> = {
   host: 'localhost',
   port: 23191,
-  clientId: 'discord-mcbe-bds',
+  clientId: () => (world.getDynamicProperty('clientId') as string) ?? 'discord-mcbe-bds',
 };
 
 export class BridgeClient extends BaseClient<ScriptBridgeClient> {

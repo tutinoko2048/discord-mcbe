@@ -21,9 +21,13 @@ export class BaseClient<T extends IBridgeClient = IBridgeClient> {
     // register events to send to server
     registerEvents(this.bridge);
 
-    system.beforeEvents.startup.subscribe(ev => registerCommands(ev.customCommandRegistry));
+    system.beforeEvents.startup.subscribe(ev => registerCommands(ev.customCommandRegistry, this));
 
     this.bridge.on('connect', this.onConnect.bind(this));
+  }
+
+  setClientId(clientId: string) {
+    world.setDynamicProperty('clientId', clientId);
   }
 
   private async onConnect() {
