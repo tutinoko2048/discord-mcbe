@@ -1,18 +1,6 @@
 import { z } from 'zod';
 
 export const configSchema = z.object({
-  discord_token: z.string()
-    .describe('Token of the bot'),
-  guild_id: z.string()
-    .describe('ID of the guild that use the bot'),
-  channel_id: z.string()
-    .describe('ID of the channel that messages will be sent'),
-  socket_port: z.number().int().positive()
-    .optional()
-    .describe('Port used for websocket connection'),
-  bridge_port: z.number().int().positive()
-    .optional()
-    .describe('Port used for ScriptBridge(BDS) connection'),
   language: z.string()
     .optional()
     .describe('Language (File name in `lang` folder)'),

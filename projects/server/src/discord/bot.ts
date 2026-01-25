@@ -40,7 +40,7 @@ export class DiscordBot<READY extends boolean = false> {
   }
 
   getMainChannel(): TextChannel {
-    const channel = this.client.channels.cache.get(this.app.config.channel_id);
+    const channel = this.client.channels.cache.get(this.app.env.CHANNEL_ID);
     this.validateChannel(channel);
     return channel;
   }
@@ -82,7 +82,7 @@ export class DiscordBot<READY extends boolean = false> {
 
     this.client.on(Events.Error, this.onError.bind(this));
 
-    await this.client.login(this.app.config.discord_token);
+    await this.client.login(this.app.env.DISCORD_TOKEN);
   }
 
   async stop() {
@@ -129,7 +129,7 @@ export class DiscordBot<READY extends boolean = false> {
   private onReady(client: Client<true>) {
     this.logger.info(_t('console.login', client.user.tag));
 
-    const channel = client.channels.cache.get(this.app.config.channel_id);
+    const channel = client.channels.cache.get(this.app.env.CHANNEL_ID);
     this.validateChannel(channel);
     // this.interactions.registerCommands(this.app.config.guild_id);
 
@@ -145,7 +145,7 @@ export class DiscordBot<READY extends boolean = false> {
 
     // this.logger.debug('messageCreate', message.content, message.author.tag);
 
-    if (message.channel.id === this.app.config.channel_id) {
+    if (message.channel.id === this.app.env.CHANNEL_ID) {
       if (!message.inGuild()) {
         return this.logger.warn(`Received a message from invalid channel (ID: ${message.channel.id})`);
       }
@@ -160,11 +160,11 @@ export class DiscordBot<READY extends boolean = false> {
 
   private validateChannel(channel?: Channel): asserts channel is TextChannel {
     if (!channel) {
-      throw new Error(`Failed to find the channel (ID: ${this.app.config.channel_id})`);
+      throw new Error(`Failed to find the channel (ID: ${this.app.env.CHANNEL_ID})`);
     }
 
     if (channel.type !== ChannelType.GuildText) {
-      throw new Error(`The channel (ID: ${this.app.config.channel_id}) is not a text channel`);
+      throw new Error(`The channel (ID: ${this.app.env.CHANNEL_ID}) is not a text channel`);
     }
   }
 }

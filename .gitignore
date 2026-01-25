@@ -9,3 +9,7 @@ dist
 todo.md
 build/
 tsconfig.tsbuildinfo
+.env
+.env.local
+.env.development
+.env.production

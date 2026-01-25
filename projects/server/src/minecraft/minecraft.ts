@@ -26,11 +26,11 @@ export class MinecraftHandler {
   constructor(private readonly app: Application) {
     this.logger = new Logger('Minecraft', this.app.config);
     this.script = new ScriptBridgeServer({
-      port: this.app.config.bridge_port,
+      port: this.app.env.BRIDGE_PORT,
       timeoutThresholdMultiplier: 10,
     });
     this.socket = new SocketBridgeServer({
-      port: this.app.config.socket_port,
+      port: this.app.env.SOCKET_PORT,
       commandVersion: this.app.config.command_version,
       debug: this.app.config.debug,
       disableEncryption: this.app.config.disable_encryption,
@@ -126,9 +126,9 @@ export class MinecraftHandler {
   }
 
   private onOpen() {
-    this.logger.info(_t('console.socket.ready', this.app.config.socket_port));
+    this.logger.info(_t('console.socket.ready', this.app.env.SOCKET_PORT));
     this.logger.info(
-      _t('console.socket.command', green(`/connect localhost:${this.app.config.socket_port}`)),
+      _t('console.socket.command', green(`/connect localhost:${this.app.env.SOCKET_PORT}`)),
     );
   }
 

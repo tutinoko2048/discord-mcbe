@@ -2,18 +2,20 @@ import { ExtendedEmitter, MinecraftCommandVersion } from 'socket-be';
 import { DiscordBot } from './discord';
 import { MinecraftHandler } from './minecraft';
 import { EventHandler, CommandLineHandler, ScriptHandler } from './handlers';
-import { Logger, PropertyManager, loadConfig, initialize as initializeLang } from './util';
+import { Logger, PropertyManager, loadConfig, initialize as initializeLang, loadEnv } from './util';
 import { StartupEvent } from './events';
 
 import type { ExtractOptional } from '@discord-mcbe/shared';
-import type { ApplicationEvents, Config } from './types';
+import type { ApplicationEvents, Config, Env } from './types';
 
 import { version as VERSION } from '../package.json';
 
+const defaultEnv: ExtractOptional<Env> = {
+  SOCKET_PORT: 8000,
+  BRIDGE_PORT: 23191,
+}
 
 const defaultConfig: ExtractOptional<Config> = {
-  socket_port: 8000,
-  bridge_port: 23191,
   language: 'ja_JP',
   timezoneOffset: 0,
   command_role_id: [],
@@ -28,8 +30,9 @@ const defaultConfig: ExtractOptional<Config> = {
 };
 
 export class Application extends ExtendedEmitter<ApplicationEvents> {
-  public readonly config: Required<Config>;
   public readonly version: string;
+  public readonly env: Required<Env>;
+  public readonly config: Required<Config>;
   public readonly logger: Logger;
   public readonly properties: PropertyManager;
   public readonly bot: DiscordBot;
@@ -47,9 +50,11 @@ export class Application extends ExtendedEmitter<ApplicationEvents> {
 
     this.version = VERSION;
 
+    this.env = loadEnv(defaultEnv);
+
     this.properties = new PropertyManager();
 
-    this.config = Object.assign(defaultConfig, loadConfig());
+    this.config = loadConfig(defaultConfig);
 
     initializeLang(this.config.language);
 

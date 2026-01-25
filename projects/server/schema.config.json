@@ -1,28 +1,6 @@
 {
   "type": "object",
   "properties": {
-    "discord_token": {
-      "type": "string",
-      "description": "Token of the bot"
-    },
-    "guild_id": {
-      "type": "string",
-      "description": "ID of the guild that use the bot"
-    },
-    "channel_id": {
-      "type": "string",
-      "description": "ID of the channel that messages will be sent"
-    },
-    "socket_port": {
-      "type": "integer",
-      "exclusiveMinimum": 0,
-      "description": "Port used for websocket connection"
-    },
-    "bridge_port": {
-      "type": "integer",
-      "exclusiveMinimum": 0,
-      "description": "Port used for ScriptBridge(BDS) connection"
-    },
     "language": {
       "type": "string",
       "description": "Language (File name in `lang` folder)"
@@ -95,11 +73,6 @@
       "description": "Disable encryption for WebSocket connection"
     }
   },
-  "required": [
-    "discord_token",
-    "guild_id",
-    "channel_id"
-  ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
 }
