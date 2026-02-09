@@ -1,4 +1,6 @@
 import { Locale, type LocalizationMap } from 'discord.js';
+import { yellow } from 'colorette';
+
 import type { Arg, LangArgs, LangKey } from '../types/lang.generated';
 
 import enUS from '../assets/locales/en-US.json';
@@ -21,7 +23,7 @@ export function initialize(lang: string) {
   // load lang from internal asset
   templates = templateMap.get(lang as Locale);
   if (!templates) {
-    console.warn(`Warning: Language "${lang}" not found. Falling back to ${FALLBACK_LANG}.`);
+    console.warn(yellow(`[!] Language "${lang}" not found. Falling back to ${FALLBACK_LANG}.`));
     templates = fallbackTemplates;
   }
 

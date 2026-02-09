@@ -1,15 +1,15 @@
 {
   "extends": "@discord-mcbe/internal-config/typescript",
-  "include": ["src"],
+  "include": ["src", "tests"],
   "compilerOptions": {
-    "types": ["./src/global.d.ts"],
+    "types": ["bun-types", "./src/global.d.ts"],
     "target": "ESNext",
     "module": "esnext",
     "moduleResolution": "bundler",
 
     "noEmit": false,
     "outDir": "./dist",
-    "rootDir": "./src",
+    // "rootDir": "./src",
     "resolveJsonModule": true,
     "sourceMap": true,
 

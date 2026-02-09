@@ -31,9 +31,8 @@ export class MinecraftHandler {
     });
     this.socket = new SocketBridgeServer({
       port: this.app.env.SOCKET_PORT,
-      commandVersion: this.app.config.command_version,
       debug: this.app.config.debug,
-      disableEncryption: this.app.config.disable_encryption,
+      disableEncryption: this.app.config.bridge.disable_encryption,
     });
 
     this.socket.on('clientConnect', this.onClientConnect.bind(this));

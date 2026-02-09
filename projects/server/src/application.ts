@@ -1,4 +1,4 @@
-import { ExtendedEmitter, MinecraftCommandVersion } from 'socket-be';
+import { ExtendedEmitter } from 'socket-be';
 import { DiscordBot } from './discord';
 import { MinecraftHandler } from './minecraft';
 import { EventHandler, CommandLineHandler, ScriptHandler } from './handlers';
@@ -6,7 +6,8 @@ import { Logger, PropertyManager, loadConfig, initialize as initializeLang, load
 import { StartupEvent } from './events';
 
 import type { ExtractOptional } from '@discord-mcbe/shared';
-import type { ApplicationEvents, Config, Env } from './types';
+import type { ApplicationEvents, Env } from './types';
+import type { MergedConfig } from './util';
 
 import { version as VERSION } from '../package.json';
 
@@ -15,24 +16,28 @@ const defaultEnv: ExtractOptional<Env> = {
   BRIDGE_PORT: 23191,
 }
 
-const defaultConfig: ExtractOptional<Config> = {
-  language: 'ja_JP',
-  timezoneOffset: 0,
-  command_role_id: [],
-  ready_message: true,
-  strip_color_prefix: false,
-  panel_update_interval: 10000,
-  styles_tnac: true,
-  scripts_entry: '',
-  command_version: MinecraftCommandVersion.Latest,
+const defaultConfig: MergedConfig = {
+  app: {
+    language: 'en_US',
+    timezone_offset: 0,
+    scripts_entry: '',
+  },
+  bot: {
+    command_role_id: [],
+    send_ready: true,
+    strip_color_prefix: false,
+    panel_update_interval: 10000,
+  },
+  bridge: {
+    disable_encryption: false,
+  },
   debug: false,
-  disable_encryption: false,
 };
 
 export class Application extends ExtendedEmitter<ApplicationEvents> {
   public readonly version: string;
   public readonly env: Required<Env>;
-  public readonly config: Required<Config>;
+  public readonly config: MergedConfig;
   public readonly logger: Logger;
   public readonly properties: PropertyManager;
   public readonly bot: DiscordBot;
@@ -56,7 +61,7 @@ export class Application extends ExtendedEmitter<ApplicationEvents> {
 
     this.config = loadConfig(defaultConfig);
 
-    initializeLang(this.config.language);
+    initializeLang(this.config.app.language);
 
     this.logger = new Logger('App', this.config);
 

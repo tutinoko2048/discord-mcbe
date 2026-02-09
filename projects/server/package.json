@@ -17,7 +17,7 @@
     "format:write": "biome format --write ./src",
     "typecheck": "tsc --noEmit",
     "clean": "rimraf dist build .turbo",
-    "test": "bun ./tests/test.ts",
+    "test": "bun test",
     "generate-schema": "bun ./scripts/generate-schema.ts",
     "generate-logo": "bun ./scripts/generate-logo.ts",
     "generate-lang-types": "bun ./scripts/generate-lang-types.ts"
@@ -37,9 +37,9 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "oh-my-logo": "^0.2.1",
     "@discord-mcbe/internal-config": "workspace:*",
-    "@types/bun": "^1.3.3",
+    "bun-types": "^1.3.8",
+    "oh-my-logo": "^0.2.1",
     "zod-to-json-schema": "^3.25.0"
   }
 }
