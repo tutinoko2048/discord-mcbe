@@ -1,20 +1,23 @@
 {
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "properties": {
     "app": {
       "type": "object",
       "properties": {
         "language": {
-          "type": "string",
-          "description": "Language (File name in `lang` folder)"
+          "description": "Language (File name in `lang` folder)",
+          "type": "string"
         },
         "timezone_offset": {
+          "description": "Timezone used to display the time",
           "type": "integer",
-          "description": "Timezone used to display the time"
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
         },
         "scripts_entry": {
-          "type": "string",
-          "description": "The entry file for custom scripts"
+          "description": "The entry file for custom scripts",
+          "type": "string"
         }
       },
       "additionalProperties": false
@@ -23,24 +26,25 @@
       "type": "object",
       "properties": {
         "command_role_id": {
+          "description": "Role ids that are allowed to use commands to minecraft",
           "type": "array",
           "items": {
             "type": "string"
-          },
-          "description": "Role ids that are allowed to use commands to minecraft"
+          }
         },
         "send_ready": {
-          "type": "boolean",
-          "description": "Whether to send messages when ready"
+          "description": "Whether to send messages when ready",
+          "type": "boolean"
         },
         "strip_color_prefix": {
-          "type": "boolean",
-          "description": "Whether to delete § in messages sent from minecraft"
+          "description": "Whether to delete § in messages sent from minecraft",
+          "type": "boolean"
         },
         "panel_update_interval": {
+          "description": "The interval to update StatusPanel",
           "type": "integer",
           "exclusiveMinimum": 0,
-          "description": "The interval to update StatusPanel"
+          "maximum": 9007199254740991
         }
       },
       "additionalProperties": false
@@ -49,15 +53,15 @@
       "type": "object",
       "properties": {
         "disable_encryption": {
-          "type": "boolean",
-          "description": "Disable encryption for WebSocket connection"
+          "description": "Disable encryption for WebSocket connection",
+          "type": "boolean"
         }
       },
       "additionalProperties": false
     },
     "debug": {
-      "type": "boolean",
-      "description": "debug."
+      "description": "debug.",
+      "type": "boolean"
     }
   },
   "required": [
@@ -65,6 +69,5 @@
     "bot",
     "bridge"
   ],
-  "additionalProperties": false,
-  "$schema": "http://json-schema.org/draft-07/schema#"
+  "additionalProperties": false
 }

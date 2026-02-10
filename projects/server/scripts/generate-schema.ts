@@ -1,9 +1,8 @@
 import { writeFileSync } from "node:fs";
 import { join } from 'node:path';
-import { zodToJsonSchema } from "zod-to-json-schema";
 import { configSchema } from "../src/types/config";
 
-const jsonSchema = zodToJsonSchema(configSchema);
+const jsonSchema = configSchema.toJSONSchema();
 
 const targetPath = join(__dirname, "../schema.config.json");
 

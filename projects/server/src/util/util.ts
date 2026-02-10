@@ -2,6 +2,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { jsonc } from 'jsonc';
 import { dim } from 'colorette';
+import * as z from 'zod';
 import { ROOT_DIR } from './environment';
 import { configSchema, envSchema, type Config, type Env } from '../types';
 
@@ -65,8 +66,10 @@ export function loadConfig(defaultConfig: DefaultConfig): MergedConfig {
 
   const parsedConfig = configSchema.safeParse(configData);
   if (!parsedConfig.success) {
+    console.error('-'.repeat(24));
     console.error('Invalid config.json:');
-    console.error(parsedConfig.error.format());
+    console.error(z.prettifyError(parsedConfig.error));
+    console.error('-'.repeat(24));
     process.exit(1);
   }
 
@@ -76,8 +79,10 @@ export function loadConfig(defaultConfig: DefaultConfig): MergedConfig {
 export function loadEnv(defaultEnv: ExtractOptional<Env>): Required<Env> {
   const parsedEnv = envSchema.safeParse(process.env);
   if (!parsedEnv.success) {
+    console.error('-'.repeat(24));
     console.error('Invalid environment variables:');
-    console.error(parsedEnv.error.format());
+    console.error(z.prettifyError(parsedEnv.error));
+    console.error('-'.repeat(24));
     process.exit(1);
   }
 
