@@ -33,7 +33,7 @@
     "dotlang": "^1.1.1",
     "jsonc": "^2.0.0",
     "moment-timezone": "^0.5.48",
-    "socket-be": "^2.4.0",
+    "socket-be": "^2.6.0-beta.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {

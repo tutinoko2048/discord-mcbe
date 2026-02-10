@@ -35,7 +35,7 @@ export class PanelHandler {
       this.update();
     }
     setInterval(
-      () => this.update(),
+      this.update.bind(this),
       this.app.config.bot.panel_update_interval || 30000, // デフォルト値を設定
     );
   }

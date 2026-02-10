@@ -154,8 +154,8 @@ importers:
         specifier: ^0.5.48
         version: 0.5.48
       socket-be:
-        specifier: ^2.4.0
-        version: 2.4.0(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
+        specifier: ^2.6.0-beta.0
+        version: 2.6.0-beta.0(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
       zod:
         specifier: ^4.3.6
         version: 4.3.6
@@ -944,8 +944,8 @@ packages:
     resolution: {integrity: sha512-bSiSngZ/jWeX93BqeIAbImyTbEihizcwNjFoRUIY/T1wWQsfsm2Vw1agPKylXvQTU7iASGdHhyqRlqQzfz+Htg==}
     engines: {node: '>=18'}
 
-  socket-be@2.4.0:
-    resolution: {integrity: sha512-BsnFYYz3eGYlfCrAs6riz0DHX/wiOGTEhHa7g4E4wtzDBloOPSdBQ4cY5yhmCIj0dsNc32la48L4itgMUXLuxg==}
+  socket-be@2.6.0-beta.0:
+    resolution: {integrity: sha512-hAOES8eVEMGaFjUl2RC2cjbzXebtObzw12hLMLwHf4flnxgj+gwYlLVWfBUspSwPaEbVWg9boM+ZkRDt+OE9vA==}
 
   stack-utils@2.0.6:
     resolution: {integrity: sha512-XlkWvfIm6RmsWtNJx+uqtKLS8eqFbxUg0ZzLXqY0caEy9l7hruX8IpiDnjsLavoBgqCCR71TqWO8MaXYheJ3RQ==}
@@ -1107,6 +1107,18 @@ packages:
 
   ws@8.18.3:
     resolution: {integrity: sha512-PEIGCY5tSlUt50cqyMXfCzX+oOPqN0vuGqWzbcJ2xvnkzkq46oOpz7dQaTDBdfICb4N14+GARUDw2XV2N4tvzg==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: '>=5.0.2'
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
+
+  ws@8.19.0:
+    resolution: {integrity: sha512-blAT2mjOEIi0ZzruJfIhb3nps74PRWTCz1IjglWEEpQl5XS/UNama6u2/rjFkDDouqr4L67ry+1aGIALViWjDg==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
@@ -1853,11 +1865,11 @@ snapshots:
       ansi-styles: 6.2.1
       is-fullwidth-code-point: 5.0.0
 
-  socket-be@2.4.0(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70):
+  socket-be@2.6.0-beta.0(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70):
     dependencies:
       '@minecraft/server': 2.5.0-beta.1.21.130-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
       '@serenityjs/emitter': 0.5.2
-      ws: 8.18.3
+      ws: 8.19.0
     transitivePeerDependencies:
       - '@minecraft/common'
       - '@minecraft/vanilla-data'
@@ -2002,6 +2014,8 @@ snapshots:
     optional: true
 
   ws@8.18.3: {}
+
+  ws@8.19.0: {}
 
   yoga-layout@3.2.1: {}
 
