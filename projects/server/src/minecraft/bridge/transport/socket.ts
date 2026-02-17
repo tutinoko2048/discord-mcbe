@@ -51,7 +51,7 @@ export class SocketBridgeServer extends EventEmitter<ServerEvents> {
 
       this.emit('clientConnect', session);
     } catch (err) {
-      if (err instanceof AddonNotInstalledError)  throw err;
+      if (err instanceof AddonNotInstalledError) throw err;
 
       this.logger.warn(`Failed to create session: ${err}`);
 
@@ -124,6 +124,7 @@ export class SocketBridgeServer extends EventEmitter<ServerEvents> {
     } catch (err) {
       this.logger.error(err);
       if (err instanceof AddonNotInstalledError) {
+        await ev.world.sendMessage('§c[discord-mcbe] Error: Required addon not installed. Please install the addon in your world and try again.');
         await ev.world.disconnect();
       }
     }
