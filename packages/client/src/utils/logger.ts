@@ -1,6 +1,10 @@
 export class Logger {
   constructor(private readonly name: string) {}
 
+  log(...message: unknown[]): void {
+    console.log(`[${this.name}] ${this.formatMessage(message)}`);
+  }
+
   info(...message: unknown[]): void {
     console.info(`[${this.name}] ${this.formatMessage(message)}`);
   }

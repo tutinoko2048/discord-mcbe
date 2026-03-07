@@ -1,10 +1,10 @@
 import * as fs from 'node:fs/promises';
-import * as path from 'node:path';
+import { join, basename } from 'node:path';
 // import packageJson from './package.json' with { type: 'json' };
 
 const windowsOption: Bun.CompileBuildOptions['windows'] = {
   // adding metadata causes: "error: Failed to set Windows metadata: FailedToCommit"
-  // icon: 'discord-mcbe.ico',
+  // icon: 'assets/discord-mcbe.ico',
   // title: 'discord-mcbe updater',
   // version: packageJson.version,
 }
@@ -23,11 +23,11 @@ for (const platform of platforms) {
   for (const target of platform.targets) {
     console.log(`[${target}] Building...`);
 
-    const targetDir = path.join('build', target);
+    const targetDir = join('build', target);
     await fs.mkdir(targetDir, { recursive: true });
 
     // copy run script
-    await fs.copyFile(platform.run, path.join(targetDir, path.basename(platform.run)));
+    await fs.copyFile(platform.run, join(targetDir, basename(platform.run)));
 
     // compile with bun
     const startAt = Date.now();
@@ -35,7 +35,7 @@ for (const platform of platforms) {
       entrypoints: ['src/main.ts'],
       compile: {
         target: `bun-${target}`,
-        outfile: path.join(targetDir, `updater${platform.ext}`),
+        outfile: join(targetDir, `updater${platform.ext}`),
         windows: windowsOption,
       },
     });

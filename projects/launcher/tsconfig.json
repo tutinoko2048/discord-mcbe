@@ -4,6 +4,7 @@
   "compilerOptions": {
     "noEmit": false,
     "types": ["bun-types"],
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "lib": ["ESNext"],
   }
 }

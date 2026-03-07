@@ -1,4 +1,6 @@
-import * as path from 'node:path';
+import { join } from 'node:path';
+
+const isExecutable = typeof __BUN_EXE__ !== 'undefined';
 
 export const ROOT_DIR =
-  typeof __BUN_EXE__ === 'undefined' ? path.join(process.cwd(), '../../') : path.join(process.cwd());
+  isExecutable ? join(process.cwd()) : join(process.cwd(), './');

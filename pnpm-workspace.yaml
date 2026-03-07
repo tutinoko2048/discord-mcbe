@@ -1,6 +1,7 @@
 packages:
   - projects/*
   - packages/*
+  - devapp
 onlyBuiltDependencies:
   - rolldown
 catalog:

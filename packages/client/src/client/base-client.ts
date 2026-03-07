@@ -6,12 +6,20 @@ import { registerCommands } from './command';
 import { createPlayerDescriptor } from './descriptors';
 import { Logger } from '../utils';
 
-import type { IBridgeClient } from '../transport';
+import type { SocketBridgeClient, IBridgeClient } from '../transport';
+import type { ScriptBridgeClient } from '@script-bridge/client';
 
-export class BaseClient<T extends IBridgeClient = IBridgeClient> {
+export enum ClientType {
+  Local = 'Local',
+  BDS = 'BDS',
+}
+
+export abstract class BaseClient<T extends IBridgeClient = IBridgeClient> {
   public readonly bridge: T;
 
   public readonly logger = new Logger('discord-mcbe');
+
+  abstract readonly type: ClientType;
 
   constructor(bridge: T) {
     this.bridge = bridge;
@@ -30,6 +38,10 @@ export class BaseClient<T extends IBridgeClient = IBridgeClient> {
     world.setDynamicProperty('clientId', clientId);
   }
 
+  getClientId(): string | undefined {
+    return world.getDynamicProperty('clientId') as string | undefined;
+  }
+
   private async onConnect() {
     const players = world.getPlayers();
 
@@ -40,5 +52,13 @@ export class BaseClient<T extends IBridgeClient = IBridgeClient> {
     } catch (error) {
       this.logger.error('Failed to send WorldInitializeAction:', error);
     }
+  }
+
+  isLocal(): this is BaseClient<SocketBridgeClient> {
+    return this.type === ClientType.Local;
+  }
+
+  isBDS(): this is BaseClient<ScriptBridgeClient> {
+    return this.type === ClientType.BDS;
   }
 }

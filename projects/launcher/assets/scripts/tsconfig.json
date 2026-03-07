@@ -1,8 +1,0 @@
-{
-  "include": ["."],
-  "compilerOptions": {
-    "paths": {
-      "@discord-mcbe/server": []
-    }
-  }
-}

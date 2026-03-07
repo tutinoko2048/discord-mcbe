@@ -1,6 +1,10 @@
 {
   "folders": [
     {
+      "name": "🧪 Dev App",
+      "path": "../devapp"
+    },
+    {
       "name": "🖥️ Server",
       "path": "../projects/server"
     },

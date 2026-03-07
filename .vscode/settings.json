@@ -1,7 +1,7 @@
 {
   "json.schemas": [
     {
-      "fileMatch": ["config.json", "projects/server/src/assets/config.json"],
+      "fileMatch": ["devapp/config.json", "projects/server/src/assets/config.json"],
       "url": "./projects/server/schema.config.json"
     }
   ],

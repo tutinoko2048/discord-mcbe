@@ -1,6 +1,7 @@
 {
   "name": "discord-mcbe",
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "turbo run build",
     "build:silent": "turbo run build --output-logs errors-only",

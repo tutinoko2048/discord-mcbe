@@ -1,5 +1,5 @@
 import { world } from '@minecraft/server';
-import { BaseClient } from './client';
+import { BaseClient, ClientType } from './client';
 import { SocketBridgeClient } from './transport';
 import type { ExtractOptional } from '@discord-mcbe/shared';
 
@@ -12,8 +12,10 @@ const defaultOptions: ExtractOptional<BridgeClientOptions> = {
 };
 
 export class BridgeClient extends BaseClient<SocketBridgeClient> {
+  readonly type = ClientType.Local;
+  
   constructor(options: BridgeClientOptions = {}) {
-    if (__DEV__) console.log('[discord-mcbe] Initializing bridge client...');
+    if (__DEV__) console.log('§7[discord-mcbe] Initializing bridge client...');
 
     const mergedOptions = { ...defaultOptions, ...options };
 
@@ -21,11 +23,11 @@ export class BridgeClient extends BaseClient<SocketBridgeClient> {
     super(bridge);
 
     bridge.on('ready', () => {
-      console.log('[discord-mcbe] Listening connection from discord-mcbe server...');
+      console.info('[discord-mcbe] Listening connection from discord-mcbe server...');
     });
 
     bridge.on('connect', () => {
-      console.log('[discord-mcbe] Connection established!');
+      console.info('[discord-mcbe] Connection established!');
     });
   }
 }

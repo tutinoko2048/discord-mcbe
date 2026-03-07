@@ -24,6 +24,8 @@ export interface IBridgeClient {
 
   registerHandler<A extends BaseAction = BaseAction>(channelId: A['id'], handler: ActionHandler<A>): void;
 
+  disconnect(reason?: DisconnectReason): Promise<void>;
+
   on(event: 'connect', listener: Listener<{ sessionId: string }>): void;
   on(event: 'disconnect', listener: Listener<{ reason: DisconnectReason }>): void;
 }

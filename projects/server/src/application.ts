@@ -1,15 +1,14 @@
 import { ExtendedEmitter } from 'socket-be';
+import { VERSION, type ExtractOptional } from '@discord-mcbe/shared';
 import { DiscordBot } from './discord';
 import { MinecraftHandler } from './minecraft';
 import { EventHandler, CommandLineHandler, ScriptHandler } from './handlers';
 import { Logger, PropertyManager, loadConfig, initialize as initializeLang, loadEnv } from './util';
 import { StartupEvent } from './events';
 
-import type { ExtractOptional } from '@discord-mcbe/shared';
 import type { ApplicationEvents, Env } from './types';
 import type { MergedConfig } from './util';
 
-import { version as VERSION } from '../package.json';
 
 const defaultEnv: ExtractOptional<Env> = {
   SOCKET_PORT: 8000,

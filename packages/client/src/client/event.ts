@@ -37,5 +37,5 @@ export function registerEvents(bridge: IBridgeClient) {
     });
   });
 
-  if (__DEV__) console.log('[discord-mcbe] - Successfully registered events.');
+  if (__DEV__) console.log('§7[discord-mcbe] -- Successfully registered events.');
 }

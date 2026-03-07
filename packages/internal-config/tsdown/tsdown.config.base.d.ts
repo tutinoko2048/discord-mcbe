@@ -1,4 +1,4 @@
-import { Options, UserConfigFn } from 'tsdown';
+import type { Options, UserConfigFn } from 'tsdown';
 
 declare const defaultConfig: Options;
 

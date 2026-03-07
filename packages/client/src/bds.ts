@@ -1,4 +1,4 @@
-import { BaseClient } from './client';
+import { BaseClient, ClientType } from './client';
 import { ScriptBridgeClient } from '@script-bridge/client';
 import type { ExtractOptional } from '@discord-mcbe/shared';
 import { world } from '@minecraft/server';
@@ -16,6 +16,8 @@ const defaultOptions: ExtractOptional<BridgeClientOptions> = {
 };
 
 export class BridgeClient extends BaseClient<ScriptBridgeClient> {
+  readonly type = ClientType.BDS;
+  
   constructor(options: BridgeClientOptions = {}) {
     const mergedOptions = { ...defaultOptions, ...options };
 

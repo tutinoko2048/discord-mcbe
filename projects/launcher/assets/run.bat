@@ -9,6 +9,7 @@ if not exist "app" (
     call updater.exe
     if errorlevel 1 (
         echo Failed to run updater
+        pause
         exit /b 1
     )
 )

@@ -15,11 +15,9 @@ export class SettingsForm {
   }
 
   async main() {
-    const currentClientId = (this.player.getDynamicProperty('clientId') as string) ?? '';
-
     const form = new ModalFormData()
       .title('discord-mcbe settings')
-      .textField('clientId', 'Client ID', { defaultValue: currentClientId });
+      .textField('clientId', 'Client ID', { defaultValue: this.client.getClientId() });
 
     const res = await form.show(this.player);
     if (res.canceled || !res.formValues) return;

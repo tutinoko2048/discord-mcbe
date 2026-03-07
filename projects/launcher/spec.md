@@ -9,21 +9,24 @@
 
 ## 共通
 - `scripts/` (カスタムスクリプト)
-- `lang/` (言語ファイル)
 - `app/` (本体)
 
 # updater
 - bun executable
-- `updater check` 最新バージョンを返す: `{ "current": string, "latest": string }`
 - `updater` アプデ実行
 - `updater --dry-run`
 - `updater --help` `-h` ヘルプ表示
 - `updater --version` `-v` updaterのバージョン表示
 - アップデート方法 (検討中)
-  - GH Release経由で`package.json`とかいろいろ入ったzipを落として展開
-  - `app/*`を置き換え
-  - npm経由で本体のインストール(`app/node_modules/*`)
-  - 問題: `scripts`からapp/node_modules/*の補完を効かせる方法
+  - バージョン取得
+    - GH Actionsで特定ブランチにバージョン情報をJSONで上げる
+    - そこからバージョンを持ってくる
+  - アップデート処理
+    - GH Release経由で`package.json`とかいろいろ入ったzipを落として展開
+    - `app/*`を置き換え
+    - `app/.VERSION`に現在のバージョンを書き込んでおく
+    - npm経由で本体のインストール(`app/node_modules/*`)
+    - 問題: `scripts`からapp/node_modules/*の補完を効かせる方法
 
 # run
 - appフォルダがなければupdaterを走らせる

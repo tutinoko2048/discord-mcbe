@@ -291,7 +291,7 @@ export class SocketSession implements ISession {
       respond({
         type: PayloadType.Response,
         error: true,
-        message: 'Session disconnected',
+        message: 'Session disconnected before response was received',
         errorReason: ResponseErrorReason.Abort,
         sessionId: this.id,
         requestId,

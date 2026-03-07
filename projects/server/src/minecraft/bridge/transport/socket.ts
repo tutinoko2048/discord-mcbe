@@ -9,12 +9,13 @@ import {
   type World as SocketWorld,
 } from 'socket-be';
 import { NamespaceRequiredError } from '@script-bridge/server';
-import { DisconnectReason, type BaseAction } from '@script-bridge/protocol';
+import { DisconnectReason, InternalAction, type InternalActions, type BaseAction } from '@script-bridge/protocol';
 import { SocketSession } from './session';
 import { AddonNotInstalledError } from './errors';
 import { Logger } from '../../../util';
 
 import type { ClientActionHandler } from './types';
+import type { ISession } from './interfaces';
 
 interface ConnectionState {
   previousSessionId?: string;
@@ -43,6 +44,16 @@ export class SocketBridgeServer extends EventEmitter<ServerEvents> {
     this.server.on(ServerEvent.WorldRemove, this.onWorldRemove.bind(this));
     this.server.on(ServerEvent.PlayerJoin, this.onPlayerJoin.bind(this));
     this.server.on(ServerEvent.PlayerLeave, this.onPlayerLeave.bind(this));
+    this.registerHandler<InternalActions.Disconnect>(InternalAction.Disconnect, (action) => {
+      const { session, data } = action;
+      this.emit('clientDisconnect', session, data.reason);
+      session.destroy();
+      action.respond();
+
+      if (session instanceof SocketSession) {
+        setTimeout(() => session.world.disconnect(), 200);
+      }
+    });
   }
 
   async connect(world: SocketWorld, state: ConnectionState = { attemptCount: 0 }) {
@@ -163,7 +174,7 @@ export class SocketBridgeServer extends EventEmitter<ServerEvents> {
 
 interface ServerEvents {
   open: [];
-  clientConnect: [session: SocketSession];
-  clientDisconnect: [session: SocketSession, reason: DisconnectReason];
-  sessionDestroy: [session: SocketSession];
+  clientConnect: [session: ISession];
+  clientDisconnect: [session: ISession, reason: DisconnectReason];
+  sessionDestroy: [session: ISession];
 }

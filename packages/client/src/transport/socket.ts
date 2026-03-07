@@ -1,10 +1,10 @@
 import {
+  world,
+  system,
   CommandPermissionLevel,
   CustomCommandParamType,
   CustomCommandStatus,
-  system,
-  world,
-  type CustomCommandRegistry,
+  type StartupEvent,
   type CustomCommandResult,
 } from '@minecraft/server';
 import {
@@ -16,7 +16,7 @@ import {
   type ServerResponse,
   type QueryResponse,
 } from '@discord-mcbe/shared';
-import { DisconnectReason, PayloadType, ResponseErrorReason, type BaseAction } from '@script-bridge/protocol';
+import { DisconnectReason, InternalAction, type InternalActions, PayloadType, ResponseErrorReason, type BaseAction } from '@script-bridge/protocol';
 import { Emitter } from '../utils/emitter';
 import { Logger } from '../utils';
 
@@ -59,10 +59,7 @@ export class SocketBridgeClient extends Emitter<SocketEvents> implements IBridge
 
     this._clientId = options.clientId;
 
-    system.beforeEvents.startup.subscribe((event) => {
-      this.registerCommands(event.customCommandRegistry);
-      this.logger.info('- Successfully registered custom commands.');
-    });
+    system.beforeEvents.startup.subscribe(this.onStartup.bind(this));
 
     system.afterEvents.scriptEventReceive.subscribe(
       (event) => {
@@ -117,12 +114,39 @@ export class SocketBridgeClient extends Emitter<SocketEvents> implements IBridge
     this.actionHandlers.set(channelId, handler as unknown as ActionHandler<BaseAction>);
   }
 
+  async disconnect(reason: DisconnectReason = DisconnectReason.Disconnect): Promise<void> {
+    try {
+      await this.send<InternalActions.Disconnect>(InternalAction.Disconnect, { reason });
+    } catch (e) {
+      this.logger.warn('Failed to send disconnect message', e);
+    }
+
+    this.destroy();
+
+    this.emit('disconnect', { reason });
+  }
+
   destroy() {
-    this.currentSessionId = null;
+    this.clearResponses();
     this.sendQueue.length = 0;
     this.deltaTimes.length = 0;
-    this.awaitingResponses.clear();
     this.lastQueryReceivedAt = null;
+    this.currentSessionId = null;
+  }
+
+  private clearResponses() {
+    for (const [requestId, resolve] of this.awaitingResponses.entries()) {
+      resolve({
+        type: PayloadType.Response,
+        error: true,
+        message: 'Session disconnected before response was received',
+        errorReason: ResponseErrorReason.Abort,
+        // biome-ignore lint/style/noNonNullAssertion: sessionId should be non-null
+        sessionId: this.currentSessionId!,
+        requestId,
+      })
+    }
+    this.awaitingResponses.clear();
   }
 
   private handleConnection(protocolVersion: number, sessionId: string): CustomCommandResult {
@@ -251,7 +275,11 @@ export class SocketBridgeClient extends Emitter<SocketEvents> implements IBridge
     }
   }
 
-  private registerCommands(registry: CustomCommandRegistry) {
+  /**
+   * Register internal commands
+   */
+  private onStartup(ev: StartupEvent) {
+    const registry = ev.customCommandRegistry;
     registry.registerCommand(
       {
         name: 'dmc:__query__',

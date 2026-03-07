@@ -1,11 +1,10 @@
-import { Application } from '../projects/server/src';
+import { Application } from '@discord-mcbe/server';
 
 /** 
  * @param {Application} app
  */
 export default function main(app) {
-  console.log('[Script] loaded!');
-  throw new Error('Test error from script')
+  console.log('[Script] loaded!', app.config);
 }
 
 // const PREFIX = '.';
