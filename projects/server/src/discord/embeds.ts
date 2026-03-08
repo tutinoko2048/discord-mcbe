@@ -10,7 +10,7 @@ export const enum Palette {
   Leave = 0xef5350,
 }
 
-export const error = (desc: string) => {
+export const createErrorEmbed = (desc: string) => {
   return new EmbedBuilder().setColor(Palette.Error).setDescription(desc).setAuthor({ name: '❌  Error' });
 };
 

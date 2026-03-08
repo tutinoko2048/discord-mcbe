@@ -16,12 +16,13 @@ import type { Application } from '../application';
 
 import { _t, Logger } from '../util';
 import { DiscordMessageEvent, DiscordReadyEvent, DiscordSendEvent } from '../events';
+import { InteractionManager } from './interaction';
 
 export class DiscordBot<READY extends boolean = false> {
   private readonly logger: Logger;
-  public readonly client: Client<READY>;
 
-  // public readonly interactions: DiscordInteractions;
+  public readonly client: Client<READY>;
+  private readonly interactions: InteractionManager;
   // public readonly panels: PanelHandler;
 
   constructor(private readonly app: Application) {
@@ -31,8 +32,7 @@ export class DiscordBot<READY extends boolean = false> {
       allowedMentions: { repliedUser: false },
     });
 
-    // this.interactions = new DiscordInteractions(this.client);
-    // this.interactions.loadRegistries(path.resolve(__dirname, './interactions'));
+    this.interactions = new InteractionManager(this.app);
 
     // this.panels = new PanelHandler(this.app);
 
@@ -126,12 +126,13 @@ export class DiscordBot<READY extends boolean = false> {
     this.logger.error(error);
   }
 
-  private onReady(client: Client<true>) {
+  private async onReady(client: Client<true>) {
     this.logger.info(_t('console.login', client.user.tag));
 
     const channel = client.channels.cache.get(this.app.env.CHANNEL_ID);
     this.validateChannel(channel);
-    // this.interactions.registerCommands(this.app.config.guild_id);
+
+    await this.interactions.register(client);
 
     // // void this.updateActivity();
     // // setInterval(() => this.updateActivity(), 20_000);
@@ -143,8 +144,6 @@ export class DiscordBot<READY extends boolean = false> {
   private onMessageCreate(message: Message) {
     if (message.author.bot) return;
 
-    // this.logger.debug('messageCreate', message.content, message.author.tag);
-
     if (message.channel.id === this.app.env.CHANNEL_ID) {
       if (!message.inGuild()) {
         return this.logger.warn(`Received a message from invalid channel (ID: ${message.channel.id})`);
@@ -154,8 +153,17 @@ export class DiscordBot<READY extends boolean = false> {
     }
   }
 
-  private onInteractionCreate(interaction: Interaction) {
-    this.logger.debug('interactionCreate', interaction.user.tag);
+  private async onInteractionCreate(interaction: Interaction) {
+    if (!interaction.inCachedGuild()) {
+      this.logger.warn('Received interaction in uncached guild, ignoring.');
+      return;
+    }
+
+    try {
+      await this.interactions.onInteractionCreate(interaction);
+    } catch (error) {
+      this.logger.error(`Failed to handle interaction: ${error}`);
+    }
   }
 
   private validateChannel(channel?: Channel): asserts channel is TextChannel {

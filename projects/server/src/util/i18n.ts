@@ -3,8 +3,8 @@ import { yellow } from 'colorette';
 
 import type { Arg, LangArgs, LangKey } from '../types/lang.generated';
 
-import enUS from '../assets/locales/en-US.json';
-import ja from '../assets/locales/ja.json';
+import enUS from '../assets/locales/en-US.json' with { type: 'json' };
+import ja from '../assets/locales/ja.json' with { type: 'json' };
 
 const templateMap = new Map<Locale, Record<string, string>>([
   [Locale.EnglishUS, enUS],

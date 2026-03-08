@@ -19,8 +19,13 @@ export type LangArgs = {
   'command.error.nopermission': [];
   'command.error.noworlds': [];
   'command.help.commands': [];
+  'command.list.description': [];
   'command.list.fetching': [];
   'command.list.offline': [];
+  'command.list.players': [];
+  'command.list.silent.description': [];
+  'command.list.world.description': [];
+  'command.list.world.notFound': [Arg];
   'command.panel.deleted': [];
   'command.panel.jump': [];
   'command.panel.notfound': [];
@@ -46,7 +51,6 @@ export type LangArgs = {
   'discord.disconnect': [];
   'discord.join': [Arg];
   'discord.leave': [Arg];
-  'discord.list': [Arg, Arg, Arg];
   'discord.ready': [];
   'minecraft.connect': [Arg];
   'minecraft.message': [Arg, Arg];
