@@ -9,21 +9,20 @@ import {
   type Message,
   type MessageCreateOptions,
 } from 'discord.js';
-// import { DiscordInteractions } from '@akki256/discord-interaction';
-import type { Application } from '../application';
-
-// import { PanelHandler } from './panel';
-
+import { InteractionManager } from './interaction';
+import { StatusPanel } from './panel';
 import { _t, Logger } from '../util';
 import { DiscordMessageEvent, DiscordReadyEvent, DiscordSendEvent } from '../events';
-import { InteractionManager } from './interaction';
+
+import type { Application } from '../application';
+
 
 export class DiscordBot<READY extends boolean = false> {
   private readonly logger: Logger;
 
   public readonly client: Client<READY>;
   private readonly interactions: InteractionManager;
-  // public readonly panels: PanelHandler;
+  public readonly panels: StatusPanel;
 
   constructor(private readonly app: Application) {
     this.logger = new Logger('Discord', this.app.config);
@@ -34,7 +33,7 @@ export class DiscordBot<READY extends boolean = false> {
 
     this.interactions = new InteractionManager(this.app);
 
-    // this.panels = new PanelHandler(this.app);
+    this.panels = new StatusPanel(this.app);
 
     this.logger.debug('Initialized');
   }
@@ -137,7 +136,8 @@ export class DiscordBot<READY extends boolean = false> {
     // // void this.updateActivity();
     // // setInterval(() => this.updateActivity(), 20_000);
 
-    // this.panels.startInterval();
+    this.panels.startInterval();
+
     new DiscordReadyEvent(this.app, client).emit();
   }
 

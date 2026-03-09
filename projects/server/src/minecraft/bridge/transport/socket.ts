@@ -16,6 +16,7 @@ import { Logger } from '../../../util';
 
 import type { ClientActionHandler } from './types';
 import type { ISession } from './interfaces';
+import type { Application } from '../../../application';
 
 interface ConnectionState {
   previousSessionId?: string;
@@ -32,12 +33,15 @@ export class SocketBridgeServer extends EventEmitter<ServerEvents> {
   private readonly logger: Logger;
   private readonly maxReconnectAttempts = 10;
 
-  constructor(serverOptions: ServerOptions) {
+  constructor(
+    private readonly app: Application,
+    serverOptions: ServerOptions
+  ) {
     super();
 
     this.server = new SocketServer(serverOptions);
 
-    this.logger = new Logger('SocketBridgeServer', serverOptions);
+    this.logger = new Logger('SocketBridgeServer', this.app.config);
 
     this.server.on(ServerEvent.Open, () => this.emit('open'));
     this.server.on(ServerEvent.WorldInitialize, this.onWorldInitialize.bind(this));
@@ -122,7 +126,7 @@ export class SocketBridgeServer extends EventEmitter<ServerEvents> {
 
     if (body.error) throw new Error(DisconnectReason[body.errorReason]);
 
-    return new SocketSession(this, world, sessionId, body.clientId);
+    return new SocketSession(this.app, this, world, sessionId, body.clientId);
   }
 
   private async onWorldInitialize(ev: { world: SocketWorld }) {

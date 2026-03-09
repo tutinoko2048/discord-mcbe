@@ -3,7 +3,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "bun --watch --conditions=\"dev\" ./main.ts",
+    "dev": "bun --conditions=\"dev\" ./main.ts",
     "lint": "biome lint ./src",
     "format": "biome format ./src",
     "format:write": "biome format --write ./src",

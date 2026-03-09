@@ -66,7 +66,7 @@ export class ScriptPlayer {
     const dimensionId = res.data.dimension.id;
     let dimension = this.world._dimensions.get(dimensionId);
     if (!dimension) {
-      dimension = new ScriptDimension(this.world, res.data.dimension);
+      dimension = new ScriptDimension(res.data.dimension);
       this.world._dimensions.set(dimensionId, dimension);
     }
     return dimension;

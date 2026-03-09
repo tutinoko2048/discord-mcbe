@@ -36,5 +36,5 @@
   "console.chat": "<%0> %1",
   "console.me": " * %0 %1",
   "console.say": "%0",
-  "util.duration": "%0h %1m %2s"
+  "common.duration": "%0h %1m %2s"
 }

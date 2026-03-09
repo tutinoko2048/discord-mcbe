@@ -15,25 +15,33 @@ const panelEmbed = new EmbedBuilder()
   .setColor(Palette.Discord)
   .setDescription('Awaiting update...');
 
-export class PanelHandler {
+export class StatusPanel {
   private readonly logger: Logger;
-  private client: Client;
 
   private message: Message | null = null;
 
   constructor(private readonly app: Application) {
-    this.logger = new Logger('PanelHandler', this.app.config);
-    this.client = app.bot.client;
+    this.logger = new Logger('StatusPanel', this.app.config);
   }
 
-  async startInterval(): Promise<void> {
-    const panel = await this.fetchMessage().catch((err) =>
-      this.logger.error(`failed to fetch panel | code: ${err.code}`),
-    );
-    if (panel) {
-      this.logger.info('successfully fetched the panel');
-      this.update();
-    }
+  private get client() {
+    return this.app.bot.client;
+  }
+
+  startInterval() {
+    this.fetchMessage()
+      .then((panel) => {
+        if (!panel) {
+          this.logger.debug('No panel found, skipping initial update');
+          return;
+        }
+        this.logger.debug('Panel found, performing initial update');
+        this.update();
+      })
+      .catch((err) =>
+        this.logger.error(`failed to fetch panel | code: ${err.code}`),
+      );
+
     setInterval(
       this.update.bind(this),
       this.app.config.bot.panel_update_interval || 30000, // デフォルト値を設定
@@ -52,8 +60,14 @@ export class PanelHandler {
       this.message = message;
       return message;
     } catch (err) {
-      if (err instanceof DiscordAPIError && err.code === RESTJSONErrorCodes.UnknownMessage) this.clearPanel();
-      else throw err;
+      // 削除された場合はパネルをクリアする
+      if (err instanceof DiscordAPIError && err.code === RESTJSONErrorCodes.UnknownMessage) {
+        this.clearPanel();
+        this.logger.warn('Message not found, clearing panel data');
+        return;
+      }
+
+      throw err;
     }
   }
 
@@ -81,14 +95,11 @@ export class PanelHandler {
   async update(): Promise<void> {
     if (!this.message) {
       const fetchedMessage = await this.fetchMessage();
-      if (!fetchedMessage) {
-        console.error('Failed to update panel: panel not found');
-        return;
-      }
+      if (!fetchedMessage) return;
       this.message = fetchedMessage;
     }
 
-    const uptime = _t('util.duration', ...getDuration(this.app.initializedAt, Date.now()));
+    const uptime = _t('common.duration', ...getDuration(this.app.initializedAt, Date.now()));
 
     const worlds = this.app.minecraft.getWorlds();
     const info = await Promise.all(
@@ -113,18 +124,22 @@ export class PanelHandler {
 
         return [
           `\n**${w.name} - ${list.current}/${list.max}**`,
-          `**  |  **Host: \`${host ?? '-'}\``,
-          `**  |  **Ping: ${w.averagePing} ms`,
-          `**  |  **Connected: ${connectAt}`,
-          '**  |  **Players:',
-          `**  |  **${list.players.sort().join(', ')}`,
-        ].join('\n');
+          host ? `┃ Host: \`${host}\`` : undefined,
+          `┃ Ping: ${w.averagePing} ms`,
+          `┃ Connected: ${connectAt}`,
+          '┃ Players:',
+          `┃ ${list.players.sort().join(', ')}`,
+        ].filter(Boolean).join('\n');
       }),
     );
     const filteredInfo = info.filter((item): item is string => Boolean(item));
 
-    const messages = ['**Server**', `**  |  **Ping: ${this.client.ws.ping} ms`, `**  |  **Uptime: ${uptime}`];
-    if (worlds.length === 0) messages.push(`\n${_t('command.list.offline')}`);
+    const messages = [
+      '**Server**',
+      `┃ Ping: ${this.client.ws.ping} ms`,
+      `┃ ${_t('discord.panel.uptime')}: ${uptime}`
+    ];
+    if (worlds.length === 0) messages.push(`\n-# ${_t('common.noOnlineWorlds')}`);
 
     panelEmbed.setTimestamp(Date.now());
     panelEmbed.setDescription([...messages, ...filteredInfo].join('\n'));
@@ -133,6 +148,7 @@ export class PanelHandler {
 
     try {
       await this.message.edit({ embeds: [panelEmbed] });
+      this.logger.debug('updated');
     } catch (err) {
       if (err instanceof DiscordAPIError && err.code === RESTJSONErrorCodes.UnknownMessage) this.clearPanel();
       else throw err;

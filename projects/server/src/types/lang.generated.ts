@@ -20,17 +20,18 @@ export type LangArgs = {
   'command.error.noworlds': [];
   'command.help.commands': [];
   'command.list.description': [];
-  'command.list.fetching': [];
-  'command.list.offline': [];
   'command.list.players': [];
   'command.list.silent.description': [];
   'command.list.world.description': [];
   'command.list.world.notFound': [Arg];
-  'command.panel.deleted': [];
-  'command.panel.jump': [];
-  'command.panel.notfound': [];
-  'command.panel.set': [Arg];
-  'command.ping.startAt': [Arg];
+  'command.panel.create.description': [];
+  'command.panel.create.success': [Arg];
+  'command.panel.description': [];
+  'command.panel.show.description': [];
+  'command.panel.show.notFound': [];
+  'command.ping.description': [];
+  'common.duration': [Arg, Arg, Arg];
+  'common.noOnlineWorlds': [];
   'console.chat': [Arg, Arg, Arg];
   'console.command': [Arg, Arg, Arg];
   'console.connect': [Arg];
@@ -51,13 +52,13 @@ export type LangArgs = {
   'discord.disconnect': [];
   'discord.join': [Arg];
   'discord.leave': [Arg];
+  'discord.panel.uptime': [];
   'discord.ready': [];
   'minecraft.connect': [Arg];
   'minecraft.message': [Arg, Arg];
   'minecraft.message.withAttachments': [Arg, Arg];
   'minecraft.reply': [Arg, Arg, Arg];
   'minecraft.reply.withAttachments': [Arg, Arg, Arg];
-  'util.duration': [Arg, Arg, Arg];
 };
 
 

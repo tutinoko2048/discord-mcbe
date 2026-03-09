@@ -49,14 +49,12 @@ export default defineCommand(
       worlds = allWorlds;
     }
 
-    await interaction.deferReply(silent ? { flags: MessageFlags.Ephemeral } : undefined);
-
     const embed = new EmbedBuilder();
     embed.setColor(Palette.Success);
     embed.setTitle('List')
 
     if (worlds.length === 0) {
-      embed.setDescription(_t('command.list.offline'));
+      embed.setDescription(`-# ${_t('common.noOnlineWorlds')}`);
     } else if (useFields || worlds.length > 1) {
       for (const world of worlds) {
         embed.addFields({ name: world.name, value: getPlayerListText(world) });
@@ -66,7 +64,10 @@ export default defineCommand(
       embed.setDescription(getPlayerListText(world));
     }
 
-    await interaction.followUp({ embeds: [embed] });
+    await interaction.reply({
+      embeds: [embed],
+      flags: silent ? MessageFlags.Ephemeral : undefined,
+    });
   },
   async (interaction, app) => {
     const focused = interaction.options.getFocused(true);
@@ -75,7 +76,7 @@ export default defineCommand(
       const worlds = app.minecraft.getWorlds();
       await interaction.respond(
         worlds.map((w) => {
-          const { current, max } = getPlayerList(w);
+          const { current, max } = w.getPlayerList();
           return {
             name: max === undefined
               ? `${w.name} - ${current} players`
@@ -88,29 +89,18 @@ export default defineCommand(
   }
 );
 
-function getPlayerList(world: ScriptWorld): { current: number, max?: number } {
-  if (world.isLocal()) {
-    return {
-      current: world.session.world.players.size,
-      max: world.session.world.maxPlayers,
-    };
-  } else {
-    return { current: world.players.size };
-  }
-}
-
 function getPlayerListText(world: ScriptWorld): string {
-  const { current, max } = getPlayerList(world);
+  const { current, max, players } = world.getPlayerList();
 
   if (max === undefined) {
     return [
       `${_t('command.list.players')}: ${current}`,
-      ...world.getPlayers().map((p) => `- ${p.name}`),
+      ...players.map((p) => `- ${p.name}`),
     ].filter(Boolean).join('\n');
   } else {
     return [
       `${_t('command.list.players')}: ${current}/${max}`,
-      ...world.getPlayers().map((p) => `- ${p.name}`),
+      ...players.map((p) => `- ${p.name}`),
     ].filter(Boolean).join('\n');
   }
 }

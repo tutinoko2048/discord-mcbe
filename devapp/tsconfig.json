@@ -3,8 +3,5 @@
   "include": ["main.ts"],
   "compilerOptions": {
     "customConditions": ["dev"]
-  },
-  "references": [
-    { "path": "../projects/server" }
-  ]
+  }
 }

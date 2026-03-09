@@ -1,6 +1,6 @@
 import type { AutocompleteInteraction, ChatInputCommandInteraction, Client, Interaction } from 'discord.js';
 import type { Application } from '../application';
-import { ChatInputData } from './command';
+import type { ChatInputData } from './command';
 
 export class InteractionManager {
   private readonly chatInputs = new Map<string, ChatInputData>();

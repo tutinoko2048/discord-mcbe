@@ -29,7 +29,7 @@ export class MinecraftHandler {
       port: this.app.env.BRIDGE_PORT,
       timeoutThresholdMultiplier: 10,
     });
-    this.socket = new SocketBridgeServer({
+    this.socket = new SocketBridgeServer(this.app, {
       port: this.app.env.SOCKET_PORT,
       debug: this.app.config.debug,
       disableEncryption: this.app.config.bridge.disable_encryption,

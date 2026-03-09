@@ -30,6 +30,9 @@ export function initialize(lang: string) {
   // TODO: load lang from external override file
 }
 
+/**
+ * Translate a language key to the corresponding string in the current language, replacing placeholders with the provided values.
+ */
 function translate<K extends LangKey>(key: K, ...values: LangArgs[K]): string {
   if (!templates) {
     throw new Error('Language templates are not initialized. Call initialize() first.');
@@ -41,6 +44,9 @@ function translate<K extends LangKey>(key: K, ...values: LangArgs[K]): string {
   return replaceTemplates(value, values);
 }
 
+/**
+ * Get the translation map for a given language key. Used for discord localizations.
+ */
 function getTranslationMap(key: LangKey): LocalizationMap {
   if (!templates) {
     throw new Error('Language templates are not initialized. Call initialize() first.');

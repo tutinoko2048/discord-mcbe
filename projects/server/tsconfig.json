@@ -15,7 +15,7 @@
 
     "allowJs": true,
     // "checkJs": true,
-    "composite": true,
+    // "composite": true,
   },
   "references": [
     { "path": "../../packages/shared" }

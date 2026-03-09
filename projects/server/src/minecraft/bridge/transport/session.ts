@@ -20,6 +20,8 @@ import { Logger } from '../../../util';
 
 import type { ISession } from './interfaces';
 import type { SocketBridgeServer } from './socket';
+import type { Application } from '../../../application';
+
 
 export class SocketSession implements ISession {
   private readonly server: SocketBridgeServer;
@@ -41,12 +43,18 @@ export class SocketSession implements ISession {
   /** Number of failed query requests */
   private failCount = 0;
 
-  constructor(server: SocketBridgeServer, world: SocketWorld, id: string, clientId: string) {
+  constructor(
+    private readonly app: Application,
+    server: SocketBridgeServer,
+    world: SocketWorld,
+    id: string,
+    clientId: string
+  ) {
     this.server = server;
     this.world = world;
     this.id = id;
     this.clientId = clientId;
-    this.logger = new Logger('SocketSession', this.server.server.options);
+    this.logger = new Logger('SocketSession', this.app.config);
     this.server.sessions.add(this);
 
     this.startInterval(this.requestInterval);
