@@ -13,11 +13,9 @@
     "resolveJsonModule": true,
     "sourceMap": true,
 
-    "allowJs": true,
+    "allowJs": true
     // "checkJs": true,
     // "composite": true,
   },
-  "references": [
-    { "path": "../../packages/shared" }
-  ]
+  "references": [{ "path": "../../packages/shared" }]
 }

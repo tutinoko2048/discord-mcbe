@@ -3,5 +3,5 @@ export type ExtractOptional<T> = {
 };
 
 export type Branded<T, ID> = T & {
-  __brand: ID
+  __brand: ID;
 };

@@ -1,6 +1,6 @@
 import { Application } from '@discord-mcbe/server';
 
-/** 
+/**
  * @param {Application} app
  */
 export default function main(app) {
@@ -10,10 +10,10 @@ export default function main(app) {
 // const PREFIX = '.';
 // server.events.on('playerChat', async ev => {
 //   const { message, world } = ev;
-  
+
 //   if (message.startsWith(PREFIX)) { // チャットの擬似コマンドのサンプル
 //     const [ command ] = message.slice(PREFIX.length).split(' ');
-    
+
 //     if (command === 'help') {
 //       await world.sendMessage([
 //         `§b[discord-mcbe]§r`,
@@ -22,7 +22,7 @@ export default function main(app) {
 //         '§7Made by RetoRuto9900K / tutinoko2048§r'
 //       ].join('\n'));
 //     }
-    
+
 //     if (command === 'ping') {
 //       await world.sendMessage([
 //         '§b[discord-mcbe]§r Pong!',

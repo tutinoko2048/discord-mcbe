@@ -8,7 +8,13 @@ import {
   type PlayerLeaveAction,
   type WorldInitializeAction,
 } from '@discord-mcbe/shared';
-import { ScriptWorld, type ClientActionHandler, type ISession, SocketBridgeServer, SocketSession } from './bridge';
+import {
+  ScriptWorld,
+  type ClientActionHandler,
+  type ISession,
+  SocketBridgeServer,
+  SocketSession,
+} from './bridge';
 import { _t, Logger } from '../util';
 import { WorldConnectEvent, WorldDisconnectEvent } from '../events';
 
@@ -126,9 +132,7 @@ export class MinecraftHandler {
 
   private onOpen() {
     this.logger.info(_t('console.socket.ready', this.app.env.SOCKET_PORT));
-    this.logger.info(
-      _t('console.socket.command', green(`/connect localhost:${this.app.env.SOCKET_PORT}`)),
-    );
+    this.logger.info(_t('console.socket.command', green(`/connect localhost:${this.app.env.SOCKET_PORT}`)));
   }
 
   private onError(error: Error) {

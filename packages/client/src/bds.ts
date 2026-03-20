@@ -17,7 +17,7 @@ const defaultOptions: ExtractOptional<BridgeClientOptions> = {
 
 export class BridgeClient extends BaseClient<ScriptBridgeClient> {
   readonly type = ClientType.BDS;
-  
+
   constructor(options: BridgeClientOptions = {}) {
     const mergedOptions = { ...defaultOptions, ...options };
 

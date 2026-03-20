@@ -4,7 +4,7 @@ import { Application } from '../src';
 const app = new Application();
 app.start().catch((e) => app.logger.error('Failed to start application\n', e));
 
-app.on('worldConnect', async ev => {
+app.on('worldConnect', async (ev) => {
   const { world } = ev;
   const objectives = await world.scoreboard.getObjectives();
   console.log('getObjectives', objectives);
@@ -37,4 +37,4 @@ app.on('worldConnect', async ev => {
 
   await world.scoreboard.removeObjective('test');
   console.log('removeObjective');
-})
+});

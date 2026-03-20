@@ -16,7 +16,6 @@ import { DiscordMessageEvent, DiscordReadyEvent, DiscordSendEvent } from '../eve
 
 import type { Application } from '../application';
 
-
 export class DiscordBot<READY extends boolean = false> {
   private readonly logger: Logger;
 
@@ -162,7 +161,7 @@ export class DiscordBot<READY extends boolean = false> {
     try {
       await this.interactions.onInteractionCreate(interaction);
     } catch (error) {
-      this.logger.error(`Failed to handle interaction: ${error}`);
+      this.logger.error(`Failed to handle interaction:`, error);
     }
   }
 

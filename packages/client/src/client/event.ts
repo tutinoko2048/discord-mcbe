@@ -14,7 +14,7 @@ export function registerEvents(bridge: IBridgeClient) {
   world.afterEvents.playerSpawn.subscribe((ev) => {
     if (!bridge.isConnected || !ev.initialSpawn) return;
 
-    bridge.send<PlayerJoinAction>(ActionId.PlayerJoin, {
+    void bridge.send<PlayerJoinAction>(ActionId.PlayerJoin, {
       player: createPlayerDescriptor(ev.player),
     });
   });
@@ -22,7 +22,7 @@ export function registerEvents(bridge: IBridgeClient) {
   world.afterEvents.playerLeave.subscribe((ev) => {
     if (!bridge.isConnected) return;
 
-    bridge.send<PlayerLeaveAction>(ActionId.PlayerLeave, {
+    void bridge.send<PlayerLeaveAction>(ActionId.PlayerLeave, {
       playerUniqueId: ev.playerId as UniqueId,
     });
   });
@@ -30,7 +30,7 @@ export function registerEvents(bridge: IBridgeClient) {
   world.afterEvents.chatSend.subscribe((ev) => {
     if (!bridge.isConnected) return;
 
-    bridge.send<ChatSendAction>(ActionId.ChatSend, {
+    void bridge.send<ChatSendAction>(ActionId.ChatSend, {
       senderName: ev.sender.name,
       senderUniqueId: ev.sender.id as UniqueId,
       message: ev.message,

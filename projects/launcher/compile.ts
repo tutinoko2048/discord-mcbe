@@ -7,7 +7,7 @@ const windowsOption: Bun.CompileBuildOptions['windows'] = {
   // icon: 'assets/discord-mcbe.ico',
   // title: 'discord-mcbe updater',
   // version: packageJson.version,
-}
+};
 
 const platforms = [
   { name: 'windows', run: 'assets/run.bat', ext: '.exe', targets: ['windows-x64'] },

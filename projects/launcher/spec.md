@@ -1,17 +1,22 @@
 # 構造
+
 ## win
+
 - `run.bat`
 - `updater.exe`
 
 ## linux/macos
+
 - `run.sh`
 - `updater`
 
 ## 共通
+
 - `scripts/` (カスタムスクリプト)
 - `app/` (本体)
 
 # updater
+
 - bun executable
 - `updater` アプデ実行
 - `updater --dry-run`
@@ -26,9 +31,10 @@
     - `app/*`を置き換え
     - `app/.VERSION`に現在のバージョンを書き込んでおく
     - npm経由で本体のインストール(`app/node_modules/*`)
-    - 問題: `scripts`からapp/node_modules/*の補完を効かせる方法
+    - 問題: `scripts`からapp/node_modules/\*の補完を効かせる方法
 
 # run
+
 - appフォルダがなければupdaterを走らせる
 - updater `app/discord-mcbe.js` を起動する
   - ランタイムは`BUN_BE_BUN=1`にしてupdaterを実行する
@@ -36,5 +42,6 @@
   - bat: `set BUN_BE_BUN=1 && updater run --bun start`
 
 # 実装
+
 - commanderを使う
 - repo: `tutinoko2048/discord-mcbe`

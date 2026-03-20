@@ -9,11 +9,10 @@ import { StartupEvent } from './events';
 import type { ApplicationEvents, Env } from './types';
 import type { MergedConfig } from './util';
 
-
 const defaultEnv: ExtractOptional<Env> = {
   SOCKET_PORT: 8000,
   BRIDGE_PORT: 23191,
-}
+};
 
 const defaultConfig: MergedConfig = {
   app: {

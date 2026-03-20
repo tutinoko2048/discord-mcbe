@@ -1,6 +1,6 @@
 import * as moment from 'moment-timezone';
 import type { Application } from '../application';
-import { type Client, EmbedBuilder, RESTJSONErrorCodes, type Message, time, DiscordAPIError } from 'discord.js';
+import { EmbedBuilder, RESTJSONErrorCodes, type Message, time, DiscordAPIError } from 'discord.js';
 import { Palette } from './embeds';
 import { _t, Logger } from '../util';
 import { type PlayerList, RequestTimeoutError } from 'socket-be';
@@ -36,11 +36,9 @@ export class StatusPanel {
           return;
         }
         this.logger.debug('Panel found, performing initial update');
-        this.update();
+        void this.update();
       })
-      .catch((err) =>
-        this.logger.error(`failed to fetch panel | code: ${err.code}`),
-      );
+      .catch((err) => this.logger.error(`failed to fetch panel | code: ${err.code}`));
 
     setInterval(
       this.update.bind(this),
@@ -129,7 +127,9 @@ export class StatusPanel {
           `┃ Connected: ${connectAt}`,
           '┃ Players:',
           `┃ ${list.players.sort().join(', ')}`,
-        ].filter(Boolean).join('\n');
+        ]
+          .filter(Boolean)
+          .join('\n');
       }),
     );
     const filteredInfo = info.filter((item): item is string => Boolean(item));
@@ -137,7 +137,7 @@ export class StatusPanel {
     const messages = [
       '**Server**',
       `┃ Ping: ${this.client.ws.ping} ms`,
-      `┃ ${_t('discord.panel.uptime')}: ${uptime}`
+      `┃ ${_t('discord.panel.uptime')}: ${uptime}`,
     ];
     if (worlds.length === 0) messages.push(`\n-# ${_t('common.noOnlineWorlds')}`);
 

@@ -1,4 +1,8 @@
-import { type ScoreboardIdentityDescriptor, ScoreboardIdentityType, type UniqueId } from '@discord-mcbe/shared';
+import {
+  type ScoreboardIdentityDescriptor,
+  ScoreboardIdentityType,
+  type UniqueId,
+} from '@discord-mcbe/shared';
 
 export class ScoreboardIdentity {
   readonly type: ScoreboardIdentityType;

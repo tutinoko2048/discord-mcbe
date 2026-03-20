@@ -59,7 +59,7 @@ export class ScriptWorld<S extends ISession = ISession> {
     return Array.from(this.players.values());
   }
 
-  getPlayerList(): { players: ScriptPlayer[], current: number, max?: number } {
+  getPlayerList(): { players: ScriptPlayer[]; current: number; max?: number } {
     const players = this.getPlayers();
     const current = players.length;
     const max = this.isLocal() ? this.session.world.maxPlayers : undefined;

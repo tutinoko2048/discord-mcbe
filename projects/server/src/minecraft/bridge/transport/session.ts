@@ -22,7 +22,6 @@ import type { ISession } from './interfaces';
 import type { SocketBridgeServer } from './socket';
 import type { Application } from '../../../application';
 
-
 export class SocketSession implements ISession {
   private readonly server: SocketBridgeServer;
   readonly world: SocketWorld;
@@ -48,7 +47,7 @@ export class SocketSession implements ISession {
     server: SocketBridgeServer,
     world: SocketWorld,
     id: string,
-    clientId: string
+    clientId: string,
   ) {
     this.server = server;
     this.world = world;
@@ -186,7 +185,7 @@ export class SocketSession implements ISession {
       return {
         type: PayloadType.Response,
         error: true,
-        message: `An error occurred while handling the request\n${err}`,
+        message: `An error occurred while handling the request\n${String(err)}`,
         errorReason: ResponseErrorReason.InternalError,
         sessionId,
         requestId,
@@ -251,7 +250,7 @@ export class SocketSession implements ISession {
           return;
         }
 
-        this.logger.error(`[query] fetch failed: ${e}`);
+        this.logger.error(`[query] fetch failed:`, e);
 
         this.failCount++;
         if (this.failCount >= 3) {
@@ -269,7 +268,7 @@ export class SocketSession implements ISession {
           try {
             await this.sendPayload(response);
           } catch (e) {
-            this.logger.error(`Failed to send response: ${e}`);
+            this.logger.error(`Failed to send response:`, e);
           }
         }
       }
@@ -284,7 +283,7 @@ export class SocketSession implements ISession {
 
     this.server.emit('clientDisconnect', this, DisconnectReason.ConnectionLost);
 
-    this.reconnect();
+    void this.reconnect();
   }
 
   private stopInterval(): void {

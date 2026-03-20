@@ -11,13 +11,13 @@ const data = new SlashCommandBuilder()
   .setName('list')
   .setDescription(_t('command.list.description'))
   .setDescriptionLocalizations(_tm('command.list.description'))
-  .addBooleanOption(option =>
+  .addBooleanOption((option) =>
     option
       .setName(SILENT_OPTION)
       .setDescription(_t('command.list.silent.description'))
       .setDescriptionLocalizations(_tm('command.list.silent.description')),
   )
-  .addStringOption(option =>
+  .addStringOption((option) =>
     option
       .setName(WORLD_OPTION)
       .setDescription(_t('command.list.world.description'))
@@ -51,7 +51,7 @@ export default defineCommand(
 
     const embed = new EmbedBuilder();
     embed.setColor(Palette.Success);
-    embed.setTitle('List')
+    embed.setTitle('List');
 
     if (worlds.length === 0) {
       embed.setDescription(`-# ${_t('common.noOnlineWorlds')}`);
@@ -77,27 +77,28 @@ export default defineCommand(
       await interaction.respond(
         worlds.map((w) => {
           const { current, max } = w.getPlayerList();
+          const playerCountText = max === undefined ? `${current} players` : `${current}/${max} players`;
           return {
-            name: max === undefined
-              ? `${w.name} - ${current} players`
-              : `${w.name} - ${current}/${max} players`,
+            name: `${w.name} - ${playerCountText}`,
             value: w.name,
           };
         }),
       );
     }
-  }
+  },
 );
 
 function getPlayerListText(world: ScriptWorld): string {
   const { current, max, players } = world.getPlayerList();
 
   if (max === undefined) {
+    // oxfmt-ignore
     return [
       `${_t('command.list.players')}: ${current}`,
       ...players.map((p) => `- ${p.name}`),
     ].filter(Boolean).join('\n');
   } else {
+    // oxfmt-ignore
     return [
       `${_t('command.list.players')}: ${current}/${max}`,
       ...players.map((p) => `- ${p.name}`),

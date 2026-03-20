@@ -11,7 +11,7 @@ export class CommandLineHandler {
 
   constructor(app: Application) {
     this.app = app;
-    this.logger = new Logger('CommandLine', this.app.config);
+    this.logger = new Logger('CLI', this.app.config);
     this.reader = readline.createInterface({
       input: process.stdin,
       output: process.stdout,
@@ -31,12 +31,12 @@ export class CommandLineHandler {
   private handleLine(line: string): void {
     const command = line.replace(/^\/*/, '');
     if (command.trim() === '') return;
-    this.app.minecraft.getWorlds().map(async (world) => {
+    this.app.minecraft.getWorlds().forEach(async (world) => {
       try {
         const result = await world.runCommand(command);
-        console.log(`[${world.name}]`, result);
+        this.logger.info(`[${world.name}]`, result);
       } catch (err) {
-        console.error(`[${world.name}] Error: ${err}`);
+        this.logger.error(`[${world.name}]`, err);
       }
     });
   }

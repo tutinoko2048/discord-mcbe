@@ -16,7 +16,14 @@ import {
   type ServerResponse,
   type QueryResponse,
 } from '@discord-mcbe/shared';
-import { DisconnectReason, InternalAction, type InternalActions, PayloadType, ResponseErrorReason, type BaseAction } from '@script-bridge/protocol';
+import {
+  DisconnectReason,
+  InternalAction,
+  type InternalActions,
+  PayloadType,
+  ResponseErrorReason,
+  type BaseAction,
+} from '@script-bridge/protocol';
 import { Emitter } from '../utils/emitter';
 import { Logger } from '../utils';
 
@@ -66,7 +73,7 @@ export class SocketBridgeClient extends Emitter<SocketEvents> implements IBridge
       },
       {
         namespaces: ['bridge'],
-      }
+      },
     );
 
     world.afterEvents.worldLoad.subscribe(() => {
@@ -84,7 +91,7 @@ export class SocketBridgeClient extends Emitter<SocketEvents> implements IBridge
 
   async send<A extends BaseAction = BaseAction>(
     channelId: A['id'],
-    data?: A['request']
+    data?: A['request'],
   ): Promise<IResponse<A['response']>> {
     if (!this.currentSessionId) throw new Error('No active session');
 
@@ -142,7 +149,7 @@ export class SocketBridgeClient extends Emitter<SocketEvents> implements IBridge
         errorReason: ResponseErrorReason.Abort,
         sessionId: this.currentSessionId!,
         requestId,
-      })
+      });
     }
     this.awaitingResponses.clear();
   }
@@ -215,7 +222,7 @@ export class SocketBridgeClient extends Emitter<SocketEvents> implements IBridge
         type: PayloadType.Response,
         error: true,
         errorReason: ResponseErrorReason.InternalError,
-        message: `An error occurred while handling the request\n${err}`,
+        message: `An error occurred while handling the request\n${String(err)}`,
         requestId,
         sessionId,
       });
@@ -290,7 +297,7 @@ export class SocketBridgeClient extends Emitter<SocketEvents> implements IBridge
           },
         ],
       },
-      (_, sessionId: string) => this.onQuery(sessionId)
+      (_, sessionId: string) => this.onQuery(sessionId),
     );
 
     registry.registerCommand(
@@ -309,7 +316,7 @@ export class SocketBridgeClient extends Emitter<SocketEvents> implements IBridge
           },
         ],
       },
-      (_, protocolVersion: number, sessionId: string) => this.handleConnection(protocolVersion, sessionId)
+      (_, protocolVersion: number, sessionId: string) => this.handleConnection(protocolVersion, sessionId),
     );
   }
 }

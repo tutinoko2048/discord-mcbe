@@ -13,7 +13,7 @@ const defaultOptions: ExtractOptional<BridgeClientOptions> = {
 
 export class BridgeClient extends BaseClient<SocketBridgeClient> {
   readonly type = ClientType.Local;
-  
+
   constructor(options: BridgeClientOptions = {}) {
     if (__DEV__) console.log('§7[discord-mcbe] Initializing bridge client...');
 

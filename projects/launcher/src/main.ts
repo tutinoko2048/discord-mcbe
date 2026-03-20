@@ -22,6 +22,6 @@ const options: Options = program.opts();
 try {
   await install(options);
 } catch (error) {
-  console.error("An error occurred during installation:", error);
+  console.error('An error occurred during installation:', error);
   process.exit(1);
 }

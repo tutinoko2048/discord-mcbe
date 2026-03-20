@@ -34,7 +34,7 @@ export function createDimensionDescriptor(dimension: Dimension): DimensionDescri
 }
 
 export function createScoreboardObjectiveDescriptor(
-  objective: ScoreboardObjective
+  objective: ScoreboardObjective,
 ): ScoreboardObjectiveDescriptor {
   return {
     id: objective.id,
@@ -43,13 +43,13 @@ export function createScoreboardObjectiveDescriptor(
 }
 
 export function createScoreboardParticipantDescriptor(
-  target: Entity | string
+  target: Entity | string,
 ): ScoreboardParticipantDescriptor {
   return typeof target === 'string' ? { fakePlayer: target } : { uniqueId: target.id as UniqueId };
 }
 
 export function createScoreboardIdentityDescriptor(
-  identity: ScoreboardIdentity
+  identity: ScoreboardIdentity,
 ): ScoreboardIdentityDescriptor {
   let entityUniqueId: UniqueId | undefined;
   if (
@@ -69,7 +69,7 @@ export function createScoreboardIdentityDescriptor(
 }
 
 export function createScoreboardScoreInfoDescriptor(
-  info: ScoreboardScoreInfo
+  info: ScoreboardScoreInfo,
 ): ScoreboardScoreInfoDescriptor {
   return {
     score: info.score,

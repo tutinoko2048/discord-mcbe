@@ -44,9 +44,9 @@ export async function fetchReleaseList(): Promise<ReleaseList> {
         version: '0.0.0-beta',
         asset_url: 'https://example.com/asset.zip',
         beta: true,
-      }
+      },
     ],
-  }
+  };
 }
 
 export async function resolveVersion(tag: string): Promise<Release> {

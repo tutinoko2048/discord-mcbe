@@ -5,8 +5,7 @@ import type { ChatInputData } from './command';
 export class InteractionManager {
   private readonly chatInputs = new Map<string, ChatInputData>();
 
-  constructor(private readonly app: Application) {
-  }
+  constructor(private readonly app: Application) {}
 
   async register(client: Client<true>) {
     const commands = (await import('./interactions')).default;
@@ -19,7 +18,7 @@ export class InteractionManager {
     }
   }
 
-  async onInteractionCreate(interaction: Interaction<"cached">) {
+  async onInteractionCreate(interaction: Interaction<'cached'>) {
     if (interaction.isChatInputCommand()) {
       await this.onChatInput(interaction);
     } else if (interaction.isAutocomplete()) {

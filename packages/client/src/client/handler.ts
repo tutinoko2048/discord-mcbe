@@ -158,7 +158,7 @@ export function registerHandlers(bridge: IBridgeClient) {
     if (!target) throw new Error(`Participant '${participant.uniqueId}' not found`);
 
     action.respond({
-      value: target ? objective.getScore(target) ?? null : null,
+      value: target ? (objective.getScore(target) ?? null) : null,
     });
   });
 

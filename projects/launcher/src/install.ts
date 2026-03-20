@@ -4,7 +4,6 @@ import { askVersion, resolveVersion } from './version';
 
 import packageJson from '../assets/package.json' with { type: 'json' };
 
-
 export interface InstallOptions {
   cwd?: string;
   dryRun?: boolean;
@@ -36,9 +35,9 @@ export async function install(options: InstallOptions) {
 
   // install discord-mcbe packages
   const packages = ['@discord-mcbe/server', '@discord-mcbe/shared'];
-  await Bun.$`../updater add -E ${packages.map(p => `${p}@${resolved.version}`).join(' ')}`
+  await Bun.$`../updater add -E ${packages.map((p) => `${p}@${resolved.version}`).join(' ')}`
     .env({ BUN_BE_BUN: '1' })
-    .cwd(resolve(cwd, 'app'))
+    .cwd(resolve(cwd, 'app'));
 
   await Bun.write(resolve(cwd, 'app', '.VERSION'), resolved.version);
 }
@@ -67,7 +66,8 @@ async function downloadFile(url: string): Promise<Uint8Array> {
   bar.start(totalBytes > 0 ? totalBytes : 1, 0);
 
   try {
-    if (buffer) { // content-lengthがある場合
+    if (buffer) {
+      // content-lengthがある場合
       for await (const chunk of response.body) {
         buffer.set(chunk, downloadedBytes);
         downloadedBytes += chunk.byteLength;
@@ -113,5 +113,4 @@ async function extractArchive(data: Uint8Array, destination: string, dryRun?: bo
     console.error('Failed to extract archive:', error);
     throw error;
   }
-  
 }

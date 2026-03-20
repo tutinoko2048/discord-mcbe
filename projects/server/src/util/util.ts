@@ -32,7 +32,7 @@ function setMerged<K extends keyof Config>(
   merged: MergedConfig,
   key: K,
   value: Config[K],
-  defaultValue: DefaultConfig[K]
+  defaultValue: DefaultConfig[K],
 ): void {
   if (isPlainObject(value) && isPlainObject(defaultValue)) {
     const valueObj = value as Record<string, unknown>;

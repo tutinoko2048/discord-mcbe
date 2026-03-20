@@ -1,9 +1,9 @@
 {
   "name": "@discord-mcbe/addon-bds",
   "version": "0.1.0",
+  "private": true,
   "description": "",
   "type": "module",
-  "private": true,
   "scripts": {
     "build": "tsdown",
     "watch": "tsdown --watch",

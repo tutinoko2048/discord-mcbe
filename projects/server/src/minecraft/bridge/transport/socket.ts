@@ -9,7 +9,12 @@ import {
   type World as SocketWorld,
 } from 'socket-be';
 import { NamespaceRequiredError } from '@script-bridge/server';
-import { DisconnectReason, InternalAction, type InternalActions, type BaseAction } from '@script-bridge/protocol';
+import {
+  DisconnectReason,
+  InternalAction,
+  type InternalActions,
+  type BaseAction,
+} from '@script-bridge/protocol';
 import { SocketSession } from './session';
 import { AddonNotInstalledError } from './errors';
 import { Logger } from '../../../util';
@@ -35,7 +40,7 @@ export class SocketBridgeServer extends EventEmitter<ServerEvents> {
 
   constructor(
     private readonly app: Application,
-    serverOptions: ServerOptions
+    serverOptions: ServerOptions,
   ) {
     super();
 
@@ -68,7 +73,7 @@ export class SocketBridgeServer extends EventEmitter<ServerEvents> {
     } catch (err) {
       if (err instanceof AddonNotInstalledError) throw err;
 
-      this.logger.warn(`Failed to create session: ${err}`);
+      this.logger.warn(`Failed to create session:`, err);
 
       if (state.attemptCount >= this.maxReconnectAttempts) {
         this.logger.error('Max reconnect attempts reached, giving up');
@@ -82,7 +87,7 @@ export class SocketBridgeServer extends EventEmitter<ServerEvents> {
         `Reconnect after ${backoffSeconds} seconds... (attempt ${state.attemptCount}/${this.maxReconnectAttempts})`,
       );
 
-      await new Promise(resolve => setTimeout(resolve, backoffSeconds * 1000));
+      await new Promise((resolve) => setTimeout(resolve, backoffSeconds * 1000));
       await this.connect(world, state);
     }
   }
@@ -139,7 +144,9 @@ export class SocketBridgeServer extends EventEmitter<ServerEvents> {
     } catch (err) {
       this.logger.error(err);
       if (err instanceof AddonNotInstalledError) {
-        await ev.world.sendMessage('§c[discord-mcbe] Error: Required addon not installed. Please install the addon in your world and try again.');
+        await ev.world.sendMessage(
+          '§c[discord-mcbe] Error: Required addon not installed. Please install the addon in your world and try again.',
+        );
         await ev.world.disconnect();
       }
     }

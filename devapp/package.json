@@ -1,7 +1,7 @@
 {
   "name": "@discord-mcbe/devapp",
-  "type": "module",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "bun --conditions=\"dev\" ./main.ts",
     "lint": "vp lint",

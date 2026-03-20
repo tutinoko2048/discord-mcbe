@@ -4,18 +4,18 @@
     "name": "discord-mcbe local client",
     "description": "pack.description",
     "uuid": "842dcb2d-8154-41f8-8333-31e23b123f4d",
-    "version": [ 0, 1, 0 ],
-    "min_engine_version": [ 1, 21, 100 ]
+    "version": [0, 1, 0],
+    "min_engine_version": [1, 21, 100]
   },
   "modules": [
     {
-      "version": [ 0, 0, 1 ],
+      "version": [0, 0, 1],
       "type": "data",
       "uuid": "a64e526e-7820-4b72-b339-1bb2289396d2",
       "description": "data module"
     },
     {
-      "version": [ 0, 0, 1 ],
+      "version": [0, 0, 1],
       "type": "script",
       "language": "javascript",
       "entry": "scripts/main.js",
