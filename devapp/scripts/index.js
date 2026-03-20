@@ -1,7 +1,5 @@
-import { Application } from '@discord-mcbe/server';
-
 /**
- * @param {Application} app
+ * @param {import('@discord-mcbe/server').Application} app
  */
 export default function main(app) {
   console.log('[Script] loaded!', app.config);

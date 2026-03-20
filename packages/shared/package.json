@@ -12,8 +12,7 @@
     "lint:fix": "vp lint --fix",
     "format": "vp fmt",
     "check": "vp check",
-    "typecheck": "tsc --noEmit",
-    "clean": "rimraf dist .turbo"
+    "clean": "rimraf dist .turbo tsconfig.tsbuildinfo"
   },
   "dependencies": {
     "@minecraft/server": "catalog:",

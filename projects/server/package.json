@@ -19,9 +19,7 @@
     "lint:fix": "vp lint --fix",
     "format": "vp fmt",
     "check": "vp check",
-    "typecheck": "tsc --noEmit",
     "clean": "rimraf dist build .turbo",
-    "test": "bun test",
     "generate-schema": "bun ./scripts/generate-schema.ts",
     "generate-logo": "bun ./scripts/generate-logo.ts",
     "generate-lang-types": "bun ./scripts/generate-lang-types.ts"

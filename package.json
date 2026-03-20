@@ -9,7 +9,6 @@
     "lint:fix": "turbo run lint:fix",
     "format": "turbo run format",
     "check": "turbo run check",
-    "typecheck": "turbo run typecheck",
     "clean": "pnpm run -r clean"
   },
   "devDependencies": {
