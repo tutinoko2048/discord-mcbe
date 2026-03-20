@@ -3,8 +3,6 @@ package-lock.json
 yarn.lock
 yarn-error.log
 .discord-mcbe/
-config.jsonc
-config.json
 dist
 .turbo
 todo.md
