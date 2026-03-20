@@ -1,6 +1,11 @@
 {
   "name": "@discord-mcbe/shared",
   "version": "4.0.0-beta.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tutinoko2048/discord-mcbe.git",
+    "directory": "packages/shared"
+  },
   "files": [
     "dist"
   ],
@@ -23,10 +28,5 @@
   },
   "devDependencies": {
     "@discord-mcbe/internal-config": "workspace:*"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/tutinoko2048/discord-mcbe.git",
-    "directory": "packages/shared"
   }
 }

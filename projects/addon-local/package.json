@@ -3,6 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "description": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tutinoko2048/discord-mcbe.git",
+    "directory": "projects/addon-local"
+  },
   "type": "module",
   "scripts": {
     "build": "tsdown",
@@ -20,10 +25,5 @@
     "@bedrock-apis/env-types": "catalog:",
     "@discord-mcbe/internal-config": "workspace:*",
     "@minecraft/server": "catalog:"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/tutinoko2048/discord-mcbe.git",
-    "directory": "projects/addon-local"
   }
 }

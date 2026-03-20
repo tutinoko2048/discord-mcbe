@@ -1,6 +1,11 @@
 {
   "name": "@discord-mcbe/server",
   "version": "4.0.0-beta.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tutinoko2048/discord-mcbe.git",
+    "directory": "projects/server"
+  },
   "files": [
     "dist",
     "schema.config.json"
@@ -48,10 +53,5 @@
   },
   "engines": {
     "node": ">=24.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/tutinoko2048/discord-mcbe.git",
-    "directory": "projects/server"
   }
 }

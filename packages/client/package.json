@@ -1,6 +1,11 @@
 {
   "name": "@discord-mcbe/client",
   "version": "4.0.0-beta.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tutinoko2048/discord-mcbe.git",
+    "directory": "packages/client"
+  },
   "files": [
     "dist"
   ],
@@ -34,10 +39,5 @@
   "devDependencies": {
     "@bedrock-apis/env-types": "catalog:",
     "@discord-mcbe/internal-config": "workspace:*"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/tutinoko2048/discord-mcbe.git",
-    "directory": "packages/client"
   }
 }

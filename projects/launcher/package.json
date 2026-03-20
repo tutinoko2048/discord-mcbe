@@ -2,6 +2,11 @@
   "name": "@discord-mcbe/launcher",
   "version": "0.1.0",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tutinoko2048/discord-mcbe.git",
+    "directory": "projects/launcher"
+  },
   "type": "module",
   "scripts": {
     "dev": "bun run src/main.ts -c test --dry-run",
@@ -21,10 +26,5 @@
     "@discord-mcbe/internal-config": "workspace:*",
     "@types/cli-progress": "^3.11.6",
     "bun-types": "catalog:"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/tutinoko2048/discord-mcbe.git",
-    "directory": "projects/launcher"
   }
 }
