@@ -5,6 +5,7 @@ export const defaultConfig: Options = {
   outDir: 'dist',
   external: [/^@minecraft\/(?!vanilla-data|math)[\w-\/]+$/],
   tsconfig: true,
+  dts: true,
 };
 
 export const sourceMapConfig: Options = {
