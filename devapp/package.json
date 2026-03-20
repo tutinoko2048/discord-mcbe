@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "bun --conditions=\"dev\" ./main.ts",
-    "lint": "biome lint ./src",
-    "format": "biome format ./src",
-    "format:write": "biome format --write ./src",
+    "lint": "vp lint",
+    "lint:fix": "vp lint --fix",
+    "format": "vp fmt",
+    "check": "vp check",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

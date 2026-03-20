@@ -1,16 +1,13 @@
-// @ts-check
-import { defineConfig as tsdownDefineConfig } from 'tsdown';
+import { defineConfig as tsdownDefineConfig, type Options } from 'tsdown';
 
-/** @type {import('tsdown').Options} */
-export const defaultConfig = {
+export const defaultConfig: Options = {
   entry: 'src/index.ts',
   outDir: 'dist',
   external: [/^@minecraft\/(?!vanilla-data|math)[\w-\/]+$/],
   tsconfig: true,
 };
 
-/** @type {import('tsdown').Options} */
-export const sourceMapConfig = {
+export const sourceMapConfig: Options = {
   sourcemap: true,
   dts: {
     compilerOptions: {
@@ -19,11 +16,7 @@ export const sourceMapConfig = {
   },
 };
 
-/**
- * @param {import('tsdown').Options} options
- * @param {boolean} [emitSourceMap]
- */
-export function defineConfig(options, emitSourceMap) {
+export function defineConfig(options: Options, emitSourceMap?: boolean) {
   return tsdownDefineConfig((cliOptions) => ({
     ...defaultConfig,
     ...(emitSourceMap ? sourceMapConfig : {}),

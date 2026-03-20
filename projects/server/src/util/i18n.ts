@@ -12,7 +12,6 @@ const templateMap = new Map<Locale, Record<string, string>>([
 ]);
 
 const FALLBACK_LANG = Locale.EnglishUS;
-// biome-ignore lint/style/noNonNullAssertion: ok
 const fallbackTemplates: Record<string, string> = templateMap.get(FALLBACK_LANG)!;
 if (!fallbackTemplates)
   throw new Error(`Invalid fallback language: ${FALLBACK_LANG}. Report this to the developer.`);

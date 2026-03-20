@@ -24,7 +24,6 @@ import type { ActionHandler } from '@script-bridge/client';
 import type { IBridgeClient, IResponse } from './interfaces';
 
 export interface SocketEvents {
-  /** biome-ignore lint: ignore */
   ready: {};
   connect: {
     sessionId: string;
@@ -141,7 +140,6 @@ export class SocketBridgeClient extends Emitter<SocketEvents> implements IBridge
         error: true,
         message: 'Session disconnected before response was received',
         errorReason: ResponseErrorReason.Abort,
-        // biome-ignore lint/style/noNonNullAssertion: sessionId should be non-null
         sessionId: this.currentSessionId!,
         requestId,
       })
