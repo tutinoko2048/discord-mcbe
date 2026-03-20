@@ -10,7 +10,7 @@
     "format": "turbo run format",
     "check": "turbo run check",
     "typecheck": "turbo run typecheck",
-    "clean": "turbo run clean"
+    "clean": "pnpm run -r clean"
   },
   "devDependencies": {
     "rimraf": "^6.1.2",

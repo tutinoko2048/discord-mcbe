@@ -24,7 +24,6 @@ export class ScriptHandler {
       return;
     }
 
-    // biome-ignore lint/suspicious/noExplicitAny: this is any
     let script: any;
     try {
       //TODO - tsならトランスパイルしてから実行する

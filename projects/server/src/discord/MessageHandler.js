@@ -1,4 +1,4 @@
-/** biome-ignore-all lint: old file */
+/** oxlint-disable */
 
 const embeds = require('./embeds');
 const { EmbedBuilder } = require('discord.js');

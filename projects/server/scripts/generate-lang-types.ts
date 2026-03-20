@@ -45,7 +45,6 @@ const langArgsType = `
 export type LangArgs = {
 ${keys
   .map((key) => {
-    // biome-ignore lint/style/noNonNullAssertion: ok.
     const count = argCountByKey.get(key)!;
     const tuple = count === 0 ? '[]' : `[${Array(count).fill('Arg').join(', ')}]`;
     return `  '${key}': ${tuple};`;
@@ -57,8 +56,6 @@ ${keys
 const output = `
 // ⚠️ AUTO-GENERATED FILE
 // DO NOT EDIT MANUALLY
-
-/* biome-ignore: auto-generated file. */
 
 export type Arg = string | number;
 

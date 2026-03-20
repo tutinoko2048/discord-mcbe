@@ -1,8 +1,6 @@
 // ⚠️ AUTO-GENERATED FILE
 // DO NOT EDIT MANUALLY
 
-/* biome-ignore: auto-generated file. */
-
 export type Arg = string | number;
 
 

@@ -44,12 +44,9 @@ This is a monorepo managed with pnpm workspaces:
 - `projects/server`: Main application server
 - `projects/addon-bds`: Minecraft addon for Bedrock Dedicated Server (BDS)
 - `projects/addon-local`: Minecraft addon for local worlds
+- `projects/launcher`: discord-mcbe launcher/installer application
 - `packages/client`: Client library used by addons
 - `packages/shared`: Shared utilities and types
-
-### Common Commands
-- `pnpm build`: Build all packages using Turbo.
-- `pnpm format`: Format code using Biome.
 
 ## 🤝 How to Contribute Code
 

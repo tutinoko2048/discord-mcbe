@@ -12,5 +12,6 @@
     "**/*.code-search": true,
     "**/dist": true,
     "**/build": true,
-  }
+  },
+  "oxc.fmt.configPath": "./packages/internal-config/vite/vite.config.base.mts",
 }

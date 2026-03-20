@@ -3,6 +3,7 @@ import { deepMerge } from '../utils.mts';
 
 type FormatConfig = NonNullable<UserConfig['fmt']>;
 const defaultFormatConfig: FormatConfig = {
+  ignorePatterns: ['dist/**'],
   singleQuote: true,
   printWidth: 110,
   endOfLine: 'lf',
@@ -10,6 +11,7 @@ const defaultFormatConfig: FormatConfig = {
 
 type LintConfig = NonNullable<UserConfig['lint']>;
 const defaultLintConfig: LintConfig = {
+  ignorePatterns: ['dist/**'],
   options: {
     typeAware: true,
     typeCheck: true,
@@ -24,3 +26,5 @@ export function defineConfig(config: UserConfig) {
   });
 }
 
+// predefined config for vscode settings
+export default defineConfig({});
