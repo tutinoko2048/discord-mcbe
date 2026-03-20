@@ -12,6 +12,7 @@
     "clean": "pnpm run -r clean"
   },
   "devDependencies": {
+    "bun-types": "catalog:",
     "rimraf": "^6.1.2",
     "tsdown": "^0.15.12",
     "turbo": "^2.6.2",

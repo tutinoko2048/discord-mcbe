@@ -29,6 +29,7 @@
     "@script-bridge/protocol": "catalog:"
   },
   "devDependencies": {
+    "@bedrock-apis/env-types": "catalog:",
     "@discord-mcbe/internal-config": "workspace:*"
   }
 }

@@ -1,5 +1,9 @@
 {
   "extends": "@discord-mcbe/internal-config/typescript",
   "include": ["src"],
+  "compilerOptions": {
+    "noLib": true,
+    "types": ["@bedrock-apis/env-types"]
+  },
   "references": [{ "path": "../../packages/client" }]
 }

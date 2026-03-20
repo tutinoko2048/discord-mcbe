@@ -17,6 +17,7 @@
     "@discord-mcbe/client": "workspace:*"
   },
   "devDependencies": {
+    "@bedrock-apis/env-types": "catalog:",
     "@discord-mcbe/internal-config": "workspace:*",
     "@minecraft/server": "catalog:"
   }

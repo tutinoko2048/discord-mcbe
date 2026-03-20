@@ -6,6 +6,9 @@ settings:
 
 catalogs:
   default:
+    '@bedrock-apis/env-types':
+      specifier: 1.0.0-beta.6
+      version: 1.0.0-beta.6
     '@minecraft/server-ui':
       specifier: 2.0.0
       version: 2.0.0
@@ -18,6 +21,9 @@ catalogs:
     '@script-bridge/server':
       specifier: ^0.5.0
       version: 0.5.0
+    bun-types:
+      specifier: ^1.3.8
+      version: 1.3.8
 
 overrides:
   '@minecraft/server': 2.5.0-beta.1.21.130-stable
@@ -26,6 +32,9 @@ importers:
 
   .:
     devDependencies:
+      bun-types:
+        specifier: 'catalog:'
+        version: 1.3.8
       rimraf:
         specifier: ^6.1.2
         version: 6.1.2
@@ -70,6 +79,9 @@ importers:
         specifier: 'catalog:'
         version: 0.5.0
     devDependencies:
+      '@bedrock-apis/env-types':
+        specifier: 'catalog:'
+        version: 1.0.0-beta.6
       '@discord-mcbe/internal-config':
         specifier: workspace:*
         version: link:../internal-config
@@ -95,6 +107,9 @@ importers:
         specifier: workspace:*
         version: link:../../packages/client
     devDependencies:
+      '@bedrock-apis/env-types':
+        specifier: 'catalog:'
+        version: 1.0.0-beta.6
       '@discord-mcbe/internal-config':
         specifier: workspace:*
         version: link:../../packages/internal-config
@@ -108,6 +123,9 @@ importers:
         specifier: workspace:*
         version: link:../../packages/client
     devDependencies:
+      '@bedrock-apis/env-types':
+        specifier: 'catalog:'
+        version: 1.0.0-beta.6
       '@discord-mcbe/internal-config':
         specifier: workspace:*
         version: link:../../packages/internal-config
@@ -134,7 +152,7 @@ importers:
         specifier: ^3.11.6
         version: 3.11.6
       bun-types:
-        specifier: ^1.3.6
+        specifier: 'catalog:'
         version: 1.3.8
 
   projects/server:
@@ -180,7 +198,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/internal-config
       bun-types:
-        specifier: ^1.3.8
+        specifier: 'catalog:'
         version: 1.3.8
       oh-my-logo:
         specifier: ^0.2.1
@@ -215,6 +233,9 @@ packages:
   '@babel/types@7.28.5':
     resolution: {integrity: sha512-qQ5m48eI/MFLQ5PxQj4PFaprjyCTLI37ElWMmNs0K8Lk3dVeOdNpB3ks8jc7yM5CDmVC73eMVk/trk3fgmrUpA==}
     engines: {node: '>=6.9.0'}
+
+  '@bedrock-apis/env-types@1.0.0-beta.6':
+    resolution: {integrity: sha512-eB9QQcnS3zbZU2xkS6h5tOHYgbUQ4LOZsyyaxQL4tBzfGNo7pmMW2Hk+SUsFpkGMZ75eVU4MkNEvrNsk38Cj9w==}
 
   '@discordjs/builders@1.13.1':
     resolution: {integrity: sha512-cOU0UDHc3lp/5nKByDxkmRiNZBpdp0kx55aarbiAfakfKJHlxv/yFW1zmIqCAmwH5CRlrH9iMFKJMpvW4DPB+w==}
@@ -1921,6 +1942,8 @@ snapshots:
     dependencies:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.28.5
+
+  '@bedrock-apis/env-types@1.0.0-beta.6': {}
 
   '@discordjs/builders@1.13.1':
     dependencies:
