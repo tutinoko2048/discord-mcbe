@@ -1,6 +1,9 @@
 {
   "name": "@discord-mcbe/client",
   "version": "0.1.0",
+  "files": [
+    "dist"
+  ],
   "type": "module",
   "exports": {
     "./bds": {
