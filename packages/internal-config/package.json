@@ -4,11 +4,13 @@
   "private": true,
   "exports": {
     "./tsdown": {
-      "import": "./tsdown/tsdown.config.base.mjs",
-      "types": "./tsdown/tsdown.config.base.d.ts"
+      "default": "./tsdown/tsdown.config.base.mts"
     },
     "./typescript": {
       "default": "./typescript/tsconfig.base.json"
+    },
+    "./vite": {
+      "default": "./vite/vite.config.base.mts"
     }
   }
 }

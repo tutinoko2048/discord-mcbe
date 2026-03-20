@@ -7,9 +7,10 @@
   "scripts": {
     "build": "tsdown",
     "watch": "tsdown --watch",
-    "lint": "biome lint ./src",
-    "format": "biome format ./src",
-    "format:write": "biome format --write ./src",
+    "lint": "vp lint",
+    "lint:fix": "vp lint --fix",
+    "format": "vp fmt",
+    "check": "vp check",
     "typecheck": "tsc --noEmit",
     "clean": "rimraf dist .turbo"
   },

@@ -6,9 +6,10 @@
   "scripts": {
     "dev": "bun run src/main.ts -c test --dry-run",
     "compile": "pnpm run clean && bun run compile.ts",
-    "lint": "biome lint ./src",
-    "format": "biome format ./src",
-    "format:write": "biome format ./src --write",
+    "lint": "vp lint",
+    "lint:fix": "vp lint --fix",
+    "format": "vp fmt",
+    "check": "vp check",
     "typecheck": "tsc --noEmit",
     "clean": "rimraf build"
   },

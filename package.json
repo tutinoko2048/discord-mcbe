@@ -6,17 +6,18 @@
     "build": "turbo run build",
     "build:silent": "turbo run build --output-logs errors-only",
     "lint": "turbo run lint",
+    "lint:fix": "turbo run lint:fix",
     "format": "turbo run format",
-    "format:write": "turbo run format:write",
+    "check": "turbo run check",
     "typecheck": "turbo run typecheck",
     "clean": "turbo run clean"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.2.0",
     "rimraf": "^6.1.2",
     "tsdown": "^0.15.12",
     "turbo": "^2.6.2",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vite-plus": "^0.1.13"
   },
   "pnpm": {
     "overrides": {
