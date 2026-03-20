@@ -21,8 +21,8 @@ const defaultLintConfig: LintConfig = {
 export function defineConfig(config: UserConfig) {
   return defineVitePlusConfig({
     ...config,
-    fmt: deepMerge({ ...defaultFormatConfig }, config.fmt ?? {}),
-    lint: deepMerge({ ...defaultLintConfig }, config.lint ?? {}),
+    fmt: deepMerge(defaultFormatConfig, config.fmt ?? {}),
+    lint: deepMerge(defaultLintConfig, config.lint ?? {}),
   });
 }
 

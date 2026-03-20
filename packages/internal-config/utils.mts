@@ -1,5 +1,8 @@
-export function deepMerge<T extends Record<string, unknown>>(target: T, source: Partial<T>): T {
-  return mergeObjects(target, source as Record<string, unknown>) as T;
+export function deepMerge<T = any>(target: T, source: Partial<T>): T {
+  return mergeObjects(
+    structuredClone(target) as Record<string, unknown>,
+    source as Record<string, unknown>,
+  ) as T;
 }
 
 function mergeObjects(
