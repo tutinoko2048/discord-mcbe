@@ -20,5 +20,10 @@
     "@bedrock-apis/env-types": "catalog:",
     "@discord-mcbe/internal-config": "workspace:*",
     "@minecraft/server": "catalog:"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tutinoko2048/discord-mcbe.git",
+    "directory": "projects/addon-local"
   }
 }

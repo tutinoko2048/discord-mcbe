@@ -21,5 +21,10 @@
     "@discord-mcbe/internal-config": "workspace:*",
     "@types/cli-progress": "^3.11.6",
     "bun-types": "catalog:"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tutinoko2048/discord-mcbe.git",
+    "directory": "projects/launcher"
   }
 }

@@ -34,5 +34,10 @@
   "devDependencies": {
     "@bedrock-apis/env-types": "catalog:",
     "@discord-mcbe/internal-config": "workspace:*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tutinoko2048/discord-mcbe.git",
+    "directory": "packages/client"
   }
 }
