@@ -43,12 +43,12 @@ jobs:
 
       - name: Publish shared
         working-directory: ./packages/shared
-        run: pnpm publish --access public --no-git-checks --tag "$NPM_TAG" --dry-run
+        run: pnpm publish --access public --no-git-checks --tag "$NPM_TAG"
 
       - name: Publish client
         working-directory: ./packages/client
-        run: pnpm publish --access public --no-git-checks --tag "$NPM_TAG" --dry-run
+        run: pnpm publish --access public --no-git-checks --tag "$NPM_TAG"
 
       - name: Publish server
         working-directory: ./projects/server
-        run: pnpm publish --access public --no-git-checks --tag "$NPM_TAG" --dry-run
+        run: pnpm publish --access public --no-git-checks --tag "$NPM_TAG"
