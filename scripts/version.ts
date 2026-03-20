@@ -1,19 +1,15 @@
 import { $ } from 'bun';
 import { join } from 'path';
+import { packages } from './_packages';
 
 const type = process.argv[2] as 'app' | 'launcher' | undefined;
 const version = process.argv[3];
 if (!type || !version || !['app', 'launcher'].includes(type)) {
-  console.error('Usage:\npnpm run version <app|launcher> <major|minor|patch|pre>\npnpm run version <app|launcher> <version>');
+  console.error('Usage:\npnpm run bump-version <app|launcher> <major|minor|patch|pre>\npnpm run bump-version <app|launcher> <version>');
   process.exit(1);
 }
 
 const isSpecified = /^\d+\.\d+\.\d+(-\w+\.\d+)?$/.test(version.trim());
-
-const packages = {
-  app: ['../projects/server', '../packages/client', '../packages/shared'],
-  launcher: ['../projects/launcher'],
-}
 
 const addons = ['../projects/addon-bds', '../projects/addon-local'];
 

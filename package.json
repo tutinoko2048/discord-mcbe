@@ -9,7 +9,9 @@
     "lint:fix": "turbo run lint:fix",
     "format": "turbo run format",
     "check": "turbo run check",
-    "clean": "pnpm run -r clean"
+    "clean": "pnpm run -r clean",
+    "bump-version": "bun run scripts/version.ts",
+    "publish": "bun run scripts/publish.ts"
   },
   "devDependencies": {
     "bun-types": "catalog:",
