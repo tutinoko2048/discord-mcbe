@@ -33,10 +33,22 @@ jobs:
       - name: Check
         run: pnpm run check
 
-      - name: Publish
+      - name: Resolve npm tag from version
         run: |
           if [[ "$VERSION" =~ -([0-9A-Za-z]+)\. ]]; then
-            pnpm run publish app --access public --no-git-checks --tag "${BASH_REMATCH[1]}" --dry-run
+            echo "NPM_TAG=${BASH_REMATCH[1]}" >> "$GITHUB_ENV"
           else
-            pnpm run publish app --access public --no-git-checks --dry-run
+            echo "NPM_TAG=latest" >> "$GITHUB_ENV"
           fi
+
+      - name: Publish shared
+        working-directory: ./packages/shared
+        run: pnpm publish --access public --no-git-checks --tag "$NPM_TAG" --dry-run
+
+      - name: Publish client
+        working-directory: ./packages/client
+        run: pnpm publish --access public --no-git-checks --tag "$NPM_TAG" --dry-run
+
+      - name: Publish server
+        working-directory: ./projects/server
+        run: pnpm publish --access public --no-git-checks --tag "$NPM_TAG" --dry-run
