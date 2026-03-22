@@ -52,3 +52,18 @@ jobs:
       - name: Publish server
         working-directory: ./projects/server
         run: pnpm publish --access public --no-git-checks --tag "$NPM_TAG"
+
+      - name: Create release assets
+        run: pnpm run create-release-assets ${VERSION}
+
+      - name: Create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "v$VERSION" \
+            --generate-notes \
+            --target main \
+            --title "discord-mcbe v$VERSION" \
+            $(if [ "$NPM_TAG" != "latest" ]; then echo "--prerelease"; fi) \
+            .release-temp/version.json \
+            .release-temp/discord-mcbe-v$VERSION.tar.gz

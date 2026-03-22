@@ -11,7 +11,8 @@
     "check": "turbo run check",
     "clean": "pnpm run -r clean",
     "bump-version": "bun run scripts/version.ts",
-    "publish": "bun run scripts/publish.ts"
+    "publish": "bun run scripts/publish.ts",
+    "create-release-assets": "bun run scripts/create-release-assets.ts"
   },
   "devDependencies": {
     "bun-types": "catalog:",
