@@ -65,5 +65,5 @@ jobs:
             --target main \
             --title "discord-mcbe v$VERSION" \
             $(if [ "$NPM_TAG" != "latest" ]; then echo "--prerelease"; fi) \
-            .release-temp/version.json \
+            .release-temp/metadata.json \
             .release-temp/discord-mcbe-v$VERSION.tar.gz

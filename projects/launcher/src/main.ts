@@ -1,12 +1,6 @@
 import { Command } from 'commander';
 import packageJson from '../package.json' with { type: 'json' };
-import { install } from './install';
-
-interface Options {
-  cwd?: string;
-  dryRun?: boolean;
-  interactive?: boolean;
-}
+import { install, InstallOptions } from './install';
 
 const program = new Command();
 program.version(packageJson.version, '-v, --version', 'Show version number');
@@ -14,10 +8,11 @@ program.version(packageJson.version, '-v, --version', 'Show version number');
 program.option('--dry-run', 'Perform a dry run without making any changes');
 program.option('-c, --cwd <path>', 'Set the working directory');
 program.option('-i, --interactive', 'Run in interactive mode');
+program.option('-t, --tag <version>', 'Install a specific version (e.g. "1.2.3" or "beta")');
 
 program.parse();
 
-const options: Options = program.opts();
+const options = program.opts<InstallOptions>();
 
 try {
   await install(options);

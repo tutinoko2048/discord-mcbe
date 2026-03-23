@@ -1,59 +1,60 @@
-import { resolve } from 'node:path';
+import { $ } from 'bun';
+import { join, resolve } from 'node:path';
 import { SingleBar } from 'cli-progress';
 import { askVersion, resolveVersion } from './version';
-
-import packageJson from '../assets/package.json' with { type: 'json' };
+import { isCompiled } from './env';
 
 export interface InstallOptions {
   cwd?: string;
   dryRun?: boolean;
   interactive?: boolean;
-  /** latest, beta, specific versions are accepted */
   tag?: string;
 }
 
 export async function install(options: InstallOptions) {
-  const cwd = options.cwd ?? process.cwd();
-  console.debug('install', options);
+  const cwd = options.cwd ? resolve(options.cwd) : process.cwd();
+  console.debug('cwd:', cwd);
+  console.debug('install options', options);
+
+  const appDir = join(cwd, 'app');
 
   const resolved = options.interactive ? await askVersion() : await resolveVersion(options.tag ?? 'latest');
-  console.log(`Installing version ${resolved.version} from ${resolved.asset_url}`);
 
-  const downloadedData = await downloadFile(resolved.asset_url);
+  console.log(`Downloading version ${resolved.version} from ${resolved.assetFileUrl}`);
+  const downloadedData = await downloadAssetFile(resolved.assetFileUrl);
   console.log('Download complete.');
 
-  await extractArchive(downloadedData, resolve(cwd, 'app'), options.dryRun);
-
-  // init package.json
-  const packageJsonPath = resolve(cwd, 'app', 'package.json');
-  if (options.dryRun) {
-    console.log(`Dry run enabled, skipping writing package.json to ${packageJsonPath}`);
-  } else {
-    await Bun.write(packageJsonPath, JSON.stringify(packageJson, null, 2));
-    console.log(`Initialized package.json at ${packageJsonPath}`);
-  }
+  console.log('Installing...');
+  await extractArchive(downloadedData, appDir, options.dryRun);
+  console.log(`Installation complete. Application is extracted to ${appDir}`);
 
   // install discord-mcbe packages
-  const packages = ['@discord-mcbe/server', '@discord-mcbe/shared'];
-  await Bun.$`../updater add -E ${packages.map((p) => `${p}@${resolved.version}`).join(' ')}`
-    .env({ BUN_BE_BUN: '1' })
-    .cwd(resolve(cwd, 'app'));
-
-  await Bun.write(resolve(cwd, 'app', '.VERSION'), resolved.version);
-}
-
-async function downloadFile(url: string): Promise<Uint8Array> {
-  const response = await fetch(url);
-
-  if (!response.ok) {
-    throw new Error(`Failed to download installer: ${response.status} ${response.statusText}`);
+  if (options.dryRun) {
+    console.log('Dry run enabled, skipping package installation.');
+  } else {
+    if (isCompiled) {
+      await $`../updater install`
+        .env({ BUN_BE_BUN: '1' })
+        .cwd(appDir);
+    } else {
+      await $`bun install`.cwd(appDir);
+    }
   }
 
-  if (!response.body) {
+  console.log(`Successfully installed discord-mcbe v${resolved.version}!`);
+}
+
+async function downloadAssetFile(url: string): Promise<Uint8Array> {
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error(`Failed to download installer: ${res.status} ${res.statusText}`);
+  }
+
+  if (!res.body) {
     throw new Error('No response body available for download stream');
   }
 
-  const totalBytes = Number(response.headers.get('content-length')) || 0;
+  const totalBytes = Number(res.headers.get('content-length')) || 0;
 
   const buffer = totalBytes > 0 ? new Uint8Array(totalBytes) : null;
   const chunks: Uint8Array[] = buffer ? [] : [];
@@ -68,13 +69,13 @@ async function downloadFile(url: string): Promise<Uint8Array> {
   try {
     if (buffer) {
       // content-lengthがある場合
-      for await (const chunk of response.body) {
+      for await (const chunk of res.body) {
         buffer.set(chunk, downloadedBytes);
         downloadedBytes += chunk.byteLength;
         bar.update(downloadedBytes);
       }
     } else {
-      for await (const chunk of response.body) {
+      for await (const chunk of res.body) {
         chunks.push(chunk);
         downloadedBytes += chunk.byteLength;
         bar.setTotal(downloadedBytes);

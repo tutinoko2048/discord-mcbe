@@ -1,6 +1,7 @@
 import { exists, mkdir, readFile, rm, writeFile } from "fs/promises";
 import { join } from 'path';
 import { MINIMUM_LAUNCHER_VERSION } from '../packages/shared/src/constants/common';
+import type { ReleaseMetadata } from "../projects/launcher/src/version";
 
 const version = process.argv[2];
 if (!version) {
@@ -36,11 +37,11 @@ await Bun.write(archivePath, archive);
 console.log(`Created release assets archive at ${archivePath}`);
 
 
-const versionJson = {
+const metadata: ReleaseMetadata = {
   minimumLauncherVersion: MINIMUM_LAUNCHER_VERSION,
 };
 
-const versionJsonPath = join(TARGET_DIR, "version.json");
-await writeFile(versionJsonPath, JSON.stringify(versionJson, null, 2));
+const versionJsonPath = join(TARGET_DIR, "metadata.json");
+await writeFile(versionJsonPath, JSON.stringify(metadata, null, 2));
 
-console.log(`Created version.json for version ${version} at ${versionJsonPath}`);
+console.log(`Created metadata.json for version ${version} at ${versionJsonPath}`);
