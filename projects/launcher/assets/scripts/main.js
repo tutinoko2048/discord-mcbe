@@ -2,5 +2,5 @@
  * @param {import('@discord-mcbe/server').Application} app
  */
 export default function main(app) {
-  app
+  app.logger.info('Script loaded');
 }

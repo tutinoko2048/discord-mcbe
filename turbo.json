@@ -5,16 +5,12 @@
       "dependsOn": ["^build"]
     },
     "lint": {
-      "cache": false
     },
     "lint:fix": {
-      "cache": false
     },
     "format": {
-      "cache": false
     },
     "check": {
-      "cache": false
     },
     "typecheck": {
       "dependsOn": ["^typecheck"]
