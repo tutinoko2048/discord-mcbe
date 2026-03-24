@@ -12,7 +12,12 @@ export type Locale =
 
 
 export type LangArgs = {
+  'command.command.command.description': [];
+  'command.command.description': [];
+  'command.command.raw.description': [];
   'command.command.sending': [];
+  'command.command.silent.description': [];
+  'command.command.world.description': [];
   'command.error.catch': [];
   'command.error.nopermission': [];
   'command.error.noworlds': [];
@@ -21,7 +26,6 @@ export type LangArgs = {
   'command.list.players': [];
   'command.list.silent.description': [];
   'command.list.world.description': [];
-  'command.list.world.notFound': [Arg];
   'command.panel.create.description': [];
   'command.panel.create.success': [Arg];
   'command.panel.description': [];
@@ -30,6 +34,7 @@ export type LangArgs = {
   'command.ping.description': [];
   'common.duration': [Arg, Arg, Arg];
   'common.noOnlineWorlds': [];
+  'common.worldNotFound': [Arg];
   'console.chat': [Arg, Arg, Arg];
   'console.command': [Arg, Arg, Arg];
   'console.connect': [Arg];

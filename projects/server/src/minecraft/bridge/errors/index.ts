@@ -1,1 +1,2 @@
-export * from './action-error';
+export * from './bridge-action';
+export * from './command';

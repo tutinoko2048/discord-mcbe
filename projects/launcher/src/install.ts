@@ -33,9 +33,7 @@ export async function install(options: InstallOptions) {
     console.log('Dry run enabled, skipping package installation.');
   } else {
     if (isCompiled) {
-      await $`../updater install`
-        .env({ BUN_BE_BUN: '1' })
-        .cwd(appDir);
+      await $`../updater install`.env({ BUN_BE_BUN: '1' }).cwd(appDir);
     } else {
       await $`bun install`.cwd(appDir);
     }

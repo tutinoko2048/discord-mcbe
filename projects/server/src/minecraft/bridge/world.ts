@@ -10,7 +10,7 @@ import {
 } from '@discord-mcbe/shared';
 import { ScriptPlayer } from './player';
 import { ScriptScoreboard } from './scoreboard';
-import { BridgeActionError } from './errors';
+import { BridgeActionError, CommandError } from './errors';
 import { MinecraftMessageEvent, PlayerJoinEvent, PlayerLeaveEvent } from '../../events';
 import { Logger } from '../../util';
 
@@ -69,7 +69,8 @@ export class ScriptWorld<S extends ISession = ISession> {
   async runCommand(command: string): Promise<{ successCount: number }> {
     const res = await this.session.send<RunCommandAction>(ActionId.RunCommand, { command });
     if (res.error) throw new BridgeActionError(res);
-    return res.data;
+    if (res.data.error) throw new CommandError(res.data.message);
+    return { successCount: res.data.successCount };
   }
 
   async sendMessage(message: string | RawMessage | (string | RawMessage)[]): Promise<void> {

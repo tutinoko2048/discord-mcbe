@@ -36,7 +36,8 @@ export class CommandLineHandler {
         const result = await world.runCommand(command);
         this.logger.info(`[${world.name}]`, result);
       } catch (err) {
-        this.logger.error(`[${world.name}]`, err);
+        const message = Error.isError(err) ? err.message : String(err);
+        this.logger.error(`[${world.name}]`, message);
       }
     });
   }

@@ -53,14 +53,14 @@ async function fetchReleaseList(): Promise<ReleaseList> {
     throw new Error(`Failed to fetch releases: ${res.status} ${res.statusText}`);
   }
 
-  const rawReleases = await res.json() as GitHubRelease[];
+  const rawReleases = (await res.json()) as GitHubRelease[];
 
   const releases: Release[] = [];
   for (const release of rawReleases) {
     if (release.tag_name.startsWith('launcher@v')) continue;
 
     const version = release.tag_name.replace(/^v/, '');
-    const assetFile = release.assets.find(a => a.name.startsWith('discord-mcbe-'));
+    const assetFile = release.assets.find((a) => a.name.startsWith('discord-mcbe-'));
     const metadataFile = release.assets.find((a) => a.name.endsWith('.json'));
     if (!assetFile || !metadataFile) continue;
 
@@ -76,11 +76,10 @@ async function fetchReleaseList(): Promise<ReleaseList> {
 
   return {
     releases,
-    latest: releases.find(r => !r.isBeta),
-    latestBeta: releases.find(r => r.isBeta),
+    latest: releases.find((r) => !r.isBeta),
+    latestBeta: releases.find((r) => r.isBeta),
   };
 }
-
 
 export async function resolveVersion(tag: string): Promise<Release> {
   const releaseList = await fetchReleaseList();

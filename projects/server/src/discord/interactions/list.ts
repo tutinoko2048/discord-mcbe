@@ -39,7 +39,7 @@ export default defineCommand(
     if (worldName) {
       const world = app.minecraft.getWorlds().find((w) => w.name === worldName);
       if (!world) {
-        const embed = createErrorEmbed(_t('command.list.world.notFound', worldName));
+        const embed = createErrorEmbed(_t('common.worldNotFound', worldName));
         await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
         return;
       }

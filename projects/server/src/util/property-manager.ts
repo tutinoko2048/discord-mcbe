@@ -1,10 +1,9 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { ROOT_DIR } from './environment';
+import { DATA_DIR } from './environment';
 
 export class PropertyManager {
-  static readonly DATA_DIR = path.join(ROOT_DIR, '.discord-mcbe');
-  static readonly DATA_PATH = path.join(PropertyManager.DATA_DIR, 'data.json');
+  static readonly DATA_PATH = path.join(DATA_DIR, 'data.json');
 
   private readonly cache = new Map<string, unknown>();
 
@@ -26,8 +25,8 @@ export class PropertyManager {
 
   private save(): void {
     try {
-      if (!fs.existsSync(PropertyManager.DATA_DIR)) {
-        fs.mkdirSync(PropertyManager.DATA_DIR, { recursive: true });
+      if (!fs.existsSync(DATA_DIR)) {
+        fs.mkdirSync(DATA_DIR, { recursive: true });
       }
       const data = Object.fromEntries(this.cache);
       fs.writeFileSync(PropertyManager.DATA_PATH, JSON.stringify(data, null, 2), 'utf-8');

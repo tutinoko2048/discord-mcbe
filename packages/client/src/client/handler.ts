@@ -49,8 +49,12 @@ export function registerHandlers(bridge: IBridgeClient) {
     const { command } = action.data;
 
     const overworld = world.getDimension('overworld');
-    const { successCount } = overworld.runCommand(command);
-    action.respond({ successCount });
+    try {
+      const { successCount } = overworld.runCommand(command);
+      action.respond({ error: false, successCount });
+    } catch (error) {
+      action.respond({ error: true, message: String(error) });
+    }
   });
 
   bridge.registerHandler<SendScriptEventAction>(ActionId.SendScriptEvent, (action) => {

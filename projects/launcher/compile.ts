@@ -40,7 +40,7 @@ for (const platform of platforms) {
       },
       define: {
         __COMPILED__: 'true',
-      }
+      },
     });
 
     console.log(`[${target}] Build complete in ${Date.now() - startAt}ms.`);
