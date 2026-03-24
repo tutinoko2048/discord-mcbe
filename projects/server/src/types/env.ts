@@ -7,10 +7,10 @@ export const envSchema = z.object({
     .describe('ID of the guild that use the bot'),
   CHANNEL_ID: z.string()
     .describe('ID of the channel that messages will be sent'),
-  SOCKET_PORT: z.number().int().positive()
+  SOCKET_PORT: z.coerce.number().int().positive()
     .optional()
     .describe('Port used for websocket connection'),
-  BRIDGE_PORT: z.number().int().positive()
+  BRIDGE_PORT: z.coerce.number().int().positive()
     .optional()
     .describe('Port used for ScriptBridge(BDS) connection'),
 })

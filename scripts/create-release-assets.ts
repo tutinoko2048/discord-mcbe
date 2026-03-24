@@ -1,4 +1,4 @@
-import { exists, mkdir, readFile, rm, writeFile } from "fs/promises";
+import { exists, mkdir, rm, writeFile } from "fs/promises";
 import { join } from 'path';
 import { MINIMUM_LAUNCHER_VERSION } from '../packages/shared/src/constants/common';
 import type { ReleaseMetadata } from "../projects/launcher/src/version";
@@ -21,10 +21,15 @@ if (await exists(TARGET_DIR)) {
 await mkdir(TARGET_DIR, { recursive: true });
 
 // update dependencies in package.json
-const packageJson: { dependencies: Record<string, string> } = await readFile(join(ASSETS_DIR, "package.json"), "utf-8").then(JSON.parse);
-packageJson.dependencies["@discord-mcbe/server"] = version;
-packageJson.dependencies["@discord-mcbe/client"] = version;
-packageJson.dependencies["@discord-mcbe/shared"] = version;
+const packageJson = {
+  "name": "discord-mcbe-assets",
+  "private": true,
+  "dependencies": {
+    "@discord-mcbe/server": version,
+    "@discord-mcbe/client": version,
+    "@discord-mcbe/shared": version,
+  }
+};
 
 // create archive
 const archive = new Bun.Archive({

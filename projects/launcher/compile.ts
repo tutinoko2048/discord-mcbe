@@ -10,10 +10,10 @@ const windowsOption: Bun.CompileBuildOptions['windows'] = {
 };
 
 const platforms = [
-  { name: 'windows', run: 'assets/run.bat', ext: '.exe', targets: ['windows-x64'] },
+  { name: 'windows', run: 'assets/start.bat', ext: '.exe', targets: ['windows-x64'] },
   {
     name: 'linux',
-    run: 'assets/run.sh',
+    run: 'assets/start.sh',
     ext: '',
     targets: ['linux-x64', 'linux-arm64', 'darwin-x64', 'darwin-arm64'],
   },
@@ -28,6 +28,14 @@ for (const platform of platforms) {
 
     // copy run script
     await fs.copyFile(platform.run, join(targetDir, basename(platform.run)));
+    // copy package.json
+    await fs.copyFile('assets/package.json', join(targetDir, 'package.json'));
+    // copy tsconfig.json
+    await fs.copyFile('assets/tsconfig.json', join(targetDir, 'tsconfig.json'));
+    // copy scripts
+    await fs.cp('assets/scripts', join(targetDir, 'scripts'), { recursive: true });
+    // create .env from .env.example
+    await fs.copyFile('../../devapp/.env.example', join(targetDir, '.env'));
 
     // compile with bun
     const startAt = Date.now();

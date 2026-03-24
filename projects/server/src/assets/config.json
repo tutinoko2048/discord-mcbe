@@ -1,11 +1,11 @@
 {
   "app": {
-    "language": "ja_JP",
+    "language": "ja",
     "timezone_offset": 9,
-    "scripts_entry": "scripts/index.js"
+    "scripts_entry": "scripts/main.js"
   },
   "bot": {
-    "command_role_id": [""],
+    "command_role_id": [],
     "send_ready": true,
     "strip_color_prefix": true,
     "panel_update_interval": 10000

@@ -1,0 +1,10 @@
+{
+  "include": ["scripts"],
+  "compilerOptions": {
+    "allowJs": true,
+    "noEmit": true,
+    "paths": {
+      "@discord-mcbe/*": ["./app/node_modules/@discord-mcbe/*"]
+    }
+  }
+}

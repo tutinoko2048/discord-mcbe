@@ -1,6 +1,6 @@
 import { $ } from 'bun';
 import { join, resolve } from 'node:path';
-import { SingleBar } from 'cli-progress';
+// import { SingleBar } from 'cli-progress';
 import { askVersion, resolveVersion } from './version';
 import { isCompiled } from './env';
 
@@ -24,9 +24,8 @@ export async function install(options: InstallOptions) {
   const downloadedData = await downloadAssetFile(resolved.assetFileUrl);
   console.log('Download complete.');
 
-  console.log('Installing...');
   await extractArchive(downloadedData, appDir, options.dryRun);
-  console.log(`Installation complete. Application is extracted to ${appDir}`);
+  console.log(`Application is extracted to ${appDir}`);
 
   // install discord-mcbe packages
   if (options.dryRun) {
@@ -42,58 +41,60 @@ export async function install(options: InstallOptions) {
   console.log(`Successfully installed discord-mcbe v${resolved.version}!`);
 }
 
-async function downloadAssetFile(url: string): Promise<Uint8Array> {
+async function downloadAssetFile(url: string) {
   const res = await fetch(url);
   if (!res.ok) {
     throw new Error(`Failed to download installer: ${res.status} ${res.statusText}`);
   }
 
-  if (!res.body) {
-    throw new Error('No response body available for download stream');
-  }
+  return await res.bytes();
 
-  const totalBytes = Number(res.headers.get('content-length')) || 0;
+  // if (!res.body) {
+  //   throw new Error('No response body available for download stream');
+  // }
 
-  const buffer = totalBytes > 0 ? new Uint8Array(totalBytes) : null;
-  const chunks: Uint8Array[] = buffer ? [] : [];
-  let downloadedBytes = 0;
+  // const totalBytes = Number(res.headers.get('content-length')) || 0;
 
-  const bar = new SingleBar({
-    format: 'Downloading [{bar}] {percentage}% | ETA: {eta}s | {value}/{total} bytes',
-  });
+  // const buffer = totalBytes > 0 ? new Uint8Array(totalBytes) : null;
+  // const chunks: Uint8Array[] = buffer ? [] : [];
+  // let downloadedBytes = 0;
 
-  bar.start(totalBytes > 0 ? totalBytes : 1, 0);
+  // const bar = new SingleBar({
+  //   format: 'Downloading [{bar}] {percentage}% | ETA: {eta}s | {value}/{total} bytes',
+  // });
 
-  try {
-    if (buffer) {
-      // content-lengthがある場合
-      for await (const chunk of res.body) {
-        buffer.set(chunk, downloadedBytes);
-        downloadedBytes += chunk.byteLength;
-        bar.update(downloadedBytes);
-      }
-    } else {
-      for await (const chunk of res.body) {
-        chunks.push(chunk);
-        downloadedBytes += chunk.byteLength;
-        bar.setTotal(downloadedBytes);
-        bar.update(downloadedBytes);
-      }
-    }
-  } finally {
-    bar.stop();
-  }
+  // bar.start(totalBytes > 0 ? totalBytes : 1, 0);
 
-  // If we had a content-length, we filled the buffer directly
-  if (buffer) return buffer;
+  // try {
+  //   if (buffer) {
+  //     // content-lengthがある場合
+  //     for await (const chunk of res.body) {
+  //       buffer.set(chunk, downloadedBytes);
+  //       downloadedBytes += chunk.byteLength;
+  //       bar.update(downloadedBytes);
+  //     }
+  //   } else {
+  //     for await (const chunk of res.body) {
+  //       chunks.push(chunk);
+  //       downloadedBytes += chunk.byteLength;
+  //       bar.setTotal(downloadedBytes);
+  //       bar.update(downloadedBytes);
+  //     }
+  //   }
+  // } finally {
+  //   bar.stop();
+  // }
 
-  const result = new Uint8Array(downloadedBytes);
-  let offset = 0;
-  for (const chunk of chunks) {
-    result.set(chunk, offset);
-    offset += chunk.byteLength;
-  }
-  return result;
+  // // If we had a content-length, we filled the buffer directly
+  // if (buffer) return buffer;
+
+  // const result = new Uint8Array(downloadedBytes);
+  // let offset = 0;
+  // for (const chunk of chunks) {
+  //   result.set(chunk, offset);
+  //   offset += chunk.byteLength;
+  // }
+  // return result;
 }
 
 async function extractArchive(data: Uint8Array, destination: string, dryRun?: boolean) {

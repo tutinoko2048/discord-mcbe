@@ -64,6 +64,7 @@ jobs:
             --generate-notes \
             --target main \
             --title "discord-mcbe v$VERSION" \
+            --draft \
             $(if [ "$NPM_TAG" != "latest" ]; then echo "--prerelease"; fi) \
             .release-temp/metadata.json \
             .release-temp/discord-mcbe-v$VERSION.tar.gz

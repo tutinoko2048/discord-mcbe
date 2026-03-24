@@ -58,7 +58,7 @@ async function readCurrentVersion() {
 }
 
 async function updateAddonVersion(version: string) {
-  for (const addonRelativePath of addons) {
+  await Promise.all(addons.map(async (addonRelativePath) => {
     const addonDir = join(__dirname, addonRelativePath);
     const manifestPath = join(addonDir, 'manifest.json');
     const manifestFile = Bun.file(manifestPath);
@@ -70,6 +70,6 @@ async function updateAddonVersion(version: string) {
     await $`vp fmt 'manifest.json'`.cwd(addonDir).quiet();
 
     console.log(`- updated manifest.json: ${addonDir}`);
-  }
+  }));
 }
 
