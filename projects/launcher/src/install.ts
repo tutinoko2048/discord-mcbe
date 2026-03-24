@@ -144,6 +144,8 @@ async function extractArchive(data: Uint8Array, destination: string, dryRun?: bo
 }
 
 export function shouldUpdate(current: string, target: string): boolean {
+  if (current === '0.0.0') return true;
+
   // プレリリース同士、または安定版同士のみ更新判定を行う
   const currentIsPrerelease = current.split('+', 1)[0]!.includes('-');
   const targetIsPrerelease = target.split('+', 1)[0]!.includes('-');
