@@ -36,6 +36,8 @@ for (const platform of platforms) {
     await fs.cp('assets/scripts', join(targetDir, 'scripts'), { recursive: true });
     // create .env from .env.example
     await fs.copyFile('../../devapp/.env.example', join(targetDir, '.env'));
+    // copy .vscode
+    await fs.cp('assets/.vscode', join(targetDir, '.vscode'), { recursive: true });
 
     // compile with bun
     const startAt = Date.now();

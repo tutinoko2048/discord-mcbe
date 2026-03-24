@@ -2,10 +2,13 @@ import z from 'zod';
 
 export const envSchema = z.object({
   DISCORD_TOKEN: z.string()
+    .min(1)
     .describe('Token of the bot'),
   GUILD_ID: z.string()
+    .min(1)
     .describe('ID of the guild that use the bot'),
   CHANNEL_ID: z.string()
+    .min(1)
     .describe('ID of the channel that messages will be sent'),
   SOCKET_PORT: z.coerce.number().int().positive()
     .optional()

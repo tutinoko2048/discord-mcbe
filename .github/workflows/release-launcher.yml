@@ -41,7 +41,7 @@ jobs:
           cd projects/launcher/build
 
           for platform in windows-x64 linux-x64 linux-arm64 darwin-x64 darwin-arm64; do
-            zip -r "$ASSET_DIR/discord-mcbe-$platform-v$LAUNCHER_VERSION.zip" "$platform"
+            (cd "$platform" && zip -r "$ASSET_DIR/discord-mcbe-$platform-v$LAUNCHER_VERSION.zip" .)
           done
 
           echo "LAUNCHER_ASSET_DIR=$ASSET_DIR" >> "$GITHUB_ENV"
@@ -55,8 +55,8 @@ jobs:
             --target main \
             --title "launcher v$LAUNCHER_VERSION" \
             --draft \
-            "$LAUNCHER_ASSET_DIR/discord-mcbe-windows-x64-v$LAUNCHER_VERSION.zip" \
-            "$LAUNCHER_ASSET_DIR/discord-mcbe-linux-x64-v$LAUNCHER_VERSION.zip" \
-            "$LAUNCHER_ASSET_DIR/discord-mcbe-linux-arm64-v$LAUNCHER_VERSION.zip" \
+            "$LAUNCHER_ASSET_DIR/discord-mcbe-darwin-arm64-v$LAUNCHER_VERSION.zip" \
             "$LAUNCHER_ASSET_DIR/discord-mcbe-darwin-x64-v$LAUNCHER_VERSION.zip" \
-            "$LAUNCHER_ASSET_DIR/discord-mcbe-darwin-arm64-v$LAUNCHER_VERSION.zip"
+            "$LAUNCHER_ASSET_DIR/discord-mcbe-linux-arm64-v$LAUNCHER_VERSION.zip" \
+            "$LAUNCHER_ASSET_DIR/discord-mcbe-linux-x64-v$LAUNCHER_VERSION.zip" \
+            "$LAUNCHER_ASSET_DIR/discord-mcbe-windows-x64-v$LAUNCHER_VERSION.zip"
