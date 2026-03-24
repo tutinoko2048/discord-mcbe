@@ -5,14 +5,16 @@ import { install, InstallOptions } from './install';
 const program = new Command();
 program.version(packageJson.version, '-v, --version', 'Show version number');
 
+program.argument('[version]', 'Version to install (e.g. "1.2.3" or "beta"). If not specified, the latest version will be installed.');
 program.option('--dry-run', 'Perform a dry run without making any changes');
 program.option('-c, --cwd <path>', 'Set the working directory');
-program.option('-i, --interactive', 'Run in interactive mode');
-program.option('-t, --tag <version>', 'Install a specific version (e.g. "1.2.3" or "beta")');
+program.option('--no-interactive', 'Run in non-interactive mode');
+program.option('-f, --force', 'Force installation even if the current version is up to date');
 
 program.parse();
 
 const options = program.opts<InstallOptions>();
+options.version = program.args[0];
 
 try {
   await install(options);

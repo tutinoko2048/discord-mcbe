@@ -1,24 +1,52 @@
-import { $ } from 'bun';
+import { $, semver } from 'bun';
 import { join, resolve } from 'node:path';
+import { exists } from 'fs/promises';
+import confirm from '@inquirer/confirm';
 // import { SingleBar } from 'cli-progress';
 import { askVersion, resolveVersion } from './version';
 import { isCompiled } from './env';
+
+const VERSION_FILE_NAME = '.VERSION';
 
 export interface InstallOptions {
   cwd?: string;
   dryRun?: boolean;
   interactive?: boolean;
-  tag?: string;
+  version?: string;
+  force?: boolean;
 }
 
 export async function install(options: InstallOptions) {
   const cwd = options.cwd ? resolve(options.cwd) : process.cwd();
-  console.debug('cwd:', cwd);
-  console.debug('install options', options);
 
   const appDir = join(cwd, 'app');
+  const versionFilePath = join(appDir, VERSION_FILE_NAME);
 
-  const resolved = options.interactive ? await askVersion() : await resolveVersion(options.tag ?? 'latest');
+  let currentVersion = '0.0.0';
+  if (await exists(versionFilePath)) {
+    currentVersion = (await Bun.file(versionFilePath).text()).trim();
+  }
+
+  const resolved =
+    options.interactive && !options.version
+      ? await askVersion()
+      : await resolveVersion(options.version ?? 'latest');
+
+  if (!shouldUpdate(currentVersion, resolved.version)) {
+    console.log(`Current version (${currentVersion}) is up to date. No update needed.`);
+
+    if (options.version && options.force) {
+      console.log('Force option is enabled, proceeding with installation...');
+    } else if (options.interactive) {
+      const proceed = await confirmUpdate(currentVersion, resolved.version);
+      if (!proceed) {
+        console.log('Installation cancelled by user.');
+        return;
+      }
+    } else {
+      return;
+    }
+  }
 
   console.log(`Downloading version ${resolved.version} from ${resolved.assetFileUrl}`);
   const downloadedData = await downloadAssetFile(resolved.assetFileUrl);
@@ -112,5 +140,35 @@ async function extractArchive(data: Uint8Array, destination: string, dryRun?: bo
   } catch (error) {
     console.error('Failed to extract archive:', error);
     throw error;
+  }
+}
+
+export function shouldUpdate(current: string, target: string): boolean {
+  // プレリリース同士、または安定版同士のみ更新判定を行う
+  const currentIsPrerelease = current.split('+', 1)[0]!.includes('-');
+  const targetIsPrerelease = target.split('+', 1)[0]!.includes('-');
+  if (currentIsPrerelease !== targetIsPrerelease) {
+    return false;
+  }
+
+  return semver.order(current, target) < 0;
+}
+
+async function confirmUpdate(current: string, target: string): Promise<boolean> {
+  try {
+    let message = `Do you want to change version to ${target}?`;
+    if (current === target) {
+      message = 'Do you want to reinstall it?';
+    }
+
+    const proceed = await confirm({
+      message,
+      default: false,
+    });
+    return proceed;
+  } catch (error) {
+    if (!Error.isError(error)) throw error;
+    if (error.name !== 'ExitPromptError') throw error;
+    process.exit(1);
   }
 }
