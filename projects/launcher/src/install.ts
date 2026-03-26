@@ -48,8 +48,8 @@ export async function install(options: InstallOptions) {
     }
   }
 
-  console.log(`Downloading version ${resolved.version} from ${resolved.assetFileUrl}`);
-  const downloadedData = await downloadAssetFile(resolved.assetFileUrl);
+  console.log(`Downloading version ${resolved.version} from ${resolved.assetsFileUrl}`);
+  const downloadedData = await downloadAssetFile(resolved.assetsFileUrl);
   console.log('Download complete.');
 
   await extractArchive(downloadedData, appDir, options.dryRun);

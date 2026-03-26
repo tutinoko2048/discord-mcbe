@@ -37,7 +37,7 @@ const archive = new Bun.Archive({
   [APP_ENTRY_NAME]: await Bun.file(join(ASSETS_DIR, APP_ENTRY_NAME)).text(), // Bun.fileをそのまま渡せるはずなのに機能しなかったため
   '.VERSION': version,
 }, { compress: 'gzip' });
-const archivePath = join(TARGET_DIR, `discord-mcbe-v${version}.tar.gz`);
+const archivePath = join(TARGET_DIR, '_assets.tar.gz');
 await Bun.write(archivePath, archive);
 console.log(`Created release assets archive at ${archivePath}`);
 
@@ -46,7 +46,7 @@ const metadata: ReleaseMetadata = {
   minimumLauncherVersion: MINIMUM_LAUNCHER_VERSION,
 };
 
-const versionJsonPath = join(TARGET_DIR, "metadata.json");
+const versionJsonPath = join(TARGET_DIR, "_metadata.json");
 await writeFile(versionJsonPath, JSON.stringify(metadata, null, 2));
 
-console.log(`Created metadata.json for version ${version} at ${versionJsonPath}`);
+console.log(`Created _metadata.json for version ${version} at ${versionJsonPath}`);

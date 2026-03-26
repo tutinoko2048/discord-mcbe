@@ -83,8 +83,8 @@ jobs:
             --title "discord-mcbe v$VERSION" \
             --draft \
             $(if [ "$NPM_TAG" != "latest" ]; then echo "--prerelease"; fi) \
-            .release-temp/metadata.json \
-            .release-temp/discord-mcbe-v$VERSION.tar.gz \
+            .release-temp/_metadata.json \
+            .release-temp/_assets.tar.gz \
             .release-temp/discord-mcbe-bds-v$VERSION.zip \
             .release-temp/discord-mcbe-bds-v$VERSION.mcpack \
             .release-temp/discord-mcbe-local-v$VERSION.zip \

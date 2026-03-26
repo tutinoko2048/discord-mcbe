@@ -31,7 +31,7 @@ interface GitHubRelease {
 
 export interface Release {
   version: string;
-  assetFileUrl: string;
+  assetsFileUrl: string;
   metadataFileUrl: string;
   isBeta: boolean;
 }
@@ -60,13 +60,13 @@ async function fetchReleaseList(): Promise<ReleaseList> {
     if (release.tag_name.startsWith('launcher@v')) continue;
 
     const version = release.tag_name.replace(/^v/, '');
-    const assetFile = release.assets.find((a) => a.name.startsWith('discord-mcbe-'));
-    const metadataFile = release.assets.find((a) => a.name.endsWith('.json'));
-    if (!assetFile || !metadataFile) continue;
+    const assetsFile = release.assets.find((a) => a.name === '_assets.tar.gz');
+    const metadataFile = release.assets.find((a) => a.name === '_metadata.json');
+    if (!assetsFile || !metadataFile) continue;
 
     releases.push({
       version,
-      assetFileUrl: assetFile.browser_download_url,
+      assetsFileUrl: assetsFile.browser_download_url,
       metadataFileUrl: metadataFile.browser_download_url,
       isBeta: release.prerelease,
     });
