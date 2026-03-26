@@ -15,11 +15,9 @@ const defaultEnv: ExtractOptional<Env> = {
 };
 
 const defaultConfig: MergedConfig = {
-  app: {
-    language: 'en_US',
-    timezone_offset: 0,
-    scripts_entry: '',
-  },
+  language: 'en_US',
+  timezone_offset: 0,
+  scripts_entry: '',
   bot: {
     command_role_id: [],
     send_ready: true,
@@ -29,6 +27,7 @@ const defaultConfig: MergedConfig = {
   bridge: {
     disable_encryption: false,
   },
+  translationOverrides: {},
   debug: false,
 };
 
@@ -59,7 +58,7 @@ export class Application extends ExtendedEmitter<ApplicationEvents> {
 
     this.config = loadConfig(defaultConfig);
 
-    initializeLang(this.config.app.language);
+    initializeLang(this.config.language, this.config.translationOverrides as Record<string, string>);
 
     this.logger = new Logger('App', this.config);
 

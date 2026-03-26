@@ -1,16 +1,5 @@
 import { z } from 'zod';
-
-const appSchema = z.object({
-  language: z.string()
-    .optional()
-    .describe('Language (File name in `lang` folder)'),
-  timezone_offset: z.number().int()
-    .optional()
-    .describe('Timezone used to display the time'),
-  scripts_entry: z.string()
-    .optional()
-    .describe('The entry file for custom scripts'),
-});
+import { getAvailableLanguages, getDefaultLocalizationKeys } from '../util/i18n';
 
 const botSchema = z.object({
   command_role_id: z.array(z.string())
@@ -34,9 +23,19 @@ const bridgeSchema = z.object({
 });
 
 export const configSchema = z.object({
-  app: appSchema,
+  language: z.enum(getAvailableLanguages())
+    .optional()
+    .describe('Language'),
+  timezone_offset: z.number().int()
+    .optional()
+    .describe('Timezone used to display the time'),
+  scripts_entry: z.string()
+    .optional()
+    .describe('The entry file for custom scripts'),
   bot: botSchema,
   bridge: bridgeSchema,
+  translationOverrides: z.partialRecord(z.enum(getDefaultLocalizationKeys()), z.string())
+    .describe('Override specific translations with custom strings.'),
   debug: z.boolean()
     .optional()
     .describe('debug.'),

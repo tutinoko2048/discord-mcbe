@@ -13,7 +13,7 @@ export class ScriptHandler {
   }
 
   async start() {
-    const entry = this.app.config.app.scripts_entry;
+    const entry = this.app.config.scripts_entry;
     if (!entry) return;
     const entryPath = path.resolve(ROOT_DIR, entry);
     this.logger.debug(`Loading script from "${entryPath}"...`);

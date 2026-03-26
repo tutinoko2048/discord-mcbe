@@ -1,9 +1,7 @@
 {
-  "app": {
-    "language": "ja",
-    "timezone_offset": 9,
-    "scripts_entry": "scripts/main.js"
-  },
+  "language": "ja",
+  "timezone_offset": 9,
+  "scripts_entry": "scripts/main.js",
   "bot": {
     "command_role_id": [],
     "send_ready": true,
@@ -13,5 +11,6 @@
   "bridge": {
     "disable_encryption": false
   },
+  "translationOverrides": {},
   "debug": false
 }

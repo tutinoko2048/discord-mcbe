@@ -18,7 +18,7 @@ if (!fallbackTemplates)
 
 let templates: Record<string, string> | undefined;
 
-export function initialize(lang: string) {
+export function initialize(lang: string, overrides: Record<string, string>) {
   // load lang from internal asset
   templates = templateMap.get(lang as Locale);
   if (!templates) {
@@ -26,7 +26,12 @@ export function initialize(lang: string) {
     templates = fallbackTemplates;
   }
 
-  // TODO: load lang from external override file
+  // Apply translation overrides
+  for (const [key, value] of Object.entries(overrides)) {
+    if (templates) {
+      templates[key] = value;
+    }
+  }
 }
 
 /**
@@ -71,4 +76,12 @@ function replaceTemplates(text: string, values: Arg[]): string {
     result = result.replace(new RegExp(`%${index}`, 'g'), value.toString());
   }
   return result;
+}
+
+export function getDefaultLocalizationKeys(): string[] {
+  return Object.keys(fallbackTemplates);
+}
+
+export function getAvailableLanguages(): string[] {
+  return Array.from(templateMap.keys());
 }

@@ -2,25 +2,23 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "properties": {
-    "app": {
-      "type": "object",
-      "properties": {
-        "language": {
-          "description": "Language (File name in `lang` folder)",
-          "type": "string"
-        },
-        "timezone_offset": {
-          "description": "Timezone used to display the time",
-          "type": "integer",
-          "minimum": -9007199254740991,
-          "maximum": 9007199254740991
-        },
-        "scripts_entry": {
-          "description": "The entry file for custom scripts",
-          "type": "string"
-        }
-      },
-      "additionalProperties": false
+    "language": {
+      "description": "Language",
+      "type": "string",
+      "enum": [
+        "en-US",
+        "ja"
+      ]
+    },
+    "timezone_offset": {
+      "description": "Timezone used to display the time",
+      "type": "integer",
+      "minimum": -9007199254740991,
+      "maximum": 9007199254740991
+    },
+    "scripts_entry": {
+      "description": "The entry file for custom scripts",
+      "type": "string"
     },
     "bot": {
       "type": "object",
@@ -59,15 +57,77 @@
       },
       "additionalProperties": false
     },
+    "translationOverrides": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "enum": [
+          "minecraft.connect",
+          "minecraft.message",
+          "minecraft.message.withAttachments",
+          "minecraft.reply",
+          "minecraft.reply.withAttachments",
+          "discord.ready",
+          "discord.connect",
+          "discord.disconnect",
+          "discord.chat",
+          "discord.chat.multipleWorlds",
+          "discord.join",
+          "discord.leave",
+          "discord.panel.uptime",
+          "command.error.catch",
+          "command.error.noworlds",
+          "command.error.nopermission",
+          "command.ping.description",
+          "command.help.commands",
+          "command.list.description",
+          "command.list.silent.description",
+          "command.list.world.description",
+          "command.list.players",
+          "command.panel.description",
+          "command.panel.create.description",
+          "command.panel.create.success",
+          "command.panel.show.description",
+          "command.panel.show.notFound",
+          "command.command.description",
+          "command.command.command.description",
+          "command.command.raw.description",
+          "command.command.silent.description",
+          "command.command.world.description",
+          "command.command.sending",
+          "console.login",
+          "console.socket.ready",
+          "console.socket.command",
+          "console.script.ready",
+          "console.connect",
+          "console.disconnect",
+          "console.join",
+          "console.leave",
+          "console.message",
+          "console.message.withAttachments",
+          "console.reply",
+          "console.reply.withAttachments",
+          "console.command",
+          "console.chat",
+          "common.duration",
+          "common.noOnlineWorlds",
+          "common.worldNotFound"
+        ]
+      },
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Override specific translations with custom strings."
+    },
     "debug": {
       "description": "debug.",
       "type": "boolean"
     }
   },
   "required": [
-    "app",
     "bot",
-    "bridge"
+    "bridge",
+    "translationOverrides"
   ],
   "additionalProperties": false
 }
