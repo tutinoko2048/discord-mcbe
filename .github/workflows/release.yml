@@ -1,7 +1,6 @@
 name: Release App
 
-on:
-  workflow_dispatch
+on: workflow_dispatch
 
 permissions:
   contents: write
@@ -16,7 +15,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 24
-          cache: 'pnpm'
+          cache: "pnpm"
       - uses: oven-sh/setup-bun@v2
 
       - name: Install Dependencies
@@ -56,6 +55,24 @@ jobs:
       - name: Create release assets
         run: pnpm run create-release-assets ${VERSION}
 
+      - name: Create mcpack (BDS)
+        working-directory: ./projects/addon-bds
+        run: |
+          cp ../../LICENSE ./
+          zip "discord-mcbe-bds-v$VERSION.zip" manifest.json scripts LICENSE
+          cp "discord-mcbe-bds-v$VERSION.zip" "discord-mcbe-bds-v$VERSION.mcpack"
+          mv "discord-mcbe-bds-v$VERSION.zip" ../../.release-temp/
+          mv "discord-mcbe-bds-v$VERSION.mcpack" ../../.release-temp/
+
+      - name: Create mcpack (Local)
+        working-directory: ./projects/addon-local
+        run: |
+          cp ../../LICENSE ./
+          zip "discord-mcbe-local-v$VERSION.zip" manifest.json scripts LICENSE
+          cp "discord-mcbe-local-v$VERSION.zip" "discord-mcbe-local-v$VERSION.mcpack"
+          mv "discord-mcbe-local-v$VERSION.zip" ../../.release-temp/
+          mv "discord-mcbe-local-v$VERSION.mcpack" ../../.release-temp/
+
       - name: Create GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -67,4 +84,8 @@ jobs:
             --draft \
             $(if [ "$NPM_TAG" != "latest" ]; then echo "--prerelease"; fi) \
             .release-temp/metadata.json \
-            .release-temp/discord-mcbe-v$VERSION.tar.gz
+            .release-temp/discord-mcbe-v$VERSION.tar.gz \
+            .release-temp/discord-mcbe-bds-v$VERSION.zip \
+            .release-temp/discord-mcbe-bds-v$VERSION.mcpack \
+            .release-temp/discord-mcbe-local-v$VERSION.zip \
+            .release-temp/discord-mcbe-local-v$VERSION.mcpack

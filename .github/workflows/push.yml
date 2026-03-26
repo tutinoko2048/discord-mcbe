@@ -6,13 +6,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-
       - uses: pnpm/action-setup@v4
-
       - uses: actions/setup-node@v6
         with:
           node-version: 24
-          cache: 'pnpm'
+          cache: "pnpm"
 
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
@@ -20,5 +18,5 @@ jobs:
       - name: Build
         run: pnpm run build
 
-      - name: Linter
+      - name: Check
         run: pnpm run check
