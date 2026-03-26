@@ -53,7 +53,7 @@ jobs:
           gh release create "launcher@v$LAUNCHER_VERSION" \
             --generate-notes \
             --target main \
-            --title "launcher v$LAUNCHER_VERSION" \
+            --title "discord-mcbe launcher v$LAUNCHER_VERSION" \
             --draft \
             "$LAUNCHER_ASSET_DIR/discord-mcbe-darwin-arm64-v$LAUNCHER_VERSION.zip" \
             "$LAUNCHER_ASSET_DIR/discord-mcbe-darwin-x64-v$LAUNCHER_VERSION.zip" \

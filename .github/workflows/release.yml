@@ -59,7 +59,7 @@ jobs:
         working-directory: ./projects/addon-bds
         run: |
           cp ../../LICENSE ./
-          zip "discord-mcbe-bds-v$VERSION.zip" manifest.json scripts LICENSE
+          zip -r "discord-mcbe-bds-v$VERSION.zip" manifest.json scripts LICENSE pack_icon.png
           cp "discord-mcbe-bds-v$VERSION.zip" "discord-mcbe-bds-v$VERSION.mcpack"
           mv "discord-mcbe-bds-v$VERSION.zip" ../../.release-temp/
           mv "discord-mcbe-bds-v$VERSION.mcpack" ../../.release-temp/
@@ -68,7 +68,7 @@ jobs:
         working-directory: ./projects/addon-local
         run: |
           cp ../../LICENSE ./
-          zip "discord-mcbe-local-v$VERSION.zip" manifest.json scripts LICENSE
+          zip -r "discord-mcbe-local-v$VERSION.zip" manifest.json scripts LICENSE pack_icon.png
           cp "discord-mcbe-local-v$VERSION.zip" "discord-mcbe-local-v$VERSION.mcpack"
           mv "discord-mcbe-local-v$VERSION.zip" ../../.release-temp/
           mv "discord-mcbe-local-v$VERSION.mcpack" ../../.release-temp/
