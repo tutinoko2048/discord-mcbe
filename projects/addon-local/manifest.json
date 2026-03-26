@@ -4,7 +4,7 @@
     "name": "discord-mcbe local client",
     "description": "pack.description",
     "uuid": "842dcb2d-8154-41f8-8333-31e23b123f4d",
-    "version": "4.0.0-beta.2",
+    "version": "4.0.0-beta.3",
     "min_engine_version": [1, 21, 100]
   },
   "modules": [
