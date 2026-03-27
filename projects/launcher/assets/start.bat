@@ -3,6 +3,11 @@ setlocal
 
 cd /d "%~dp0"
 
+set "LAUNCHER_VERSION="
+for /f "usebackq delims=" %%i in (`updater.exe --version 2^>nul`) do (
+    if not defined LAUNCHER_VERSION set "LAUNCHER_VERSION=%%i"
+)
+
 rem Check if app folder exists
 if not exist "app" (
     echo App folder not found. Running updater...
@@ -21,6 +26,7 @@ if not exist "app" (
 )
 
 set BUN_BE_BUN=1
+set "LAUNCHER_VERSION=%LAUNCHER_VERSION%"
 updater.exe run app\discord-mcbe.js
 
 if %ERRORLEVEL% NEQ 0 (
