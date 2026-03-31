@@ -6,7 +6,6 @@ export default defineConfig(
   {
     entry: './src/index.ts',
     format: ['esm'],
-    noExternal: ['@script-bridge/protocol'], // 実行時のエラー回避のため
   },
   isDev,
 );

@@ -39,17 +39,17 @@
     "@script-bridge/protocol": "catalog:",
     "@script-bridge/server": "catalog:",
     "colorette": "^2.0.20",
-    "discord.js": "^14.25.1",
+    "discord.js": "^14.26.0",
     "dotlang": "^1.1.1",
     "jsonc": "^2.0.0",
-    "moment-timezone": "^0.5.48",
-    "socket-be": "^2.6.0-beta.0",
+    "moment-timezone": "^0.6.1",
+    "socket-be": "^2.6.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
     "@discord-mcbe/internal-config": "workspace:*",
     "bun-types": "catalog:",
-    "oh-my-logo": "^0.2.1"
+    "oh-my-logo": "^0.4.0"
   },
   "engines": {
     "node": ">=24.0.0"

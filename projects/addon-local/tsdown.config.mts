@@ -6,5 +6,9 @@ export default defineConfig({
   format: 'esm',
   dts: false,
   sourcemap: true,
-  noExternal: ['@discord-mcbe/client/local'],
+  deps: {
+    alwaysBundle: ['@discord-mcbe/client/local'],
+    onlyBundle: false,
+  },
+  outExtensions: () => ({ js: '.js' }),
 });

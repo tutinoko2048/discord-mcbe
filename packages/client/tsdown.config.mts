@@ -11,6 +11,7 @@ export default defineConfig(
     define: {
       __DEV__: String(isDev),
     },
+    exports: true,
   },
   isDev,
 );

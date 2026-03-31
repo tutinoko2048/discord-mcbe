@@ -1,14 +1,18 @@
-import { defineConfig as tsdownDefineConfig, type Options } from 'tsdown';
+import { defineConfig as tsdownDefineConfig, type DepsConfig, type UserConfig } from 'tsdown';
+import { deepMerge } from '../utils.mts';
 
-export const defaultConfig: Options = {
+const defaultDepsConfig: DepsConfig = {
+  neverBundle: /^@minecraft\/(?!vanilla-data|math)[\w-/]+$/,
+};
+
+export const defaultConfig: UserConfig = {
   entry: 'src/index.ts',
   outDir: 'dist',
-  external: [/^@minecraft\/(?!vanilla-data|math)[\w-\/]+$/],
   tsconfig: true,
   dts: true,
 };
 
-export const sourceMapConfig: Options = {
+export const sourceMapConfig: UserConfig = {
   sourcemap: true,
   dts: {
     compilerOptions: {
@@ -17,11 +21,12 @@ export const sourceMapConfig: Options = {
   },
 };
 
-export function defineConfig(options: Options, emitSourceMap?: boolean) {
+export function defineConfig(options: UserConfig, emitSourceMap?: boolean) {
   return tsdownDefineConfig((cliOptions) => ({
     ...defaultConfig,
-    ...(emitSourceMap ? sourceMapConfig : {}),
+    ...(emitSourceMap && sourceMapConfig),
     ...options,
     ...cliOptions,
+    deps: deepMerge(defaultDepsConfig, { ...options.deps, ...cliOptions.deps }),
   }));
 }

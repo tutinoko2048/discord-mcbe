@@ -5,6 +5,7 @@ const isDev = process.env.CI !== 'true';
 export default defineConfig(
   {
     format: ['esm', 'cjs'],
+    exports: true,
   },
   isDev,
 );

@@ -11,14 +11,9 @@
   ],
   "type": "module",
   "exports": {
-    "./bds": {
-      "default": "./dist/bds.js",
-      "types": "./dist/bds.d.ts"
-    },
-    "./local": {
-      "default": "./dist/local.js",
-      "types": "./dist/local.d.ts"
-    }
+    "./bds": "./dist/bds.mjs",
+    "./local": "./dist/local.mjs",
+    "./package.json": "./package.json"
   },
   "scripts": {
     "build": "tsdown",
