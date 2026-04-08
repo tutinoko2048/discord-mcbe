@@ -16,10 +16,6 @@
       "minimum": -9007199254740991,
       "maximum": 9007199254740991
     },
-    "scripts_entry": {
-      "description": "The entry file for custom scripts",
-      "type": "string"
-    },
     "bot": {
       "type": "object",
       "properties": {
@@ -55,6 +51,19 @@
           "type": "boolean"
         }
       },
+      "additionalProperties": false
+    },
+    "script": {
+      "type": "object",
+      "properties": {
+        "entry": {
+          "type": "string",
+          "description": "The entry file for custom scripts"
+        }
+      },
+      "required": [
+        "entry"
+      ],
       "additionalProperties": false
     },
     "translationOverrides": {

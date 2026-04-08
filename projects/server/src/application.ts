@@ -6,18 +6,16 @@ import { EventHandler, CommandLineHandler, ScriptHandler } from './handlers';
 import { Logger, PropertyManager, loadConfig, initialize as initializeLang, loadEnv } from './util';
 import { StartupEvent } from './events';
 
-import type { ApplicationEvents, Env } from './types';
-import type { MergedConfig } from './util';
+import type { ApplicationEvents, Config, Env } from './types';
 
 const defaultEnv: ExtractOptional<Env> = {
-  SOCKET_PORT: 8000,
+  SOCKET_PORT: 3063,
   BRIDGE_PORT: 23191,
 };
 
-const defaultConfig: MergedConfig = {
-  language: 'en_US',
+const defaultConfig: Config = {
+  language: 'ja',
   timezone_offset: 0,
-  scripts_entry: '',
   bot: {
     command_role_id: [],
     send_ready: true,
@@ -27,6 +25,9 @@ const defaultConfig: MergedConfig = {
   bridge: {
     disable_encryption: false,
   },
+  script: {
+    entry: 'scripts/main.js',
+  },
   translationOverrides: {},
   debug: false,
 };
@@ -34,7 +35,7 @@ const defaultConfig: MergedConfig = {
 export class Application extends ExtendedEmitter<ApplicationEvents> {
   public readonly version: string;
   public readonly env: Required<Env>;
-  public readonly config: MergedConfig;
+  public readonly config: Config;
   public readonly logger: Logger;
   public readonly properties: PropertyManager;
   public readonly bot: DiscordBot;

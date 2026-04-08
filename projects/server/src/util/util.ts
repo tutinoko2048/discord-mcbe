@@ -9,7 +9,6 @@ import { configSchema, envSchema, type Config, type Env } from '../types';
 import type { ExtractOptional } from '@discord-mcbe/shared';
 
 import logo from '../assets/logo.json' with { type: 'json' };
-import configJson from '../assets/config.json' with { type: 'json' };
 
 export function renderLogo() {
   const decodedLogo = Buffer.from(logo.data, 'base64').toString('utf-8');
@@ -18,53 +17,71 @@ export function renderLogo() {
 
 export const CONFIG_FILE = path.join(ROOT_DIR, 'config.json');
 
-export type MergedConfig = {
-  [K in keyof Config]-?: ExtractOptional<Config[K]>;
-};
-
-type DefaultConfig = MergedConfig;
-
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-function setMerged<K extends keyof Config>(
-  merged: MergedConfig,
-  key: K,
-  value: Config[K],
-  defaultValue: DefaultConfig[K],
-): void {
-  if (isPlainObject(value) && isPlainObject(defaultValue)) {
-    const valueObj = value as Record<string, unknown>;
+function cloneValue<T>(value: T): T {
+  return structuredClone(value);
+}
+
+function deepMergeValue(
+  defaultValue: unknown,
+  userValue: unknown,
+  pathSegments: string[],
+  unknownKeys: string[],
+): unknown {
+  if (userValue === undefined) {
+    return cloneValue(defaultValue);
+  }
+
+  if (isPlainObject(defaultValue)) {
+    if (!isPlainObject(userValue)) {
+      return userValue;
+    }
+
     const defaultObj = defaultValue as Record<string, unknown>;
-    merged[key] = { ...defaultObj, ...valueObj } as MergedConfig[K];
-    return;
+    const userObj = userValue as Record<string, unknown>;
+    const defaultKeys = Object.keys(defaultObj);
+
+    if (defaultKeys.length === 0) {
+      return cloneValue(userObj);
+    }
+
+    const mergedObj: Record<string, unknown> = {};
+    for (const key of defaultKeys) {
+      mergedObj[key] = deepMergeValue(defaultObj[key], userObj[key], [...pathSegments, key], unknownKeys);
+    }
+
+    for (const key of Object.keys(userObj)) {
+      if (!(key in defaultObj)) {
+        unknownKeys.push([...pathSegments, key].join('.'));
+      }
+    }
+
+    return mergedObj;
   }
 
-  merged[key] = value as MergedConfig[K];
+  if (Array.isArray(defaultValue)) {
+    return Array.isArray(userValue) ? cloneValue(userValue) : userValue;
+  }
+
+  return userValue;
 }
 
-export function mergeConfig(defaultConfig: DefaultConfig, parsedConfig: Config): MergedConfig {
-  const merged: MergedConfig = { ...defaultConfig };
-  for (const key of Object.keys(parsedConfig) as Array<keyof Config>) {
-    const value = parsedConfig[key];
-    if (value === undefined) continue;
-
-    const defaultValue = defaultConfig[key];
-    setMerged(merged, key, value, defaultValue);
-  }
-  return merged;
-}
-
-export function loadConfig(defaultConfig: DefaultConfig): MergedConfig {
-  if (!fs.existsSync(CONFIG_FILE)) {
-    console.info(dim('[!] config.json not found. Creating default config.json...'));
-    fs.writeFileSync(CONFIG_FILE, JSON.stringify(configJson, null, 2), 'utf-8');
+export function mergeConfig(defaultConfig: Config, rawConfig: unknown): Config {
+  if (!isPlainObject(rawConfig)) {
+    return cloneValue(defaultConfig);
   }
 
-  const configData: Config = jsonc.parse(fs.readFileSync(CONFIG_FILE, 'utf-8'));
+  const unknownKeys: string[] = [];
+  const merged = deepMergeValue(defaultConfig, rawConfig, [], unknownKeys);
 
-  const parsedConfig = configSchema.safeParse(configData);
+  if (unknownKeys.length > 0) {
+    console.warn(dim(`[!] Unknown config keys were ignored: ${unknownKeys.join(', ')}`));
+  }
+
+  const parsedConfig = configSchema.safeParse(merged);
   if (!parsedConfig.success) {
     console.error('-'.repeat(24));
     console.error('Invalid config.json:');
@@ -73,7 +90,18 @@ export function loadConfig(defaultConfig: DefaultConfig): MergedConfig {
     process.exit(1);
   }
 
-  return mergeConfig(defaultConfig, parsedConfig.data);
+  return parsedConfig.data;
+}
+
+export function loadConfig(defaultConfig: Config): Config {
+  if (!fs.existsSync(CONFIG_FILE)) {
+    console.info(dim('[!] config.json not found. Creating default config.json...'));
+    fs.writeFileSync(CONFIG_FILE, JSON.stringify(defaultConfig, null, 2), 'utf-8');
+  }
+
+  const configData: unknown = jsonc.parse(fs.readFileSync(CONFIG_FILE, 'utf-8'));
+
+  return mergeConfig(defaultConfig, configData);
 }
 
 export function loadEnv(defaultEnv: ExtractOptional<Env>): Required<Env> {

@@ -13,14 +13,14 @@ export class ScriptHandler {
   }
 
   async start() {
-    const entry = this.app.config.scripts_entry;
-    if (!entry) return;
-    const entryPath = path.resolve(ROOT_DIR, entry);
+    const scriptConfig = this.app.config.script;
+    if (!scriptConfig) return;
+    const entryPath = path.resolve(ROOT_DIR, scriptConfig.entry);
     this.logger.debug(`Loading script from "${entryPath}"...`);
 
     const exists = fs.existsSync(entryPath);
     if (!exists) {
-      this.logger.error(`Failed to load script:\nEntrypoint "${entry}" not found.`);
+      this.logger.error(`Failed to load script:\nEntrypoint "${scriptConfig.entry}" not found.`);
       return;
     }
 
