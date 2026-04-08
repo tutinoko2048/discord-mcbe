@@ -1,4 +1,4 @@
-> [README_en.md](README_en.md) (English)is here
+[日本語](./README_ja.md) | English
 
 # discord-mcbe
   
@@ -7,125 +7,119 @@
   <img src="https://img.shields.io/github/v/release/tutinoko2048/discord-mcbe?display_name=tag&style=for-the-badge">
 </a>
   
-MinecraftBEでdiscordとチャットを繋ぐことができるDiscord Botです。バニラ環境で動きます。  
+This is a discord bot that can connect discord and chat on MinecraftBE.  
 https://youtu.be/BEv4oozeQKU  
   
 <img src="docs/minecraft.jpeg" width="100%" alt="minecraft"></br>
 <img src="docs/discord.jpeg" width="100%" alt="discord"></br>
   
-[Discord サポートサーバー](https://discord.gg/XGR8FcCeFc)
+[Discord Support Server](https://discord.gg/XGR8FcCeFc)
 
-## 動作環境
-- 基本的にはWindowsのPCでの動作を想定しています
-- MinecraftBEのシングル/マルチワールド用です。BDSなどのサーバーでは使用できません
-- 双方向のチャットするにはワールドのホスト(鯖主)が繋げる必要があります
+## Environments
+- Windows PC(basically)
+- Only available on MinecraftBE single/multiplayer world. You can't use this on servers like BDS
+- You need to connect as world's host
 
-## 使い方
-### Nodejsをインストール
-Nodejs v18以上をインストールしてください  
-https://nodejs.org/ja/  
+## Installation
+### Install Nodejs
+Requires v18 or more  
+https://nodejs.org/en/  
 
-### botを作る
-discordのbotが必要なので用意してください。  
-(botアカウントの作り方はここでは省略します)  
+### Make a bot account
+You need discord bot account, prepare that.  
 
-### Configを編集
-[ここから最新のものをダウンロード](https://github.com/tutinoko2048/discord-mcbe/releases)して展開してください。gitからcloneしても構いません。  
-その中の`config.jsonc`ファイルを編集して必要な値を入力してください  
-[Configの内容はこちらから](#config)
+### Edit config
+[Download latest one](https://github.com/tutinoko2048/discord-mcbe/releases)and unzip it, or clone this repo.  
+open `config.jsonc` in that and edit values you need to change in that  
+[Config descriptions are here](#config)
 
-### 動かす
-> **Note**: マイクラの設定で `暗号化されたWebsocketの要求` がオフになっていることを確認してください  
+### Run
+> **Note**: Make sure that `Require Encrypted Websockets` is off in Minecraft settings  
   
-> **Note**: PCで動かす場合はループバック接続を許可してください [詳しくはこちら](#ループバック接続の許可)  
+> **Note**: Allow loopback connection if you use this on PC [\[Details\]](#Allow-loopback)  
 
-`start.cmd`を実行してサーバーを起動させましょう。  
-次にマイクラ側で  
-```/connect [ローカルIP]:[ポート]```  
-```/connect localhost:[ポート]``` (同じ端末の場合)  
-のコマンドを実行します  
-これで接続することができます
+Run `start.cmd` to start the server  
+Next on Minecraft side  
+```/connect [LocalIP]:[PORT]```  
+```/connect localhost:[PORT]``` (on same device)  
+Run this command and you can establish connection
 
-## コマンド一覧
+## List of commands
 - /help  
-ボットのヘルプを表示します
+Show a help message of this bot
 
 - /ping  
-ボットとワールドの応答速度を表示します
+Shows the bot and worlds response time
 
 - /list  
-プレイヤーリストを表示します
+Shows player list
 
-- /command <コマンド> [ワールド]  
-ワールドにコマンドを送信します。従来通りメッセージから送信することも可能です。  
-[詳しくはこちら](#コマンドの実行)
+- /command <command> [world]  
+Sends a command to worlds.   
+[Details](#Run-commands)
 
-- /tell <送り先> <メッセージ>  
-tellでメッセージをプレイヤーに送信します。周りからは見られません
+- /tell <target> <message>  
+Sends a message with tell. The message will not be seen by others
 
 - /panel get  
-ステータスパネルのあるチャンネルを表示します  
-[詳しくはこちら](#ステータスパネル)
+Gets the channel the status panel is shown  
+[Details](#Status-panel)
 
 - /panel set  
-ステータスパネルを表示するチャンネルを設定します
+Sets the channel to show the status panel
 
 - /panel delete  
-ステータスパネルを削除します
+Deletes the status panel
 
-## ループバック接続の許可
-同じPC内で通信をするには設定が必要になる場合があります。  
-こちらのコマンドをコマンドプロンプトで**管理者権限**で実行してください  
+## Allow loopback
+Communication within the same PC may require some configurations.  
+Run this command on command prompt(cmd.exe) as an **Administrator**  
 `CheckNetIsolation LoopbackExempt -a -n="Microsoft.MinecraftUWP_8wekyb3d8bbwe"`  
-または `loopback.cmd` を実行してください(同じコマンドが入っています)
+or you can run `loopback.cmd` (same commands here)
 
 ## Config
-(必須)  
-- `discord_token`: botのトークン  
-- `guild_id`: このbotを使うサーバー(Guild)のID  
-- `channel_id`: メッセージを送信するチャンネルのID  
+(Required)  
+- `discord_token`: The token of the bot
+- `guild_id`: ID of the guild that uses this bot
+- `channel_id`: ID of the channel to send messages
 
-(任意)  
-- `port`: websocket接続に使用するポート
-- `language`: 使用する言語 langフォルダのファイル名
-- `timezone`: 時刻表示に使うタイムゾーン
-- `command_role_id`: マイクラへのコマンドの送信を許可するロールのID  
-文字の配列で指定します (EX: `[ "ロールID1", "ロールID2",... ]`)
-- `ready_message`: サーバー起動時に通知メッセージを送信
-- `delete_color_prefix`: discord送信時に§とその後の文字を削除するか
-- `panel_update_interval`: ステータスパネルの更新間隔(ミリ秒単位)
-- `scripts_entry`: 実行するスクリプトのエントリポイント
-- `command_version`: マイクラに送るコマンドのバージョン
-- `debug`: デバッグログを有効化
-- `styles_tnac`: TN-AntiCheatからのメッセージを強調する
+(Optional)  
+- `port`: The port to use websocket connection
+- `language`: Language, the name of file in lang folder
+- `timezone`: Timezone used to display the time
+- `command_role_id`: ID of the role that allows sending commands to Minecraft
+Array of string. (EX: `[ "RoleID1", "RoleID2",... ]`)
+- `ready_message`: Sends a message when the server(bot) starts
+- `delete_color_prefix`: Remove § and the following character
+- `panel_update_interval`: Update interval of status panel(ms)
+- `scripts_entry`: The entrypoint of scripts
+- `command_version`: The version of command to send
+- `debug`: Enables debug log
+- `styles_tnac`: Highlights messages from TN-AntiCheat
 
-## その他の機能
-### コマンドの実行
-`/command <送信するコマンド>` または `/送信するコマンド` でワールドにコマンドを送ることができます。  
-専用ロールを作成し、configの`command_role_id`にロールIDを入力して権限を取得してください  
+## Other features
+### Run commands
+You can send commands to worlds by `/command <command>` or `/<command>`  
+Create a role and put the role ID to config `command_role_id` to get permission  
 <img src="docs/command.jpeg" width="90%" alt="command">
 
-### ステータスパネル
-pingや人数の情報をリアルタイムで更新するパネルです  
-`/panel set` で実行したチャンネルにパネルを設置します  
+### Status panel
+A panel that shows ping and players in worlds  
+Run `/panel set` to set up the panel
 <img src="docs/panel.jpeg" width="90%" alt="panel">
 
-### コンソール
-コンソールからコマンドを送信することができます。文字の先頭に.を付けるとコードをevalで実行します
+### Console
+You can send commands in console. You can execute code by eval if the message starts with "."
 
-### カスタムスクリプト
-websocketサーバーやdiscordのbotの機能をカスタマイズできます  
-サーバーは`server` botは`client`にインスタンスが入っています。ws鯖については[SocketBEのページ](https://github.com/tutinoko2048/SocketBE)をご覧ください  
-configのscripts_entryで指定したファイルが自動で読み込まれます
-
-### TNACとの連携
-[TN-AntiCheat](https://github.com/tutinoko2048/TNAntiCheat)からのメッセージを強調表示できます(configで設定)  
-TNAC側のconfig `others/sendws` もオンにしてください
+### Custom scripts
+You can custom websocket server and discord bot.  
+There is an example script in `scripts/index.js`. The `server` is SocketBE's Server instance. See [SocketBE Page](https://github.com/tutinoko2048/SocketBE) to get more information.    
+The file set in config `scripts_entry` is automatically loaded.
 
 ## Contributing & Translation
-改善点、問題点などのPull RequestやIssueは大歓迎です！  
-このBotは複数言語に対応しています。翻訳ファイル(`lang/*.lang`, `src/interactions/_localizations.json`)を編集することで他の言語に対応させることができます。  
-※後者のlocalizationの言語のキーは[DiscordAPIのもの](https://discord.com/developers/docs/reference#locales)に従ってください
+Please send PR or Issue if you have any bugs or improvements!
+This bot supports multiple languages. You can make it support other languages by editing the translation files (`lang/*.lang`, `src/interactions/_localizations.json`)  
+※The language key in _localization.json must follow [DiscordAPI](https://discord.com/developers/docs/reference#locales)
 
-## ライセンス
-MIT Licenseだよ。
+## License
+MIT License

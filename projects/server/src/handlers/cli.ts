@@ -33,7 +33,9 @@ export class CommandLineHandler {
     if (command.trim() === '') return;
     this.app.minecraft.getWorlds().forEach(async (world) => {
       try {
-        const result = await world.runCommand(command);
+        const result = world.isLocal()
+          ? await world.session.world.runCommand(command)
+          : await world.runCommand(command);
         this.logger.info(`[${world.name}]`, result);
       } catch (err) {
         const message = Error.isError(err) ? err.message : String(err);

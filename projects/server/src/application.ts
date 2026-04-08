@@ -48,7 +48,7 @@ export class Application extends ExtendedEmitter<ApplicationEvents> {
   constructor() {
     super();
 
-    console.log(`Loading discord-mcbe v${VERSION}...`);
+    console.log(`Starting discord-mcbe v${VERSION}...`);
 
     this.version = VERSION;
 
