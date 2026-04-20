@@ -4,6 +4,7 @@ import {
   InteractionContextType,
   MessageFlags,
   messageLink,
+  PermissionsBitField,
   SlashCommandBuilder,
 } from 'discord.js';
 import { _t, _tm } from '../../util';
@@ -18,6 +19,7 @@ const data = new SlashCommandBuilder()
   .setDescription(_t('command.panel.description'))
   .setDescriptionLocalizations(_tm('command.panel.description'))
   .setContexts(InteractionContextType.Guild)
+  .setDefaultMemberPermissions(PermissionsBitField.Flags.Administrator)
   .addSubcommand((subcommand) =>
     subcommand
       .setName(SUBCOMMAND_CREATE)

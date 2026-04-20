@@ -8,6 +8,7 @@ import {
   inlineCode,
   InteractionContextType,
   MessageFlags,
+  PermissionsBitField,
   SlashCommandBuilder,
 } from 'discord.js';
 import { CommandResult } from 'socket-be';
@@ -25,6 +26,8 @@ const data = new SlashCommandBuilder()
   .setName('command')
   .setDescription(_t('command.command.description'))
   .setDescriptionLocalizations(_tm('command.command.description'))
+  .setContexts(InteractionContextType.Guild)
+  .setDefaultMemberPermissions(PermissionsBitField.Flags.Administrator)
   .addStringOption((option) =>
     option
       .setName(COMMAND_OPTION)
@@ -50,8 +53,7 @@ const data = new SlashCommandBuilder()
       .setName(SILENT_OPTION)
       .setDescription(_t('command.command.silent.description'))
       .setDescriptionLocalizations(_tm('command.command.silent.description')),
-  )
-  .setContexts(InteractionContextType.Guild);
+  );
 
 export default defineCommand(
   data,

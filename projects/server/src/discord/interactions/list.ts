@@ -11,6 +11,7 @@ const data = new SlashCommandBuilder()
   .setName('list')
   .setDescription(_t('command.list.description'))
   .setDescriptionLocalizations(_tm('command.list.description'))
+  .setContexts(InteractionContextType.Guild)
   .addBooleanOption((option) =>
     option
       .setName(SILENT_OPTION)
@@ -23,8 +24,7 @@ const data = new SlashCommandBuilder()
       .setDescription(_t('command.list.world.description'))
       .setDescriptionLocalizations(_tm('command.list.world.description'))
       .setAutocomplete(true),
-  )
-  .setContexts(InteractionContextType.Guild);
+  );
 
 export default defineCommand(
   data,
