@@ -18,10 +18,10 @@
     "clean": "rimraf build .turbo"
   },
   "dependencies": {
-    "@inquirer/confirm": "^6.0.10",
-    "@inquirer/select": "^5.0.7",
+    "@inquirer/confirm": "^6.0.12",
+    "@inquirer/select": "^5.1.4",
     "cli-progress": "^3.12.0",
-    "commander": "^14.0.2",
+    "commander": "^14.0.3",
     "semver": "^7.7.4"
   },
   "devDependencies": {
