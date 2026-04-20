@@ -110,12 +110,25 @@ export class EventHandler {
     const repliedName = repliedUser
       ? (message.guild.members.cache.get(repliedUser.id)?.displayName ?? repliedUser.username)
       : undefined;
+    let repliedContent: string = '-';
+    if (message.reference?.messageId) {
+      const repliedMessage = await message.channel.messages.fetch(message.reference.messageId);
+      const maxLength = this.app.config.bot.reply_preview_max_length;
+      repliedContent =
+        repliedMessage.cleanContent.length > maxLength
+          ? repliedMessage.cleanContent.slice(0, maxLength) + '...'
+          : repliedMessage.cleanContent;
+    }
 
     if (content.length > 0) {
       if (repliedName) {
-        this.logger.info(_t('console.reply', message.guild.name, senderName, repliedName, content));
+        this.logger.info(
+          _t('console.reply', message.guild.name, senderName, repliedName, repliedContent, content),
+        );
 
-        await this.app.minecraft.broadcastMessage(_t('minecraft.reply', senderName, repliedName, content));
+        await this.app.minecraft.broadcastMessage(
+          _t('minecraft.reply', senderName, repliedName, repliedContent, content),
+        );
       } else {
         this.logger.info(_t('console.message', message.guild.name, senderName, content));
         await this.app.minecraft.broadcastMessage(_t('minecraft.message', senderName, content));
@@ -130,12 +143,19 @@ export class EventHandler {
             message.guild.name,
             senderName,
             repliedName,
+            repliedContent,
             message.attachments.size,
           ),
         );
 
         await this.app.minecraft.broadcastMessage(
-          _t('minecraft.reply.withAttachments', senderName, repliedName, message.attachments.size),
+          _t(
+            'minecraft.reply.withAttachments',
+            senderName,
+            repliedName,
+            repliedContent,
+            message.attachments.size,
+          ),
         );
       } else {
         this.logger.info(

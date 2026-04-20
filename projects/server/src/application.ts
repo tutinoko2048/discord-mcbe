@@ -17,6 +17,7 @@ const defaultConfig: Config = {
   language: 'ja',
   timezone_offset: 0,
   bot: {
+    reply_preview_max_length: 9,
     command_role_id: [],
     send_ready: true,
     strip_color_prefix: false,

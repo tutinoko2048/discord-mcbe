@@ -2,6 +2,8 @@ import { z } from 'zod';
 import { getAvailableLanguages, getDefaultLocalizationKeys } from '../util/i18n';
 
 const botSchema = z.object({
+  reply_preview_max_length: z.number().int().positive()
+    .describe('Maximum characters for replied content preview'),
   command_role_id: z.array(z.string())
     .describe('Role ids that are allowed to use commands to minecraft'),
   send_ready: z.boolean()

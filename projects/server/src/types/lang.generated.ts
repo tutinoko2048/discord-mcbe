@@ -44,8 +44,8 @@ export type LangArgs = {
   'console.login': [Arg];
   'console.message': [Arg, Arg, Arg];
   'console.message.withAttachments': [Arg, Arg, Arg];
-  'console.reply': [Arg, Arg, Arg, Arg];
-  'console.reply.withAttachments': [Arg, Arg, Arg, Arg];
+  'console.reply': [Arg, Arg, Arg, Arg, Arg];
+  'console.reply.withAttachments': [Arg, Arg, Arg, Arg, Arg];
   'console.script.ready': [Arg];
   'console.socket.command': [Arg];
   'console.socket.ready': [Arg];
@@ -60,8 +60,8 @@ export type LangArgs = {
   'minecraft.connect': [Arg];
   'minecraft.message': [Arg, Arg];
   'minecraft.message.withAttachments': [Arg, Arg];
-  'minecraft.reply': [Arg, Arg, Arg];
-  'minecraft.reply.withAttachments': [Arg, Arg, Arg];
+  'minecraft.reply': [Arg, Arg, Arg, Arg];
+  'minecraft.reply.withAttachments': [Arg, Arg, Arg, Arg];
 };
 
 
