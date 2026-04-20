@@ -3,8 +3,8 @@
   "include": ["src", "compile.ts"],
   "compilerOptions": {
     "noEmit": false,
+    "target": "esnext",
     "types": ["bun-types"],
-    "resolveJsonModule": true,
-    "lib": ["ESNext"]
+    "resolveJsonModule": true
   }
 }
