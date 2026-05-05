@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import starlightThemeRapide from 'starlight-theme-rapide';
 
 // https://astro.build/config
 export default defineConfig({
@@ -15,7 +16,7 @@ export default defineConfig({
           items: [
             { label: 'Setup Bot', slug: 'installation/setup-bot' },
             { label: 'Setup World', slug: 'installation/setup-world' },
-          ]
+          ],
         },
         {
           label: 'Guides',
@@ -25,10 +26,14 @@ export default defineConfig({
           ],
         },
         {
-          label: 'Reference',
-          autogenerate: { directory: 'reference' },
+          label: 'API Reference',
+          items: [
+            // { label: 'Reference', slug: 'reference' },
+          ],
         },
       ],
+      plugins: [starlightThemeRapide()],
+      customCss: ['./src/styles/custom.css'],
     }),
   ],
 });

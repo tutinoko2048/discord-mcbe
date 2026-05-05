@@ -4,6 +4,8 @@
   - `server/` サーバーとDiscord bot
   - `addon-bds/` BDS用のアドオン(基本はclientを包むだけ)
   - `addon-local/` 通常ワールド用のアドオン(基本はclientを包むだけ)
+  - `launcher/` アップデートツール兼ランタイムCLI
+  - `docs/` ドキュメントWebサイト
 - `packages/`
   - `client/` アドオンで使うクライアント(配布可能)
   - `shared/` 共有するコードを置く

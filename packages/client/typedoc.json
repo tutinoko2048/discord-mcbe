@@ -1,0 +1,3 @@
+{
+  "entryPoints": ["src/bds.ts", "src/local.ts"]
+}

@@ -5,6 +5,8 @@
   "scripts": {
     "build": "turbo run build",
     "build:silent": "turbo run build --output-logs errors-only",
+    "build:docs": "pnpm run -F @discord-mcbe/docs build",
+    "build:reference": "typedoc",
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint:fix",
     "format": "turbo run format",
@@ -20,7 +22,10 @@
     "tsdown": "^0.21.9",
     "turbo": "^2.9.6",
     "typescript": "^6.0.3",
-    "vite-plus": "^0.1.18"
+    "vite-plus": "^0.1.18",
+    "typedoc": "^0.28.19",
+    "typedoc-material-theme": "^1.4.1",
+    "typedoc-plugin-merge-modules": "^7.0.0"
   },
   "pnpm": {
     "overrides": {

@@ -1,0 +1,84 @@
+@layer starlight, rapide, override;
+
+@layer override {
+  /* #region Generated Colors */
+  /* Generated with https://starlight.astro.build/guides/css-and-tailwind/#color-theme-editor */
+
+  /* Dark mode colors. */
+  :root {
+    --sl-color-accent-low: #1a2045;
+    --sl-color-accent: #4a53df;
+    --sl-color-accent-high: #bac6f7;
+    --sl-color-white: #ffffff;
+    --sl-color-gray-1: #eceef2;
+    --sl-color-gray-2: #c0c2c7;
+    --sl-color-gray-3: #888b96;
+    --sl-color-gray-4: #545861;
+    --sl-color-gray-5: #353841;
+    --sl-color-gray-6: #24272f;
+    --sl-color-black: #17181c;
+  }
+  /* Light mode colors. */
+  :root[data-theme='light'] {
+    --sl-color-accent-low: #ccd5fa;
+    --sl-color-accent: #4c55e1;
+    --sl-color-accent-high: #232a66;
+    --sl-color-white: #17181c;
+    --sl-color-gray-1: #24272f;
+    --sl-color-gray-2: #353841;
+    --sl-color-gray-3: #545861;
+    --sl-color-gray-4: #888b96;
+    --sl-color-gray-5: #c0c2c7;
+    --sl-color-gray-6: #eceef2;
+    --sl-color-gray-7: #f5f6f8;
+    --sl-color-black: #ffffff;
+  }
+  /* #endregion */
+
+  :root {
+    --sl-color-text-accent: var(--sl-color-accent-high);
+  }
+
+  :root[data-theme='light'] {
+    --sl-color-text-accent: var(--sl-color-accent);
+  }
+
+  .sl-link-button {
+    &.primary {
+      background-color: var(--sl-color-accent-low);
+      border: 1px solid var(--sl-color-accent);
+      color: var(--sl-color-accent-high);
+
+      &:is(:hover, :focus-visible) {
+        border-color: color-mix(in srgb, var(--sl-color-accent) 85%, black);
+        color: color-mix(in srgb, var(--sl-color-accent-high) 85%, black);
+      }
+    }
+  }
+
+  .sl-markdown-content a:not(:where(.not-content *)) {
+    color: var(--sl-color-text-accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+
+    &:is(:hover, :focus-visible) {
+      color: var(--sl-color-white);
+    }
+  }
+
+  .pagination-links {
+    --pagination-link-gap: 1rem;
+    gap: var(--pagination-link-gap);
+
+    a {
+      padding: 1rem;
+      border: 1px solid var(--sl-color-gray-4);
+      border-radius: 10px;
+      flex: 0 0 calc(50% - var(--pagination-link-gap) / 2);
+    }
+
+    &:has(a[rel='next']:only-child) {
+      justify-content: flex-end;
+    }
+  }
+}
