@@ -1,6 +1,6 @@
 {
   "extends": "@discord-mcbe/internal-config/typescript",
-  "include": ["src", "tests", "scripts"],
+  "include": ["src", "examples", "scripts"],
   "compilerOptions": {
     "types": ["bun-types", "./src/global.d.ts"],
     "target": "ESNext",
