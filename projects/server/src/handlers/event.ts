@@ -1,5 +1,5 @@
 import { EmbedBuilder } from 'discord.js';
-import { _t, Logger } from '../util';
+import { _t, Logger, applyMessageFilters, FILTER_MASK, SHORTEN_SUFFIX } from '../util';
 import { Palette } from '../discord';
 import type {
   DiscordMessageEvent,
@@ -86,7 +86,12 @@ export class EventHandler {
   }
 
   private async onMinecraftMessage(event: MinecraftMessageEvent) {
-    const { world, sender, message } = event;
+    const { world, sender, message: rawMessage } = event;
+
+    let message = rawMessage;
+    if (this.app.config.bot.strip_color_prefix) {
+      message = message.replace(/§./g, '');
+    }
 
     this.logger.info(_t('console.chat', world.name, sender.name, message));
 
@@ -105,7 +110,14 @@ export class EventHandler {
     const { message } = event;
 
     const senderName = message.member?.displayName ?? message.author.username;
-    const content = message.cleanContent;
+
+    let content = message.cleanContent;
+    const rawFilters = this.app.config.bot.discord_message_filter;
+    const filters = Array.isArray(rawFilters) ? rawFilters : [rawFilters];
+    const contentResult = applyMessageFilters(content, filters);
+    if (contentResult.action === 'cancel') return;
+    if (contentResult.action === 'update') content = contentResult.updatedContent;
+
     const repliedUser = message.mentions.repliedUser;
     const repliedName = repliedUser
       ? (message.guild.members.cache.get(repliedUser.id)?.displayName ?? repliedUser.username)
@@ -113,11 +125,19 @@ export class EventHandler {
     let repliedContent: string = '-';
     if (message.reference?.messageId) {
       const repliedMessage = await message.channel.messages.fetch(message.reference.messageId);
+
+      repliedContent = repliedMessage.cleanContent;
+      const replyResult = applyMessageFilters(repliedMessage.cleanContent, filters);
+      if (replyResult.action === 'cancel') {
+        repliedContent = FILTER_MASK; // Mask the replied content if it is canceled by filters
+      } else if (replyResult.action === 'update') {
+        repliedContent = replyResult.updatedContent;
+      }
+
       const maxLength = this.app.config.bot.reply_preview_max_length;
-      repliedContent =
-        repliedMessage.cleanContent.length > maxLength
-          ? repliedMessage.cleanContent.slice(0, maxLength) + '...'
-          : repliedMessage.cleanContent;
+      if (repliedContent.length > maxLength) {
+        repliedContent = repliedContent.slice(0, maxLength) + SHORTEN_SUFFIX;
+      }
     }
 
     if (content.length > 0) {

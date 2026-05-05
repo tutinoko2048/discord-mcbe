@@ -2,6 +2,12 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "properties": {
+    "config_version": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 9007199254740991,
+      "description": "The version of the config file, used for internal migration."
+    },
     "language": {
       "type": "string",
       "enum": [
@@ -25,17 +31,6 @@
           "maximum": 9007199254740991,
           "description": "Maximum characters for replied content preview"
         },
-        "command_role_id": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "Role ids that are allowed to use commands to minecraft"
-        },
-        "send_ready": {
-          "type": "boolean",
-          "description": "Whether to send messages when ready"
-        },
         "strip_color_prefix": {
           "type": "boolean",
           "description": "Whether to delete § in messages sent from minecraft"
@@ -45,14 +40,135 @@
           "exclusiveMinimum": 0,
           "maximum": 9007199254740991,
           "description": "The interval to update StatusPanel"
+        },
+        "discord_message_filter": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "on_fail": {
+                      "type": "string",
+                      "enum": [
+                        "cancel",
+                        "shorten"
+                      ],
+                      "description": "Action to take when content exceeds max length or lines"
+                    },
+                    "max_content_length": {
+                      "description": "Maximum character length of the content",
+                      "type": "integer",
+                      "exclusiveMinimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "max_content_lines": {
+                      "description": "Maximum number of lines in the content",
+                      "type": "integer",
+                      "exclusiveMinimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  "required": [
+                    "on_fail"
+                  ],
+                  "additionalProperties": false,
+                  "description": "LengthFilter"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "on_fail": {
+                      "type": "string",
+                      "enum": [
+                        "cancel",
+                        "replace"
+                      ],
+                      "description": "Action to take when content matches the regex pattern"
+                    },
+                    "ignore_pattern": {
+                      "type": "string",
+                      "description": "Regular expression for content to ignore certain content"
+                    }
+                  },
+                  "required": [
+                    "on_fail",
+                    "ignore_pattern"
+                  ],
+                  "additionalProperties": false,
+                  "description": "RegexFilter"
+                }
+              ]
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "on_fail": {
+                        "type": "string",
+                        "enum": [
+                          "cancel",
+                          "shorten"
+                        ],
+                        "description": "Action to take when content exceeds max length or lines"
+                      },
+                      "max_content_length": {
+                        "description": "Maximum character length of the content",
+                        "type": "integer",
+                        "exclusiveMinimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "max_content_lines": {
+                        "description": "Maximum number of lines in the content",
+                        "type": "integer",
+                        "exclusiveMinimum": 0,
+                        "maximum": 9007199254740991
+                      }
+                    },
+                    "required": [
+                      "on_fail"
+                    ],
+                    "additionalProperties": false,
+                    "description": "LengthFilter"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "on_fail": {
+                        "type": "string",
+                        "enum": [
+                          "cancel",
+                          "replace"
+                        ],
+                        "description": "Action to take when content matches the regex pattern"
+                      },
+                      "ignore_pattern": {
+                        "type": "string",
+                        "description": "Regular expression for content to ignore certain content"
+                      }
+                    },
+                    "required": [
+                      "on_fail",
+                      "ignore_pattern"
+                    ],
+                    "additionalProperties": false,
+                    "description": "RegexFilter"
+                  }
+                ]
+              }
+            }
+          ],
+          "description": "Filters to apply to messages sent from Discord to Minecraft. Can be a single filter or an array of filters to apply in order."
         }
       },
       "required": [
         "reply_preview_max_length",
-        "command_role_id",
-        "send_ready",
         "strip_color_prefix",
-        "panel_update_interval"
+        "panel_update_interval",
+        "discord_message_filter"
       ],
       "additionalProperties": false
     },
@@ -150,6 +266,7 @@
     }
   },
   "required": [
+    "config_version",
     "language",
     "timezone_offset",
     "bot",

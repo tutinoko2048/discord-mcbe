@@ -14,14 +14,14 @@ const defaultEnv: ExtractOptional<Env> = {
 };
 
 const defaultConfig: Config = {
+  config_version: 1,
   language: 'ja',
   timezone_offset: 0,
   bot: {
     reply_preview_max_length: 9,
-    command_role_id: [],
-    send_ready: true,
-    strip_color_prefix: false,
+    strip_color_prefix: true,
     panel_update_interval: 10000,
+    discord_message_filter: [],
   },
   bridge: {
     disable_encryption: false,
