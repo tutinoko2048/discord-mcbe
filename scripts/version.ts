@@ -44,7 +44,7 @@ async function runPnpmVersion(cwd: string) {
   try {
     await $`pnpm version ${version} --no-git-tag-version`.cwd(cwd).quiet();
   } catch (error) {
-    console.error(error.message);
+    console.error(error);
     process.exit(1);
   }
 
