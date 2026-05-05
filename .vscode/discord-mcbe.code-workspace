@@ -29,6 +29,10 @@
       "path": "../projects/launcher"
     },
     {
+      "name": "📚 Docs",
+      "path": "../projects/docs"
+    },
+    {
       "name": "📁 Repository",
       "path": ".."
     },

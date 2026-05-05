@@ -1,0 +1,28 @@
+{
+  "name": "@discord-mcbe/docs",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "lint": "vp lint",
+    "lint:fix": "vp lint --fix",
+    "format": "vp fmt",
+    "check": "vp check && astro check",
+    "clean": "rimraf dist .turbo .astro"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.9",
+    "@astrojs/starlight": "^0.38.4",
+    "astro": "^6.1.9",
+    "sharp": "^0.34.5"
+  },
+  "devDependencies": {
+    "@discord-mcbe/internal-config": "workspace:",
+    "typescript": "^6.0.3",
+    "wrangler": "^4.87.0"
+  }
+}

@@ -25,7 +25,12 @@
   "pnpm": {
     "overrides": {
       "@minecraft/server": "catalog:"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "rolldown",
+      "workerd"
+    ]
   },
   "packageManager": "pnpm@10.33.0",
   "devEngines": {
