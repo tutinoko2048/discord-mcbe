@@ -9,6 +9,9 @@ catalogs:
     '@bedrock-apis/env-types':
       specifier: 1.0.0-rc.1
       version: 1.0.0-rc.1
+    '@minecraft/server':
+      specifier: 2.7.0-beta.1.26.12-stable
+      version: 2.7.0-beta.1.26.12-stable
     '@minecraft/server-ui':
       specifier: 2.0.0
       version: 2.0.0
@@ -24,9 +27,6 @@ catalogs:
     bun-types:
       specifier: ^1.3.13
       version: 1.3.13
-
-overrides:
-  '@minecraft/server': 2.7.0-beta.1.26.12-stable
 
 importers:
 
@@ -76,7 +76,7 @@ importers:
         specifier: workspace:*
         version: link:../shared
       '@minecraft/server':
-        specifier: 2.7.0-beta.1.26.12-stable
+        specifier: 'catalog:'
         version: 2.7.0-beta.1.26.12-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
       '@minecraft/server-ui':
         specifier: 'catalog:'
@@ -100,7 +100,7 @@ importers:
   packages/shared:
     dependencies:
       '@minecraft/server':
-        specifier: 2.7.0-beta.1.26.12-stable
+        specifier: 'catalog:'
         version: 2.7.0-beta.1.26.12-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
       '@script-bridge/protocol':
         specifier: 'catalog:'
@@ -123,7 +123,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/internal-config
       '@minecraft/server':
-        specifier: 2.7.0-beta.1.26.12-stable
+        specifier: 'catalog:'
         version: 2.7.0-beta.1.26.12-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
 
   projects/addon-local:
@@ -139,7 +139,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/internal-config
       '@minecraft/server':
-        specifier: 2.7.0-beta.1.26.12-stable
+        specifier: 'catalog:'
         version: 2.7.0-beta.1.26.12-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
 
   projects/docs:
@@ -210,7 +210,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/shared
       '@minecraft/server':
-        specifier: 2.7.0-beta.1.26.12-stable
+        specifier: 'catalog:'
         version: 2.7.0-beta.1.26.12-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
       '@script-bridge/protocol':
         specifier: 'catalog:'
@@ -476,9 +476,6 @@ packages:
 
   '@emnapi/runtime@1.10.0':
     resolution: {integrity: sha512-ewvYlk86xUoGI0zQRNq/mC+16R1QeDlKQy21Ki3oSYXNgLb45GV1P6A0M+/s6nyCuNDqe5VpaY84BzXGwVbwFA==}
-
-  '@emnapi/runtime@1.9.2':
-    resolution: {integrity: sha512-3U4+MIWHImeyu1wnmVygh5WlgfYDtyf0k8AbLhMFxOipihf6nrWC4syIm/SwEeec0mNSafiiNnMJwbza/Is6Lw==}
 
   '@emnapi/wasi-threads@1.2.1':
     resolution: {integrity: sha512-uTII7OYF+/Mes/MrcIOYp5yOtSMLBWSIoLPpcgwipoiKbli6k322tcoFsxoIIxPDqW01SQGAgko4EzZi2BNv2w==}
@@ -1040,6 +1037,18 @@ packages:
 
   '@minecraft/server-ui@2.0.0':
     resolution: {integrity: sha512-K1xFK1OEJSNfIgyRElaoxDTW/nbEqjBp1YnUdyPCs4kGDglwoXNyFz3wzMOkvT04CJXSifZGcTJeWda4C6OkXw==}
+
+  '@minecraft/server@2.5.0':
+    resolution: {integrity: sha512-fh+1lByNo5tav75Xz0StOjBLUnWEQabg4K+RV7B7acGjdO5YkPnpXa2vw1ABuppgLuiBb2+E5letoCAj89bUBQ==}
+    peerDependencies:
+      '@minecraft/common': ^1.2.0
+      '@minecraft/vanilla-data': '>=1.20.70'
+
+  '@minecraft/server@2.6.0':
+    resolution: {integrity: sha512-/l1gbUHcTl/3gb3cB7Ilb8pfW1QytoAc+iMXUPSzvv8cxGluf6M635jl29P8Bid3iVmUB9hWyCUZtRUVVlk5ew==}
+    peerDependencies:
+      '@minecraft/common': ^1.2.0
+      '@minecraft/vanilla-data': '>=1.20.70'
 
   '@minecraft/server@2.7.0-beta.1.26.12-stable':
     resolution: {integrity: sha512-u2FvlYBJhPsdN0+OvtueZztCAx9qAgLqMb9D2eSEayKtW2a6oBMuMtOddN21Na1KxPUNfW58kBGj5MnbdnvX3Q==}
@@ -1903,9 +1912,6 @@ packages:
 
   '@types/node@24.12.2':
     resolution: {integrity: sha512-A1sre26ke7HDIuY/M23nd9gfB+nrmhtYyMINbjI1zHJxYteKR6qSMX56FsmjMcDb3SMcjJg5BiRRgOCC/yBD0g==}
-
-  '@types/node@25.2.2':
-    resolution: {integrity: sha512-BkmoP5/FhRYek5izySdkOneRyXYN35I860MFAGupTdebyE66uZaR+bXLHq8k4DirE5DwQi3NuhvRU1jqTVwUrQ==}
 
   '@types/node@25.6.0':
     resolution: {integrity: sha512-+qIYRKdNYJwY3vRCZMdJbPLJAtGjQBudzZzdzwQYkEPQd+PJGixUL5QfvCLDaULoLv+RhT3LDkwEfKaAkgSmNQ==}
@@ -2972,10 +2978,6 @@ packages:
     resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}
     hasBin: true
 
-  lru-cache@11.2.7:
-    resolution: {integrity: sha512-aY/R+aEsRelme17KGQa/1ZSIpLpNYYrhcrepKTZgE+W3WM16YMCaPwOHLHsmopZHELU0Ojin1lPVxKR0MihncA==}
-    engines: {node: 20 || >=22}
-
   lru-cache@11.3.6:
     resolution: {integrity: sha512-Gf/KoL3C/MlI7Bt0PGI9I+TeTC/I6r/csU58N4BSNc4lppLBeKsOdFYkK+dX0ABDUMJNfCHTyPpzwwO21Awd3A==}
     engines: {node: 20 || >=22}
@@ -3218,11 +3220,6 @@ packages:
     resolution: {integrity: sha512-dkEJPVvun4FryqBmZ5KhDo0K9iDXAwn08tMLDinNdRBNPcYEDiWYysLcc6k3mjTMlbP9KyylvRpd4wFtwrT9rw==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  nanoid@3.3.11:
-    resolution: {integrity: sha512-N8SpfPUnUp1bK+PMYW8qSWdl9U+wwNWI4QKxOYDy9JAro3WMX7p2OeVRF9v+347pnakNevPmiHhNmZ2HbFA76w==}
-    engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
-    hasBin: true
-
   nanoid@3.3.12:
     resolution: {integrity: sha512-ZB9RH/39qpq5Vu6Y+NmUaFhQR6pp+M2Xt76XBnEwDaGcVAqhlvxrl3B2bKS5D3NH3QR76v3aSrKaF/Kiy7lEtQ==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
@@ -3378,10 +3375,6 @@ packages:
   postcss-selector-parser@6.1.2:
     resolution: {integrity: sha512-Q8qQfPiZ+THO/3ZrOrO0cJJKfpYCagtMUkXbnEfmgUjwXg6z/WBeOyS9APBBPCTSiDV+s4SwQGu8yFsiMRIudg==}
     engines: {node: '>=4'}
-
-  postcss@8.5.10:
-    resolution: {integrity: sha512-pMMHxBOZKFU6HgAZ4eyGnwXF/EvPGGqUr0MnZ5+99485wwW41kW91A4LOGxSHhgugZmSChL5AlElNdwlNgcnLQ==}
-    engines: {node: ^10 || ^12 || >=14}
 
   postcss@8.5.14:
     resolution: {integrity: sha512-SoSL4+OSEtR99LHFZQiJLkT59C5B1amGO1NzTwj7TT1qCUgUO6hxOvzkOYxD+vMrXBM3XJIKzokoERdqQq/Zmg==}
@@ -3717,10 +3710,6 @@ packages:
 
   tinycolor2@1.6.0:
     resolution: {integrity: sha512-XPaBkWQJdsf3pLKJV9p4qN/S+fm2Oj8AIPo1BTUhg5oxkvm9+SVEGFdhyOz7tTdUTfvxMiAs4sp6/eZO2Ew+pw==}
-
-  tinyexec@1.1.1:
-    resolution: {integrity: sha512-VKS/ZaQhhkKFMANmAOhhXVoIfBXblQxGX1myCQ2faQrfmobMftXeJPcZGp0gS07ocvGJWDLZGyOZDadDBqYIJg==}
-    engines: {node: '>=18'}
 
   tinyexec@1.1.2:
     resolution: {integrity: sha512-dAqSqE/RabpBKI8+h26GfLq6Vb3JVXs30XYQjdMjaj/c2tS8IYYMbIzP599KtRj7c57/wYApb3QjgRgXmrCukA==}
@@ -4604,11 +4593,6 @@ snapshots:
       tslib: 2.8.1
     optional: true
 
-  '@emnapi/runtime@1.9.2':
-    dependencies:
-      tslib: 2.8.1
-    optional: true
-
   '@emnapi/wasi-threads@1.2.1':
     dependencies:
       tslib: 2.8.1
@@ -4891,7 +4875,7 @@ snapshots:
 
   '@img/sharp-wasm32@0.34.5':
     dependencies:
-      '@emnapi/runtime': 1.9.2
+      '@emnapi/runtime': 1.10.0
     optional: true
 
   '@img/sharp-win32-arm64@0.34.5':
@@ -4995,9 +4979,19 @@ snapshots:
   '@minecraft/server-ui@2.0.0(@minecraft/vanilla-data@1.21.70)':
     dependencies:
       '@minecraft/common': 1.2.0
-      '@minecraft/server': 2.7.0-beta.1.26.12-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
+      '@minecraft/server': 2.6.0(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
     transitivePeerDependencies:
       - '@minecraft/vanilla-data'
+
+  '@minecraft/server@2.5.0(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)':
+    dependencies:
+      '@minecraft/common': 1.2.0
+      '@minecraft/vanilla-data': 1.21.70
+
+  '@minecraft/server@2.6.0(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)':
+    dependencies:
+      '@minecraft/common': 1.2.0
+      '@minecraft/vanilla-data': 1.21.70
 
   '@minecraft/server@2.7.0-beta.1.26.12-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)':
     dependencies:
@@ -5512,7 +5506,7 @@ snapshots:
 
   '@types/cli-progress@3.11.6':
     dependencies:
-      '@types/node': 25.2.2
+      '@types/node': 25.6.0
 
   '@types/debug@4.1.13':
     dependencies:
@@ -5551,10 +5545,6 @@ snapshots:
       '@types/unist': 3.0.3
 
   '@types/node@24.12.2':
-    dependencies:
-      undici-types: 7.16.0
-
-  '@types/node@25.2.2':
     dependencies:
       undici-types: 7.16.0
 
@@ -5814,7 +5804,7 @@ snapshots:
       smol-toml: 1.6.1
       svgo: 4.0.1
       tinyclip: 0.1.12
-      tinyexec: 1.1.1
+      tinyexec: 1.1.2
       tinyglobby: 0.2.16
       ultrahtml: 1.6.0
       unifont: 0.7.4
@@ -6736,8 +6726,6 @@ snapshots:
     dependencies:
       js-tokens: 4.0.0
 
-  lru-cache@11.2.7: {}
-
   lru-cache@11.3.6: {}
 
   lunr@2.3.9: {}
@@ -7270,8 +7258,6 @@ snapshots:
 
   mute-stream@3.0.0: {}
 
-  nanoid@3.3.11: {}
-
   nanoid@3.3.12: {}
 
   neotraverse@0.6.18: {}
@@ -7474,12 +7460,6 @@ snapshots:
     dependencies:
       cssesc: 3.0.0
       util-deprecate: 1.0.2
-
-  postcss@8.5.10:
-    dependencies:
-      nanoid: 3.3.11
-      picocolors: 1.1.1
-      source-map-js: 1.2.1
 
   postcss@8.5.14:
     dependencies:
@@ -7892,7 +7872,7 @@ snapshots:
 
   socket-be@2.6.0(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70):
     dependencies:
-      '@minecraft/server': 2.7.0-beta.1.26.12-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
+      '@minecraft/server': 2.5.0(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
       '@serenityjs/emitter': 0.5.2
       ws: 8.20.0
     transitivePeerDependencies:
@@ -7983,8 +7963,6 @@ snapshots:
   tinyclip@0.1.12: {}
 
   tinycolor2@1.6.0: {}
-
-  tinyexec@1.1.1: {}
 
   tinyexec@1.1.2: {}
 
@@ -8173,7 +8151,7 @@ snapshots:
       chokidar: 5.0.0
       destr: 2.0.5
       h3: 1.15.11
-      lru-cache: 11.2.7
+      lru-cache: 11.3.6
       node-fetch-native: 1.6.7
       ofetch: 1.5.1
       ufo: 1.6.4
@@ -8247,7 +8225,7 @@ snapshots:
       esbuild: 0.27.7
       fdir: 6.5.0(picomatch@4.0.4)
       picomatch: 4.0.4
-      postcss: 8.5.10
+      postcss: 8.5.14
       rollup: 4.60.3
       tinyglobby: 0.2.16
     optionalDependencies:

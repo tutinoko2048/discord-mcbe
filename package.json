@@ -29,18 +29,12 @@
   "pnpm": {
     "overrides": {
       "@minecraft/server": "catalog:"
-    },
-    "onlyBuiltDependencies": [
-      "esbuild",
-      "rolldown",
-      "sharp",
-      "workerd"
-    ]
+    }
   },
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
-      "version": "11.x",
+      "version": "11.0.6",
       "onFail": "error"
     }
   }
