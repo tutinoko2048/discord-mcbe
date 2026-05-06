@@ -27,9 +27,7 @@ export default defineConfig({
         },
         {
           label: 'API Reference',
-          items: [
-            { label: 'Reference', link: '/reference' },
-          ],
+          items: [{ label: 'Reference', link: '/reference' }],
         },
       ],
       plugins: [starlightThemeRapide()],
