@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "build:reference": "pnpm run -w build:reference",
     "preview": "astro preview",
     "lint": "vp lint",
     "lint:fix": "vp lint --fix",

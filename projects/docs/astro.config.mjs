@@ -28,7 +28,7 @@ export default defineConfig({
         {
           label: 'API Reference',
           items: [
-            // { label: 'Reference', slug: 'reference' },
+            { label: 'Reference', link: '/reference' },
           ],
         },
       ],
