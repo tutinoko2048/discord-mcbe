@@ -53,7 +53,7 @@ import { Icon, Steps } from '@astrojs/starlight/components';
 | `packages/internal-config` | Workspace build and validation configuration                         |
 | `devapp`                   | Local development application                                        |
 
-Regular worlds use SocketBE over WebSocket. BDS uses ScriptBridge. Both transports feed the same action layer.
+Regular worlds use SocketBE over WebSocket. BDS uses the `@minecraft/server-net` WebSocket API, with ScriptBridge polling retained as a compatibility option. Both feed the same action layer.
 
 ## <Icon name="terminal" />Common commands
 

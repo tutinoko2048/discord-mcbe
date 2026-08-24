@@ -3,13 +3,7 @@
 
 export type Arg = string | number;
 
-
-export type Locale =
-  | 'en-US'
-  | 'fr'
-  | 'ja';
-
-
+export type Locale = 'en-US' | 'fr' | 'ja';
 
 export type LangArgs = {
   'command.command.command.description': [];
@@ -63,6 +57,5 @@ export type LangArgs = {
   'minecraft.reply': [Arg, Arg, Arg, Arg];
   'minecraft.reply.withAttachments': [Arg, Arg, Arg, Arg];
 };
-
 
 export type LangKey = keyof LangArgs;

@@ -10,6 +10,7 @@ import {
 } from '@discord-mcbe/shared';
 import {
   ScriptWorld,
+  BdsWebSocketBridgeServer,
   type ClientActionHandler,
   type ISession,
   SocketBridgeServer,
@@ -25,16 +26,19 @@ export class MinecraftHandler {
   private readonly logger: Logger;
 
   public readonly socket: SocketBridgeServer;
-  public readonly script: ScriptBridgeServer;
+  public readonly script: ScriptBridgeServer | BdsWebSocketBridgeServer;
 
   public readonly worlds = new Map<ISession, ScriptWorld>();
 
   constructor(private readonly app: Application) {
     this.logger = new Logger('Minecraft', this.app.config);
-    this.script = new ScriptBridgeServer({
-      port: this.app.env.BRIDGE_PORT,
-      timeoutThresholdMultiplier: 10,
-    });
+    this.script =
+      this.app.env.BRIDGE_TRANSPORT === 'polling'
+        ? new ScriptBridgeServer({
+            port: this.app.env.BRIDGE_PORT,
+            timeoutThresholdMultiplier: 10,
+          })
+        : new BdsWebSocketBridgeServer({ port: this.app.env.BRIDGE_PORT });
     this.socket = new SocketBridgeServer(this.app, {
       port: this.app.env.SOCKET_PORT,
       debug: this.app.config.debug,
@@ -125,7 +129,7 @@ export class MinecraftHandler {
   private onSessionDestroy(session: ISession) {
     this.logger.debug('onSessionDestroy', session.id);
     const world = this.worlds.get(session);
-    if (!world) throw new Error(`World not found: ${session.id}`);
+    if (!world) return;
     new WorldDisconnectEvent(this.app, world).emit();
     this.worlds.delete(session);
   }

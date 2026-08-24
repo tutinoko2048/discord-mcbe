@@ -72,17 +72,18 @@ Give every concurrently connected world a unique ID such as `survival` or `creat
 
 2. Extract the behavior pack into the BDS `behavior_packs` directory and register it for the target world. You can instead apply the mcpack to a world in a Minecraft client, then move that world to BDS.
 
-3. Enable the experimental world features required to run the current Beta API pack in BDS.
+3. The pack uses Beta APIs and the `@minecraft/server-net` WebSocket API. Use BDS 1.26.20 or later and enable the required experimental world features.
 
-4. Start discord-mcbe first, then start BDS. When both run on the same machine with the defaults, the add-on connects to `localhost:23191` automatically. Do not run `/connect`.
+4. Start discord-mcbe first, then start BDS. When both run on the same machine with the defaults, the add-on connects to `localhost:23191` over WebSocket automatically. Do not run `/connect`.
 
-5. Confirm that the discord-mcbe log contains `[BDS] ScriptBridge server is listening on port: 23191` followed by the world connection message.
+5. Confirm that the discord-mcbe log contains `[BDS] Bridge server is listening on port: 23191` followed by the world connection message.
 
 </Steps>
 
 <Aside type="note" title="Running on separate machines">
-  The prebuilt BDS add-on connects to `localhost:23191`. To run BDS and discord-mcbe on separate hosts, build
-  a custom add-on that passes `host` and `port` to `BridgeClient` from `@discord-mcbe/client/bds`.
+  The prebuilt BDS add-on connects to `localhost:23191` over WebSocket. To run BDS and discord-mcbe on
+  separate hosts, build a custom add-on that passes `host` and `port` to `BridgeClient` from
+  `@discord-mcbe/client/bds`.
 </Aside>
 
 ## <Icon name="terminal" />Minecraft administration commands

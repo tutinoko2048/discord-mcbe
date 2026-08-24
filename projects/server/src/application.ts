@@ -11,6 +11,7 @@ import type { ApplicationEvents, Config, Env } from './types';
 const defaultEnv: ExtractOptional<Env> = {
   SOCKET_PORT: 3063,
   BRIDGE_PORT: 23191,
+  BRIDGE_TRANSPORT: 'websocket',
 };
 
 const defaultConfig: Config = {
