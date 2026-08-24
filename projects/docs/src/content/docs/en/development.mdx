@@ -1,0 +1,88 @@
+---
+title: Development guide
+description: Set up, build, check, and document the discord-mcbe monorepo.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+## Prerequisites
+
+- Node.js 24 or later
+- pnpm matching the repository's `packageManager` field (Corepack recommended)
+- Bun for launcher development, compilation, and release assets
+- Git
+
+## Setup
+
+<Steps>
+
+1. Clone the repository.
+
+   ```bash
+   git clone https://github.com/tutinoko2048/discord-mcbe.git
+   cd discord-mcbe
+   ```
+
+2. Enable Corepack and install dependencies.
+
+   ```bash
+   corepack enable
+   pnpm install
+   ```
+
+3. Build and check the workspace.
+
+   ```bash
+   pnpm build
+   pnpm check
+   ```
+
+</Steps>
+
+## Monorepo layout
+
+| Path                       | Responsibility                                                       |
+| -------------------------- | -------------------------------------------------------------------- |
+| `projects/server`          | Discord bot, configuration, events, and Minecraft connection servers |
+| `projects/launcher`        | Distribution installer/updater and bundled runtime                   |
+| `projects/addon-local`     | Behavior pack for regular worlds                                     |
+| `projects/addon-bds`       | Behavior pack for BDS                                                |
+| `projects/docs`            | Astro + Starlight documentation site                                 |
+| `packages/client`          | Minecraft Script API client shared by both add-ons                   |
+| `packages/shared`          | Actions, types, enums, and shared protocol code                      |
+| `packages/internal-config` | Workspace build and validation configuration                         |
+| `devapp`                   | Local development application                                        |
+
+Regular worlds use SocketBE over WebSocket. BDS uses ScriptBridge. Both transports feed the same action layer.
+
+## Common commands
+
+| Command                                  | Purpose                                              |
+| ---------------------------------------- | ---------------------------------------------------- |
+| `pnpm build`                             | Build all packages with Turbo                        |
+| `pnpm check`                             | Run types, lint, and package checks                  |
+| `pnpm lint`                              | Lint the workspace                                   |
+| `pnpm format`                            | Format the workspace                                 |
+| `pnpm --filter @discord-mcbe/docs dev`   | Start the documentation dev server                   |
+| `pnpm --filter @discord-mcbe/docs build` | Build both locales and the TypeDoc API               |
+| `pnpm build:reference`                   | Generate the API into `projects/docs/dist/reference` |
+
+## Translation and documentation
+
+Built-in bot translations live in `projects/server/src/assets/locales/`. Keep keys and `%0` placeholders aligned with English and regenerate types with `generate-lang-types` when required.
+
+For the website, Japanese pages are directly under `projects/docs/src/content/docs/` and English pages are under `en/`. Give translations matching slugs so the language picker can pair them.
+
+## Contributing
+
+Check [Issues](https://github.com/tutinoko2048/discord-mcbe/issues) and existing pull requests first. Keep changes focused and include:
+
+- Why the change is needed and how it works
+- A related issue
+- Builds, checks, and tests you ran
+- Screenshots for visible UI or Discord output changes
+- Japanese and English docs for behavior changes
+
+Run `pnpm build` and `pnpm check` before submitting. Contributions are provided under the repository's MIT License.
+
+See the [API reference](https://discord-mcbe.tn2048.workers.dev/reference/) for the public API.

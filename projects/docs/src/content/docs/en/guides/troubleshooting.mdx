@@ -1,0 +1,99 @@
+---
+title: Troubleshooting
+description: Diagnose bot, Discord command, regular-world, and BDS connection problems.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+First confirm that the server and add-on came from the same v4 release and that you restarted discord-mcbe after changing `.env` or `config.json`.
+
+## The bot does not start
+
+### `Invalid environment variables`
+
+- Confirm that `.env` is next to `start.bat` or `start.sh`.
+- Check that `DISCORD_TOKEN`, `GUILD_ID`, and `CHANNEL_ID` are not empty.
+- Use a numeric ID of roughly 18–20 digits, not a channel name or URL.
+- Ports must be positive integers.
+
+### Discord error `4014` or the bot immediately goes offline
+
+Enable **Bot → Privileged Gateway Intents → Message Content Intent** in the Developer Portal and restart. If you reset the token, update `.env` too.
+
+### `Failed to find the channel`
+
+Check `CHANNEL_ID`, the bot's View Channel permission, and that the ID belongs to a regular server text channel. Threads, DMs, and a channel in another server are not supported.
+
+### `Invalid config.json`
+
+Follow the key path in the error. Common causes are a trailing JSON comma, a missing quote, or `0` where a positive integer is required. If necessary, move the current file aside, let discord-mcbe generate defaults, then reapply only the settings you need.
+
+## Slash commands are missing
+
+1. Confirm that `GUILD_ID` identifies the server where the bot was installed.
+2. Include the `applications.commands` scope when installing the bot.
+3. Restart discord-mcbe and check for errors after `Logged in as ...`.
+4. Reload the Discord client.
+
+`/command` and `/panel` are visible only to administrators. Use `/ping` and `/list` to confirm that registration worked.
+
+## Discord chat does not relay
+
+- Post in the exact channel selected by `CHANNEL_ID`.
+- Grant View Channels, Send Messages, Embed Links, Attach Files, and Read Message History.
+- Enable Message Content Intent.
+- Check whether a `cancel` rule in `bot.discord_message_filter` matches the message.
+- Use `/ping` to confirm that a world is connected.
+
+Messages authored by bots are intentionally ignored. Attachments relay only their count, not their contents.
+
+## Minecraft does not connect
+
+### Regular world
+
+1. Activate `discord-mcbe-local-*.mcpack` as a behavior pack.
+2. Start the world and discord-mcbe, then run `/connect localhost:3063` as the host.
+3. From another device, replace `localhost` with the server machine's LAN address.
+4. If you changed `SOCKET_PORT`, use the same port in `/connect`.
+5. Allow inbound TCP on that port in the OS firewall. It does not need to be exposed to the public internet.
+
+<Aside type="note" title="Encryption setting">
+  v4 enables local connection encryption by default. The old instruction to disable Minecraft's “Require
+  Encrypted Websockets” setting is normally not needed. Use `bridge.disable_encryption` only when
+  investigating compatibility.
+</Aside>
+
+### `Required addon not installed`
+
+The WebSocket is open, but discord-mcbe cannot find the v4 local add-on's internal commands. Confirm the pack and Beta APIs are active and that the server and add-on versions match.
+
+### BDS
+
+- Use the `bds` pack, not the `local` pack.
+- Start discord-mcbe first and wait for `[BDS] ScriptBridge server is listening` before BDS.
+- The prebuilt BDS add-on connects to `localhost:23191`, so run BDS and discord-mcbe on the same machine.
+- Changing `BRIDGE_PORT` makes it differ from the prebuilt add-on. Restore the default or build an add-on with a matching port.
+- Check the BDS content log to confirm the pack and Beta API are enabled.
+
+## World names collide or cannot be selected
+
+An add-on's Client ID becomes its Discord world name. Save a unique value with `/dmc:setid survival`. For a regular world, run `/dmc:disconnect` and reconnect; for BDS, restart the server.
+
+## Updates fail
+
+- Use `updater beta` for v4 and `updater latest` for the stable track.
+- Add `--force` when moving between beta and stable tracks.
+- If a minimum launcher version error appears, extract the [latest launcher release](https://github.com/tutinoko2048/discord-mcbe/releases?q=launcher).
+- Confirm that a proxy or firewall permits GitHub Releases and the npm registry.
+
+## Information to include when asking for help
+
+Temporarily set `debug` to `true` in `config.json`, reproduce the issue, and collect:
+
+- discord-mcbe, launcher, add-on, and Minecraft/BDS versions
+- OS and CPU architecture
+- Whether this is a regular world or BDS
+- Steps taken and expected behavior
+- Logs including the lines before and after the error
+
+Remove bot tokens, `.env`, and personal data, then ask in [GitHub Issues](https://github.com/tutinoko2048/discord-mcbe/issues) or the [Discord support server](https://discord.gg/XGR8FcCeFc).

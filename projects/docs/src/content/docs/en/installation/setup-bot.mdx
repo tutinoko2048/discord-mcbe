@@ -1,0 +1,120 @@
+---
+title: Set up the bot and server
+description: Create a Discord bot and run the current v4 server with launcher v2.
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+import LauncherDownloads from '../../../../components/LauncherDownloads.astro';
+
+<Aside type="caution" title="This page targets the v4 beta">
+  It installs launcher v2 and the `v4.0.0-beta` line, not stable v3. Back up an existing v3 installation into
+  a separate directory before continuing.
+</Aside>
+
+## Requirements
+
+| Item      | Requirement                                                      |
+| --------- | ---------------------------------------------------------------- |
+| Discord   | A server where you have Manage Server permission                 |
+| Host      | Windows x64, Linux x64/arm64, or macOS x64/arm64                 |
+| Minecraft | Bedrock Edition 1.21.100 or later                                |
+| Network   | Access to the Discord API, GitHub Releases, and the npm registry |
+
+The launcher includes its runtime. A normal installation does not require a separate Node.js or Bun installation.
+
+## Create a Discord bot
+
+<Steps>
+
+1. Open the [Discord Developer Portal](https://discord.com/developers/applications), select **New Application**, and create an application.
+
+2. Open **Bot** in the sidebar, use **Reset Token** to issue a bot token, and keep it somewhere secure.
+
+   <Aside type="danger" title="Treat the token as a password">
+     Never paste the token into chat, screenshots, or a Git repository. If it is exposed, reset it in the
+     Developer Portal immediately.
+   </Aside>
+
+3. Under **Bot → Privileged Gateway Intents**, enable **Message Content Intent**. Without it, messages cannot be relayed from Discord and the bot's connection may be rejected.
+
+4. In the Guild Install settings under **Installation** (or **OAuth2 → URL Generator**), select the `bot` and `applications.commands` scopes and grant these bot permissions:
+   - View Channels
+   - Send Messages
+   - Embed Links
+   - Attach Files
+   - Read Message History
+
+   Bypass Slowmode is optional for a busy relay channel. The bot does not need Manage Channels or Administrator.
+
+5. Open the generated install link and add the bot to the Discord server you will use.
+
+</Steps>
+
+## Copy the Discord IDs
+
+Enable **User Settings → Advanced → Developer Mode** in Discord. Right-click the target server and the text channel used for chat relay, then copy each ID.
+
+| Value        | Copy from                                |
+| ------------ | ---------------------------------------- |
+| `GUILD_ID`   | The Discord server that contains the bot |
+| `CHANNEL_ID` | The text channel used for Minecraft chat |
+
+Check the channel permission overrides as well. They must not deny the permissions granted above.
+
+## Prepare the launcher
+
+<LauncherDownloads locale="en" />
+
+<Steps>
+
+1. Extract the downloaded zip to a dedicated writable directory. On Windows, if the zip's Properties dialog shows **Unblock**, enable it before extracting.
+
+2. Create a file named `.env` next to `start.bat` or `start.sh` and insert the values you copied:
+
+   ```dotenv
+   DISCORD_TOKEN=your_bot_token
+   GUILD_ID=your_discord_server_id
+   CHANNEL_ID=your_relay_channel_id
+   # SOCKET_PORT=3063
+   # BRIDGE_PORT=23191
+   ```
+
+   Values do not need quotes. Only set `SOCKET_PORT` or `BRIDGE_PORT` when the default port conflicts with another service.
+
+3. Install the v4 beta and start the server.
+
+   **Windows (PowerShell or Command Prompt)**
+
+   ```powershell
+   .\updater.exe beta
+   .\start.bat
+   ```
+
+   **Linux / macOS**
+
+   ```bash
+   chmod +x updater start.sh
+   ./updater beta
+   ./start.sh
+   ```
+
+4. The first successful start creates `config.json`. This part is complete when the bot is online and the configured channel receives its startup message.
+
+</Steps>
+
+![Launcher installing the v4 beta](../../../../assets/updater.png)
+
+Next, [install the add-on in your Minecraft world](/en/installation/setup-world/).
+
+## Update or switch versions
+
+Stop the server before running the launcher. `config.json`, `.env`, and `scripts/` live outside `app/` and are retained across updates, but keeping a backup is still recommended.
+
+| Action               | Windows                    | Linux / macOS            |
+| -------------------- | -------------------------- | ------------------------ |
+| Latest beta          | `updater.exe beta`         | `./updater beta`         |
+| Latest stable        | `updater.exe latest`       | `./updater latest`       |
+| Choose interactively | `updater.exe`              | `./updater`              |
+| Install one version  | `updater.exe 4.0.0-beta.4` | `./updater 4.0.0-beta.4` |
+
+Add `--force` when moving between the beta and stable tracks or reinstalling the same version. If the installer reports a minimum launcher version error, download a newer launcher archive.

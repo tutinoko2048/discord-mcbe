@@ -1,49 +1,25 @@
-# Starlight Starter Kit: Basics
+# discord-mcbe documentation
 
-[![Built with Starlight](https://astro.badg.es/v2/built-with-starlight/tiny.svg)](https://starlight.astro.build)
+AstroとStarlightで構築した、discord-mcbeの日本語・英語ドキュメントです。
 
-```
-pnpm create astro@latest -- --template starlight
-```
+## 開発
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+リポジトリのルートで依存関係をインストールし、次のコマンドを実行します。
 
-## 🚀 Project Structure
-
-Inside of your Astro + Starlight project, you'll see the following folders and files:
-
-```
-.
-├── public/
-├── src/
-│   ├── assets/
-│   ├── content/
-│   │   └── docs/
-│   └── content.config.ts
-├── astro.config.mjs
-├── package.json
-└── tsconfig.json
+```bash
+pnpm --filter @discord-mcbe/docs dev
 ```
 
-Starlight looks for `.md` or `.mdx` files in the `src/content/docs/` directory. Each file is exposed as a route based on its file name.
+本番ビルドではAstroサイトに続いてTypeDocのAPIリファレンスも生成されます。
 
-Images can be added to `src/assets/` and embedded in Markdown with a relative link.
+```bash
+pnpm --filter @discord-mcbe/docs build
+```
 
-Static assets, like favicons, can be placed in the `public/` directory.
+コンテンツは`src/content/docs`にあり、ルート直下が日本語、`en/`以下が英語です。
 
-## 🧞 Commands
+## デプロイ
 
-All commands are run from the root of the project, from a terminal:
+GitHub Releaseを公開すると、`.github/workflows/deploy-docs.yml`がリリースのタグをcheckoutし、Cloudflare Workersへデプロイします。これにより、ランチャーとアドオンのダウンロードリンクは、そのリリース時点の`package.json`に記載されたバージョンへ更新されます。
 
-| Command                | Action                                           |
-| :--------------------- | :----------------------------------------------- |
-| `pnpm install`         | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Check out [Starlight’s docs](https://starlight.astro.build/), read [the Astro documentation](https://docs.astro.build), or jump into the [Astro Discord server](https://astro.build/chat).
+GitHub Actionsには`CLOUDFLARE_ACCOUNT_ID`と`CLOUDFLARE_API_TOKEN`のRepository secretsが必要です。workflowは手動実行にも対応しています。

@@ -1,0 +1,88 @@
+---
+title: 開発ガイド
+description: discord-mcbeのモノレポをセットアップし、ビルド、検査、ドキュメント開発を行います。
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+## 必要なツール
+
+- Node.js 24以降
+- リポジトリの`packageManager`に従うpnpm（Corepack推奨）
+- Bun（ランチャーの開発・コンパイルとリリースアセット生成に使用）
+- Git
+
+## セットアップ
+
+<Steps>
+
+1. リポジトリをクローンします。
+
+   ```bash
+   git clone https://github.com/tutinoko2048/discord-mcbe.git
+   cd discord-mcbe
+   ```
+
+2. Corepackを有効にし、依存関係をインストールします。
+
+   ```bash
+   corepack enable
+   pnpm install
+   ```
+
+3. 全パッケージをビルド・検査します。
+
+   ```bash
+   pnpm build
+   pnpm check
+   ```
+
+</Steps>
+
+## モノレポ構成
+
+| パス                       | 役割                                               |
+| -------------------------- | -------------------------------------------------- |
+| `projects/server`          | Discord Bot、設定、イベント、Minecraft接続サーバー |
+| `projects/launcher`        | 配布物のインストール・更新と内蔵ランタイム         |
+| `projects/addon-local`     | 通常ワールド用ビヘイビアーパック                   |
+| `projects/addon-bds`       | BDS用ビヘイビアーパック                            |
+| `projects/docs`            | Astro + Starlightのドキュメントサイト              |
+| `packages/client`          | 両アドオンで使うMinecraft Script APIクライアント   |
+| `packages/shared`          | アクション、型、列挙、プロトコル共有コード         |
+| `packages/internal-config` | ワークスペース共通のビルド・検査設定               |
+| `devapp`                   | ローカル開発用アプリ                               |
+
+ローカルワールドはSocketBEのWebSocket経由、BDSはScriptBridge経由で同じアクション層へ接続します。
+
+## よく使うコマンド
+
+| コマンド                                 | 内容                                                  |
+| ---------------------------------------- | ----------------------------------------------------- |
+| `pnpm build`                             | Turboで全パッケージをビルド                           |
+| `pnpm check`                             | 型、Lint、各パッケージの検査を実行                    |
+| `pnpm lint`                              | ワークスペース全体をLint                              |
+| `pnpm format`                            | フォーマッターを実行                                  |
+| `pnpm --filter @discord-mcbe/docs dev`   | ドキュメントの開発サーバー                            |
+| `pnpm --filter @discord-mcbe/docs build` | 日英サイトとTypeDoc APIを生成                         |
+| `pnpm build:reference`                   | `projects/docs/dist/reference`へAPIリファレンスを生成 |
+
+## 翻訳とドキュメント
+
+Botの組み込み翻訳は`projects/server/src/assets/locales/`にあります。英語を基準にキーと`%0`形式のプレースホルダーを揃え、必要に応じて`generate-lang-types`で型を再生成します。
+
+Webドキュメントは`projects/docs/src/content/docs/`直下が日本語、`en/`以下が英語です。同じslugを両言語に用意すると言語切り替えが対応します。
+
+## コントリビュート
+
+変更前に[Issue](https://github.com/tutinoko2048/discord-mcbe/issues)と既存のPull Requestを確認し、目的ごとに小さな変更へ分けてください。PRには次を含めます。
+
+- 変更理由と動作の説明
+- 関連Issue
+- 実行した`build`・`check`・テスト
+- UIやDiscord表示が変わる場合のスクリーンショット
+- 仕様変更に対応する日本語・英語ドキュメント
+
+提出前に`pnpm build`と`pnpm check`が通ることを確認してください。コントリビューションはリポジトリのMIT Licenseで提供されます。
+
+公開APIの詳細は[APIリファレンス](https://discord-mcbe.tn2048.workers.dev/reference/)を参照してください。

@@ -1,6 +1,5 @@
 import { $, semver } from 'bun';
 import { join, resolve } from 'node:path';
-import { exists } from 'fs/promises';
 import confirm from '@inquirer/confirm';
 // import { SingleBar } from 'cli-progress';
 import { askVersion, resolveVersion } from './version';
@@ -21,10 +20,11 @@ export async function install(options: InstallOptions) {
 
   const appDir = join(cwd, 'app');
   const versionFilePath = join(appDir, VERSION_FILE_NAME);
+  const versionFile = Bun.file(versionFilePath);
 
   let currentVersion = '0.0.0';
-  if (await exists(versionFilePath)) {
-    currentVersion = (await Bun.file(versionFilePath).text()).trim();
+  if (await versionFile.exists()) {
+    currentVersion = (await versionFile.text()).trim();
   }
 
   const resolved =

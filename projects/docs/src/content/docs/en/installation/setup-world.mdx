@@ -1,0 +1,97 @@
+---
+title: Set up a Minecraft world
+description: Install and connect the v4 add-on in a regular world or Bedrock Dedicated Server.
+---
+
+import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+import AddonDownloads from '../../../../components/AddonDownloads.astro';
+
+discord-mcbe v4 ships two behavior packs with different transports. Use the one that matches the kind of world you run.
+
+| World                            | Download                             | Connection                | Default port |
+| -------------------------------- | ------------------------------------ | ------------------------- | ------------ |
+| Regular single/multiplayer world | `discord-mcbe-local-*.mcpack`        | Minecraft `/connect`      | `3063`       |
+| Bedrock Dedicated Server         | `discord-mcbe-bds-*.mcpack` / `.zip` | Automatic from the add-on | `23191`      |
+
+<Aside type="caution" title="Match the add-on and server versions">
+  The v3 add-on is not compatible with the v4 server. For the v4 beta, use the server and add-on assets
+  attached to the same GitHub release.
+</Aside>
+
+<AddonDownloads locale="en" />
+
+## Regular hosted world
+
+<Steps>
+
+1. Download the mcpack under **Regular hosted world** above.
+
+2. Open the mcpack with Minecraft, then activate `discord-mcbe local client` under the world's **Behavior Packs**.
+
+3. The current pack uses beta Script APIs. Enable **Beta APIs** if the world settings ask for it. Testing in a copy of the world is recommended.
+
+4. Start the discord-mcbe server. The terminal prints instructions similar to:
+
+   ```text
+   [Local] SocketBridge server is listening on port: 3063
+   [Local] Type /connect localhost:3063 in Minecraft to connect.
+   ```
+
+5. Run the connection command as the player hosting the world.
+
+   <Tabs>
+     <TabItem label="Same PC">`/connect localhost:3063`</TabItem>
+     <TabItem label="Another device">
+       `/connect 192.168.1.10:3063` — replace `192.168.1.10` with the LAN address of the machine running
+       discord-mcbe.
+     </TabItem>
+   </Tabs>
+
+6. The setup is complete when both Minecraft and Discord display the world connection message.
+
+</Steps>
+
+### Change the world name
+
+The add-on's Client ID becomes its world name in selectors and the status panel. The default is `discord-mcbe-local`. An operator can change it with either command below, then reconnect.
+
+```text
+/dmc:dmc
+/dmc:setid survival
+/dmc:disconnect
+/connect localhost:3063
+```
+
+Give every concurrently connected world a unique ID such as `survival` or `creative`.
+
+## Bedrock Dedicated Server
+
+<Steps>
+
+1. Download the zip under **Bedrock Dedicated Server** above. Do not use the `local` pack.
+
+2. Extract the behavior pack into the BDS `behavior_packs` directory and register it for the target world. You can instead apply the mcpack to a world in a Minecraft client, then move that world to BDS.
+
+3. Enable the experimental world features required to run the current Beta API pack in BDS.
+
+4. Start discord-mcbe first, then start BDS. When both run on the same machine with the defaults, the add-on connects to `localhost:23191` automatically. Do not run `/connect`.
+
+5. Confirm that the discord-mcbe log contains `[BDS] ScriptBridge server is listening on port: 23191` followed by the world connection message.
+
+</Steps>
+
+<Aside type="note" title="Running on separate machines">
+  The prebuilt BDS add-on connects to `localhost:23191`. To run BDS and discord-mcbe on separate hosts, build
+  a custom add-on that passes `host` and `port` to `BridgeClient` from `@discord-mcbe/client/bds`.
+</Aside>
+
+## Minecraft administration commands
+
+| Command             | Permission | Description                                       |
+| ------------------- | ---------- | ------------------------------------------------- |
+| `/dmc:dmc`          | Admin      | Open a form that edits the Client ID              |
+| `/dmc:discord-mcbe` | Admin      | Alias for the same settings form                  |
+| `/dmc:setid <name>` | Host       | Save a Client ID; takes effect after reconnecting |
+| `/dmc:disconnect`   | Admin      | Disconnect the current discord-mcbe session       |
+
+If the world does not connect, continue with [troubleshooting](/en/guides/troubleshooting/#minecraft-does-not-connect).

@@ -1,0 +1,101 @@
+---
+title: Custom scripts
+description: Extend discord-mcbe from JavaScript with events and world APIs.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+At startup, discord-mcbe imports the JavaScript module selected by `script.entry` in `config.json` and passes its `Application` instance to the module's default export. The default entry point is `scripts/main.js`.
+
+<Aside type="danger" title="Only run custom scripts you trust">
+  A script runs with the same OS privileges as discord-mcbe and can access the bot token, local files, the
+  network, and Minecraft commands.
+</Aside>
+
+## Minimal script
+
+```js
+/**
+ * @param {import('@discord-mcbe/server').Application} app
+ */
+export default function main(app) {
+  app.logger.info('Custom script loaded');
+}
+```
+
+Restart discord-mcbe after saving the file. There is no hot reload. The current launcher imports JavaScript directly, so compile TypeScript to JavaScript first.
+
+## Subscribe to events
+
+```js
+/**
+ * @param {import('@discord-mcbe/server').Application} app
+ */
+export default function main(app) {
+  app.on('worldConnect', async (event) => {
+    app.logger.info('Connected:', event.world.name);
+    await event.world.sendMessage('§aDiscord bridge connected');
+  });
+
+  app.on('playerJoin', async (event) => {
+    const location = await event.player.getLocation();
+    app.logger.info(event.player.name, location);
+  });
+
+  app.on('minecraftMessage', (event) => {
+    app.logger.info('Chat:', event.world.name, event.sender.name, event.message);
+  });
+}
+```
+
+The main events are:
+
+| Event                        | Main values                  | Emitted                                                |
+| ---------------------------- | ---------------------------- | ------------------------------------------------------ |
+| `startup`                    | `app`                        | After the bot, bridge servers, and script have started |
+| `discordReady`               | `client`                     | After the bot logs in                                  |
+| `discordMessage`             | `message`                    | When a user posts in the relay channel                 |
+| `discordSend`                | `channel`, `message`         | Immediately before discord-mcbe sends to Discord       |
+| `worldConnect`               | `world`                      | When a world finishes initializing                     |
+| `worldDisconnect`            | `world`                      | When a world session ends                              |
+| `minecraftMessage`           | `world`, `sender`, `message` | On Minecraft chat                                      |
+| `playerJoin` / `playerLeave` | `world`, `player`            | When a player joins or leaves                          |
+
+## Control a world
+
+```js
+/**
+ * @param {import('@discord-mcbe/server').Application} app
+ */
+export default function main(app) {
+  app.on('worldConnect', async ({ world }) => {
+    const result = await world.runCommand('weather clear');
+    const tps = await world.getTPS();
+
+    app.logger.info(world.name, result, 'TPS:', tps);
+  });
+}
+```
+
+`ScriptWorld` provides messaging, commands, TPS, script events, player access, and scoreboards. `ScriptPlayer` provides direct messages, position, dimension and game-mode queries, game-mode changes, kicking, and screen display controls.
+
+See the [API reference](https://discord-mcbe.tn2048.workers.dev/reference/) for the full set of methods and types.
+
+## Add dependencies
+
+The launcher replaces `app/` during an update, so keep your code under `scripts/`. Add external dependencies to the `package.json` in the launcher root. To use the bundled Bun runtime, stop the server and run:
+
+**Windows PowerShell**
+
+```powershell
+$env:BUN_BE_BUN = '1'
+.\updater.exe add package-name
+```
+
+**Linux / macOS**
+
+```bash
+BUN_BE_BUN=1 ./updater add package-name
+```
+
+Replace `package-name` with the dependency you need. Back up `package.json`, `scripts/`, and configuration files before updating.

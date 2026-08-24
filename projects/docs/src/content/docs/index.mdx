@@ -1,39 +1,50 @@
 ---
-title: Welcome to Starlight
-description: Get started building your docs site with Starlight.
-template: splash # Remove or comment out this line to display the site sidebar on this page.
+title: discord-mcbe
+description: Minecraft Bedrock EditionとDiscordのチャットを双方向につなぐブリッジです。
+template: splash
 hero:
-  tagline: Congrats on setting up a new Starlight project!
-  image:
-    file: ../../assets/houston.webp
+  tagline: Minecraft Bedrock EditionとDiscordを、ひとつのチャットに。
   actions:
-    - text: Example Guide
-      link: /guides/example/
+    - text: 導入を始める
+      link: /installation/setup-bot/
       icon: right-arrow
-    - text: Read the Starlight docs
-      link: https://starlight.astro.build
+    - text: GitHub
+      link: https://github.com/tutinoko2048/discord-mcbe
       icon: external
       variant: minimal
 ---
 
-import { Card, CardGrid } from '@astrojs/starlight/components';
+import { Aside, Card, CardGrid } from '@astrojs/starlight/components';
 
-## Next steps
+<Aside type="caution" title="v4はベータ版です">
+  このドキュメントは現在の`v4.0.0-beta`系を対象としています。安定版v3とは、配布物・設定ファイル・コマンドが異なります。
+</Aside>
+
+discord-mcbeは、Minecraft Bedrock EditionのワールドとDiscordサーバーのテキストチャンネルをつなぐオープンソースのブリッジです。普段のチャットに加え、参加・退出通知、プレイヤー一覧、コマンド実行、ステータスパネルをひとつのBotで扱えます。
+
+## できること
 
 <CardGrid stagger>
-  <Card title="Update content" icon="pencil">
-    Edit `src/content/docs/index.mdx` to see this page change.
+  <Card title="双方向チャット" icon="messages">
+    MinecraftのチャットをDiscordへ、指定したDiscordチャンネルのメッセージを接続中の全ワールドへ届けます。返信と添付ファイル数もゲーム内で確認できます。
   </Card>
-  <Card title="Change page layout" icon="document">
-    Delete `template: splash` in `src/content/docs/index.mdx` to display a sidebar on this page.
+  <Card title="複数ワールド" icon="puzzle">
+    通常のワールドとBedrock Dedicated
+    Server（BDS）の両方に対応。複数のワールドを同時に接続し、名前を指定して操作できます。
   </Card>
-  <Card title="Add new content" icon="add-document">
-    Add Markdown or MDX files to `src/content/docs` to create new pages.
+  <Card title="運用コマンド" icon="terminal">
+    Discordから応答速度、プレイヤー一覧、Minecraftコマンドの実行結果を確認できます。管理系コマンドはDiscordの管理者だけに制限されます。
   </Card>
-  <Card title="Configure your site" icon="setting">
-    Edit your `sidebar` and other config in `astro.config.mjs`.
-  </Card>
-  <Card title="Read the docs" icon="open-book">
-    Learn more in [the Starlight Docs](https://starlight.astro.build/).
+  <Card title="拡張可能" icon="setting">
+    メッセージフィルターや表示文言を設定できるほか、JavaScriptのカスタムスクリプトからイベントとMinecraft
+    APIラッパーを利用できます。
   </Card>
 </CardGrid>
+
+## 導入の流れ
+
+1. [Discord Botとdiscord-mcbeサーバーをセットアップする](/installation/setup-bot/)
+2. [ローカルワールドまたはBDSにアドオンを導入する](/installation/setup-world/)
+3. [設定](/guides/configuration/)と[コマンド](/guides/commands/)を用途に合わせて調整する
+
+セットアップで詰まった場合は、[トラブルシューティング](/guides/troubleshooting/)にログ別の確認項目をまとめています。

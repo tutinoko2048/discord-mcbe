@@ -1,0 +1,96 @@
+---
+title: Minecraftワールドのセットアップ
+description: ローカルワールドまたはBedrock Dedicated Serverへv4アドオンを導入して接続します。
+---
+
+import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+import AddonDownloads from '../../../components/AddonDownloads.astro';
+
+discord-mcbe v4には接続方式の異なる2種類のビヘイビアーパックがあります。ワールドの種類に合う方を使用してください。
+
+| ワールド                    | 配布物                               | 接続方式              | 既定ポート |
+| --------------------------- | ------------------------------------ | --------------------- | ---------- |
+| 通常のシングル/マルチプレイ | `discord-mcbe-local-*.mcpack`        | Minecraftの`/connect` | `3063`     |
+| Bedrock Dedicated Server    | `discord-mcbe-bds-*.mcpack` / `.zip` | アドオンから自動接続  | `23191`    |
+
+<Aside type="caution" title="アドオンとサーバーの版を合わせてください">
+  v3用アドオンとv4サーバーには互換性がありません。v4ベータでは、GitHub
+  Releasesの同じリリースに含まれるサーバーとアドオンを組み合わせます。
+</Aside>
+
+<AddonDownloads locale="ja" />
+
+## ローカルワールド
+
+<Steps>
+
+1. 上の「通常のワールド」からmcpackをダウンロードします。
+
+2. mcpackをMinecraftで開いてインポートし、対象ワールドの **ビヘイビアーパック** で`discord-mcbe local client`を有効にします。
+
+3. 現在のベータScript APIを使うため、ワールド設定で要求された場合は **Beta APIs** を有効にします。ワールドのコピーを作ってから試すことを推奨します。
+
+4. discord-mcbeサーバーを起動します。ターミナルに次のような案内が表示されます。
+
+   ```text
+   [Local] SocketBridgeサーバーはポート 3063 で待機しています
+   [Local] Minecraftで /connect localhost:3063 と入力して接続してください。
+   ```
+
+5. ワールドをホストしているプレイヤーがMinecraftで接続コマンドを実行します。
+
+   <Tabs>
+     <TabItem label="同じPC">`/connect localhost:3063`</TabItem>
+     <TabItem label="別の端末">
+       `/connect 192.168.1.10:3063` —
+       `192.168.1.10`はdiscord-mcbeを動かしている端末のLAN内IPアドレスに置き換えます。
+     </TabItem>
+   </Tabs>
+
+6. MinecraftとDiscordの両方に接続メッセージが表示されれば完了です。
+
+</Steps>
+
+### ワールド名を変更する
+
+接続先の選択やステータスパネルでは、アドオンのClient IDがワールド名になります。既定値は`discord-mcbe-local`です。オペレーターが次のいずれかを実行して変更し、接続し直します。
+
+```text
+/dmc:dmc
+/dmc:setid survival
+/dmc:disconnect
+/connect localhost:3063
+```
+
+複数ワールドを同時に使う場合は、`survival`や`creative`のように重複しない名前を設定してください。
+
+## Bedrock Dedicated Server
+
+<Steps>
+
+1. 上の「Bedrock Dedicated Server」からzipをダウンロードします。ローカル用ではなく、`bds`と付いた配布物を使用します。
+
+2. zip内のビヘイビアーパックをBDSの`behavior_packs`へ配置し、対象ワールドのビヘイビアーパックとして登録します。別のMinecraftクライアントでmcpackをワールドへ適用してからワールドをBDSへ移す方法でも構いません。
+
+3. Beta APIを使用する現在のパックを実行できるよう、BDSとワールドの実験的機能を有効にします。
+
+4. discord-mcbeサーバーを先に起動し、次にBDSを起動します。両方が同じ端末にあり、既定ポートを使用していれば、アドオンが`localhost:23191`へ自動接続します。`/connect`は不要です。
+
+5. discord-mcbeのログに`[BDS] ScriptBridgeサーバーはポート 23191 で待機しています`とワールドの接続ログが表示されることを確認します。
+
+</Steps>
+
+<Aside type="note" title="別の端末に分ける構成">
+  配布済みBDSアドオンの接続先は`localhost:23191`です。BDSとdiscord-mcbeを別端末で動かすには、`@discord-mcbe/client/bds`の`BridgeClient`へ`host`と`port`を渡す独自アドオンのビルドが必要です。
+</Aside>
+
+## Minecraft側の管理コマンド
+
+| コマンド            | 権限   | 説明                                    |
+| ------------------- | ------ | --------------------------------------- |
+| `/dmc:dmc`          | 管理者 | Client IDを編集する設定画面を開く       |
+| `/dmc:discord-mcbe` | 管理者 | 同じ設定画面を開く別名                  |
+| `/dmc:setid <名前>` | ホスト | Client IDを直接保存する。再接続後に反映 |
+| `/dmc:disconnect`   | 管理者 | 現在のdiscord-mcbe接続を切断する        |
+
+接続できない場合は[トラブルシューティング](/guides/troubleshooting/#minecraftと接続できない)を確認してください。

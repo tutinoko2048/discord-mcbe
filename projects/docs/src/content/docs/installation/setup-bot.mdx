@@ -1,0 +1,119 @@
+---
+title: Botとサーバーのセットアップ
+description: Discord Botを作成し、v4ランチャーでdiscord-mcbeサーバーを起動します。
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+import LauncherDownloads from '../../../components/LauncherDownloads.astro';
+
+<Aside type="caution" title="このページはv4ベータ版向けです">
+  安定版v3ではなく、ランチャーv2と`v4.0.0-beta`系を導入します。既存のv3環境は別のフォルダーにバックアップしてください。
+</Aside>
+
+## 必要なもの
+
+| 項目         | 要件                                                        |
+| ------------ | ----------------------------------------------------------- |
+| Discord      | Botを追加できるサーバーと「サーバーを管理」権限             |
+| 実行環境     | Windows x64、Linux x64/arm64、またはmacOS x64/arm64         |
+| Minecraft    | Bedrock Edition 1.21.100以降                                |
+| ネットワーク | Discord API、GitHub Releases、npmレジストリへ接続できること |
+
+ランチャーには実行環境が含まれるため、通常の導入ではNode.jsやBunを別途インストールする必要はありません。
+
+## Discord Botを作る
+
+<Steps>
+
+1. [Discord Developer Portal](https://discord.com/developers/applications)で **New Application** を選び、アプリケーションを作成します。
+
+2. 左側の **Bot** を開き、**Reset Token** でBotトークンを発行して安全な場所に控えます。
+
+   <Aside type="danger" title="トークンはパスワードです">
+     トークンをチャット、スクリーンショット、Gitリポジトリへ載せないでください。漏えいした場合はDeveloper
+     Portalですぐに再発行します。
+   </Aside>
+
+3. **Bot → Privileged Gateway Intents** で **Message Content Intent** を有効にします。これが無効だとDiscordからMinecraftへ本文を転送できず、Botの接続も拒否される場合があります。
+
+4. **Installation** のGuild Install設定（または **OAuth2 → URL Generator**）で`bot`と`applications.commands`のスコープを選び、次のBot権限を付けます。
+   - チャンネルを見る（View Channels）
+   - メッセージを送信（Send Messages）
+   - 埋め込みリンク（Embed Links）
+   - ファイルを添付（Attach Files）
+   - メッセージ履歴を読む（Read Message History）
+
+   頻繁にメッセージが流れるチャンネルでは「低速モードを回避」も任意で追加できます。チャンネル管理者権限は不要です。
+
+5. 生成されたInstall Linkを開き、使用するDiscordサーバーへBotを追加します。
+
+</Steps>
+
+## DiscordのIDを控える
+
+Discordの **ユーザー設定 → 詳細設定 → 開発者モード** を有効にします。次に、対象のサーバーとチャット連携に使うテキストチャンネルを右クリックして、それぞれのIDをコピーします。
+
+| 値           | コピー元                                              |
+| ------------ | ----------------------------------------------------- |
+| `GUILD_ID`   | Botを追加したDiscordサーバー                          |
+| `CHANNEL_ID` | Minecraftとメッセージをやり取りするテキストチャンネル |
+
+Botへのチャンネル権限の上書きで、先ほどの権限が拒否されていないことも確認してください。
+
+## ランチャーを準備する
+
+<LauncherDownloads locale="ja" />
+
+<Steps>
+
+1. ダウンロードしたzipを、書き込み可能な専用フォルダーへ展開します。Windowsでは、zipのプロパティに「ブロックの解除」が表示される場合、解除してから展開します。
+
+2. `start.bat`または`start.sh`と同じ階層に`.env`ファイルを作り、控えた値を設定します。
+
+   ```dotenv
+   DISCORD_TOKEN=Botのトークン
+   GUILD_ID=DiscordサーバーのID
+   CHANNEL_ID=連携するテキストチャンネルのID
+   # SOCKET_PORT=3063
+   # BRIDGE_PORT=23191
+   ```
+
+   値を引用符で囲む必要はありません。`SOCKET_PORT`と`BRIDGE_PORT`は、既定ポートが競合するときだけ変更します。
+
+3. v4ベータ版をインストールします。
+
+   **Windows（PowerShellまたはコマンドプロンプト）**
+
+   ```powershell
+   .\updater.exe beta
+   .\start.bat
+   ```
+
+   **Linux / macOS**
+
+   ```bash
+   chmod +x updater start.sh
+   ./updater beta
+   ./start.sh
+   ```
+
+4. 初回起動時に`config.json`が作成されます。Botがオンラインになり、指定チャンネルに起動メッセージが届けば、サーバー側の準備は完了です。
+
+</Steps>
+
+![v4ベータ版をインストールするランチャー](../../../assets/updater.png)
+
+続いて、[Minecraftワールドへアドオンを導入します](/installation/setup-world/)。
+
+## アップデートとバージョン切り替え
+
+サーバーを停止してからランチャーを実行します。`config.json`、`.env`、`scripts/`は`app/`とは別に保存されるため更新後も引き継がれますが、更新前のバックアップを推奨します。
+
+| 操作             | Windows                    | Linux / macOS            |
+| ---------------- | -------------------------- | ------------------------ |
+| 最新ベータへ更新 | `updater.exe beta`         | `./updater beta`         |
+| 最新安定版へ更新 | `updater.exe latest`       | `./updater latest`       |
+| バージョンを選択 | `updater.exe`              | `./updater`              |
+| 指定版を導入     | `updater.exe 4.0.0-beta.4` | `./updater 4.0.0-beta.4` |
+
+ベータ版と安定版の系統をまたぐ場合や同じ版を再導入する場合は`--force`を追加します。ランチャー自体の更新が必要と表示された場合は、ランチャーのリリースから新しいzipを取得してください。

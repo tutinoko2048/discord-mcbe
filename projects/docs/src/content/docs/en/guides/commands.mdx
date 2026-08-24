@@ -1,0 +1,87 @@
+---
+title: Commands and features
+description: Learn the Discord and Minecraft commands, chat relay, and status panel.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Discord commands
+
+At startup, the bot registers commands in the Discord server specified by `GUILD_ID`.
+
+| Command                                             | Permission    | Description                                                     |
+| --------------------------------------------------- | ------------- | --------------------------------------------------------------- |
+| `/ping`                                             | Everyone      | Show latency for the bot and every connected world              |
+| `/list [silent] [world]`                            | Everyone      | Show player counts and names; `silent` makes the result private |
+| `/command command:<command> [raw] [world] [silent]` | Administrator | Execute a Minecraft command and display its result              |
+| `/panel create`                                     | Administrator | Create the status panel in the current channel                  |
+| `/panel show`                                       | Administrator | Show a link to the stored status panel                          |
+
+### /command
+
+Enter the Minecraft command in `command` without a leading slash.
+
+```text
+/command command:time set day world:survival silent:true
+```
+
+- Omitting `world` executes the command in every connected world.
+- World suggestions use each add-on's Client ID.
+- `raw` displays the raw result as JSON.
+- A result longer than the embed threshold is attached as `results.txt`.
+- `silent` makes the response visible only to the person who ran it.
+
+<Aside type="caution" title="Only Discord administrators can execute Minecraft commands">
+  `/command` and `/panel` default to Discord's Administrator member permission. This does not mean the bot
+  itself needs Administrator. You can restrict command access further in Discord's Integrations settings.
+</Aside>
+
+### Status panel
+
+`/panel create` posts an embed that periodically refreshes with:
+
+- Discord Gateway latency and bot uptime
+- World name, host type, latency, and connection time
+- Player count and player names
+- The discord-mcbe version
+
+Only one panel is stored. Creating another removes the old panel, and its message ID is persisted in `.discord-mcbe/data.json`. If the message is deleted manually, the stored value is cleared the next time it is fetched. Change the refresh interval in [configuration](/en/guides/configuration/#configjson).
+
+## Chat relay
+
+### Minecraft to Discord
+
+Normal chat from players in a connected world is sent to `CHANNEL_ID`. Join, leave, world-connect, and disconnect events are sent as embeds.
+
+When multiple worlds are connected, a world name is included where needed. Minecraft `§` color codes are removed by default.
+
+### Discord to Minecraft
+
+Messages from users in `CHANNEL_ID` are broadcast to every connected world.
+
+- Messages authored by bots are ignored to prevent loops.
+- The member's Discord display name is used as the sender.
+- Replies include the source author's name and a short content preview.
+- Attachment data is not downloaded; only the file count is shown.
+- [Message filters](/en/guides/configuration/#discord-message-filters) can trim, replace, or reject content.
+
+## Server console
+
+Type a Minecraft command into the terminal running discord-mcbe to execute it in every connected world. A leading slash is optional.
+
+```text
+say Server maintenance starts in 10 minutes
+```
+
+Anyone with console access can execute unrestricted Minecraft commands. Protect the host OS account and its files accordingly.
+
+## Minecraft commands
+
+| Command             | Permission | Description                                    |
+| ------------------- | ---------- | ---------------------------------------------- |
+| `/dmc:dmc`          | Admin      | Open the discord-mcbe settings form            |
+| `/dmc:discord-mcbe` | Admin      | Alias for the settings form                    |
+| `/dmc:setid <name>` | Host       | Save the Client ID used to identify this world |
+| `/dmc:disconnect`   | Admin      | Disconnect the current bridge session          |
+
+A Client ID change takes effect on the next connection. Use a unique ID for every concurrently connected world.

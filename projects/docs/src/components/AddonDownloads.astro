@@ -1,0 +1,113 @@
+---
+import serverPackage from '../../../server/package.json';
+
+interface Props {
+  locale: 'en' | 'ja';
+}
+
+const { locale } = Astro.props;
+const version = String(serverPackage.version);
+const repositoryUrl = 'https://github.com/tutinoko2048/discord-mcbe';
+const tag = `v${version}`;
+const releaseUrl = `${repositoryUrl}/releases/tag/${encodeURIComponent(tag)}`;
+const assetBaseUrl = `${repositoryUrl}/releases/download/${encodeURIComponent(tag)}`;
+const assetUrl = (variant: 'bds' | 'local', extension: 'mcpack' | 'zip') =>
+  `${assetBaseUrl}/discord-mcbe-${variant}-v${version}.${extension}`;
+
+const copy =
+  locale === 'ja'
+    ? {
+        version: `discord-mcbe v${version}`,
+        localTitle: '通常のワールド',
+        localDescription: 'Minecraftへ直接インポートする場合',
+        bdsTitle: 'Bedrock Dedicated Server',
+        bdsDescription: 'behavior_packsへ手動で配置する場合',
+        mcpack: 'mcpackをダウンロード',
+        zip: 'zipをダウンロード',
+        releasePage: 'リリースノートと全アセットを見る',
+      }
+    : {
+        version: `discord-mcbe v${version}`,
+        localTitle: 'Regular hosted world',
+        localDescription: 'Import directly into Minecraft',
+        bdsTitle: 'Bedrock Dedicated Server',
+        bdsDescription: 'Install manually under behavior_packs',
+        mcpack: 'Download mcpack',
+        zip: 'Download zip',
+        releasePage: 'View release notes and all assets',
+      };
+---
+
+<div class="addon-downloads">
+  <p class="version">{copy.version}</p>
+  <div class="variants">
+    <section>
+      <strong>{copy.localTitle}</strong>
+      <p>{copy.localDescription}</p>
+      <div class="links">
+        <a href={assetUrl('local', 'mcpack')}>{copy.mcpack}</a>
+        <a href={assetUrl('local', 'zip')}>{copy.zip}</a>
+      </div>
+    </section>
+    <section>
+      <strong>{copy.bdsTitle}</strong>
+      <p>{copy.bdsDescription}</p>
+      <div class="links">
+        <a href={assetUrl('bds', 'zip')}>{copy.zip}</a>
+        <a href={assetUrl('bds', 'mcpack')}>{copy.mcpack}</a>
+      </div>
+    </section>
+  </div>
+  <a class="release-link" href={releaseUrl}>{copy.releasePage}</a>
+</div>
+
+<style>
+  .addon-downloads {
+    margin-block: 1.25rem;
+    padding: 1rem;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.75rem;
+    background: var(--sl-color-gray-6);
+  }
+
+  .version {
+    margin: 0 0 0.75rem;
+    color: var(--sl-color-gray-2);
+    font-size: var(--sl-text-sm);
+    font-weight: 600;
+  }
+
+  .variants {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: 0.75rem;
+  }
+
+  section {
+    padding: 0.85rem;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.55rem;
+  }
+
+  section p {
+    margin-block: 0.25rem 0.65rem;
+    color: var(--sl-color-gray-2);
+    font-size: var(--sl-text-sm);
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.75rem;
+  }
+
+  .release-link {
+    display: inline-block;
+    margin-top: 0.85rem;
+    font-size: var(--sl-text-sm);
+  }
+
+  :global(:root[data-theme='light']) .addon-downloads {
+    background: var(--sl-color-gray-7);
+  }
+</style>

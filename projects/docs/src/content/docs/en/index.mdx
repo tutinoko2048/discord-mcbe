@@ -1,0 +1,53 @@
+---
+title: discord-mcbe
+description: A two-way bridge between Minecraft Bedrock Edition and Discord.
+template: splash
+hero:
+  tagline: Bring Minecraft Bedrock Edition and Discord into one conversation.
+  actions:
+    - text: Get started
+      link: /en/installation/setup-bot/
+      icon: right-arrow
+    - text: GitHub
+      link: https://github.com/tutinoko2048/discord-mcbe
+      icon: external
+      variant: minimal
+---
+
+import { Aside, Card, CardGrid } from '@astrojs/starlight/components';
+
+<Aside type="caution" title="v4 is currently in beta">
+  These docs cover the current `v4.0.0-beta` line. Its downloads, configuration, and commands differ from
+  stable v3 releases.
+</Aside>
+
+discord-mcbe is an open-source bridge between a Minecraft Bedrock Edition world and a text channel in your Discord server. It relays chat, join and leave events, player lists, commands, and live status through one bot.
+
+## What it can do
+
+<CardGrid stagger>
+  <Card title="Two-way chat" icon="messages">
+    Relay Minecraft chat to Discord and messages from one Discord channel to every connected world. Replies
+    and attachment counts are represented in game too.
+  </Card>
+  <Card title="Multiple worlds" icon="puzzle">
+    Connect regular hosted worlds and Bedrock Dedicated Server (BDS) worlds at the same time, then target them
+    by name.
+  </Card>
+  <Card title="Operations commands" icon="terminal">
+    Check latency and player lists or execute Minecraft commands from Discord. Administrative commands are
+    restricted to Discord administrators by default.
+  </Card>
+  <Card title="Extensible" icon="setting">
+    Configure message filters and text overrides, then use JavaScript custom scripts to consume events and the
+    Minecraft API wrappers.
+  </Card>
+</CardGrid>
+
+## Installation path
+
+1. [Set up the Discord bot and discord-mcbe server](/en/installation/setup-bot/)
+2. [Install the add-on in a local or BDS world](/en/installation/setup-world/)
+3. Tune the [configuration](/en/guides/configuration/) and learn the [commands](/en/guides/commands/)
+
+If something does not connect, the [troubleshooting guide](/en/guides/troubleshooting/) collects checks by symptom and log message.

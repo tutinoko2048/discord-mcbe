@@ -1,0 +1,100 @@
+---
+title: カスタムスクリプト
+description: JavaScriptからdiscord-mcbeのイベントとワールドAPIを拡張します。
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+起動時に`config.json`の`script.entry`で指定したJavaScriptモジュールを読み込み、`default export`へ`Application`インスタンスを渡します。既定のエントリーポイントは`scripts/main.js`です。
+
+<Aside type="danger" title="カスタムスクリプトは信頼できるものだけ実行してください">
+  スクリプトはdiscord-mcbeと同じOS権限で実行され、Botトークン、ファイル、ネットワーク、Minecraftコマンドへアクセスできます。
+</Aside>
+
+## 最小構成
+
+```js
+/**
+ * @param {import('@discord-mcbe/server').Application} app
+ */
+export default function main(app) {
+  app.logger.info('Custom script loaded');
+}
+```
+
+ファイルを保存してdiscord-mcbeを再起動します。ホットリロードはありません。現在のランチャーはJavaScriptを直接読み込むため、TypeScriptは事前にJavaScriptへ変換してください。
+
+## イベントを受け取る
+
+```js
+/**
+ * @param {import('@discord-mcbe/server').Application} app
+ */
+export default function main(app) {
+  app.on('worldConnect', async (event) => {
+    app.logger.info('Connected:', event.world.name);
+    await event.world.sendMessage('§aDiscord bridge connected');
+  });
+
+  app.on('playerJoin', async (event) => {
+    const location = await event.player.getLocation();
+    app.logger.info(event.player.name, location);
+  });
+
+  app.on('minecraftMessage', (event) => {
+    app.logger.info('Chat:', event.world.name, event.sender.name, event.message);
+  });
+}
+```
+
+主なイベントは次のとおりです。
+
+| イベント                     | 主な値                       | 発生時点                                     |
+| ---------------------------- | ---------------------------- | -------------------------------------------- |
+| `startup`                    | `app`                        | Bot、接続サーバー、スクリプトの起動後        |
+| `discordReady`               | `client`                     | Discordへのログイン完了時                    |
+| `discordMessage`             | `message`                    | 対象チャンネルでユーザーのメッセージを受信時 |
+| `discordSend`                | `channel`, `message`         | discord-mcbeがDiscordへ送信する直前          |
+| `worldConnect`               | `world`                      | ワールドの初期化完了時                       |
+| `worldDisconnect`            | `world`                      | ワールドのセッション終了時                   |
+| `minecraftMessage`           | `world`, `sender`, `message` | Minecraftチャット受信時                      |
+| `playerJoin` / `playerLeave` | `world`, `player`            | プレイヤーの参加・退出時                     |
+
+## ワールドを操作する
+
+```js
+/**
+ * @param {import('@discord-mcbe/server').Application} app
+ */
+export default function main(app) {
+  app.on('worldConnect', async ({ world }) => {
+    const result = await world.runCommand('weather clear');
+    const tps = await world.getTPS();
+
+    app.logger.info(world.name, result, 'TPS:', tps);
+  });
+}
+```
+
+`ScriptWorld`からメッセージ送信、コマンド、TPS、Script Event、プレイヤー、スコアボードを操作できます。`ScriptPlayer`では個別メッセージ、座標・ディメンション・ゲームモード取得、ゲームモード変更、キック、画面表示を扱えます。
+
+全メソッドと型は[APIリファレンス](https://discord-mcbe.tn2048.workers.dev/reference/)を参照してください。
+
+## 依存パッケージを追加する
+
+ランチャーの`app/`は更新時に再展開されるため、独自コードは`scripts/`へ置きます。外部パッケージはランチャーのルートにある`package.json`へ追加します。内蔵Bunを使う場合は、サーバーを停止して次を実行します。
+
+**Windows PowerShell**
+
+```powershell
+$env:BUN_BE_BUN = '1'
+.\updater.exe add package-name
+```
+
+**Linux / macOS**
+
+```bash
+BUN_BE_BUN=1 ./updater add package-name
+```
+
+`package-name`は使用するパッケージ名に置き換えます。更新前には`package.json`、`scripts/`、設定ファイルをバックアップしてください。

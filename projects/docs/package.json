@@ -4,21 +4,22 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && pnpm run build:reference",
     "build:reference": "pnpm run -w build:reference",
     "preview": "astro preview",
     "lint": "vp lint",
     "lint:fix": "vp lint --fix",
     "format": "vp fmt",
-    "check": "vp check && astro check",
+    "check": "astro sync && vp check && astro check",
     "clean": "rimraf dist .turbo .astro"
   },
   "dependencies": {
-    "@astrojs/check": "^0.9.9",
-    "@astrojs/starlight": "^0.38.4",
-    "astro": "^6.1.9",
+    "@astrojs/check": "^0.9.10",
+    "@astrojs/starlight": "^0.41.7",
+    "astro": "^7.2.4",
     "sharp": "^0.34.5",
-    "starlight-theme-rapide": "^0.5.2"
+    "starlight-theme-rapide": "^0.5.2",
+    "ua-parser-modern": "^0.1.1"
   },
   "devDependencies": {
     "@discord-mcbe/internal-config": "workspace:",
