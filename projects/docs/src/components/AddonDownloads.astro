@@ -1,5 +1,6 @@
 ---
 import serverPackage from '../../../server/package.json';
+import { formatFileSize, getReleaseAssets } from '../lib/github-releases';
 
 interface Props {
   locale: 'en' | 'ja';
@@ -11,8 +12,22 @@ const repositoryUrl = 'https://github.com/tutinoko2048/discord-mcbe';
 const tag = `v${version}`;
 const releaseUrl = `${repositoryUrl}/releases/tag/${encodeURIComponent(tag)}`;
 const assetBaseUrl = `${repositoryUrl}/releases/download/${encodeURIComponent(tag)}`;
-const assetUrl = (variant: 'bds' | 'local', extension: 'mcpack' | 'zip') =>
-  `${assetBaseUrl}/discord-mcbe-${variant}-v${version}.${extension}`;
+const releaseAssets = await getReleaseAssets(tag);
+const extensionOrder = ['mcpack', 'zip'] as const;
+const createAssets = (variant: 'bds' | 'local') =>
+  extensionOrder.map((extension) => {
+    const name = `discord-mcbe-${variant}-v${version}.${extension}`;
+    const releaseAsset = releaseAssets.get(name);
+    return {
+      extension,
+      size: releaseAsset ? formatFileSize(releaseAsset.size, locale) : undefined,
+      url: releaseAsset?.downloadUrl ?? `${assetBaseUrl}/${name}`,
+    };
+  });
+const assets = {
+  bds: createAssets('bds'),
+  local: createAssets('local'),
+};
 
 const copy =
   locale === 'ja'
@@ -45,16 +60,28 @@ const copy =
       <strong>{copy.localTitle}</strong>
       <p>{copy.localDescription}</p>
       <div class="links">
-        <a href={assetUrl('local', 'mcpack')}>{copy.mcpack}</a>
-        <a href={assetUrl('local', 'zip')}>{copy.zip}</a>
+        {
+          assets.local.map((asset) => (
+            <span class="download-link">
+              <a href={asset.url}>{copy[asset.extension]}</a>
+              {asset.size && <span class="file-size">{asset.size}</span>}
+            </span>
+          ))
+        }
       </div>
     </section>
     <section>
       <strong>{copy.bdsTitle}</strong>
       <p>{copy.bdsDescription}</p>
       <div class="links">
-        <a href={assetUrl('bds', 'zip')}>{copy.zip}</a>
-        <a href={assetUrl('bds', 'mcpack')}>{copy.mcpack}</a>
+        {
+          assets.bds.map((asset) => (
+            <span class="download-link">
+              <a href={asset.url}>{copy[asset.extension]}</a>
+              {asset.size && <span class="file-size">{asset.size}</span>}
+            </span>
+          ))
+        }
       </div>
     </section>
   </div>
@@ -99,6 +126,19 @@ const copy =
     display: flex;
     flex-wrap: wrap;
     gap: 0.35rem 0.75rem;
+  }
+
+  .download-link {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    align-items: baseline;
+  }
+
+  .file-size {
+    color: var(--sl-color-gray-3);
+    font-size: var(--sl-text-xs);
+    white-space: nowrap;
   }
 
   .release-link {

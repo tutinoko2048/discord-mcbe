@@ -1,5 +1,6 @@
 ---
 import launcherPackage from '../../../launcher/package.json';
+import { formatFileSize, getReleaseAssets } from '../lib/github-releases';
 
 interface Props {
   locale: 'en' | 'ja';
@@ -11,6 +12,7 @@ const repositoryUrl = 'https://github.com/tutinoko2048/discord-mcbe';
 const tag = `launcher@v${version}`;
 const releaseUrl = `${repositoryUrl}/releases/tag/${encodeURIComponent(tag)}`;
 const assetBaseUrl = `${repositoryUrl}/releases/download/${encodeURIComponent(tag)}`;
+const releaseAssets = await getReleaseAssets(tag);
 
 const assets = [
   { target: 'windows-x64', ja: 'Windows 64-bit', en: 'Windows 64-bit' },
@@ -18,10 +20,15 @@ const assets = [
   { target: 'linux-arm64', ja: 'Linux ARM64', en: 'Linux ARM64' },
   { target: 'darwin-x64', ja: 'Intel Mac', en: 'Intel Mac' },
   { target: 'darwin-arm64', ja: 'Apple Silicon Mac', en: 'Apple silicon Mac' },
-].map((asset) => ({
-  ...asset,
-  url: `${assetBaseUrl}/discord-mcbe-${asset.target}-v${version}.zip`,
-}));
+].map((asset) => {
+  const name = `discord-mcbe-${asset.target}-v${version}.zip`;
+  const releaseAsset = releaseAssets.get(name);
+  return {
+    ...asset,
+    size: releaseAsset ? formatFileSize(releaseAsset.size, locale) : undefined,
+    url: releaseAsset?.downloadUrl ?? `${assetBaseUrl}/${name}`,
+  };
+});
 
 const copy =
   locale === 'ja'
@@ -42,7 +49,10 @@ const copy =
 <div class="download-picker" data-launcher-download data-locale={locale}>
   <p class="version">{copy.version}</p>
   <p class="status" data-download-status aria-live="polite">{copy.initialStatus}</p>
-  <a class="recommended" data-recommended-download href={releaseUrl} hidden></a>
+  <div class="recommended-download" data-recommended-download-row hidden>
+    <a class="recommended" data-recommended-download href={releaseUrl}></a>
+    <span class="file-size" data-recommended-download-size></span>
+  </div>
 
   <details>
     <summary>{copy.allPlatforms}</summary>
@@ -50,9 +60,10 @@ const copy =
       {
         assets.map((asset) => (
           <li>
-            <a href={asset.url} data-download-target={asset.target}>
+            <a href={asset.url} data-download-target={asset.target} data-download-size={asset.size}>
               {asset[locale]}
             </a>
+            {asset.size && <span class="file-size">{asset.size}</span>}
             <code>{asset.target}</code>
           </li>
         ))
@@ -156,8 +167,10 @@ const copy =
   async function enhanceDownloadPicker(picker: HTMLElement) {
     const locale = picker.dataset.locale === 'en' ? 'en' : 'ja';
     const status = picker.querySelector<HTMLElement>('[data-download-status]');
+    const recommendedRow = picker.querySelector<HTMLElement>('[data-recommended-download-row]');
     const recommended = picker.querySelector<HTMLAnchorElement>('[data-recommended-download]');
-    if (!status || !recommended) return;
+    const recommendedSize = picker.querySelector<HTMLElement>('[data-recommended-download-size]');
+    if (!status || !recommendedRow || !recommended || !recommendedSize) return;
 
     const detected = await detectDownloadTarget();
     if (detected.kind === 'unsupported-mobile') {
@@ -180,7 +193,9 @@ const copy =
     status.textContent = messages[locale].detected(label);
     recommended.href = source.href;
     recommended.textContent = messages[locale].download(label);
-    recommended.hidden = false;
+    recommendedSize.textContent = source.dataset.downloadSize ?? '';
+    recommendedSize.hidden = !source.dataset.downloadSize;
+    recommendedRow.hidden = false;
   }
 
   for (const picker of document.querySelectorAll<HTMLElement>('[data-launcher-download]')) {
@@ -219,7 +234,14 @@ const copy =
     text-decoration: none;
   }
 
-  .recommended[hidden] {
+  .recommended-download {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: baseline;
+  }
+
+  .recommended-download[hidden] {
     display: none;
   }
 
@@ -245,6 +267,12 @@ const copy =
     flex-wrap: wrap;
     gap: 0.4rem 0.75rem;
     align-items: baseline;
+  }
+
+  .file-size {
+    color: var(--sl-color-gray-3);
+    font-size: var(--sl-text-xs);
+    white-space: nowrap;
   }
 
   .asset-list code {

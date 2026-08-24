@@ -13,7 +13,11 @@ export default defineConfig({
     starlight({
       title: 'discord-mcbe',
       description: 'Minecraft Bedrock EditionとDiscordをつなぐdiscord-mcbeの公式ドキュメント',
-      favicon: '/favicon.svg',
+      favicon: '/favicon.png',
+      logo: {
+        src: '../addon-local/pack_icon.png',
+        alt: 'discord-mcbe',
+      },
       locales: {
         root: { label: '日本語', lang: 'ja' },
         en: { label: 'English', lang: 'en' },

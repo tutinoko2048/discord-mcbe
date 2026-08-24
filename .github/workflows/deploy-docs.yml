@@ -32,6 +32,8 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build Docs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: pnpm --filter @discord-mcbe/docs build
 
       - name: Deploy Docs
