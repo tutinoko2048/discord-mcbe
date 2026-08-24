@@ -20,6 +20,6 @@ pnpm --filter @discord-mcbe/docs build
 
 ## デプロイ
 
-GitHub Releaseを公開すると、`.github/workflows/deploy-docs.yml`がリリースのタグをcheckoutし、Cloudflare Workersへデプロイします。これにより、ランチャーとアドオンのダウンロードリンクは、そのリリース時点の`package.json`に記載されたバージョンへ更新されます。
+`main`または`rewrite`ブランチへのpushとGitHub Releaseの公開時に、`.github/workflows/deploy-docs.yml`がCloudflare Workersへデプロイします。リリース時はタグをcheckoutするため、ランチャーとアドオンのダウンロードリンクが、そのリリース時点の`package.json`に記載されたバージョンへ更新されます。
 
 GitHub Actionsには`CLOUDFLARE_ACCOUNT_ID`と`CLOUDFLARE_API_TOKEN`のRepository secretsが必要です。workflowは手動実行にも対応しています。

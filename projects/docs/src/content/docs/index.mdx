@@ -14,15 +14,33 @@ hero:
       variant: minimal
 ---
 
-import { Aside, Card, CardGrid } from '@astrojs/starlight/components';
+import { Aside, Card, CardGrid, Icon } from '@astrojs/starlight/components';
+import AddonDownloads from '../../components/AddonDownloads.astro';
+import LauncherDownloads from '../../components/LauncherDownloads.astro';
 
 <Aside type="caution" title="v4はベータ版です">
-  このドキュメントは現在の`v4.0.0-beta`系を対象としています。安定版v3とは、配布物・設定ファイル・コマンドが異なります。
+  このドキュメントは`v4.0.0-beta`リリースを対象としています。安定版のv3とは、リリースアセット・設定ファイル・コマンドが異なります。
 </Aside>
 
 discord-mcbeは、Minecraft Bedrock EditionのワールドとDiscordサーバーのテキストチャンネルをつなぐオープンソースのブリッジです。普段のチャットに加え、参加・退出通知、プレイヤー一覧、コマンド実行、ステータスパネルをひとつのBotで扱えます。
 
-## できること
+## <Icon name="download" />ダウンロード
+
+### <Icon name="rocket" />ランチャー
+
+discord-mcbeサーバーのインストールとアップデートに使用します。この端末に対応するランチャーがある場合は、自動判定したダウンロードボタンが表示されます。
+
+<LauncherDownloads locale="ja" />
+
+### <Icon name="puzzle" />Minecraftアドオン
+
+通常のワールドには`local`、Bedrock Dedicated Serverには`bds`アセットを使用します。ランチャーでインストールするサーバーと同じバージョンを選んでください。
+
+<AddonDownloads locale="ja" />
+
+Botの作成や展開後の設定を含む手順は、[導入ガイド](/installation/setup-bot/)を参照してください。
+
+## <Icon name="star" />できること
 
 <CardGrid stagger>
   <Card title="双方向チャット" icon="messages">
@@ -36,12 +54,12 @@ discord-mcbeは、Minecraft Bedrock EditionのワールドとDiscordサーバー
     Discordから応答速度、プレイヤー一覧、Minecraftコマンドの実行結果を確認できます。管理系コマンドはDiscordの管理者だけに制限されます。
   </Card>
   <Card title="拡張可能" icon="setting">
-    メッセージフィルターや表示文言を設定できるほか、JavaScriptのカスタムスクリプトからイベントとMinecraft
+    メッセージフィルターや表示テキストを設定できるほか、JavaScriptのカスタムスクリプトからイベントとMinecraft
     APIラッパーを利用できます。
   </Card>
 </CardGrid>
 
-## 導入の流れ
+## <Icon name="list-format" />導入の流れ
 
 1. [Discord Botとdiscord-mcbeサーバーをセットアップする](/installation/setup-bot/)
 2. [ローカルワールドまたはBDSにアドオンを導入する](/installation/setup-world/)

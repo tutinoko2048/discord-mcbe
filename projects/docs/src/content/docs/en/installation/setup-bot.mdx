@@ -3,7 +3,7 @@ title: Set up the bot and server
 description: Create a Discord bot and run the current v4 server with launcher v2.
 ---
 
-import { Aside, Steps } from '@astrojs/starlight/components';
+import { Aside, Icon, Steps } from '@astrojs/starlight/components';
 import LauncherDownloads from '../../../../components/LauncherDownloads.astro';
 
 <Aside type="caution" title="This page targets the v4 beta">
@@ -11,7 +11,7 @@ import LauncherDownloads from '../../../../components/LauncherDownloads.astro';
   a separate directory before continuing.
 </Aside>
 
-## Requirements
+## <Icon name="list-format" />Requirements
 
 | Item      | Requirement                                                      |
 | --------- | ---------------------------------------------------------------- |
@@ -22,7 +22,7 @@ import LauncherDownloads from '../../../../components/LauncherDownloads.astro';
 
 The launcher includes its runtime. A normal installation does not require a separate Node.js or Bun installation.
 
-## Create a Discord bot
+## <Icon name="comment-alt" />Create a Discord bot
 
 <Steps>
 
@@ -50,7 +50,7 @@ The launcher includes its runtime. A normal installation does not require a sepa
 
 </Steps>
 
-## Copy the Discord IDs
+## <Icon name="approve-check-circle" />Copy the Discord IDs
 
 Enable **User Settings → Advanced → Developer Mode** in Discord. Right-click the target server and the text channel used for chat relay, then copy each ID.
 
@@ -61,7 +61,7 @@ Enable **User Settings → Advanced → Developer Mode** in Discord. Right-click
 
 Check the channel permission overrides as well. They must not deny the permissions granted above.
 
-## Prepare the launcher
+## <Icon name="rocket" />Prepare the launcher
 
 <LauncherDownloads locale="en" />
 
@@ -106,7 +106,7 @@ Check the channel permission overrides as well. They must not deny the permissio
 
 Next, [install the add-on in your Minecraft world](/en/installation/setup-world/).
 
-## Update or switch versions
+## <Icon name="cloud-download" />Update or switch versions
 
 Stop the server before running the launcher. `config.json`, `.env`, and `scripts/` live outside `app/` and are retained across updates, but keeping a backup is still recommended.
 

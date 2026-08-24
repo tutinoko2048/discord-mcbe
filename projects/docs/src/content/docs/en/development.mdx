@@ -3,16 +3,16 @@ title: Development guide
 description: Set up, build, check, and document the discord-mcbe monorepo.
 ---
 
-import { Steps } from '@astrojs/starlight/components';
+import { Icon, Steps } from '@astrojs/starlight/components';
 
-## Prerequisites
+## <Icon name="setting" />Prerequisites
 
 - Node.js 24 or later
 - pnpm matching the repository's `packageManager` field (Corepack recommended)
 - Bun for launcher development, compilation, and release assets
 - Git
 
-## Setup
+## <Icon name="rocket" />Setup
 
 <Steps>
 
@@ -39,7 +39,7 @@ import { Steps } from '@astrojs/starlight/components';
 
 </Steps>
 
-## Monorepo layout
+## <Icon name="code-branch" />Monorepo layout
 
 | Path                       | Responsibility                                                       |
 | -------------------------- | -------------------------------------------------------------------- |
@@ -55,7 +55,7 @@ import { Steps } from '@astrojs/starlight/components';
 
 Regular worlds use SocketBE over WebSocket. BDS uses ScriptBridge. Both transports feed the same action layer.
 
-## Common commands
+## <Icon name="terminal" />Common commands
 
 | Command                                  | Purpose                                              |
 | ---------------------------------------- | ---------------------------------------------------- |
@@ -67,13 +67,13 @@ Regular worlds use SocketBE over WebSocket. BDS uses ScriptBridge. Both transpor
 | `pnpm --filter @discord-mcbe/docs build` | Build both locales and the TypeDoc API               |
 | `pnpm build:reference`                   | Generate the API into `projects/docs/dist/reference` |
 
-## Translation and documentation
+## <Icon name="translate" />Translation and documentation
 
 Built-in bot translations live in `projects/server/src/assets/locales/`. Keep keys and `%0` placeholders aligned with English and regenerate types with `generate-lang-types` when required.
 
 For the website, Japanese pages are directly under `projects/docs/src/content/docs/` and English pages are under `en/`. Give translations matching slugs so the language picker can pair them.
 
-## Contributing
+## <Icon name="heart" />Contributing
 
 Check [Issues](https://github.com/tutinoko2048/discord-mcbe/issues) and existing pull requests first. Keep changes focused and include:
 

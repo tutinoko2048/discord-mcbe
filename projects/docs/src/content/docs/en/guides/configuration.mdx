@@ -3,7 +3,7 @@ title: Configuration
 description: Configure environment variables, config.json, message filters, and text overrides.
 ---
 
-import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
+import { Aside, Icon, Tabs, TabItem } from '@astrojs/starlight/components';
 
 discord-mcbe splits its settings between two files:
 
@@ -12,7 +12,7 @@ discord-mcbe splits its settings between two files:
 
 Place both next to the launcher's `start.bat` or `start.sh`. Restart discord-mcbe after changing either file.
 
-## Environment variables
+## <Icon name="padlock" />Environment variables
 
 ```dotenv
 DISCORD_TOKEN=your_bot_token
@@ -35,7 +35,7 @@ BRIDGE_PORT=23191
   in the Developer Portal.
 </Aside>
 
-## config.json
+## <Icon name="setting" />config.json
 
 When `config.json` does not exist, the first start with a valid `.env` creates it with these defaults:
 
@@ -77,11 +77,11 @@ When `config.json` does not exist, the first start with a valid `.env` creates i
 
 Unknown keys are ignored with a warning. An invalid type or value stops startup and prints the affected path.
 
-## Discord message filters
+## <Icon name="comment-alt" />Discord message filters
 
 Filters run on messages received in `CHANNEL_ID` before they are sent to Minecraft. Configure either one object or an array in application order.
 
-### Limit message length
+### <Icon name="list-format" />Limit message length
 
 ```json
 {
@@ -96,7 +96,7 @@ Filters run on messages received in `CHANNEL_ID` before they are sent to Minecra
 - `on_fail: "shorten"` trims excess content and adds `..`.
 - `on_fail: "cancel"` drops the entire message.
 
-### Hide content matching a regular expression
+### <Icon name="magnifier" />Hide content matching a regular expression
 
 ```json
 {
@@ -110,7 +110,7 @@ Filters run on messages received in `CHANNEL_ID` before they are sent to Minecra
 
 `ignore_pattern` is parsed as a JavaScript regular expression. Escape a backslash as `\\` inside JSON.
 
-### Apply multiple filters in order
+### <Icon name="random" />Apply multiple filters in order
 
 ```json
 "discord_message_filter": [
@@ -128,7 +128,7 @@ Filters run on messages received in `CHANNEL_ID` before they are sent to Minecra
 
 The same filters also process quoted reply previews. A reply source rejected by a `cancel` filter is represented as `***`.
 
-## Override displayed text
+## <Icon name="pencil" />Override displayed text
 
 `translationOverrides` can replace individual built-in strings. Preserve placeholders such as `%0` and `%1`.
 
@@ -142,7 +142,7 @@ The same filters also process quoted reply previews. A reply source rejected by 
 
 See the [API reference](https://discord-mcbe.tn2048.workers.dev/reference/) and the locale files under `projects/server/src/assets/locales/` for the available keys and arguments.
 
-## Change a port
+## <Icon name="server" />Change a port
 
 <Tabs>
   <TabItem label="Regular world">

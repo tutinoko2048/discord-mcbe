@@ -14,7 +14,9 @@ hero:
       variant: minimal
 ---
 
-import { Aside, Card, CardGrid } from '@astrojs/starlight/components';
+import { Aside, Card, CardGrid, Icon } from '@astrojs/starlight/components';
+import AddonDownloads from '../../../components/AddonDownloads.astro';
+import LauncherDownloads from '../../../components/LauncherDownloads.astro';
 
 <Aside type="caution" title="v4 is currently in beta">
   These docs cover the current `v4.0.0-beta` line. Its downloads, configuration, and commands differ from
@@ -23,7 +25,23 @@ import { Aside, Card, CardGrid } from '@astrojs/starlight/components';
 
 discord-mcbe is an open-source bridge between a Minecraft Bedrock Edition world and a text channel in your Discord server. It relays chat, join and leave events, player lists, commands, and live status through one bot.
 
-## What it can do
+## <Icon name="download" />Downloads
+
+### <Icon name="rocket" />Launcher
+
+Use the launcher to install and update the discord-mcbe server. When this device matches a supported build, its download button is selected automatically.
+
+<LauncherDownloads locale="en" />
+
+### <Icon name="puzzle" />Minecraft add-ons
+
+Use the `local` asset for a regular hosted world and the `bds` asset for Bedrock Dedicated Server. Match its version to the server installed by the launcher.
+
+<AddonDownloads locale="en" />
+
+Continue with the [installation guide](/en/installation/setup-bot/) for Discord bot creation, extraction, and configuration.
+
+## <Icon name="star" />What it can do
 
 <CardGrid stagger>
   <Card title="Two-way chat" icon="messages">
@@ -44,7 +62,7 @@ discord-mcbe is an open-source bridge between a Minecraft Bedrock Edition world 
   </Card>
 </CardGrid>
 
-## Installation path
+## <Icon name="list-format" />Installation path
 
 1. [Set up the Discord bot and discord-mcbe server](/en/installation/setup-bot/)
 2. [Install the add-on in a local or BDS world](/en/installation/setup-world/)

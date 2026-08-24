@@ -3,15 +3,15 @@ title: カスタムスクリプト
 description: JavaScriptからdiscord-mcbeのイベントとワールドAPIを拡張します。
 ---
 
-import { Aside } from '@astrojs/starlight/components';
+import { Aside, Icon } from '@astrojs/starlight/components';
 
-起動時に`config.json`の`script.entry`で指定したJavaScriptモジュールを読み込み、`default export`へ`Application`インスタンスを渡します。既定のエントリーポイントは`scripts/main.js`です。
+起動時に`config.json`の`script.entry`で指定したJavaScriptモジュールを読み込み、`default export`へ`Application`インスタンスを渡します。デフォルトのエントリーポイントは`scripts/main.js`です。
 
 <Aside type="danger" title="カスタムスクリプトは信頼できるものだけ実行してください">
   スクリプトはdiscord-mcbeと同じOS権限で実行され、Botトークン、ファイル、ネットワーク、Minecraftコマンドへアクセスできます。
 </Aside>
 
-## 最小構成
+## <Icon name="document" />最小構成
 
 ```js
 /**
@@ -24,7 +24,7 @@ export default function main(app) {
 
 ファイルを保存してdiscord-mcbeを再起動します。ホットリロードはありません。現在のランチャーはJavaScriptを直接読み込むため、TypeScriptは事前にJavaScriptへ変換してください。
 
-## イベントを受け取る
+## <Icon name="clock" />イベントを受け取る
 
 ```js
 /**
@@ -49,18 +49,18 @@ export default function main(app) {
 
 主なイベントは次のとおりです。
 
-| イベント                     | 主な値                       | 発生時点                                     |
-| ---------------------------- | ---------------------------- | -------------------------------------------- |
-| `startup`                    | `app`                        | Bot、接続サーバー、スクリプトの起動後        |
-| `discordReady`               | `client`                     | Discordへのログイン完了時                    |
-| `discordMessage`             | `message`                    | 対象チャンネルでユーザーのメッセージを受信時 |
-| `discordSend`                | `channel`, `message`         | discord-mcbeがDiscordへ送信する直前          |
-| `worldConnect`               | `world`                      | ワールドの初期化完了時                       |
-| `worldDisconnect`            | `world`                      | ワールドのセッション終了時                   |
-| `minecraftMessage`           | `world`, `sender`, `message` | Minecraftチャット受信時                      |
-| `playerJoin` / `playerLeave` | `world`, `player`            | プレイヤーの参加・退出時                     |
+| イベント                     | 主な値                       | タイミング                                         |
+| ---------------------------- | ---------------------------- | -------------------------------------------------- |
+| `startup`                    | `app`                        | Bot、接続サーバー、スクリプトが起動したあと        |
+| `discordReady`               | `client`                     | Discordへのログインが完了したとき                  |
+| `discordMessage`             | `message`                    | 対象チャンネルでユーザーのメッセージを受信したとき |
+| `discordSend`                | `channel`, `message`         | discord-mcbeがDiscordへ送信する直前                |
+| `worldConnect`               | `world`                      | ワールドの初期化が完了したとき                     |
+| `worldDisconnect`            | `world`                      | ワールドのセッションが終了したとき                 |
+| `minecraftMessage`           | `world`, `sender`, `message` | Minecraftのチャットを受信したとき                  |
+| `playerJoin` / `playerLeave` | `world`, `player`            | プレイヤーが参加・退出したとき                     |
 
-## ワールドを操作する
+## <Icon name="puzzle" />ワールドを操作する
 
 ```js
 /**
@@ -80,7 +80,7 @@ export default function main(app) {
 
 全メソッドと型は[APIリファレンス](https://discord-mcbe.tn2048.workers.dev/reference/)を参照してください。
 
-## 依存パッケージを追加する
+## <Icon name="add-document" />依存パッケージを追加する
 
 ランチャーの`app/`は更新時に再展開されるため、独自コードは`scripts/`へ置きます。外部パッケージはランチャーのルートにある`package.json`へ追加します。内蔵Bunを使う場合は、サーバーを停止して次を実行します。
 

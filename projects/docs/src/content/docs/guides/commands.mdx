@@ -3,9 +3,9 @@ title: コマンドと機能
 description: DiscordとMinecraftのコマンド、チャット連携、ステータスパネルを説明します。
 ---
 
-import { Aside } from '@astrojs/starlight/components';
+import { Aside, Icon } from '@astrojs/starlight/components';
 
-## Discordコマンド
+## <Icon name="terminal" />Discordコマンド
 
 Botは起動時に`GUILD_ID`で指定したDiscordサーバーへコマンドを登録します。
 
@@ -17,7 +17,7 @@ Botは起動時に`GUILD_ID`で指定したDiscordサーバーへコマンドを
 | `/panel create`                                      | 管理者 | 実行したチャンネルにステータスパネルを作成         |
 | `/panel show`                                        | 管理者 | 保存されているステータスパネルへのリンクを表示     |
 
-### /command
+### <Icon name="right-arrow" />/command
 
 `command`には先頭の`/`を付けずにMinecraftコマンドを入力します。
 
@@ -27,15 +27,15 @@ Botは起動時に`GUILD_ID`で指定したDiscordサーバーへコマンドを
 
 - `world`を省略すると、接続中のすべてのワールドで実行します。
 - `world`の候補には各アドオンのClient IDが表示されます。
-- `raw`を有効にすると、返り値をJSONで表示します。
+- `raw`を有効にすると、実行結果をJSONで表示します。
 - 結果が長い場合は`results.txt`として添付されます。
 - `silent`を有効にすると、結果は実行者だけに見えます。
 
 <Aside type="caution" title="Minecraftコマンドを実行できるのはDiscord管理者です">
-  `/command`と`/panel`は、Discord上の既定権限が「管理者」です。Botへ管理者権限を付けるという意味ではありません。Discordの「連携サービス」設定からコマンド権限をさらに絞ることもできます。
+  `/command`と`/panel`は、Discord上のデフォルト権限が「管理者」です。Botへ管理者権限を付けるという意味ではありません。Discordの「連携サービス」設定からコマンド権限をさらに絞ることもできます。
 </Aside>
 
-### ステータスパネル
+### <Icon name="analytics" />ステータスパネル
 
 `/panel create`は、次の情報を定期更新するEmbedを現在のチャンネルに作成します。
 
@@ -44,17 +44,17 @@ Botは起動時に`GUILD_ID`で指定したDiscordサーバーへコマンドを
 - プレイヤー数とプレイヤー名
 - discord-mcbeのバージョン
 
-保存できるパネルは1つです。新しく作成すると古いパネルは削除され、メッセージIDは`.discord-mcbe/data.json`へ保存されます。パネルのメッセージを手動削除した場合は保存情報も次回取得時に消去されます。更新間隔は[設定](/guides/configuration/#configjson)で変更できます。
+保存できるパネルは1つです。新しく作成すると古いパネルは削除され、メッセージIDは`.discord-mcbe/data.json`へ保存されます。パネルのメッセージを手動で削除すると、次回更新時に保存データからも削除されます。更新間隔は[設定](/guides/configuration/#configjson)で変更できます。
 
-## チャット連携
+## <Icon name="messages" />チャット連携
 
-### MinecraftからDiscord
+### <Icon name="right-arrow" />MinecraftからDiscord
 
 接続中のワールドでプレイヤーが送信した通常チャットを`CHANNEL_ID`へ転送します。参加、退出、ワールド接続、切断もEmbedで通知します。
 
-複数ワールド接続時には、必要に応じてワールド名がメッセージへ追加されます。Minecraftの`§`カラーコードは既定で除去されます。
+複数ワールド接続時には、必要に応じてワールド名がメッセージへ追加されます。Minecraftの`§`カラーコードはデフォルトで除去されます。
 
-### DiscordからMinecraft
+### <Icon name="left-arrow" />DiscordからMinecraft
 
 `CHANNEL_ID`でユーザーが送ったメッセージを、接続中のすべてのワールドへ送ります。
 
@@ -64,7 +64,7 @@ Botは起動時に`GUILD_ID`で指定したDiscordサーバーへコマンドを
 - 添付ファイル本体は送らず、ファイル数だけを通知します。
 - [メッセージフィルター](/guides/configuration/#discordメッセージフィルター)で長文や正規表現に一致する内容を短縮・置換・破棄できます。
 
-## サーバーコンソール
+## <Icon name="desktop" />サーバーコンソール
 
 discord-mcbeが動作しているターミナルへMinecraftコマンドを入力すると、接続中の全ワールドで実行します。先頭の`/`はあってもなくても構いません。
 
@@ -74,12 +74,12 @@ say Server maintenance starts in 10 minutes
 
 コンソールへアクセスできるユーザーはMinecraftコマンドを無制限に実行できます。サーバーのOSアカウントとファイル権限を適切に保護してください。
 
-## Minecraftコマンド
+## <Icon name="puzzle" />Minecraftコマンド
 
 | コマンド            | 権限   | 説明                              |
 | ------------------- | ------ | --------------------------------- |
 | `/dmc:dmc`          | 管理者 | discord-mcbe設定フォームを開く    |
-| `/dmc:discord-mcbe` | 管理者 | 設定フォームを開く別名            |
+| `/dmc:discord-mcbe` | 管理者 | 設定フォームを開くエイリアス      |
 | `/dmc:setid <名前>` | ホスト | ワールドを識別するClient IDを保存 |
 | `/dmc:disconnect`   | 管理者 | 現在のブリッジ接続を切断          |
 

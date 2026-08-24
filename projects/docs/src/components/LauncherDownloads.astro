@@ -73,6 +73,11 @@ const copy =
     | 'linux-x64'
     | 'windows-x64';
   type Locale = 'en' | 'ja';
+  type DetectionResult =
+    | { kind: 'mac-unknown' }
+    | { kind: 'target'; target: DownloadTarget }
+    | { kind: 'unknown' }
+    | { kind: 'unsupported-mobile'; os?: string };
 
   interface UserAgentData {
     getHighEntropyValues?: (hints: string[]) => Promise<{
@@ -94,12 +99,16 @@ const copy =
       detected: (label: string) => `${label}を検出しました。`,
       download: (label: string) => `${label}版をダウンロード`,
       macUnknown: 'macOSを検出しました。Apple SiliconまたはIntelを一覧から選んでください。',
+      unsupportedMobile: (os?: string) =>
+        `${os ?? 'モバイル端末'}を検出しました。ランチャーはWindows、Linux、またはmacOSの端末でダウンロードしてください。`,
       unknown: '環境を自動判定できませんでした。OSとCPUに合うものを一覧から選んでください。',
     },
     en: {
       detected: (label: string) => `${label} detected.`,
       download: (label: string) => `Download for ${label}`,
       macUnknown: 'macOS detected. Choose Apple silicon or Intel from the list.',
+      unsupportedMobile: (os?: string) =>
+        `${os ?? 'A mobile device'} was detected. Download the launcher on a Windows, Linux, or macOS device.`,
       unknown: 'Could not detect this environment. Choose the download matching your OS and CPU.',
     },
   } satisfies Record<Locale, Record<string, string | ((label: string) => string)>>;
@@ -111,12 +120,13 @@ const copy =
     return undefined;
   }
 
-  async function detectDownloadTarget(): Promise<{ isMac: boolean; target?: DownloadTarget }> {
+  async function detectDownloadTarget(): Promise<DetectionResult> {
     const parsed = parseUA();
     const osName = parsed.os.name;
     const deviceType = parsed.device.type;
     if (deviceType === 'mobile' || deviceType === 'tablet' || osName === 'Android' || osName === 'iOS') {
-      return { isMac: false };
+      const os = [osName, parsed.os.version].filter(Boolean).join(' ') || undefined;
+      return { kind: 'unsupported-mobile', os };
     }
 
     let architecture = normalizeArchitecture(parsed.cpu.architecture);
@@ -135,12 +145,12 @@ const copy =
     if (osName === 'Mac OS') platform = 'darwin';
     if (osName !== 'Android' && /(?:X11; )?Linux\b/i.test(parsed.ua)) platform = 'linux';
 
-    if (platform === 'windows' && architecture === 'x64') return { isMac: false, target: 'windows-x64' };
-    if (platform === 'linux' && architecture === 'x64') return { isMac: false, target: 'linux-x64' };
-    if (platform === 'linux' && architecture === 'arm64') return { isMac: false, target: 'linux-arm64' };
-    if (platform === 'darwin' && architecture === 'x64') return { isMac: true, target: 'darwin-x64' };
-    if (platform === 'darwin' && architecture === 'arm64') return { isMac: true, target: 'darwin-arm64' };
-    return { isMac: platform === 'darwin' };
+    if (platform === 'windows' && architecture === 'x64') return { kind: 'target', target: 'windows-x64' };
+    if (platform === 'linux' && architecture === 'x64') return { kind: 'target', target: 'linux-x64' };
+    if (platform === 'linux' && architecture === 'arm64') return { kind: 'target', target: 'linux-arm64' };
+    if (platform === 'darwin' && architecture === 'x64') return { kind: 'target', target: 'darwin-x64' };
+    if (platform === 'darwin' && architecture === 'arm64') return { kind: 'target', target: 'darwin-arm64' };
+    return platform === 'darwin' ? { kind: 'mac-unknown' } : { kind: 'unknown' };
   }
 
   async function enhanceDownloadPicker(picker: HTMLElement) {
@@ -150,8 +160,16 @@ const copy =
     if (!status || !recommended) return;
 
     const detected = await detectDownloadTarget();
-    if (!detected.target) {
-      status.textContent = detected.isMac ? messages[locale].macUnknown : messages[locale].unknown;
+    if (detected.kind === 'unsupported-mobile') {
+      status.textContent = messages[locale].unsupportedMobile(detected.os);
+      return;
+    }
+    if (detected.kind === 'mac-unknown') {
+      status.textContent = messages[locale].macUnknown;
+      return;
+    }
+    if (detected.kind === 'unknown') {
+      status.textContent = messages[locale].unknown;
       return;
     }
 

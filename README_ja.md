@@ -1,90 +1,39 @@
 日本語 | [English](./README.md)
 
-
 # discord-mcbe
 
-Minecraft統合版とDiscordのチャットを繋ぐDiscord Botです。
+[![GitHub release](https://img.shields.io/github/v/release/tutinoko2048/discord-mcbe?display_name=tag&style=for-the-badge)](https://github.com/tutinoko2048/discord-mcbe/releases)
+[![GitHub downloads](https://img.shields.io/github/downloads/tutinoko2048/discord-mcbe/total?style=for-the-badge)](https://github.com/tutinoko2048/discord-mcbe/releases)
 
-<a href="https://github.com/tutinoko2048/discord-mcbe/releases">
-  <img src="https://img.shields.io/github/v/release/tutinoko2048/discord-mcbe?display_name=tag&style=for-the-badge">
-</a>
-<a href="https://github.com/tutinoko2048/discord-mcbe/releases/latest">
-  <img src="https://img.shields.io/github/downloads/tutinoko2048/discord-mcbe/total?style=for-the-badge">
-</a>
-<a href="https://github.com/tutinoko2048/discord-mcbe/releases">
-  <img src="https://img.shields.io/github/downloads/tutinoko2048/discord-mcbe/latest/total?style=for-the-badge">
-</a>
+Minecraft Bedrock EditionとDiscordを双方向につなぐチャットブリッジです。
+
+[公式ドキュメント](https://discord-mcbe.tn2048.workers.dev/) · [リリース](https://github.com/tutinoko2048/discord-mcbe/releases) · [Discord](https://discord.gg/XGR8FcCeFc)
+
+discord-mcbeは、MinecraftのワールドとDiscordのテキストチャンネルを接続します。チャットやワールドイベントを中継し、Discord Botからコマンドを実行したり、接続状況を確認したりできます。
 
 ## 主な機能
 
-- MinecraftとDiscordのチャット連携
-- DiscordからMinecraftへのコマンド送信
-- 複数ワールドへの同時接続
-- プレイヤーリストの表示 (Discord)
-- オンライン状況をリアルタイムで表示するステータスパネル (Discord)
-- カスタムスクリプトの実行 (詳しくは[こちら](#カスタムスクリプトの実行))
+- MinecraftとDiscordの双方向チャット
+- 通常のワールドとBedrock Dedicated Serverへの対応
+- 複数ワールドの同時接続
+- プレイヤー一覧、コマンド実行、リアルタイムのステータスパネル
+- メッセージフィルターとJavaScriptカスタムスクリプト
 
-## 導入方法
-[導入方法の詳細はこちら](./docs/installation_ja.md)
+## 開発状況
 
+v4は現在ベータ版です。ランチャー、アドオン、設定、コマンドは安定版のv3と異なります。
 
-## コマンド一覧
+導入、設定、コマンド、トラブルシューティング、開発に関する情報は[公式ドキュメント](https://discord-mcbe.tn2048.workers.dev/)を参照してください。
 
-- /help  
-  ボットのヘルプを表示します
+## スクリーンショット
 
-- /ping  
-  ボットとワールドの応答速度を表示します
+<img src="docs/minecraft.jpeg" width="100%" alt="discord-mcbeで接続したMinecraftのチャット">
+<img src="docs/discord.jpeg" width="100%" alt="discord-mcbeで接続したDiscordのチャット">
 
-- /list  
-  プレイヤーリストを表示します
+## コントリビューション
 
-- /command <コマンド> [ワールド]  
-  ワールドにコマンドを送信します。従来通りメッセージから送信することも可能です。  
-  [詳しくはこちら](#コマンドの実行)
+バグ報告、機能提案、翻訳、Pull Requestを歓迎します。報告や提案には[GitHub Issues](https://github.com/tutinoko2048/discord-mcbe/issues)を利用してください。
 
-- /tell <送り先> <メッセージ>  
-  tellでメッセージをプレイヤーに送信します。周りからは見られません
+## ライセンス
 
-- /panel get  
-  ステータスパネルのあるチャンネルを表示します  
-  [詳しくはこちら](#ステータスパネル)
-
-- /panel set  
-  ステータスパネルを表示するチャンネルを設定します
-
-- /panel delete  
-  ステータスパネルを削除します
-
-## configを使ったカスタマイズ
-`config.json`
-
-## その他の機能
-
-### コマンドの実行
-
-`/command <送信するコマンド>` または `/送信するコマンド` でワールドにコマンドを送ることができます。  
-専用ロールを作成し、configの`command_role_id`にロールIDを入力して権限を取得してください  
-<!-- <img src="docs/command.jpeg" width="90%" alt="command"> -->
-
-### ステータスパネル
-
-pingや人数の情報をリアルタイムで更新するパネルです  
-`/panel set` で実行したチャンネルにパネルを設置します  
-<!-- <img src="docs/panel.jpeg" width="90%" alt="panel"> -->
-
-### コンソール
-
-コンソールからコマンドを送信することができます。
-
-### カスタムスクリプトの実行
-
-<!-- todo -->
-
-### TNACとの連携
-
-<!-- todo -->
-
-## Contributing & Translation
-
-<!-- todo -->
+[MIT](./LICENSE)

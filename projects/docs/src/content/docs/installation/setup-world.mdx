@@ -3,24 +3,24 @@ title: Minecraftワールドのセットアップ
 description: ローカルワールドまたはBedrock Dedicated Serverへv4アドオンを導入して接続します。
 ---
 
-import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+import { Aside, Icon, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
 import AddonDownloads from '../../../components/AddonDownloads.astro';
 
-discord-mcbe v4には接続方式の異なる2種類のビヘイビアーパックがあります。ワールドの種類に合う方を使用してください。
+discord-mcbe v4には接続方式の異なる2種類のビヘイビアーパックがあります。利用するワールドに合うものを選んでください。
 
-| ワールド                    | 配布物                               | 接続方式              | 既定ポート |
-| --------------------------- | ------------------------------------ | --------------------- | ---------- |
-| 通常のシングル/マルチプレイ | `discord-mcbe-local-*.mcpack`        | Minecraftの`/connect` | `3063`     |
-| Bedrock Dedicated Server    | `discord-mcbe-bds-*.mcpack` / `.zip` | アドオンから自動接続  | `23191`    |
+| ワールド                    | アセット                             | 接続方式              | デフォルトポート |
+| --------------------------- | ------------------------------------ | --------------------- | ---------------- |
+| 通常のシングル/マルチプレイ | `discord-mcbe-local-*.mcpack`        | Minecraftの`/connect` | `3063`           |
+| Bedrock Dedicated Server    | `discord-mcbe-bds-*.mcpack` / `.zip` | アドオンから自動接続  | `23191`          |
 
-<Aside type="caution" title="アドオンとサーバーの版を合わせてください">
+<Aside type="caution" title="アドオンとサーバーのバージョンを合わせてください">
   v3用アドオンとv4サーバーには互換性がありません。v4ベータでは、GitHub
   Releasesの同じリリースに含まれるサーバーとアドオンを組み合わせます。
 </Aside>
 
 <AddonDownloads locale="ja" />
 
-## ローカルワールド
+## <Icon name="laptop" />ローカルワールド
 
 <Steps>
 
@@ -28,7 +28,7 @@ discord-mcbe v4には接続方式の異なる2種類のビヘイビアーパッ�
 
 2. mcpackをMinecraftで開いてインポートし、対象ワールドの **ビヘイビアーパック** で`discord-mcbe local client`を有効にします。
 
-3. 現在のベータScript APIを使うため、ワールド設定で要求された場合は **Beta APIs** を有効にします。ワールドのコピーを作ってから試すことを推奨します。
+3. ベータ版のScript APIを使うため、ワールド設定で必要な場合は **Beta APIs** を有効にします。ワールドのコピーを作ってから試すことを推奨します。
 
 4. discord-mcbeサーバーを起動します。ターミナルに次のような案内が表示されます。
 
@@ -51,9 +51,9 @@ discord-mcbe v4には接続方式の異なる2種類のビヘイビアーパッ�
 
 </Steps>
 
-### ワールド名を変更する
+### <Icon name="pencil" />ワールド名を変更する
 
-接続先の選択やステータスパネルでは、アドオンのClient IDがワールド名になります。既定値は`discord-mcbe-local`です。オペレーターが次のいずれかを実行して変更し、接続し直します。
+接続先の選択やステータスパネルでは、アドオンのClient IDがワールド名になります。デフォルトは`discord-mcbe-local`です。オペレーターが次のいずれかを実行して変更し、接続し直します。
 
 ```text
 /dmc:dmc
@@ -64,32 +64,32 @@ discord-mcbe v4には接続方式の異なる2種類のビヘイビアーパッ�
 
 複数ワールドを同時に使う場合は、`survival`や`creative`のように重複しない名前を設定してください。
 
-## Bedrock Dedicated Server
+## <Icon name="server" />Bedrock Dedicated Server
 
 <Steps>
 
-1. 上の「Bedrock Dedicated Server」からzipをダウンロードします。ローカル用ではなく、`bds`と付いた配布物を使用します。
+1. 上の「Bedrock Dedicated Server」からzipをダウンロードします。ローカル用ではなく、`bds`アセットを使用します。
 
 2. zip内のビヘイビアーパックをBDSの`behavior_packs`へ配置し、対象ワールドのビヘイビアーパックとして登録します。別のMinecraftクライアントでmcpackをワールドへ適用してからワールドをBDSへ移す方法でも構いません。
 
-3. Beta APIを使用する現在のパックを実行できるよう、BDSとワールドの実験的機能を有効にします。
+3. 現在のパックはBeta APIを使用するため、BDSとワールドで必要な実験的機能を有効にします。
 
-4. discord-mcbeサーバーを先に起動し、次にBDSを起動します。両方が同じ端末にあり、既定ポートを使用していれば、アドオンが`localhost:23191`へ自動接続します。`/connect`は不要です。
+4. discord-mcbeサーバーを先に起動し、次にBDSを起動します。両方が同じ端末にあり、デフォルトポートを使用していれば、アドオンが`localhost:23191`へ自動接続します。`/connect`は不要です。
 
 5. discord-mcbeのログに`[BDS] ScriptBridgeサーバーはポート 23191 で待機しています`とワールドの接続ログが表示されることを確認します。
 
 </Steps>
 
-<Aside type="note" title="別の端末に分ける構成">
-  配布済みBDSアドオンの接続先は`localhost:23191`です。BDSとdiscord-mcbeを別端末で動かすには、`@discord-mcbe/client/bds`の`BridgeClient`へ`host`と`port`を渡す独自アドオンのビルドが必要です。
+<Aside type="note" title="別の端末で動かす場合">
+  公式BDSアドオンの接続先は`localhost:23191`です。BDSとdiscord-mcbeを別端末で動かすには、`@discord-mcbe/client/bds`の`BridgeClient`へ`host`と`port`を渡す独自アドオンのビルドが必要です。
 </Aside>
 
-## Minecraft側の管理コマンド
+## <Icon name="terminal" />Minecraft側の管理コマンド
 
 | コマンド            | 権限   | 説明                                    |
 | ------------------- | ------ | --------------------------------------- |
 | `/dmc:dmc`          | 管理者 | Client IDを編集する設定画面を開く       |
-| `/dmc:discord-mcbe` | 管理者 | 同じ設定画面を開く別名                  |
+| `/dmc:discord-mcbe` | 管理者 | 同じ設定画面を開くエイリアス            |
 | `/dmc:setid <名前>` | ホスト | Client IDを直接保存する。再接続後に反映 |
 | `/dmc:disconnect`   | 管理者 | 現在のdiscord-mcbe接続を切断する        |
 

@@ -1,6 +1,10 @@
 name: Deploy Docs
 
 on:
+  push:
+    branches:
+      - main
+      - rewrite
   release:
     types: [published]
   workflow_dispatch:

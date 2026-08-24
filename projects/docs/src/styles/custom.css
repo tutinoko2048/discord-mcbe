@@ -103,6 +103,13 @@
     overflow-wrap: anywhere;
   }
 
+  .sl-markdown-content :is(h2, h3) > svg {
+    display: inline-block;
+    margin-inline-end: 0.3em;
+    color: var(--sl-color-text-accent);
+    vertical-align: -0.125em;
+  }
+
   .sl-markdown-content img {
     border: 1px solid var(--sl-color-gray-5);
     border-radius: 12px;

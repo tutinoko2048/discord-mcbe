@@ -3,9 +3,9 @@ title: Commands and features
 description: Learn the Discord and Minecraft commands, chat relay, and status panel.
 ---
 
-import { Aside } from '@astrojs/starlight/components';
+import { Aside, Icon } from '@astrojs/starlight/components';
 
-## Discord commands
+## <Icon name="terminal" />Discord commands
 
 At startup, the bot registers commands in the Discord server specified by `GUILD_ID`.
 
@@ -17,7 +17,7 @@ At startup, the bot registers commands in the Discord server specified by `GUILD
 | `/panel create`                                     | Administrator | Create the status panel in the current channel                  |
 | `/panel show`                                       | Administrator | Show a link to the stored status panel                          |
 
-### /command
+### <Icon name="right-arrow" />/command
 
 Enter the Minecraft command in `command` without a leading slash.
 
@@ -36,7 +36,7 @@ Enter the Minecraft command in `command` without a leading slash.
   itself needs Administrator. You can restrict command access further in Discord's Integrations settings.
 </Aside>
 
-### Status panel
+### <Icon name="analytics" />Status panel
 
 `/panel create` posts an embed that periodically refreshes with:
 
@@ -47,15 +47,15 @@ Enter the Minecraft command in `command` without a leading slash.
 
 Only one panel is stored. Creating another removes the old panel, and its message ID is persisted in `.discord-mcbe/data.json`. If the message is deleted manually, the stored value is cleared the next time it is fetched. Change the refresh interval in [configuration](/en/guides/configuration/#configjson).
 
-## Chat relay
+## <Icon name="messages" />Chat relay
 
-### Minecraft to Discord
+### <Icon name="right-arrow" />Minecraft to Discord
 
 Normal chat from players in a connected world is sent to `CHANNEL_ID`. Join, leave, world-connect, and disconnect events are sent as embeds.
 
 When multiple worlds are connected, a world name is included where needed. Minecraft `§` color codes are removed by default.
 
-### Discord to Minecraft
+### <Icon name="left-arrow" />Discord to Minecraft
 
 Messages from users in `CHANNEL_ID` are broadcast to every connected world.
 
@@ -65,7 +65,7 @@ Messages from users in `CHANNEL_ID` are broadcast to every connected world.
 - Attachment data is not downloaded; only the file count is shown.
 - [Message filters](/en/guides/configuration/#discord-message-filters) can trim, replace, or reject content.
 
-## Server console
+## <Icon name="desktop" />Server console
 
 Type a Minecraft command into the terminal running discord-mcbe to execute it in every connected world. A leading slash is optional.
 
@@ -75,7 +75,7 @@ say Server maintenance starts in 10 minutes
 
 Anyone with console access can execute unrestricted Minecraft commands. Protect the host OS account and its files accordingly.
 
-## Minecraft commands
+## <Icon name="puzzle" />Minecraft commands
 
 | Command             | Permission | Description                                    |
 | ------------------- | ---------- | ---------------------------------------------- |

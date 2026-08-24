@@ -3,7 +3,7 @@ title: Custom scripts
 description: Extend discord-mcbe from JavaScript with events and world APIs.
 ---
 
-import { Aside } from '@astrojs/starlight/components';
+import { Aside, Icon } from '@astrojs/starlight/components';
 
 At startup, discord-mcbe imports the JavaScript module selected by `script.entry` in `config.json` and passes its `Application` instance to the module's default export. The default entry point is `scripts/main.js`.
 
@@ -12,7 +12,7 @@ At startup, discord-mcbe imports the JavaScript module selected by `script.entry
   network, and Minecraft commands.
 </Aside>
 
-## Minimal script
+## <Icon name="document" />Minimal script
 
 ```js
 /**
@@ -25,7 +25,7 @@ export default function main(app) {
 
 Restart discord-mcbe after saving the file. There is no hot reload. The current launcher imports JavaScript directly, so compile TypeScript to JavaScript first.
 
-## Subscribe to events
+## <Icon name="clock" />Subscribe to events
 
 ```js
 /**
@@ -61,7 +61,7 @@ The main events are:
 | `minecraftMessage`           | `world`, `sender`, `message` | On Minecraft chat                                      |
 | `playerJoin` / `playerLeave` | `world`, `player`            | When a player joins or leaves                          |
 
-## Control a world
+## <Icon name="puzzle" />Control a world
 
 ```js
 /**
@@ -81,7 +81,7 @@ export default function main(app) {
 
 See the [API reference](https://discord-mcbe.tn2048.workers.dev/reference/) for the full set of methods and types.
 
-## Add dependencies
+## <Icon name="add-document" />Add dependencies
 
 The launcher replaces `app/` during an update, so keep your code under `scripts/`. Add external dependencies to the `package.json` in the launcher root. To use the bundled Bun runtime, stop the server and run:
 

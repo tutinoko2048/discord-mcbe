@@ -3,7 +3,7 @@ title: Set up a Minecraft world
 description: Install and connect the v4 add-on in a regular world or Bedrock Dedicated Server.
 ---
 
-import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+import { Aside, Icon, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
 import AddonDownloads from '../../../../components/AddonDownloads.astro';
 
 discord-mcbe v4 ships two behavior packs with different transports. Use the one that matches the kind of world you run.
@@ -20,7 +20,7 @@ discord-mcbe v4 ships two behavior packs with different transports. Use the one 
 
 <AddonDownloads locale="en" />
 
-## Regular hosted world
+## <Icon name="laptop" />Regular hosted world
 
 <Steps>
 
@@ -51,7 +51,7 @@ discord-mcbe v4 ships two behavior packs with different transports. Use the one 
 
 </Steps>
 
-### Change the world name
+### <Icon name="pencil" />Change the world name
 
 The add-on's Client ID becomes its world name in selectors and the status panel. The default is `discord-mcbe-local`. An operator can change it with either command below, then reconnect.
 
@@ -64,7 +64,7 @@ The add-on's Client ID becomes its world name in selectors and the status panel.
 
 Give every concurrently connected world a unique ID such as `survival` or `creative`.
 
-## Bedrock Dedicated Server
+## <Icon name="server" />Bedrock Dedicated Server
 
 <Steps>
 
@@ -85,7 +85,7 @@ Give every concurrently connected world a unique ID such as `survival` or `creat
   a custom add-on that passes `host` and `port` to `BridgeClient` from `@discord-mcbe/client/bds`.
 </Aside>
 
-## Minecraft administration commands
+## <Icon name="terminal" />Minecraft administration commands
 
 | Command             | Permission | Description                                       |
 | ------------------- | ---------- | ------------------------------------------------- |
