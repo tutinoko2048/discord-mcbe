@@ -44,10 +44,12 @@
     "jsonc": "^2.0.0",
     "moment-timezone": "^0.6.1",
     "socket-be": "^2.6.0",
+    "ws": "catalog:",
     "zod": "^4.3.6"
   },
   "devDependencies": {
     "@discord-mcbe/internal-config": "workspace:*",
+    "@types/ws": "catalog:",
     "bun-types": "catalog:",
     "oh-my-logo": "^0.4.0"
   },

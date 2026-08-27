@@ -35,7 +35,7 @@
   "console.login": "Logged in as %0",
   "console.socket.ready": "[Local] SocketBridge server is listening on port: %0",
   "console.socket.command": "[Local] Type %0 in Minecraft to connect.",
-  "console.script.ready": "[BDS] ScriptBridge server is listening on port: %0",
+  "console.script.ready": "[BDS] Bridge server is listening on port: %0",
   "console.connect": "[%0] Connected to the world",
   "console.disconnect": "[%0] Disconnected from the world",
   "console.join": "[%0] %1 joined the game",

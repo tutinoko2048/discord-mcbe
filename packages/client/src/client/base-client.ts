@@ -6,7 +6,7 @@ import { registerCommands } from './command';
 import { createPlayerDescriptor } from './descriptors';
 import { Logger } from '../utils';
 
-import type { SocketBridgeClient, IBridgeClient } from '../transport';
+import type { SocketBridgeClient, IBridgeClient, WebSocketBridgeClient } from '../transport';
 import type { ScriptBridgeClient } from '@script-bridge/client';
 
 export enum ClientType {
@@ -58,7 +58,7 @@ export abstract class BaseClient<T extends IBridgeClient = IBridgeClient> {
     return this.type === ClientType.Local;
   }
 
-  isBDS(): this is BaseClient<ScriptBridgeClient> {
+  isBDS(): this is BaseClient<ScriptBridgeClient | WebSocketBridgeClient> {
     return this.type === ClientType.BDS;
   }
 }

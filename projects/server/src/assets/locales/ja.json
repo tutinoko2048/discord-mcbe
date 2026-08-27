@@ -35,7 +35,7 @@
   "console.login": "%0 としてログインしました",
   "console.socket.ready": "[Local] SocketBridgeサーバーはポート %0 で待機しています",
   "console.socket.command": "[Local] Minecraftで %0 と入力して接続してください。",
-  "console.script.ready": "[BDS] ScriptBridgeサーバーはポート %0 で待機しています",
+  "console.script.ready": "[BDS] Bridgeサーバーはポート %0 で待機しています",
   "console.connect": "[%0] ワールドに接続しました",
   "console.disconnect": "[%0] ワールドから切断されました",
   "console.join": "[%0] %1がゲームに参加しました",

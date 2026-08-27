@@ -20,15 +20,17 @@ GUILD_ID=123456789012345678
 CHANNEL_ID=123456789012345678
 SOCKET_PORT=3063
 BRIDGE_PORT=23191
+BRIDGE_TRANSPORT=websocket
 ```
 
-| Variable        | Required | Default | Description                                          |
-| --------------- | :------: | ------- | ---------------------------------------------------- |
-| `DISCORD_TOKEN` |    ✓     | —       | Bot token issued in the Developer Portal             |
-| `GUILD_ID`      |    ✓     | —       | Discord server where slash commands are registered   |
-| `CHANNEL_ID`    |    ✓     | —       | Text channel used for Minecraft chat relay           |
-| `SOCKET_PORT`   |          | `3063`  | WebSocket port used by `/connect` for regular worlds |
-| `BRIDGE_PORT`   |          | `23191` | ScriptBridge port used by the BDS add-on             |
+| Variable           | Required | Default     | Description                                           |
+| ------------------ | :------: | ----------- | ----------------------------------------------------- |
+| `DISCORD_TOKEN`    |    ✓     | —           | Bot token issued in the Developer Portal              |
+| `GUILD_ID`         |    ✓     | —           | Discord server where slash commands are registered    |
+| `CHANNEL_ID`       |    ✓     | —           | Text channel used for Minecraft chat relay            |
+| `SOCKET_PORT`      |          | `3063`      | WebSocket port used by `/connect` for regular worlds  |
+| `BRIDGE_PORT`      |          | `23191`     | Bridge port used by the BDS add-on                    |
+| `BRIDGE_TRANSPORT` |          | `websocket` | BDS transport: `websocket`, or `polling` for fallback |
 
 <Aside type="danger" title="Do not share .env">
   Keep `.env` out of version control and remove tokens from logs before sharing them. Reset an exposed token
@@ -150,6 +152,7 @@ See the [API reference](https://discord-mcbe.tn2048.workers.dev/reference/) and 
   </TabItem>
   <TabItem label="BDS">
     Set the same value in `BRIDGE_PORT` and `BridgeClient({port})` in a custom-built BDS add-on. The prebuilt
-    add-on is fixed to `23191`.
+    add-on is fixed to `23191` and uses WebSocket. To fall back to the old polling transport, set
+    `BRIDGE_TRANSPORT=polling` on the server and `BridgeClient({ transport: 'polling' })` in a custom add-on.
   </TabItem>
 </Tabs>

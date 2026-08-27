@@ -7,11 +7,17 @@ settings:
 catalogs:
   default:
     '@bedrock-apis/env-types':
-      specifier: 1.0.0-rc.1
-      version: 1.0.0-rc.1
+      specifier: 1.1.0-rc
+      version: 1.1.0-rc
+    '@minecraft/server-admin':
+      specifier: 1.0.0-beta.1.26.44-stable
+      version: 1.0.0-beta.1.26.44-stable
+    '@minecraft/server-net':
+      specifier: 1.0.0-beta.1.26.44-stable
+      version: 1.0.0-beta.1.26.44-stable
     '@minecraft/server-ui':
-      specifier: 2.0.0
-      version: 2.0.0
+      specifier: 2.1.0
+      version: 2.1.0
     '@script-bridge/client':
       specifier: ^0.5.0
       version: 0.5.0
@@ -21,12 +27,18 @@ catalogs:
     '@script-bridge/server':
       specifier: ^0.5.0
       version: 0.5.0
+    '@types/ws':
+      specifier: ^8.18.1
+      version: 8.18.1
     bun-types:
       specifier: ^1.3.13
       version: 1.3.13
+    ws:
+      specifier: ^8.21.3
+      version: 8.21.3
 
 overrides:
-  '@minecraft/server': 2.8.0-beta.1.26.20-stable
+  '@minecraft/server': 2.10.0-beta.1.26.44-stable
 
 importers:
 
@@ -79,11 +91,17 @@ importers:
         specifier: workspace:*
         version: link:../shared
       '@minecraft/server':
-        specifier: 2.8.0-beta.1.26.20-stable
-        version: 2.8.0-beta.1.26.20-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
+        specifier: 2.10.0-beta.1.26.44-stable
+        version: 2.10.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
+      '@minecraft/server-admin':
+        specifier: 'catalog:'
+        version: 1.0.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/server@2.10.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70))
+      '@minecraft/server-net':
+        specifier: 'catalog:'
+        version: 1.0.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/server-admin@1.0.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/server@2.10.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)))(@minecraft/server@2.10.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70))
       '@minecraft/server-ui':
         specifier: 'catalog:'
-        version: 2.0.0(@minecraft/vanilla-data@1.21.70)
+        version: 2.1.0(@minecraft/common@1.2.0)(@minecraft/server@2.10.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70))
       '@script-bridge/client':
         specifier: 'catalog:'
         version: 0.5.0
@@ -93,7 +111,7 @@ importers:
     devDependencies:
       '@bedrock-apis/env-types':
         specifier: 'catalog:'
-        version: 1.0.0-rc.1
+        version: 1.1.0-rc
       '@discord-mcbe/internal-config':
         specifier: workspace:*
         version: link:../internal-config
@@ -103,8 +121,8 @@ importers:
   packages/shared:
     dependencies:
       '@minecraft/server':
-        specifier: 2.8.0-beta.1.26.20-stable
-        version: 2.8.0-beta.1.26.20-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
+        specifier: 2.10.0-beta.1.26.44-stable
+        version: 2.10.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
       '@script-bridge/protocol':
         specifier: 'catalog:'
         version: 0.5.0
@@ -121,13 +139,13 @@ importers:
     devDependencies:
       '@bedrock-apis/env-types':
         specifier: 'catalog:'
-        version: 1.0.0-rc.1
+        version: 1.1.0-rc
       '@discord-mcbe/internal-config':
         specifier: workspace:*
         version: link:../../packages/internal-config
       '@minecraft/server':
-        specifier: 2.8.0-beta.1.26.20-stable
-        version: 2.8.0-beta.1.26.20-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
+        specifier: 2.10.0-beta.1.26.44-stable
+        version: 2.10.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
 
   projects/addon-local:
     dependencies:
@@ -137,13 +155,13 @@ importers:
     devDependencies:
       '@bedrock-apis/env-types':
         specifier: 'catalog:'
-        version: 1.0.0-rc.1
+        version: 1.1.0-rc
       '@discord-mcbe/internal-config':
         specifier: workspace:*
         version: link:../../packages/internal-config
       '@minecraft/server':
-        specifier: 2.8.0-beta.1.26.20-stable
-        version: 2.8.0-beta.1.26.20-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
+        specifier: 2.10.0-beta.1.26.44-stable
+        version: 2.10.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
 
   projects/docs:
     dependencies:
@@ -216,8 +234,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/shared
       '@minecraft/server':
-        specifier: 2.8.0-beta.1.26.20-stable
-        version: 2.8.0-beta.1.26.20-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
+        specifier: 2.10.0-beta.1.26.44-stable
+        version: 2.10.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
       '@script-bridge/protocol':
         specifier: 'catalog:'
         version: 0.5.0
@@ -242,6 +260,9 @@ importers:
       socket-be:
         specifier: ^2.6.0
         version: 2.6.0(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
+      ws:
+        specifier: 'catalog:'
+        version: 8.21.3
       zod:
         specifier: ^4.3.6
         version: 4.3.6
@@ -249,6 +270,9 @@ importers:
       '@discord-mcbe/internal-config':
         specifier: workspace:*
         version: link:../../packages/internal-config
+      '@types/ws':
+        specifier: 'catalog:'
+        version: 8.18.1
       bun-types:
         specifier: 'catalog:'
         version: 1.3.13
@@ -439,8 +463,8 @@ packages:
     resolution: {integrity: sha512-mOm5ZrYmphGfqVWoH5YYMTITb3cDXsFgmvFlvkvWDMsR9X8RFnt7a0Wb6yNIdoFsiMO9WjYLq+U/FMtqIYAF8Q==}
     engines: {node: ^20.19.0 || >=22.12.0}
 
-  '@bedrock-apis/env-types@1.0.0-rc.1':
-    resolution: {integrity: sha512-cgm5SgCTMQnnbt+6zV4JbTLlO68ohbIMx0p/HKZesN9NdHrS3hVwfBme1GxyNlt1BEBLVMIn+UbVpiKISWvmAA==}
+  '@bedrock-apis/env-types@1.1.0-rc':
+    resolution: {integrity: sha512-SkzvAwsr2aI93FDZg7PndcVS6A4S/v5QjgjfQEM+oeyf174D6nUAQtfnFsOnWpQilcCBO6GkStc8vdvIQRUrMQ==}
 
   '@blazediff/core@1.9.1':
     resolution: {integrity: sha512-ehg3jIkYKulZh+8om/O25vkvSsXXwC+skXmyA87FFx6A/45eqOkZsBltMw/TVteb0mloiGT8oGRTcjRAz66zaA==}
@@ -1228,11 +1252,27 @@ packages:
   '@minecraft/common@1.2.0':
     resolution: {integrity: sha512-JdmEq4P3Z/FtoBzhLijFgMSVFnFRrUoLwY8DHHrgtFo0mfLTOLTB1RErYjLMsA6b7BGVNxkX/pfFRiH7QZ0XwQ==}
 
-  '@minecraft/server-ui@2.0.0':
-    resolution: {integrity: sha512-K1xFK1OEJSNfIgyRElaoxDTW/nbEqjBp1YnUdyPCs4kGDglwoXNyFz3wzMOkvT04CJXSifZGcTJeWda4C6OkXw==}
+  '@minecraft/server-admin@1.0.0-beta.1.26.44-stable':
+    resolution: {integrity: sha512-nAzWUma504FW7THq/g9IrxbEf9hkn8rITnCQcoyiwc0E3jZnzJFyXpbUGfCerzuDZGhg9lajIoAWV1JghwYNUw==}
+    peerDependencies:
+      '@minecraft/common': ^1.0.0
+      '@minecraft/server': 2.10.0-beta.1.26.44-stable
 
-  '@minecraft/server@2.8.0-beta.1.26.20-stable':
-    resolution: {integrity: sha512-oxrzclVYyf3WDotWBQ5YauQ47CksnOhDdlm/jX1LPvWvNo6atMYCls6kWLE5CsQrMBwEfwb5pazFxXeUh/4ZMw==}
+  '@minecraft/server-net@1.0.0-beta.1.26.44-stable':
+    resolution: {integrity: sha512-sY597pYgUqbYWR/RUK95q+A5D9axCvUVivPqj1b7JpDh+HpCtUOqHRVdjF31fqN6fgL9+55UVMHwRuBlKvrHdA==}
+    peerDependencies:
+      '@minecraft/common': ^1.0.0
+      '@minecraft/server': 2.10.0-beta.1.26.44-stable
+      '@minecraft/server-admin': ^1.0.0-beta.1.26.44-stable
+
+  '@minecraft/server-ui@2.1.0':
+    resolution: {integrity: sha512-7zXyqK6HI62aH0RlfObLitBc7EldpoAH3AeC8JWOaI6CCNoCi2DG2U78ELdq+NrUIjvCE87Bix/I+hgXsQ5AdA==}
+    peerDependencies:
+      '@minecraft/common': ^1.0.0
+      '@minecraft/server': 2.10.0-beta.1.26.44-stable
+
+  '@minecraft/server@2.10.0-beta.1.26.44-stable':
+    resolution: {integrity: sha512-fM1KzY76b7RRlS2ldSj3qDHYtzRYBxK+JKMViW+gLQCTy0GjV1XA6aKBowlFentNLRC4119Qo5KrB2OIHI+Pcw==}
     peerDependencies:
       '@minecraft/common': ^1.2.0
       '@minecraft/vanilla-data': '>=1.20.70'
@@ -4515,18 +4555,6 @@ packages:
       utf-8-validate:
         optional: true
 
-  ws@8.20.0:
-    resolution: {integrity: sha512-sAt8BhgNbzCtgGbt2OxmpuryO63ZoDk/sqaB/znQm94T4fCEsy/yV+7CdC1kJhOU9lboAEU7R3kquuycDoibVA==}
-    engines: {node: '>=10.0.0'}
-    peerDependencies:
-      bufferutil: ^4.0.1
-      utf-8-validate: '>=5.0.2'
-    peerDependenciesMeta:
-      bufferutil:
-        optional: true
-      utf-8-validate:
-        optional: true
-
   ws@8.21.3:
     resolution: {integrity: sha512-201TZ/kPWxoPr/OKWjquZR1SWKXcvxdH+e1xrx89b3YbmzLMFCLfnaG1HFIgWzJOEWZ7MvpK++odZufgYR50Rw==}
     engines: {node: '>=10.0.0'}
@@ -4871,7 +4899,7 @@ snapshots:
       '@babel/helper-string-parser': 8.0.0-rc.4
       '@babel/helper-validator-identifier': 8.0.0-rc.3
 
-  '@bedrock-apis/env-types@1.0.0-rc.1': {}
+  '@bedrock-apis/env-types@1.1.0-rc': {}
 
   '@blazediff/core@1.9.1': {}
 
@@ -5026,7 +5054,7 @@ snapshots:
       '@vladfrangu/async_event_emitter': 2.4.7
       discord-api-types: 0.38.47
       tslib: 2.8.1
-      ws: 8.20.0
+      ws: 8.21.3
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -5464,14 +5492,23 @@ snapshots:
 
   '@minecraft/common@1.2.0': {}
 
-  '@minecraft/server-ui@2.0.0(@minecraft/vanilla-data@1.21.70)':
+  '@minecraft/server-admin@1.0.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/server@2.10.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70))':
     dependencies:
       '@minecraft/common': 1.2.0
-      '@minecraft/server': 2.8.0-beta.1.26.20-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
-    transitivePeerDependencies:
-      - '@minecraft/vanilla-data'
+      '@minecraft/server': 2.10.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
 
-  '@minecraft/server@2.8.0-beta.1.26.20-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)':
+  '@minecraft/server-net@1.0.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/server-admin@1.0.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/server@2.10.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)))(@minecraft/server@2.10.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70))':
+    dependencies:
+      '@minecraft/common': 1.2.0
+      '@minecraft/server': 2.10.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
+      '@minecraft/server-admin': 1.0.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/server@2.10.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70))
+
+  '@minecraft/server-ui@2.1.0(@minecraft/common@1.2.0)(@minecraft/server@2.10.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70))':
+    dependencies:
+      '@minecraft/common': 1.2.0
+      '@minecraft/server': 2.10.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
+
+  '@minecraft/server@2.10.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)':
     dependencies:
       '@minecraft/common': 1.2.0
       '@minecraft/vanilla-data': 1.21.70
@@ -5968,7 +6005,7 @@ snapshots:
 
   '@types/sax@1.2.7':
     dependencies:
-      '@types/node': 25.6.0
+      '@types/node': 24.13.3
 
   '@types/semver@7.7.1': {}
 
@@ -5980,7 +6017,7 @@ snapshots:
 
   '@types/ws@8.18.1':
     dependencies:
-      '@types/node': 25.6.0
+      '@types/node': 24.13.3
 
   '@ungap/structured-clone@1.3.3': {}
 
@@ -7122,7 +7159,7 @@ snapshots:
       type-fest: 4.41.0
       widest-line: 5.0.0
       wrap-ansi: 9.0.2
-      ws: 8.20.0
+      ws: 8.21.3
       yoga-layout: 3.2.1
     transitivePeerDependencies:
       - bufferutil
@@ -8433,9 +8470,9 @@ snapshots:
 
   socket-be@2.6.0(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70):
     dependencies:
-      '@minecraft/server': 2.8.0-beta.1.26.20-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
+      '@minecraft/server': 2.10.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
       '@serenityjs/emitter': 0.5.2
-      ws: 8.20.0
+      ws: 8.21.3
     transitivePeerDependencies:
       - '@minecraft/common'
       - '@minecraft/vanilla-data'
@@ -9025,8 +9062,6 @@ snapshots:
       strip-ansi: 7.2.0
 
   ws@8.18.0: {}
-
-  ws@8.20.0: {}
 
   ws@8.21.3: {}
 

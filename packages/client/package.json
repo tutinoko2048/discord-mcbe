@@ -27,6 +27,8 @@
   "dependencies": {
     "@discord-mcbe/shared": "workspace:*",
     "@minecraft/server": "catalog:",
+    "@minecraft/server-admin": "catalog:",
+    "@minecraft/server-net": "catalog:",
     "@minecraft/server-ui": "catalog:",
     "@script-bridge/client": "catalog:",
     "@script-bridge/protocol": "catalog:"

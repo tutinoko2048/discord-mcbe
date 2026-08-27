@@ -77,9 +77,10 @@ Check the channel permission overrides as well. They must not deny the permissio
    CHANNEL_ID=your_relay_channel_id
    # SOCKET_PORT=3063
    # BRIDGE_PORT=23191
+   # BRIDGE_TRANSPORT=websocket
    ```
 
-   Values do not need quotes. Only set `SOCKET_PORT` or `BRIDGE_PORT` when the default port conflicts with another service.
+   Values do not need quotes. Only set `SOCKET_PORT` or `BRIDGE_PORT` when the default port conflicts with another service. BDS uses WebSocket by default.
 
 3. Install the v4 beta and start the server.
 

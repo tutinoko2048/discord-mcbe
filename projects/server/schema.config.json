@@ -10,10 +10,7 @@
     },
     "language": {
       "type": "string",
-      "enum": [
-        "en-US",
-        "ja"
-      ],
+      "enum": ["en-US", "ja"],
       "description": "Language"
     },
     "timezone_offset": {
@@ -50,10 +47,7 @@
                   "properties": {
                     "on_fail": {
                       "type": "string",
-                      "enum": [
-                        "cancel",
-                        "shorten"
-                      ],
+                      "enum": ["cancel", "shorten"],
                       "description": "Action to take when content exceeds max length or lines"
                     },
                     "max_content_length": {
@@ -69,9 +63,7 @@
                       "maximum": 9007199254740991
                     }
                   },
-                  "required": [
-                    "on_fail"
-                  ],
+                  "required": ["on_fail"],
                   "additionalProperties": false,
                   "description": "LengthFilter"
                 },
@@ -80,10 +72,7 @@
                   "properties": {
                     "on_fail": {
                       "type": "string",
-                      "enum": [
-                        "cancel",
-                        "replace"
-                      ],
+                      "enum": ["cancel", "replace"],
                       "description": "Action to take when content matches the regex pattern"
                     },
                     "ignore_pattern": {
@@ -91,10 +80,7 @@
                       "description": "Regular expression for content to ignore certain content"
                     }
                   },
-                  "required": [
-                    "on_fail",
-                    "ignore_pattern"
-                  ],
+                  "required": ["on_fail", "ignore_pattern"],
                   "additionalProperties": false,
                   "description": "RegexFilter"
                 }
@@ -109,10 +95,7 @@
                     "properties": {
                       "on_fail": {
                         "type": "string",
-                        "enum": [
-                          "cancel",
-                          "shorten"
-                        ],
+                        "enum": ["cancel", "shorten"],
                         "description": "Action to take when content exceeds max length or lines"
                       },
                       "max_content_length": {
@@ -128,9 +111,7 @@
                         "maximum": 9007199254740991
                       }
                     },
-                    "required": [
-                      "on_fail"
-                    ],
+                    "required": ["on_fail"],
                     "additionalProperties": false,
                     "description": "LengthFilter"
                   },
@@ -139,10 +120,7 @@
                     "properties": {
                       "on_fail": {
                         "type": "string",
-                        "enum": [
-                          "cancel",
-                          "replace"
-                        ],
+                        "enum": ["cancel", "replace"],
                         "description": "Action to take when content matches the regex pattern"
                       },
                       "ignore_pattern": {
@@ -150,10 +128,7 @@
                         "description": "Regular expression for content to ignore certain content"
                       }
                     },
-                    "required": [
-                      "on_fail",
-                      "ignore_pattern"
-                    ],
+                    "required": ["on_fail", "ignore_pattern"],
                     "additionalProperties": false,
                     "description": "RegexFilter"
                   }
@@ -180,9 +155,7 @@
           "description": "Disable encryption for WebSocket connection"
         }
       },
-      "required": [
-        "disable_encryption"
-      ],
+      "required": ["disable_encryption"],
       "additionalProperties": false
     },
     "script": {
@@ -193,9 +166,7 @@
           "description": "The entry file for custom scripts"
         }
       },
-      "required": [
-        "entry"
-      ],
+      "required": ["entry"],
       "additionalProperties": false
     },
     "translationOverrides": {

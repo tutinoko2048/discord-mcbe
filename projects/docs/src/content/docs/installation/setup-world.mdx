@@ -72,16 +72,16 @@ discord-mcbe v4には接続方式の異なる2種類のビヘイビアーパッ�
 
 2. zip内のビヘイビアーパックをBDSの`behavior_packs`へ配置し、対象ワールドのビヘイビアーパックとして登録します。別のMinecraftクライアントでmcpackをワールドへ適用してからワールドをBDSへ移す方法でも構いません。
 
-3. 現在のパックはBeta APIを使用するため、BDSとワールドで必要な実験的機能を有効にします。
+3. 現在のパックはBeta APIと`@minecraft/server-net`のWebSocket APIを使用します。BDS 1.26.20以降を使い、BDSとワールドで必要な実験的機能を有効にします。
 
-4. discord-mcbeサーバーを先に起動し、次にBDSを起動します。両方が同じ端末にあり、デフォルトポートを使用していれば、アドオンが`localhost:23191`へ自動接続します。`/connect`は不要です。
+4. discord-mcbeサーバーを先に起動し、次にBDSを起動します。両方が同じ端末にあり、デフォルトポートを使用していれば、アドオンがWebSocketで`localhost:23191`へ自動接続します。`/connect`は不要です。
 
-5. discord-mcbeのログに`[BDS] ScriptBridgeサーバーはポート 23191 で待機しています`とワールドの接続ログが表示されることを確認します。
+5. discord-mcbeのログに`[BDS] Bridgeサーバーはポート 23191 で待機しています`とワールドの接続ログが表示されることを確認します。
 
 </Steps>
 
 <Aside type="note" title="別の端末で動かす場合">
-  公式BDSアドオンの接続先は`localhost:23191`です。BDSとdiscord-mcbeを別端末で動かすには、`@discord-mcbe/client/bds`の`BridgeClient`へ`host`と`port`を渡す独自アドオンのビルドが必要です。
+  公式BDSアドオンの接続先は`localhost:23191`で、通信方式はWebSocketです。BDSとdiscord-mcbeを別端末で動かすには、`@discord-mcbe/client/bds`の`BridgeClient`へ`host`と`port`を渡す独自アドオンのビルドが必要です。
 </Aside>
 
 ## <Icon name="terminal" />Minecraft側の管理コマンド
