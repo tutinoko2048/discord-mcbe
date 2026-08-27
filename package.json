@@ -28,10 +28,5 @@
     "typescript": "^6.0.3",
     "vite-plus": "^0.3.0"
   },
-  "packageManager": "pnpm@10.33.4",
-  "pnpm": {
-    "overrides": {
-      "@minecraft/server": "catalog:"
-    }
-  }
+  "packageManager": "pnpm@10.33.4"
 }
