@@ -32,6 +32,10 @@
           "type": "boolean",
           "description": "Whether to delete § in messages sent from minecraft"
         },
+        "minecraft_chat_avatar_url": {
+          "description": "Optional avatar URL template for Minecraft chat webhooks. Supports {name} and {pfid}.",
+          "type": "string"
+        },
         "panel_update_interval": {
           "type": "integer",
           "exclusiveMinimum": 0,

@@ -96,7 +96,17 @@ export class EventHandler {
     this.logger.info(_t('console.chat', world.name, sender.name, message));
 
     try {
-      if (this.app.minecraft.getWorlds().length > 2) {
+      const worldCount = this.app.minecraft.getWorlds().length;
+      if (this.app.env.DISCORD_WEBHOOK_URL) {
+        await this.app.bot.sendMinecraftChat({
+          worldName: world.name,
+          worldCount,
+          senderName: sender.name,
+          pfid: sender.pfid,
+          content: message,
+          avatarUrlTemplate: this.app.config.bot.minecraft_chat_avatar_url,
+        });
+      } else if (worldCount > 2) {
         await this.app.bot.sendMessage(_t('discord.chat.multipleWorlds', world.name, sender.name, message));
       } else {
         await this.app.bot.sendMessage(_t('discord.chat', sender.name, message));

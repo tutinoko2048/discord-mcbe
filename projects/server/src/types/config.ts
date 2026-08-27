@@ -31,6 +31,13 @@ const regexFilterSchema = z
 const messageFilterSchema = z.union([lengthFilterSchema, regexFilterSchema]);
 export type MessageFilter = z.infer<typeof messageFilterSchema>;
 
+const avatarUrlTemplateSchema = z
+  .string()
+  .refine(
+    (value) => URL.canParse(value.replaceAll('{name}', 'player').replaceAll('{pfid}', 'playfab-id')),
+    'Must be a valid URL template using {name} and {pfid} placeholders.',
+  );
+
 const botSchema = z.object({
   reply_preview_max_length: z
     .number()
@@ -38,6 +45,9 @@ const botSchema = z.object({
     .positive()
     .describe('Maximum characters for replied content preview'),
   strip_color_prefix: z.boolean().describe('Whether to delete § in messages sent from minecraft'),
+  minecraft_chat_avatar_url: avatarUrlTemplateSchema
+    .optional()
+    .describe('Optional avatar URL template for Minecraft chat webhooks. Supports {name} and {pfid}.'),
   panel_update_interval: z.number().int().positive().describe('The interval to update StatusPanel'),
   discord_message_filter: z
     .union([messageFilterSchema, z.array(messageFilterSchema)])

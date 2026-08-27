@@ -8,11 +8,13 @@ import {
   type TextChannel,
   type Message,
   type MessageCreateOptions,
+  WebhookClient,
 } from 'discord.js';
 import { InteractionManager } from './interaction';
 import { StatusPanel } from './panel';
 import { _t, Logger } from '../util';
 import { DiscordMessageEvent, DiscordReadyEvent, DiscordSendEvent } from '../events';
+import { createMinecraftChatWebhookMessage } from './minecraft-chat-webhook';
 
 import type { Application } from '../application';
 
@@ -100,6 +102,18 @@ export class DiscordBot<READY extends boolean = false> {
     if (!signal.emit()) return;
 
     await signal.channel.send(signal.message);
+  }
+
+  async sendMinecraftChat(options: Parameters<typeof createMinecraftChatWebhookMessage>[0]) {
+    const webhookUrl = this.app.env.DISCORD_WEBHOOK_URL;
+    if (!webhookUrl) throw new Error('DISCORD_WEBHOOK_URL is not configured');
+
+    const webhook = new WebhookClient({ url: webhookUrl });
+    try {
+      await webhook.send(createMinecraftChatWebhookMessage(options));
+    } finally {
+      webhook.destroy();
+    }
   }
 
   // updateActivity() {

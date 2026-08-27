@@ -15,6 +15,7 @@ import type {
   ScoreboardParticipantDescriptor,
   ScoreboardScoreInfoDescriptor,
   ScoreboardIdentityDescriptor,
+  Pfid,
 } from '@discord-mcbe/shared';
 
 export function createPlayerDescriptor(player: Player): PlayerDescriptor {
@@ -22,6 +23,7 @@ export function createPlayerDescriptor(player: Player): PlayerDescriptor {
     name: player.name,
     nameTag: player.nameTag,
     uniqueId: player.id as UniqueId,
+    pfid: player.persistentId as Pfid,
     platformType: player.clientSystemInfo.platformType,
   };
 }

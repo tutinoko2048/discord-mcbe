@@ -9,6 +9,7 @@ import { StartupEvent } from './events';
 import type { ApplicationEvents, Config, Env } from './types';
 
 const defaultEnv: ExtractOptional<Env> = {
+  DISCORD_WEBHOOK_URL: '',
   SOCKET_PORT: 3063,
   BRIDGE_PORT: 23191,
   BRIDGE_TRANSPORT: 'websocket',
@@ -21,6 +22,7 @@ const defaultConfig: Config = {
   bot: {
     reply_preview_max_length: 9,
     strip_color_prefix: true,
+    minecraft_chat_avatar_url: undefined,
     panel_update_interval: 10000,
     discord_message_filter: [],
   },

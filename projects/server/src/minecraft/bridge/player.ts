@@ -9,6 +9,7 @@ import {
   type KickPlayerAction,
   type GameMode,
   type UniqueId,
+  type Pfid,
 } from '@discord-mcbe/shared';
 import type { ScriptWorld } from './world';
 import { ScreenDisplay } from './screen-display';
@@ -26,6 +27,8 @@ export class ScriptPlayer {
 
   public readonly uniqueId: UniqueId;
 
+  public readonly pfid: Pfid;
+
   public readonly onScreenDisplay: ScreenDisplay;
 
   constructor(world: ScriptWorld, descriptor: PlayerDescriptor) {
@@ -33,6 +36,7 @@ export class ScriptPlayer {
     this.name = descriptor.name;
     this.nameTag = descriptor.nameTag;
     this.uniqueId = descriptor.uniqueId;
+    this.pfid = descriptor.pfid;
     this.onScreenDisplay = new ScreenDisplay(this);
   }
 
