@@ -126,33 +126,53 @@ export class BdsWebSocketBridgeServer extends EventEmitter<BdsWebSocketServerEve
   }
 
   private async onMessage(session: BdsWebSocketSession, rawData: RawData): Promise<void> {
-    let payload: BdsWebSocketPayload;
+    let parsed: unknown;
     try {
       const rawMessage = Array.isArray(rawData)
         ? Buffer.concat(rawData).toString()
         : rawData instanceof ArrayBuffer
           ? Buffer.from(new Uint8Array(rawData)).toString()
           : rawData.toString();
-      const parsed: unknown = JSON.parse(rawMessage);
-      if (!isBdsWebSocketPayload(parsed)) throw new Error('Invalid WebSocket payload');
-      payload = parsed;
+      parsed = JSON.parse(rawMessage);
     } catch {
       session.sendPayload(this.errorResponse('', ResponseErrorReason.InvalidPayload, 'Invalid JSON payload'));
       return;
     }
+
+    if (!isBdsWebSocketPayload(parsed)) {
+      session.sendPayload(
+        this.errorResponse('', ResponseErrorReason.InvalidPayload, 'Invalid WebSocket payload'),
+      );
+      return;
+    }
+    const payload = parsed;
 
     if (payload.type === PayloadType.Response) {
       session.handleResponse(payload);
       return;
     }
 
-    const shouldDisconnect = payload.channelId === InternalAction.Disconnect;
+    let disconnectReason: DisconnectReason | null = null;
+    if (payload.channelId === InternalAction.Disconnect) {
+      const reason = (payload.data as { reason?: unknown } | undefined)?.reason;
+      if (typeof reason !== 'number' || DisconnectReason[reason] === undefined) {
+        session.sendPayload(
+          this.errorResponse(
+            payload.requestId,
+            ResponseErrorReason.InvalidPayload,
+            'Invalid disconnect payload',
+          ),
+        );
+        return;
+      }
+      disconnectReason = reason;
+    }
+
     const response = await this.handleRequest(session, payload);
     session.sendPayload(response);
 
-    if (shouldDisconnect && session.isConnected) {
-      const reason = (payload.data as InternalActions.Disconnect['request']).reason;
-      this.emit('clientDisconnect', session, reason);
+    if (disconnectReason !== null && !response.error && session.isConnected) {
+      this.emit('clientDisconnect', session, disconnectReason);
       session.destroy();
     }
   }
