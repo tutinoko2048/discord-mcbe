@@ -3,28 +3,28 @@ import { createServer } from 'node:net';
 import { describe, expect, test } from 'bun:test';
 import { WebSocket, type RawData } from 'ws';
 import {
-  BdsWebSocketBridge,
+  ServerNetBridge,
   DisconnectReason,
   NamespaceRequiredError,
-  type BdsWebSocketPayload,
+  type ServerNetPayload,
   InternalAction,
   PayloadType,
   ResponseErrorReason,
   type BaseAction,
 } from '@discord-mcbe/shared';
-import { BdsWebSocketBridgeServer } from './bds-websocket';
+import { ServerNetBridgeServer } from './server';
 
 type EchoAction = BaseAction<'test:echo', { value: string }, { value: string }>;
 
-describe('BdsWebSocketBridgeServer', () => {
+describe('ServerNetBridgeServer', () => {
   test('rejects action handlers without a namespace', () => {
-    const server = new BdsWebSocketBridgeServer({ port: 0 });
+    const server = new ServerNetBridgeServer({ port: 0 });
     expect(() => server.registerHandler('echo', () => {})).toThrow(NamespaceRequiredError);
   });
 
   test('does not expose HTTP session or query endpoints', async () => {
     const port = await getAvailablePort();
-    const server = new BdsWebSocketBridgeServer({ port });
+    const server = new ServerNetBridgeServer({ port });
     await server.start();
     try {
       for (const path of ['/new', '/query']) {
@@ -40,7 +40,7 @@ describe('BdsWebSocketBridgeServer', () => {
 
   test('preserves the wire handshake and cleans up a closed connection', async () => {
     const port = await getAvailablePort();
-    const server = new BdsWebSocketBridgeServer({ port });
+    const server = new ServerNetBridgeServer({ port });
     await server.start();
     const socket = new WebSocket(`ws://127.0.0.1:${port}`);
 
@@ -84,7 +84,7 @@ describe('BdsWebSocketBridgeServer', () => {
 
   test('adapts bidirectional actions to WebSocket messages', async () => {
     const port = await getAvailablePort();
-    const server = new BdsWebSocketBridgeServer({ port });
+    const server = new ServerNetBridgeServer({ port });
     server.registerHandler<EchoAction>('test:echo', (action) => {
       action.respond({ value: action.data.value });
     });
@@ -103,7 +103,7 @@ describe('BdsWebSocketBridgeServer', () => {
           requestId: 'connect-1',
           data: {
             clientId: 'test-client',
-            protocolVersion: BdsWebSocketBridge.PROTOCOL_VERSION,
+            protocolVersion: ServerNetBridge.PROTOCOL_VERSION,
           },
         }),
       );
@@ -162,7 +162,7 @@ describe('BdsWebSocketBridgeServer', () => {
 
   test('distinguishes malformed JSON from an invalid WebSocket payload', async () => {
     const port = await getAvailablePort();
-    const server = new BdsWebSocketBridgeServer({ port });
+    const server = new ServerNetBridgeServer({ port });
     await server.start();
     const socket = new WebSocket(`ws://127.0.0.1:${port}`);
 
@@ -193,7 +193,7 @@ describe('BdsWebSocketBridgeServer', () => {
 
   test('rejects an invalid disconnect reason without destroying the session', async () => {
     const port = await getAvailablePort();
-    const server = new BdsWebSocketBridgeServer({ port });
+    const server = new ServerNetBridgeServer({ port });
     await server.start();
     const socket = new WebSocket(`ws://127.0.0.1:${port}`);
 
@@ -237,7 +237,7 @@ async function connect(socket: WebSocket): Promise<void> {
       requestId: 'connect-1',
       data: {
         clientId: 'test-client',
-        protocolVersion: BdsWebSocketBridge.PROTOCOL_VERSION,
+        protocolVersion: ServerNetBridge.PROTOCOL_VERSION,
       },
     }),
   );
@@ -248,9 +248,9 @@ async function connect(socket: WebSocket): Promise<void> {
   });
 }
 
-function nextPayload(socket: WebSocket): Promise<BdsWebSocketPayload> {
+function nextPayload(socket: WebSocket): Promise<ServerNetPayload> {
   return new Promise((resolve) => {
-    socket.once('message', (data) => resolve(JSON.parse(rawDataToString(data)) as BdsWebSocketPayload));
+    socket.once('message', (data) => resolve(JSON.parse(rawDataToString(data)) as ServerNetPayload));
   });
 }
 

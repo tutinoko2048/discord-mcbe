@@ -9,7 +9,7 @@ import {
   type WorldInitializeAction,
 } from '@discord-mcbe/shared';
 import {
-  BdsWebSocketBridgeServer,
+  ServerNetBridgeServer,
   type ClientActionHandler,
   type ISession,
   SocketBridgeServer,
@@ -26,13 +26,13 @@ export class MinecraftHandler {
   private readonly logger: Logger;
 
   public readonly socket: SocketBridgeServer;
-  public readonly script: BdsWebSocketBridgeServer;
+  public readonly script: ServerNetBridgeServer;
 
   public readonly worlds = new Map<ISession, ScriptWorld>();
 
   constructor(private readonly app: Application) {
     this.logger = new Logger('Minecraft', this.app.config);
-    this.script = new BdsWebSocketBridgeServer({ port: this.app.env.BRIDGE_PORT });
+    this.script = new ServerNetBridgeServer({ port: this.app.env.BRIDGE_PORT });
     this.socket = new SocketBridgeServer(this.app, {
       port: this.app.env.SOCKET_PORT,
       debug: this.app.config.debug,

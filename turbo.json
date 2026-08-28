@@ -1,20 +1,14 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "ui": "tui",
   "tasks": {
     "build": {
       "dependsOn": ["^build"]
     },
-    "lint": {
-    },
-    "lint:fix": {
-    },
-    "format": {
-    },
-    "check": {
-    },
-    "typecheck": {
-      "dependsOn": ["^typecheck"]
-    },
+    "lint": {},
+    "lint:fix": {},
+    "format": {},
+    "check": {},
     "clean": {
       "cache": false
     }

@@ -1,7 +1,7 @@
 import { PayloadType, type ResponseErrorReason } from '../protocol';
 
 /** A request sent in either direction over the BDS WebSocket transport. */
-export type BdsWebSocketRequest<T = unknown> = {
+export type ServerNetRequest<T = unknown> = {
   type: PayloadType.Request;
   channelId: string;
   requestId: string;
@@ -9,7 +9,7 @@ export type BdsWebSocketRequest<T = unknown> = {
 };
 
 /** A response sent in either direction over the BDS WebSocket transport. */
-export type BdsWebSocketResponse<T = unknown> =
+export type ServerNetResponse<T = unknown> =
   | {
       type: PayloadType.Response;
       error?: false;
@@ -24,9 +24,9 @@ export type BdsWebSocketResponse<T = unknown> =
       requestId: string;
     };
 
-export type BdsWebSocketPayload = BdsWebSocketRequest | BdsWebSocketResponse;
+export type ServerNetPayload = ServerNetRequest | ServerNetResponse;
 
-export function isBdsWebSocketPayload(value: unknown): value is BdsWebSocketPayload {
+export function isServerNetPayload(value: unknown): value is ServerNetPayload {
   if (typeof value !== 'object' || value === null) return false;
 
   const payload = value as Record<string, unknown>;
@@ -40,6 +40,6 @@ export function isBdsWebSocketPayload(value: unknown): value is BdsWebSocketPayl
   );
 }
 
-export namespace BdsWebSocketBridge {
+export namespace ServerNetBridge {
   export const PROTOCOL_VERSION = 1;
 }

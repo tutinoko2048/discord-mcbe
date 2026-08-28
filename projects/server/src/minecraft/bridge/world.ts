@@ -16,7 +16,7 @@ import { MinecraftMessageEvent, PlayerJoinEvent, PlayerLeaveEvent } from '../../
 import { Logger } from '../../util';
 
 import type { RawMessage } from '@minecraft/server';
-import type { BdsWebSocketSession, ISession, SocketSession } from '../transport';
+import type { ServerNetSession, ISession, SocketSession } from '../transport';
 import type { ScriptDimension } from './dimension';
 import type { Application } from '../../application';
 
@@ -99,7 +99,7 @@ export class ScriptWorld<S extends ISession = ISession> {
     return this._isLocal;
   }
 
-  isServer(): this is ScriptWorld<BdsWebSocketSession> {
+  isServer(): this is ScriptWorld<ServerNetSession> {
     return !this._isLocal;
   }
 

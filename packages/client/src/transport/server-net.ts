@@ -6,11 +6,11 @@ import {
   type WebSocketClientReceiveAfterEvent,
 } from '@minecraft/server-net';
 import {
-  BdsWebSocketBridge,
-  isBdsWebSocketPayload,
-  type BdsWebSocketPayload,
-  type BdsWebSocketRequest,
-  type BdsWebSocketResponse,
+  ServerNetBridge,
+  isServerNetPayload,
+  type ServerNetPayload,
+  type ServerNetRequest,
+  type ServerNetResponse,
   DisconnectReason,
   InternalAction,
   PayloadType,
@@ -36,11 +36,11 @@ export interface WebSocketBridgeClientOptions {
 
 interface PendingResponse {
   timeoutId: number;
-  resolve: (response: BdsWebSocketResponse) => void;
+  resolve: (response: ServerNetResponse) => void;
 }
 
 export class WebSocketBridgeClient extends Emitter<WebSocketBridgeEvents> implements IBridgeClient {
-  static readonly PROTOCOL_VERSION = BdsWebSocketBridge.PROTOCOL_VERSION;
+  static readonly PROTOCOL_VERSION = ServerNetBridge.PROTOCOL_VERSION;
 
   private readonly actionHandlers = new Map<string, ActionHandler<BaseAction>>();
   private readonly awaitingResponses = new Map<string, PendingResponse>();
@@ -85,7 +85,7 @@ export class WebSocketBridgeClient extends Emitter<WebSocketBridgeEvents> implem
   registerHandler<A extends BaseAction = BaseAction>(channelId: A['id'], handler: ActionHandler<A>): void {
     if (!channelId.includes(':')) throw new Error(`Channel ID "${channelId}" must include a namespace`);
     if (this.actionHandlers.has(channelId)) {
-      console.warn('[BdsWebSocket] Overwriting existing handler for channel:', channelId);
+      console.warn('[ServerNet] Overwriting existing handler for channel:', channelId);
     }
     this.actionHandlers.set(channelId, handler as unknown as ActionHandler<BaseAction>);
   }
@@ -97,7 +97,7 @@ export class WebSocketBridgeClient extends Emitter<WebSocketBridgeEvents> implem
     try {
       await this.send<InternalActions.Disconnect>(InternalAction.Disconnect, { reason });
     } catch (error) {
-      console.warn('[BdsWebSocket] Failed to send disconnect message:', error);
+      console.warn('[ServerNet] Failed to send disconnect message:', error);
     } finally {
       this.closeSocket();
     }
@@ -119,7 +119,7 @@ export class WebSocketBridgeClient extends Emitter<WebSocketBridgeEvents> implem
         const backoffSeconds = Math.min(2 ** attempt, 60);
         attempt++;
         console.error(
-          `[BdsWebSocket] Connection failed. Retrying in ${backoffSeconds} seconds ` +
+          `[ServerNet] Connection failed. Retrying in ${backoffSeconds} seconds ` +
             `(attempt ${attempt}/${this.maxReconnectAttempts})`,
           error,
         );
@@ -154,12 +154,12 @@ export class WebSocketBridgeClient extends Emitter<WebSocketBridgeEvents> implem
     channelId: string,
     data?: Request,
     timeoutTicks: number = 200,
-  ): Promise<BdsWebSocketResponse<Response>> {
+  ): Promise<ServerNetResponse<Response>> {
     const socket = this.socket;
     if (!socket?.isOpen) throw new Error('WebSocket is not connected');
 
     const requestId = String(++this.previousRequestId);
-    const payload: BdsWebSocketRequest<Request> = {
+    const payload: ServerNetRequest<Request> = {
       type: PayloadType.Request,
       channelId,
       requestId,
@@ -180,7 +180,7 @@ export class WebSocketBridgeClient extends Emitter<WebSocketBridgeEvents> implem
 
       this.awaitingResponses.set(requestId, {
         timeoutId,
-        resolve: resolve as (response: BdsWebSocketResponse) => void,
+        resolve: resolve as (response: ServerNetResponse) => void,
       });
       try {
         socket.send(JSON.stringify(payload));
@@ -195,13 +195,13 @@ export class WebSocketBridgeClient extends Emitter<WebSocketBridgeEvents> implem
   private onMessage(socket: WebSocketClient, event: WebSocketClientReceiveAfterEvent): void {
     if (socket !== this.socket) return;
 
-    let payload: BdsWebSocketPayload;
+    let payload: ServerNetPayload;
     try {
       const parsed: unknown = JSON.parse(event.message);
-      if (!isBdsWebSocketPayload(parsed)) throw new Error('Invalid WebSocket payload');
+      if (!isServerNetPayload(parsed)) throw new Error('Invalid WebSocket payload');
       payload = parsed;
     } catch (error) {
-      console.error('[BdsWebSocket] Failed to parse message:', error);
+      console.error('[ServerNet] Failed to parse message:', error);
       return;
     }
 
@@ -209,12 +209,12 @@ export class WebSocketBridgeClient extends Emitter<WebSocketBridgeEvents> implem
       this.handleResponse(payload);
     } else if (payload.type === PayloadType.Request) {
       this.handleRequest(socket, payload).catch((error) => {
-        console.error('[BdsWebSocket] Failed to handle request:', error);
+        console.error('[ServerNet] Failed to handle request:', error);
       });
     }
   }
 
-  private handleResponse(response: BdsWebSocketResponse): void {
+  private handleResponse(response: ServerNetResponse): void {
     const pending = this.awaitingResponses.get(response.requestId);
     if (!pending) return;
 
@@ -223,8 +223,8 @@ export class WebSocketBridgeClient extends Emitter<WebSocketBridgeEvents> implem
     pending.resolve(response);
   }
 
-  private async handleRequest(socket: WebSocketClient, request: BdsWebSocketRequest): Promise<void> {
-    let response: BdsWebSocketResponse;
+  private async handleRequest(socket: WebSocketClient, request: ServerNetRequest): Promise<void> {
+    let response: ServerNetResponse;
     let disconnectReason: DisconnectReason | null = null;
 
     if (request.channelId === InternalAction.Ping) {
@@ -271,7 +271,7 @@ export class WebSocketBridgeClient extends Emitter<WebSocketBridgeEvents> implem
     }
   }
 
-  private successResponse<T>(requestId: string, data: T): BdsWebSocketResponse<T> {
+  private successResponse<T>(requestId: string, data: T): ServerNetResponse<T> {
     return {
       type: PayloadType.Response,
       error: false,
@@ -293,7 +293,7 @@ export class WebSocketBridgeClient extends Emitter<WebSocketBridgeEvents> implem
     if (reason === DisconnectReason.ConnectionLost) {
       system.run(() => {
         this.connect().catch((error) => {
-          console.error('[BdsWebSocket] Reconnection failed:', error);
+          console.error('[ServerNet] Reconnection failed:', error);
         });
       });
     }

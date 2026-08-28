@@ -17,7 +17,7 @@ import { AddonNotInstalledError } from '../errors';
 import { Logger } from '../../../util';
 
 import type { ISession } from '../interfaces';
-import type { SocketBridgeServer } from './socket';
+import type { SocketBridgeServer } from './server';
 import type { Application } from '../../../application';
 
 export class SocketSession implements ISession {

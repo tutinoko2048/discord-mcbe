@@ -1,3 +1,3 @@
-export * from './bds-websocket';
+export * from './server-net';
 export * from './interfaces';
-export * from './socket';
+export * from './websocket';

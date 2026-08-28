@@ -1,11 +1,6 @@
-import type {
-  BaseAction,
-  BdsWebSocketResponse,
-  ClientResponse,
-  DisconnectReason,
-} from '@discord-mcbe/shared';
+import type { BaseAction, ServerNetResponse, ClientResponse, DisconnectReason } from '@discord-mcbe/shared';
 
-type IClientResponse<T> = ClientResponse<T> | (BdsWebSocketResponse<T> & { sessionId: string });
+type IClientResponse<T> = ClientResponse<T> | (ServerNetResponse<T> & { sessionId: string });
 
 export interface ISession {
   readonly id: string;

@@ -1,42 +1,37 @@
-import { randomUUID } from 'node:crypto';
 import { EventEmitter } from 'node:events';
 import { WebSocket, WebSocketServer } from 'ws';
 import {
-  BdsWebSocketBridge,
-  isBdsWebSocketPayload,
-  type BdsWebSocketPayload,
-  type BdsWebSocketRequest,
-  type BdsWebSocketResponse,
+  ServerNetBridge,
+  isServerNetPayload,
+  type ServerNetRequest,
+  type ServerNetResponse,
   DisconnectReason,
   InternalAction,
   PayloadType,
   ResponseErrorReason,
   type BaseAction,
   type ConnectAction,
-  type InternalActions,
   NamespaceRequiredError,
 } from '@discord-mcbe/shared';
 
 import type { RawData } from 'ws';
 import type { ClientActionHandler } from '../types';
-import type { ISession } from '../interfaces';
+import { ServerNetSessionResponse, ServerNetSession } from './session';
 
-type BdsSessionResponse<T = unknown> = BdsWebSocketResponse<T> & { sessionId: string };
-
-export interface WebSocketBridgeServerOptions {
+export interface ServerNetBridgeOptions {
   port: number;
 }
 
-export class BdsWebSocketBridgeServer extends EventEmitter<BdsWebSocketServerEvents> {
-  static readonly PROTOCOL_VERSION = BdsWebSocketBridge.PROTOCOL_VERSION;
+export class ServerNetBridgeServer extends EventEmitter<ServerNetBridgeEvents> {
+  static readonly PROTOCOL_VERSION = ServerNetBridge.PROTOCOL_VERSION;
 
   readonly port: number;
-  readonly sessions = new Set<BdsWebSocketSession>();
+  readonly sessions = new Set<ServerNetSession>();
 
   private readonly actionHandlers = new Map<string, ClientActionHandler<BaseAction>>();
   private server: WebSocketServer | null = null;
 
-  constructor(options: WebSocketBridgeServerOptions) {
+  constructor(options: ServerNetBridgeOptions) {
     super();
     this.port = options.port;
   }
@@ -82,7 +77,7 @@ export class BdsWebSocketBridgeServer extends EventEmitter<BdsWebSocketServerEve
     channelId: A['id'],
     data?: A['request'],
     timeout?: number,
-  ): Promise<BdsSessionResponse<A['response']>[]> {
+  ): Promise<ServerNetSessionResponse<A['response']>[]> {
     return Promise.all(
       [...this.sessions]
         .filter((session) => session.isConnected)
@@ -96,13 +91,13 @@ export class BdsWebSocketBridgeServer extends EventEmitter<BdsWebSocketServerEve
   ): void {
     if (!channelId.includes(':')) throw new NamespaceRequiredError(channelId);
     if (this.actionHandlers.has(channelId)) {
-      process.emitWarning(`[BdsWebSocketBridge] Overwriting handler for channel: ${channelId}`);
+      process.emitWarning(`[ServerNetBridge] Overwriting handler for channel: ${channelId}`);
     }
     this.actionHandlers.set(channelId, handler as unknown as ClientActionHandler<BaseAction>);
   }
 
   private onConnection(socket: WebSocket): void {
-    const session = new BdsWebSocketSession(this, socket);
+    const session = new ServerNetSession(this, socket);
     this.sessions.add(session);
 
     socket.on('message', (data, isBinary) => {
@@ -124,7 +119,7 @@ export class BdsWebSocketBridgeServer extends EventEmitter<BdsWebSocketServerEve
     socket.on('error', (error) => this.emit('error', error));
   }
 
-  private async onMessage(session: BdsWebSocketSession, rawData: RawData): Promise<void> {
+  private async onMessage(session: ServerNetSession, rawData: RawData): Promise<void> {
     let parsed: unknown;
     try {
       const rawMessage = Array.isArray(rawData)
@@ -138,7 +133,7 @@ export class BdsWebSocketBridgeServer extends EventEmitter<BdsWebSocketServerEve
       return;
     }
 
-    if (!isBdsWebSocketPayload(parsed)) {
+    if (!isServerNetPayload(parsed)) {
       session.sendPayload(
         this.errorResponse('', ResponseErrorReason.InvalidPayload, 'Invalid WebSocket payload'),
       );
@@ -177,9 +172,9 @@ export class BdsWebSocketBridgeServer extends EventEmitter<BdsWebSocketServerEve
   }
 
   private async handleRequest(
-    session: BdsWebSocketSession,
-    request: BdsWebSocketRequest,
-  ): Promise<BdsWebSocketResponse> {
+    session: ServerNetSession,
+    request: ServerNetRequest,
+  ): Promise<ServerNetResponse> {
     if (request.channelId === InternalAction.Connect) return this.handleConnect(session, request);
 
     if (!session.isConnected) {
@@ -224,9 +219,9 @@ export class BdsWebSocketBridgeServer extends EventEmitter<BdsWebSocketServerEve
   }
 
   private handleConnect(
-    session: BdsWebSocketSession,
-    request: BdsWebSocketRequest,
-  ): BdsWebSocketResponse<{ sessionId: string }> {
+    session: ServerNetSession,
+    request: ServerNetRequest,
+  ): ServerNetResponse<{ sessionId: string }> {
     if (session.isConnected) {
       return this.errorResponse(
         request.requestId,
@@ -244,9 +239,9 @@ export class BdsWebSocketBridgeServer extends EventEmitter<BdsWebSocketServerEve
       );
     }
 
-    if (data.protocolVersion !== BdsWebSocketBridgeServer.PROTOCOL_VERSION) {
+    if (data.protocolVersion !== ServerNetBridgeServer.PROTOCOL_VERSION) {
       const reason =
-        data.protocolVersion > BdsWebSocketBridgeServer.PROTOCOL_VERSION
+        data.protocolVersion > ServerNetBridgeServer.PROTOCOL_VERSION
           ? DisconnectReason.OutdatedServer
           : DisconnectReason.OutdatedClient;
       return this.errorResponse(
@@ -261,7 +256,7 @@ export class BdsWebSocketBridgeServer extends EventEmitter<BdsWebSocketServerEve
     return this.successResponse(request.requestId, { sessionId: session.id });
   }
 
-  private successResponse<T>(requestId: string, data: T): BdsWebSocketResponse<T> {
+  private successResponse<T>(requestId: string, data: T): ServerNetResponse<T> {
     return {
       type: PayloadType.Response,
       error: false,
@@ -274,7 +269,7 @@ export class BdsWebSocketBridgeServer extends EventEmitter<BdsWebSocketServerEve
     requestId: string,
     errorReason: ResponseErrorReason,
     message: string,
-  ): BdsWebSocketResponse<never> {
+  ): ServerNetResponse<never> {
     return {
       type: PayloadType.Response,
       error: true,
@@ -285,144 +280,11 @@ export class BdsWebSocketBridgeServer extends EventEmitter<BdsWebSocketServerEve
   }
 }
 
-export class BdsWebSocketSession implements ISession {
-  readonly id = randomUUID();
-  readonly _awaitingResponses = new Map<
-    string,
-    { resolve: (response: BdsSessionResponse) => void; sentAt: number; timeout: NodeJS.Timeout }
-  >();
-
-  clientId = '';
-  isConnected = false;
-  isDestroyed = false;
-  disconnectReason: DisconnectReason | null = null;
-
-  private readonly deltaTimes: number[] = [];
-  private readonly handshakeTimeout: NodeJS.Timeout;
-
-  constructor(
-    private readonly server: BdsWebSocketBridgeServer,
-    private readonly socket: WebSocket,
-  ) {
-    this.handshakeTimeout = setTimeout(() => this.destroy(), 10_000);
-  }
-
-  get averagePing(): number {
-    if (this.deltaTimes.length === 0) return -1;
-    return this.deltaTimes.reduce((sum, value) => sum + value, 0) / this.deltaTimes.length;
-  }
-
-  connect(clientId: string): void {
-    clearTimeout(this.handshakeTimeout);
-    this.clientId = clientId;
-    this.isConnected = true;
-  }
-
-  async disconnect(reason: DisconnectReason = DisconnectReason.Disconnect): Promise<void> {
-    if (this.isDestroyed) return;
-    this.disconnectReason = reason;
-
-    try {
-      if (this.isConnected) {
-        await this.send<InternalActions.Disconnect>(InternalAction.Disconnect, { reason }, 5_000);
-      }
-    } finally {
-      if (!this.isDestroyed) {
-        if (this.isConnected) this.server.emit('clientDisconnect', this, reason);
-        this.destroy();
-      }
-    }
-  }
-
-  destroy(): void {
-    if (this.isDestroyed) return;
-    this.isDestroyed = true;
-    clearTimeout(this.handshakeTimeout);
-
-    for (const [requestId, pending] of this._awaitingResponses) {
-      clearTimeout(pending.timeout);
-      pending.resolve({
-        type: PayloadType.Response,
-        error: true,
-        errorReason: ResponseErrorReason.Abort,
-        message: 'Session disconnected',
-        sessionId: this.id,
-        requestId,
-      });
-    }
-    this._awaitingResponses.clear();
-    this.server.sessions.delete(this);
-
-    if (this.socket.readyState === WebSocket.OPEN) this.socket.close();
-    if (this.isConnected) this.server.emit('sessionDestroy', this);
-    this.isConnected = false;
-  }
-
-  send<A extends BaseAction = BaseAction>(
-    channelId: A['id'],
-    data?: A['request'],
-    timeout: number = 10_000,
-  ): Promise<BdsSessionResponse<A['response']>> {
-    if (!channelId.includes(':')) throw new NamespaceRequiredError(channelId);
-    if (!this.isConnected || this.isDestroyed) throw new Error('No active WebSocket session');
-
-    const requestId = randomUUID();
-    const payload: BdsWebSocketRequest<A['request']> = {
-      type: PayloadType.Request,
-      channelId,
-      requestId,
-      data,
-    };
-    return new Promise((resolve, reject) => {
-      const pending = {
-        resolve: resolve as (response: BdsSessionResponse) => void,
-        sentAt: Date.now(),
-        timeout: setTimeout(() => {
-          this._awaitingResponses.delete(requestId);
-          resolve({
-            type: PayloadType.Response,
-            error: true,
-            errorReason: ResponseErrorReason.Timeout,
-            message: 'Request timed out',
-            sessionId: this.id,
-            requestId,
-          });
-        }, timeout),
-      };
-
-      this._awaitingResponses.set(requestId, pending);
-      try {
-        this.sendPayload(payload);
-      } catch (error) {
-        clearTimeout(pending.timeout);
-        this._awaitingResponses.delete(requestId);
-        reject(error as Error);
-      }
-    });
-  }
-
-  handleResponse(response: BdsWebSocketResponse): void {
-    const pending = this._awaitingResponses.get(response.requestId);
-    if (!pending) return;
-
-    clearTimeout(pending.timeout);
-    this._awaitingResponses.delete(response.requestId);
-    this.deltaTimes.push(Date.now() - pending.sentAt);
-    if (this.deltaTimes.length > 10) this.deltaTimes.shift();
-    pending.resolve({ ...response, sessionId: this.id });
-  }
-
-  sendPayload(payload: BdsWebSocketPayload): void {
-    if (this.socket.readyState !== WebSocket.OPEN) throw new Error('WebSocket is not open');
-    this.socket.send(JSON.stringify(payload));
-  }
-}
-
-interface BdsWebSocketServerEvents {
+interface ServerNetBridgeEvents {
   serverOpen: [];
   serverClose: [];
-  clientConnect: [session: BdsWebSocketSession];
-  clientDisconnect: [session: BdsWebSocketSession, reason: DisconnectReason];
-  sessionDestroy: [session: BdsWebSocketSession];
+  clientConnect: [session: ServerNetSession];
+  clientDisconnect: [session: ServerNetSession, reason: DisconnectReason];
+  sessionDestroy: [session: ServerNetSession];
   error: [error: Error];
 }
