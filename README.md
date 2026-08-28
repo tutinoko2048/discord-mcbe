@@ -19,9 +19,11 @@ discord-mcbe connects Minecraft worlds to a Discord text channel. It relays chat
 - Player lists, command execution, and a live status panel
 - Configurable message filters and custom JavaScript scripts
 
-## Project status
+## Installation
 
-Version 4 is currently in beta. Its launcher, add-ons, configuration, and commands differ from stable version 3.
+These instructions cover discord-mcbe v4. Use launcher v2 to install the latest stable release with `updater.exe latest` (Windows) or `./updater latest` (Linux / macOS), and use the add-on from the same release as the server.
+
+When upgrading from v3, back up the existing installation and set up v4 in a separate directory. The launcher, add-ons, configuration, and commands have changed; v3 add-ons are not compatible with the v4 server.
 
 For installation, configuration, commands, troubleshooting, and development information, see the [official documentation](https://discord-mcbe.tn2048.workers.dev/).
 

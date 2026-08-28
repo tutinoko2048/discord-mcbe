@@ -6,9 +6,10 @@ description: Create a Discord bot and run the current v4 server with launcher v2
 import { Aside, Icon, Steps } from '@astrojs/starlight/components';
 import LauncherDownloads from '../../../../components/LauncherDownloads.astro';
 
-<Aside type="caution" title="This page targets the v4 beta">
-  It installs launcher v2 and the `v4.0.0-beta` line, not stable v3. Back up an existing v3 installation into
-  a separate directory before continuing.
+<Aside type="note" title="This page targets stable v4">
+  Install stable v4 with launcher v2. When upgrading from v3, back up the existing installation, set up v4 in
+  a separate directory, and create its configuration using the steps below. The v3 add-on is not compatible
+  with the v4 server.
 </Aside>
 
 ## <Icon name="list-format" />Requirements
@@ -82,12 +83,12 @@ Check the channel permission overrides as well. They must not deny the permissio
 
    Values do not need quotes. Only set `SOCKET_PORT` or `BRIDGE_PORT` when the default port conflicts with another service. BDS uses WebSocket by default.
 
-3. Install the v4 beta and start the server.
+3. Install the latest stable release and start the server.
 
    **Windows (PowerShell or Command Prompt)**
 
    ```powershell
-   .\updater.exe beta
+   .\updater.exe latest
    .\start.bat
    ```
 
@@ -95,7 +96,7 @@ Check the channel permission overrides as well. They must not deny the permissio
 
    ```bash
    chmod +x updater start.sh
-   ./updater beta
+   ./updater latest
    ./start.sh
    ```
 
@@ -103,19 +104,17 @@ Check the channel permission overrides as well. They must not deny the permissio
 
 </Steps>
 
-![Launcher installing the v4 beta](../../../../assets/updater.png)
-
 Next, [install the add-on in your Minecraft world](/en/installation/setup-world/).
 
 ## <Icon name="cloud-download" />Update or switch versions
 
 Stop the server before running the launcher. `config.json`, `.env`, and `scripts/` live outside `app/` and are retained across updates, but keeping a backup is still recommended.
 
-| Action               | Windows                    | Linux / macOS            |
-| -------------------- | -------------------------- | ------------------------ |
-| Latest beta          | `updater.exe beta`         | `./updater beta`         |
-| Latest stable        | `updater.exe latest`       | `./updater latest`       |
-| Choose interactively | `updater.exe`              | `./updater`              |
-| Install one version  | `updater.exe 4.0.0-beta.4` | `./updater 4.0.0-beta.4` |
+| Action                 | Windows              | Linux / macOS      |
+| ---------------------- | -------------------- | ------------------ |
+| Latest stable          | `updater.exe latest` | `./updater latest` |
+| Latest beta (optional) | `updater.exe beta`   | `./updater beta`   |
+| Choose interactively   | `updater.exe`        | `./updater`        |
+| Install one version    | `updater.exe 4.0.0`  | `./updater 4.0.0`  |
 
-Add `--force` when moving between the beta and stable tracks or reinstalling the same version. If the installer reports a minimum launcher version error, download a newer launcher archive.
+To move from a v4 beta to the stable release, run `updater.exe latest --force` (Windows) or `./updater latest --force` (Linux / macOS), then update the add-on to the same release. Add `--force` to an explicit version or track when switching back to beta or reinstalling the same version too. If the installer reports a minimum launcher version error, download a newer launcher archive.

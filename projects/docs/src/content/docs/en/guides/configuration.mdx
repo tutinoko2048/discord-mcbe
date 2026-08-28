@@ -18,40 +18,24 @@ Place both next to the launcher's `start.bat` or `start.sh`. Restart discord-mcb
 DISCORD_TOKEN=your_bot_token
 GUILD_ID=123456789012345678
 CHANNEL_ID=123456789012345678
-DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/123456789012345678/token
 SOCKET_PORT=3063
 BRIDGE_PORT=23191
 BRIDGE_TRANSPORT=websocket
 ```
 
-| Variable              | Required | Default     | Description                                                        |
-| --------------------- | :------: | ----------- | ------------------------------------------------------------------ |
-| `DISCORD_TOKEN`       |    ✓     | —           | Bot token issued in the Developer Portal                           |
-| `GUILD_ID`            |    ✓     | —           | Discord server where slash commands are registered                 |
-| `CHANNEL_ID`          |    ✓     | —           | Text channel used for Minecraft chat relay                         |
-| `DISCORD_WEBHOOK_URL` |          | —           | Optional Discord webhook URL used only for Minecraft chat messages |
-| `SOCKET_PORT`         |          | `3063`      | WebSocket port used by `/connect` for regular worlds               |
-| `BRIDGE_PORT`         |          | `23191`     | Bridge port used by the BDS add-on                                 |
-| `BRIDGE_TRANSPORT`    |          | `websocket` | BDS transport: `websocket`, or `polling` for fallback              |
+| Variable           | Required | Default     | Description                                           |
+| ------------------ | :------: | ----------- | ----------------------------------------------------- |
+| `DISCORD_TOKEN`    |    ✓     | —           | Bot token issued in the Developer Portal              |
+| `GUILD_ID`         |    ✓     | —           | Discord server where slash commands are registered    |
+| `CHANNEL_ID`       |    ✓     | —           | Text channel used for Minecraft chat relay            |
+| `SOCKET_PORT`      |          | `3063`      | WebSocket port used by `/connect` for regular worlds  |
+| `BRIDGE_PORT`      |          | `23191`     | Bridge port used by the BDS add-on                    |
+| `BRIDGE_TRANSPORT` |          | `websocket` | BDS transport: `websocket`, or `polling` for fallback |
 
 <Aside type="danger" title="Do not share .env">
   Keep `.env` out of version control and remove tokens from logs before sharing them. Reset an exposed token
   in the Developer Portal.
 </Aside>
-
-### Minecraft chat webhook
-
-When `DISCORD_WEBHOOK_URL` is set, only chat relayed from Minecraft uses the webhook. Its `username` is the
-player name, or `world | player` while multiple worlds are connected; its `content` is the chat message.
-Startup, join, leave, status-panel, and command messages continue to use the Bot.
-
-Set `bot.minecraft_chat_avatar_url` to optionally set the webhook avatar. `{name}` and `{pfid}` are
-URL-encoded before being substituted. `{pfid}` is the Script API `Player.persistentId`; it is an empty string
-only when an older add-on does not send it.
-
-```json
-"minecraft_chat_avatar_url": "https://example.com/faces/{name}/{pfid}"
-```
 
 ## <Icon name="setting" />config.json
 
@@ -79,20 +63,19 @@ When `config.json` does not exist, the first start with a valid `.env` creates i
 }
 ```
 
-| Key                             | Description                                                                                                  |
-| ------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `config_version`                | Configuration format version used for migration. Do not edit                                                 |
-| `language`                      | Bot and console language: `ja` or `en-US`                                                                    |
-| `timezone_offset`               | Integer-hour offset from UTC used for displayed times                                                        |
-| `bot.reply_preview_max_length`  | Maximum Discord reply-preview characters shown in Minecraft                                                  |
-| `bot.strip_color_prefix`        | Remove Minecraft `§` color codes before relaying to Discord                                                  |
-| `bot.minecraft_chat_avatar_url` | Optional avatar URL template for Minecraft chat webhooks; `{name}` and `{pfid}` are replaced and URL-encoded |
-| `bot.panel_update_interval`     | Status panel refresh interval in milliseconds                                                                |
-| `bot.discord_message_filter`    | Filters applied before Discord content is sent to Minecraft                                                  |
-| `bridge.disable_encryption`     | Disable encryption for local-world connections. Normally keep `false`                                        |
-| `script.entry`                  | JavaScript file imported at startup                                                                          |
-| `translationOverrides`          | Map of built-in translation keys to replacement strings                                                      |
-| `debug`                         | Enable verbose logging                                                                                       |
+| Key                            | Description                                                           |
+| ------------------------------ | --------------------------------------------------------------------- |
+| `config_version`               | Configuration format version used for migration. Do not edit          |
+| `language`                     | Bot and console language: `ja` or `en-US`                             |
+| `timezone_offset`              | Integer-hour offset from UTC used for displayed times                 |
+| `bot.reply_preview_max_length` | Maximum Discord reply-preview characters shown in Minecraft           |
+| `bot.strip_color_prefix`       | Remove Minecraft `§` color codes before relaying to Discord           |
+| `bot.panel_update_interval`    | Status panel refresh interval in milliseconds                         |
+| `bot.discord_message_filter`   | Filters applied before Discord content is sent to Minecraft           |
+| `bridge.disable_encryption`    | Disable encryption for local-world connections. Normally keep `false` |
+| `script.entry`                 | JavaScript file imported at startup                                   |
+| `translationOverrides`         | Map of built-in translation keys to replacement strings               |
+| `debug`                        | Enable verbose logging                                                |
 
 Unknown keys are ignored with a warning. An invalid type or value stops startup and prints the affected path.
 
@@ -173,3 +156,26 @@ See the [API reference](https://discord-mcbe.tn2048.workers.dev/reference/) and 
     `BRIDGE_TRANSPORT=polling` on the server and `BridgeClient({ transport: 'polling' })` in a custom add-on.
   </TabItem>
 </Tabs>
+
+## <Icon name="code" />Advanced: Minecraft chat webhooks
+
+Normally, chat relay sends messages through the Bot to `CHANNEL_ID`; no webhook is needed. A webhook is an
+optional feature for showing only Minecraft chat under another identity. To use one, add its URL to `.env`:
+
+```dotenv
+DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/123456789012345678/token
+```
+
+When set, only chat relayed from Minecraft uses the webhook. Its `username` is the player name, or
+`world | player` while multiple worlds are connected; its `content` is the chat message. Startup, join, leave,
+status-panel, and command messages continue to use the Bot.
+
+### Set a webhook avatar
+
+For developers using their own avatar service, `bot.minecraft_chat_avatar_url` optionally supplies an avatar URL
+template. `{name}` and `{pfid}` are URL-encoded before substitution; `{pfid}` is the Script API
+`Player.persistentId`.
+
+```json
+"minecraft_chat_avatar_url": "https://example.com/faces/{name}/{pfid}"
+```

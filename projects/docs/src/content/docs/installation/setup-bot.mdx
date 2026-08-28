@@ -6,8 +6,8 @@ description: Discord Botを作成し、v4ランチャーでdiscord-mcbeサーバ
 import { Aside, Icon, Steps } from '@astrojs/starlight/components';
 import LauncherDownloads from '../../../components/LauncherDownloads.astro';
 
-<Aside type="caution" title="このページはv4ベータ版向けです">
-  安定版のv3ではなく、ランチャーv2と`v4.0.0-beta`をインストールします。既存のv3環境は別のフォルダーにバックアップしてください。
+<Aside type="note" title="このページはv4正式版向けです">
+  ランチャーv2でv4正式版をインストールします。v3から移行する場合は、既存環境をバックアップして別のフォルダーへセットアップし、以下の手順で設定を作成してください。v3用アドオンとv4サーバーには互換性がありません。
 </Aside>
 
 ## <Icon name="list-format" />必要なもの
@@ -81,12 +81,12 @@ Discordの **ユーザー設定 → 詳細設定 → 開発者モード** を有
 
    値を引用符で囲む必要はありません。`SOCKET_PORT`と`BRIDGE_PORT`は、デフォルトポートが競合するときだけ変更します。BDS通信は既定でWebSocketです。
 
-3. v4ベータをインストールします。
+3. 最新の正式版をインストールします。
 
    **Windows（PowerShellまたはコマンドプロンプト）**
 
    ```powershell
-   .\updater.exe beta
+   .\updater.exe latest
    .\start.bat
    ```
 
@@ -94,7 +94,7 @@ Discordの **ユーザー設定 → 詳細設定 → 開発者モード** を有
 
    ```bash
    chmod +x updater start.sh
-   ./updater beta
+   ./updater latest
    ./start.sh
    ```
 
@@ -102,19 +102,17 @@ Discordの **ユーザー設定 → 詳細設定 → 開発者モード** を有
 
 </Steps>
 
-![v4ベータをインストールするランチャー](../../../assets/updater.png)
-
 続いて、[Minecraftワールドへアドオンを導入します](/installation/setup-world/)。
 
 ## <Icon name="cloud-download" />アップデートとバージョン切り替え
 
 サーバーを停止してからランチャーを実行します。`config.json`、`.env`、`scripts/`は`app/`とは別に保存されるため更新後も引き継がれますが、更新前のバックアップを推奨します。
 
-| 操作                         | Windows                    | Linux / macOS            |
-| ---------------------------- | -------------------------- | ------------------------ |
-| 最新ベータへ更新             | `updater.exe beta`         | `./updater beta`         |
-| 最新安定版へ更新             | `updater.exe latest`       | `./updater latest`       |
-| バージョンを選択             | `updater.exe`              | `./updater`              |
-| 指定バージョンをインストール | `updater.exe 4.0.0-beta.4` | `./updater 4.0.0-beta.4` |
+| 操作                         | Windows              | Linux / macOS      |
+| ---------------------------- | -------------------- | ------------------ |
+| 最新安定版へ更新             | `updater.exe latest` | `./updater latest` |
+| 最新ベータへ更新（任意）     | `updater.exe beta`   | `./updater beta`   |
+| バージョンを選択             | `updater.exe`        | `./updater`        |
+| 指定バージョンをインストール | `updater.exe 4.0.0`  | `./updater 4.0.0`  |
 
-ベータ版と安定版を切り替える場合や、同じバージョンを再インストールする場合は`--force`を追加します。ランチャー自体の更新が必要と表示された場合は、ランチャーのリリースから新しいzipをダウンロードしてください。
+v4ベータ版から正式版へ移行する場合は、`updater.exe latest --force`（Windows）または`./updater latest --force`（Linux / macOS）を実行し、アドオンも同じリリースへ更新します。ベータ版へ切り替える場合や、同じバージョンを再インストールする場合も、バージョン指定に`--force`を追加します。ランチャー自体の更新が必要と表示された場合は、ランチャーのリリースから新しいzipをダウンロードしてください。
