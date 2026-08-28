@@ -53,7 +53,7 @@ import { Icon, Steps } from '@astrojs/starlight/components';
 | `packages/internal-config` | ワークスペース共通のビルド・チェック設定             |
 | `devapp`                   | ローカル開発用アプリ                                 |
 
-ローカルワールドはSocketBE、BDSは`@minecraft/server-net`のWebSocket経由で同じアクション層へ接続します。BDSでは互換用にScriptBridgeのpollingも選択できます。
+ローカルワールドはSocketBE、BDSは`@minecraft/server-net`のWebSocket経由で同じアクション層へ接続します。通信プロトコルの型・定数は`packages/shared`で管理しています。
 
 ## <Icon name="terminal" />よく使うコマンド
 

@@ -30,8 +30,7 @@
     "clean": "rimraf dist .turbo tsconfig.tsbuildinfo"
   },
   "dependencies": {
-    "@minecraft/server": "catalog:",
-    "@script-bridge/protocol": "catalog:"
+    "@minecraft/server": "catalog:"
   },
   "devDependencies": {
     "@discord-mcbe/internal-config": "workspace:*"

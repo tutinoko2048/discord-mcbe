@@ -1,4 +1,4 @@
-import type { BaseAction } from '@script-bridge/protocol';
+import type { BaseAction } from '../protocol';
 import type { ActionId } from '../enums';
 import type { PlayerDescriptor } from '../types';
 

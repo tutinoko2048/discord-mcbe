@@ -1,4 +1,4 @@
-import type { BaseAction } from '@script-bridge/protocol';
+import { type BaseAction } from '@discord-mcbe/shared';
 import type { ISession } from './interfaces';
 
 export type ClientAction<A extends BaseAction> = {

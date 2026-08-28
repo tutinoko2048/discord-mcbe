@@ -15,19 +15,17 @@ import {
   type ServerRequest,
   type ServerResponse,
   type QueryResponse,
-} from '@discord-mcbe/shared';
-import {
   DisconnectReason,
   InternalAction,
   type InternalActions,
   PayloadType,
   ResponseErrorReason,
   type BaseAction,
-} from '@script-bridge/protocol';
+  type ActionHandler,
+} from '@discord-mcbe/shared';
 import { Emitter } from '../utils/emitter';
 import { Logger } from '../utils';
 
-import type { ActionHandler } from '@script-bridge/client';
 import type { IBridgeClient, IResponse } from './interfaces';
 
 export interface SocketEvents {

@@ -2,13 +2,86 @@ import { once } from 'node:events';
 import { createServer } from 'node:net';
 import { describe, expect, test } from 'bun:test';
 import { WebSocket, type RawData } from 'ws';
-import { BdsWebSocketBridge, type BdsWebSocketPayload } from '@discord-mcbe/shared';
-import { InternalAction, PayloadType, ResponseErrorReason, type BaseAction } from '@script-bridge/protocol';
+import {
+  BdsWebSocketBridge,
+  DisconnectReason,
+  NamespaceRequiredError,
+  type BdsWebSocketPayload,
+  InternalAction,
+  PayloadType,
+  ResponseErrorReason,
+  type BaseAction,
+} from '@discord-mcbe/shared';
 import { BdsWebSocketBridgeServer } from './bds-websocket';
 
 type EchoAction = BaseAction<'test:echo', { value: string }, { value: string }>;
 
 describe('BdsWebSocketBridgeServer', () => {
+  test('rejects action handlers without a namespace', () => {
+    const server = new BdsWebSocketBridgeServer({ port: 0 });
+    expect(() => server.registerHandler('echo', () => {})).toThrow(NamespaceRequiredError);
+  });
+
+  test('does not expose HTTP session or query endpoints', async () => {
+    const port = await getAvailablePort();
+    const server = new BdsWebSocketBridgeServer({ port });
+    await server.start();
+    try {
+      for (const path of ['/new', '/query']) {
+        const response = await fetch(`http://127.0.0.1:${port}${path}`);
+        expect(response.status).toBe(426);
+        await response.text();
+      }
+      expect(server.sessions.size).toBe(0);
+    } finally {
+      await server.stop();
+    }
+  });
+
+  test('preserves the wire handshake and cleans up a closed connection', async () => {
+    const port = await getAvailablePort();
+    const server = new BdsWebSocketBridgeServer({ port });
+    await server.start();
+    const socket = new WebSocket(`ws://127.0.0.1:${port}`);
+
+    try {
+      await once(socket, 'open');
+      const handshake = nextPayload(socket);
+      // Literal values ensure client/server constants cannot silently drift together.
+      socket.send(
+        JSON.stringify({
+          type: 0,
+          channelId: '__internal__:connect',
+          requestId: 'connect-wire',
+          data: { clientId: 'wire-client', protocolVersion: 1 },
+        }),
+      );
+      expect(await handshake).toMatchObject({
+        type: 1,
+        error: false,
+        requestId: 'connect-wire',
+        data: { sessionId: expect.any(String) },
+      });
+
+      const session = [...server.sessions][0];
+      const disconnect = once(server, 'clientDisconnect');
+      const closed = once(socket, 'close');
+      socket.close();
+      const [disconnectedSession, reason] = await disconnect;
+      expect(disconnectedSession).toBe(session);
+      expect(reason).toBe(DisconnectReason.ConnectionLost);
+      await closed;
+      expect(server.sessions.size).toBe(0);
+    } finally {
+      if (socket.readyState !== WebSocket.CLOSED) {
+        const closed = once(socket, 'close');
+        socket.close();
+        await closed;
+      }
+      await server.stop();
+    }
+  });
+
   test('adapts bidirectional actions to WebSocket messages', async () => {
     const port = await getAvailablePort();
     const server = new BdsWebSocketBridgeServer({ port });

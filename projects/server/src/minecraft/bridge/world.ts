@@ -7,6 +7,7 @@ import {
   type PlayerDescriptor,
   type WorldInitializeAction,
   type UniqueId,
+  type DisconnectReason,
 } from '@discord-mcbe/shared';
 import { ScriptPlayer } from './player';
 import { ScriptScoreboard } from './scoreboard';
@@ -14,16 +15,14 @@ import { BridgeActionError, CommandError } from './errors';
 import { MinecraftMessageEvent, PlayerJoinEvent, PlayerLeaveEvent } from '../../events';
 import { Logger } from '../../util';
 
-import type { Session as ScriptSession } from '@script-bridge/server';
-import type { DisconnectReason } from '@script-bridge/protocol';
 import type { RawMessage } from '@minecraft/server';
-import type { ISession, SocketSession } from './transport';
+import type { BdsWebSocketSession, ISession, SocketSession } from './transport';
 import type { ScriptDimension } from './dimension';
 import type { Application } from '../../application';
 
 export class ScriptWorld<S extends ISession = ISession> {
   private readonly app: Application;
-  private readonly _isWebSocket: boolean;
+  private readonly _isLocal: boolean;
 
   public readonly session: S;
 
@@ -39,10 +38,10 @@ export class ScriptWorld<S extends ISession = ISession> {
 
   public readonly scoreboard: ScriptScoreboard;
 
-  constructor(app: Application, session: S, isWebSocket: boolean) {
+  constructor(app: Application, session: S, isLocal: boolean) {
     this.app = app;
     this.session = session;
-    this._isWebSocket = isWebSocket;
+    this._isLocal = isLocal;
     this.logger = new Logger(this.name, this.app.config);
     this.scoreboard = new ScriptScoreboard(this.session);
   }
@@ -97,11 +96,11 @@ export class ScriptWorld<S extends ISession = ISession> {
   }
 
   isLocal(): this is ScriptWorld<SocketSession> {
-    return this._isWebSocket;
+    return this._isLocal;
   }
 
-  isServer(): this is ScriptWorld<ScriptSession> {
-    return !this._isWebSocket;
+  isServer(): this is ScriptWorld<BdsWebSocketSession> {
+    return !this._isLocal;
   }
 
   onInitialize(data: WorldInitializeAction['request']) {

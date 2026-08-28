@@ -18,15 +18,6 @@ catalogs:
     '@minecraft/server-ui':
       specifier: 2.1.0
       version: 2.1.0
-    '@script-bridge/client':
-      specifier: ^0.5.0
-      version: 0.5.0
-    '@script-bridge/protocol':
-      specifier: ^0.5.0
-      version: 0.5.0
-    '@script-bridge/server':
-      specifier: ^0.5.0
-      version: 0.5.0
     '@types/ws':
       specifier: ^8.18.1
       version: 8.18.1
@@ -102,12 +93,6 @@ importers:
       '@minecraft/server-ui':
         specifier: 'catalog:'
         version: 2.1.0(@minecraft/common@1.2.0)(@minecraft/server@2.10.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70))
-      '@script-bridge/client':
-        specifier: 'catalog:'
-        version: 0.5.0
-      '@script-bridge/protocol':
-        specifier: 'catalog:'
-        version: 0.5.0
     devDependencies:
       '@bedrock-apis/env-types':
         specifier: 'catalog:'
@@ -123,9 +108,6 @@ importers:
       '@minecraft/server':
         specifier: 2.10.0-beta.1.26.44-stable
         version: 2.10.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
-      '@script-bridge/protocol':
-        specifier: 'catalog:'
-        version: 0.5.0
     devDependencies:
       '@discord-mcbe/internal-config':
         specifier: workspace:*
@@ -236,12 +218,6 @@ importers:
       '@minecraft/server':
         specifier: 2.10.0-beta.1.26.44-stable
         version: 2.10.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
-      '@script-bridge/protocol':
-        specifier: 'catalog:'
-        version: 0.5.0
-      '@script-bridge/server':
-        specifier: 'catalog:'
-        version: 0.5.0
       colorette:
         specifier: ^2.0.20
         version: 2.0.20
@@ -1002,12 +978,6 @@ packages:
 
   '@gerrit0/mini-shiki@3.23.0':
     resolution: {integrity: sha512-bEMORlG0cqdjVyCEuU0cDQbORWX+kYCeo0kV1lbxF5bt4r7SID2l9bqsxJEM0zndaxpOUT7riCyIVEuqq/Ynxg==}
-
-  '@hono/node-server@1.19.6':
-    resolution: {integrity: sha512-Shz/KjlIeAhfiuE93NDKVdZ7HdBVLQAfdbaXEaoAVO3ic9ibRSLGIQGkcBbFyuLr+7/1D5ZCINM8B+6IvXeMtw==}
-    engines: {node: '>=18.14.1'}
-    peerDependencies:
-      hono: ^4
 
   '@img/colour@1.1.0':
     resolution: {integrity: sha512-Td76q7j57o/tLVdgS746cYARfSyxk8iEfRxewL9h4OMzYhbW4TAcppl0mT4eyqXddh6L/jwoM75mo7ixa/pCeQ==}
@@ -1915,15 +1885,6 @@ packages:
   '@sapphire/snowflake@3.5.5':
     resolution: {integrity: sha512-xzvBr1Q1c4lCe7i6sRnrofxeO1QTP/LKQ6A6qy0iB4x5yfiSfARMEQEghojzTNALDTcv8En04qYNIco9/K9eZQ==}
     engines: {node: '>=v14.0.0', npm: '>=7.0.0'}
-
-  '@script-bridge/client@0.5.0':
-    resolution: {integrity: sha512-lNcXxSNNSxoAMddPT5m2u6oKCASsp0SFLEwiZcNquC86hHM1NOgD0SgLTa2xsZBNmY8bdZk0xgRSWQFEPueFxQ==}
-
-  '@script-bridge/protocol@0.5.0':
-    resolution: {integrity: sha512-dY0sVkNS74zGChvknohJ4iASQvlVOMIOJiz49ilm/9ufVcBLKEbo0tdeWx+/wLsEy8NpZX6+s7uDXh74MQmucQ==}
-
-  '@script-bridge/server@0.5.0':
-    resolution: {integrity: sha512-CtR3heW4t5e9J+A5bDJGU91fItyz5pNafI73KfMZw0/p5Dp/lDR4rl3h0jkAs7YLEiSrklIJAeDJJf3Y3NYdbA==}
 
   '@serenityjs/emitter@0.5.2':
     resolution: {integrity: sha512-x+tYqmCbOzSI0wo/0t6Scj5OU883RtTUZ6b0jfhymO0E5GEF1RkWI/4eEGcHUWMtuFDbPtb2pQynPNbt4R4XCQ==}
@@ -3187,10 +3148,6 @@ packages:
 
   hastscript@9.0.1:
     resolution: {integrity: sha512-g7df9rMFX/SPi34tyGCyUBREQoKkapwdY/T04Qn9TDWfHhAYt4/I0gMVirzK5wEzeUqIjEB+LXC/ypb7Aqno5w==}
-
-  hono@4.10.7:
-    resolution: {integrity: sha512-icXIITfw/07Q88nLSkB9aiUrd8rYzSweK681Kjo/TSggaGbOX4RRyxxm71v+3PC8C/j+4rlxGeoTRxQDkaJkUw==}
-    engines: {node: '>=16.9.0'}
 
   hookable@6.1.1:
     resolution: {integrity: sha512-U9LYDy1CwhMCnprUfeAZWZGByVbhd54hwepegYTK7Pi5NvqEj63ifz5z+xukznehT7i6NIZRu89Ay1AZmRsLEQ==}
@@ -5499,10 +5456,6 @@ snapshots:
       '@shikijs/types': 3.23.0
       '@shikijs/vscode-textmate': 10.0.2
 
-  '@hono/node-server@1.19.6(hono@4.10.7)':
-    dependencies:
-      hono: 4.10.7
-
   '@img/colour@1.1.0': {}
 
   '@img/sharp-darwin-arm64@0.34.5':
@@ -6055,18 +6008,6 @@ snapshots:
   '@sapphire/snowflake@3.5.3': {}
 
   '@sapphire/snowflake@3.5.5': {}
-
-  '@script-bridge/client@0.5.0':
-    dependencies:
-      '@script-bridge/protocol': 0.5.0
-
-  '@script-bridge/protocol@0.5.0': {}
-
-  '@script-bridge/server@0.5.0':
-    dependencies:
-      '@hono/node-server': 1.19.6(hono@4.10.7)
-      '@script-bridge/protocol': 0.5.0
-      hono: 4.10.7
 
   '@serenityjs/emitter@0.5.2': {}
 
@@ -7396,8 +7337,6 @@ snapshots:
       hast-util-parse-selector: 4.0.0
       property-information: 7.2.0
       space-separated-tokens: 2.0.2
-
-  hono@4.10.7: {}
 
   hookable@6.1.1: {}
 

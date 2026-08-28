@@ -7,22 +7,21 @@ import {
   type BdsWebSocketPayload,
   type BdsWebSocketRequest,
   type BdsWebSocketResponse,
-} from '@discord-mcbe/shared';
-import {
   DisconnectReason,
   InternalAction,
   PayloadType,
   ResponseErrorReason,
   type BaseAction,
-  type ClientResponse,
   type ConnectAction,
   type InternalActions,
-} from '@script-bridge/protocol';
-import { NamespaceRequiredError } from '@script-bridge/server';
+  NamespaceRequiredError,
+} from '@discord-mcbe/shared';
 
 import type { RawData } from 'ws';
 import type { ClientActionHandler } from './types';
 import type { ISession } from './interfaces';
+
+type BdsSessionResponse<T = unknown> = BdsWebSocketResponse<T> & { sessionId: string };
 
 export interface WebSocketBridgeServerOptions {
   port: number;
@@ -83,7 +82,7 @@ export class BdsWebSocketBridgeServer extends EventEmitter<BdsWebSocketServerEve
     channelId: A['id'],
     data?: A['request'],
     timeout?: number,
-  ): Promise<ClientResponse<A['response']>[]> {
+  ): Promise<BdsSessionResponse<A['response']>[]> {
     return Promise.all(
       [...this.sessions]
         .filter((session) => session.isConnected)
@@ -290,7 +289,7 @@ export class BdsWebSocketSession implements ISession {
   readonly id = randomUUID();
   readonly _awaitingResponses = new Map<
     string,
-    { resolve: (response: ClientResponse) => void; sentAt: number; timeout: NodeJS.Timeout }
+    { resolve: (response: BdsSessionResponse) => void; sentAt: number; timeout: NodeJS.Timeout }
   >();
 
   clientId = '';
@@ -363,7 +362,7 @@ export class BdsWebSocketSession implements ISession {
     channelId: A['id'],
     data?: A['request'],
     timeout: number = 10_000,
-  ): Promise<ClientResponse<A['response']>> {
+  ): Promise<BdsSessionResponse<A['response']>> {
     if (!channelId.includes(':')) throw new NamespaceRequiredError(channelId);
     if (!this.isConnected || this.isDestroyed) throw new Error('No active WebSocket session');
 
@@ -376,7 +375,7 @@ export class BdsWebSocketSession implements ISession {
     };
     return new Promise((resolve, reject) => {
       const pending = {
-        resolve: resolve as (response: ClientResponse) => void,
+        resolve: resolve as (response: BdsSessionResponse) => void,
         sentAt: Date.now(),
         timeout: setTimeout(() => {
           this._awaitingResponses.delete(requestId);

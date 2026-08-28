@@ -1,11 +1,11 @@
-import type { ClientResponse as SocketClientResponse } from '@discord-mcbe/shared';
 import type {
   BaseAction,
-  ClientResponse as ScriptClientResponse,
+  BdsWebSocketResponse,
+  ClientResponse,
   DisconnectReason,
-} from '@script-bridge/protocol';
+} from '@discord-mcbe/shared';
 
-type IClientResponse<T> = SocketClientResponse<T> | ScriptClientResponse<T>;
+type IClientResponse<T> = ClientResponse<T> | (BdsWebSocketResponse<T> & { sessionId: string });
 
 export interface ISession {
   readonly id: string;

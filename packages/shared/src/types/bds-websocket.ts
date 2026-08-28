@@ -1,4 +1,4 @@
-import { PayloadType, type ResponseErrorReason } from '@script-bridge/protocol';
+import { PayloadType, type ResponseErrorReason } from '../protocol';
 
 /** A request sent in either direction over the BDS WebSocket transport. */
 export type BdsWebSocketRequest<T = unknown> = {

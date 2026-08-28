@@ -20,17 +20,15 @@ GUILD_ID=123456789012345678
 CHANNEL_ID=123456789012345678
 SOCKET_PORT=3063
 BRIDGE_PORT=23191
-BRIDGE_TRANSPORT=websocket
 ```
 
-| 変数               | 必須 | デフォルト  | 説明                                                  |
-| ------------------ | :--: | ----------- | ----------------------------------------------------- |
-| `DISCORD_TOKEN`    |  ✓   | —           | Developer Portalで発行したBotトークン                 |
-| `GUILD_ID`         |  ✓   | —           | スラッシュコマンドを登録するDiscordサーバーのID       |
-| `CHANNEL_ID`       |  ✓   | —           | Minecraftとのチャット連携に使うテキストチャンネルのID |
-| `SOCKET_PORT`      |      | `3063`      | ローカルワールドから`/connect`するWebSocketポート     |
-| `BRIDGE_PORT`      |      | `23191`     | BDSアドオンが接続するBridgeポート                     |
-| `BRIDGE_TRANSPORT` |      | `websocket` | BDS通信方式。`websocket`または互換用の`polling`を指定 |
+| 変数            | 必須 | デフォルト | 説明                                                  |
+| --------------- | :--: | ---------- | ----------------------------------------------------- |
+| `DISCORD_TOKEN` |  ✓   | —          | Developer Portalで発行したBotトークン                 |
+| `GUILD_ID`      |  ✓   | —          | スラッシュコマンドを登録するDiscordサーバーのID       |
+| `CHANNEL_ID`    |  ✓   | —          | Minecraftとのチャット連携に使うテキストチャンネルのID |
+| `SOCKET_PORT`   |      | `3063`     | ローカルワールドから`/connect`するWebSocketポート     |
+| `BRIDGE_PORT`   |      | `23191`    | BDSアドオンが接続するBridgeポート                     |
 
 <Aside type="danger" title=".envを共有しないでください">
   `.env`はGitの管理対象にせず、ログを共有するときもトークンを含めないでください。漏えいしたトークンはDeveloper
@@ -151,7 +149,7 @@ BRIDGE_TRANSPORT=websocket
     `.env`の`SOCKET_PORT`を変更し、`/connect localhost:変更後のポート`で接続します。
   </TabItem>
   <TabItem label="BDS">
-    `.env`の`BRIDGE_PORT`と、独自にビルドしたBDSアドオンの`BridgeClient`に渡す`port`を同じ値にします。公式BDSアドオンのポートは`23191`固定で、WebSocketを使用します。旧pollingへ戻す場合は、サーバーを`BRIDGE_TRANSPORT=polling`にし、独自アドオン側の`transport`にも`polling`を指定します。
+    `.env`の`BRIDGE_PORT`と、独自にビルドしたBDSアドオンの`BridgeClient`に渡す`port`を同じ値にします。公式BDSアドオンのポートは`23191`固定です。BDSの通信方式はWebSocketのみで、サーバー・アドオンともに通信方式の設定は不要です。
   </TabItem>
 </Tabs>
 

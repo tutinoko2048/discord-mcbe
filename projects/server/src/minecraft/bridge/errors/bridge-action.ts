@@ -1,4 +1,4 @@
-import { ResponseErrorReason } from '@script-bridge/protocol';
+import { ResponseErrorReason } from '@discord-mcbe/shared';
 
 export class BridgeActionError extends Error {
   constructor(response: { errorReason: ResponseErrorReason; message: string }) {

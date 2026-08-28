@@ -1,6 +1,14 @@
 import { EventEmitter } from 'node:events';
 import { randomUUID } from 'node:crypto';
-import { SocketBridge, type ConnectionResponse } from '@discord-mcbe/shared';
+import {
+  SocketBridge,
+  type ConnectionResponse,
+  NamespaceRequiredError,
+  DisconnectReason,
+  InternalAction,
+  type InternalActions,
+  type BaseAction,
+} from '@discord-mcbe/shared';
 import {
   CommandStatusCode,
   ServerEvent,
@@ -8,13 +16,6 @@ import {
   type ServerOptions,
   type World as SocketWorld,
 } from 'socket-be';
-import { NamespaceRequiredError } from '@script-bridge/server';
-import {
-  DisconnectReason,
-  InternalAction,
-  type InternalActions,
-  type BaseAction,
-} from '@script-bridge/protocol';
 import { SocketSession } from './session';
 import { AddonNotInstalledError } from './errors';
 import { Logger } from '../../../util';

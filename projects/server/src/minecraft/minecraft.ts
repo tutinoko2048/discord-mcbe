@@ -1,7 +1,7 @@
-import { ScriptBridgeServer } from '@script-bridge/server';
 import { green } from 'colorette';
-import { type BaseAction, DisconnectReason } from '@script-bridge/protocol';
 import {
+  type BaseAction,
+  DisconnectReason,
   ActionId,
   type ChatSendAction,
   type PlayerJoinAction,
@@ -26,19 +26,13 @@ export class MinecraftHandler {
   private readonly logger: Logger;
 
   public readonly socket: SocketBridgeServer;
-  public readonly script: ScriptBridgeServer | BdsWebSocketBridgeServer;
+  public readonly script: BdsWebSocketBridgeServer;
 
   public readonly worlds = new Map<ISession, ScriptWorld>();
 
   constructor(private readonly app: Application) {
     this.logger = new Logger('Minecraft', this.app.config);
-    this.script =
-      this.app.env.BRIDGE_TRANSPORT === 'polling'
-        ? new ScriptBridgeServer({
-            port: this.app.env.BRIDGE_PORT,
-            timeoutThresholdMultiplier: 10,
-          })
-        : new BdsWebSocketBridgeServer({ port: this.app.env.BRIDGE_PORT });
+    this.script = new BdsWebSocketBridgeServer({ port: this.app.env.BRIDGE_PORT });
     this.socket = new SocketBridgeServer(this.app, {
       port: this.app.env.SOCKET_PORT,
       debug: this.app.config.debug,

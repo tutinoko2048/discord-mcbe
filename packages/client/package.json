@@ -29,9 +29,7 @@
     "@minecraft/server": "catalog:",
     "@minecraft/server-admin": "catalog:",
     "@minecraft/server-net": "catalog:",
-    "@minecraft/server-ui": "catalog:",
-    "@script-bridge/client": "catalog:",
-    "@script-bridge/protocol": "catalog:"
+    "@minecraft/server-ui": "catalog:"
   },
   "devDependencies": {
     "@bedrock-apis/env-types": "catalog:",

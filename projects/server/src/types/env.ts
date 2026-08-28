@@ -7,10 +7,6 @@ export const envSchema = z.object({
   DISCORD_WEBHOOK_URL: z.url().optional().describe('Webhook URL used only for Minecraft chat messages'),
   SOCKET_PORT: z.coerce.number().int().positive().optional().describe('Port used for websocket connection'),
   BRIDGE_PORT: z.coerce.number().int().positive().optional().describe('Port used for BDS connection'),
-  BRIDGE_TRANSPORT: z
-    .enum(['websocket', 'polling'])
-    .optional()
-    .describe('Transport used for the BDS connection'),
 });
 
 export type Env = z.infer<typeof envSchema>;

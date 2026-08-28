@@ -11,8 +11,6 @@ import {
   type BdsWebSocketPayload,
   type BdsWebSocketRequest,
   type BdsWebSocketResponse,
-} from '@discord-mcbe/shared';
-import {
   DisconnectReason,
   InternalAction,
   PayloadType,
@@ -20,10 +18,10 @@ import {
   type BaseAction,
   type ConnectAction,
   type InternalActions,
-} from '@script-bridge/protocol';
+  type ActionHandler,
+} from '@discord-mcbe/shared';
 import { Emitter } from '../utils/emitter';
 
-import type { ActionHandler } from '@script-bridge/client';
 import type { IBridgeClient, IResponse } from './interfaces';
 
 interface WebSocketBridgeEvents {

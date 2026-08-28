@@ -1,20 +1,18 @@
 import { CommandStatusCode, type World as SocketWorld } from 'socket-be';
-import type {
-  ClientRequest,
-  ClientResponse,
-  QueryResponse,
-  ServerRequest,
-  ServerResponse,
-} from '@discord-mcbe/shared';
 import {
+  type ClientRequest,
+  type ClientResponse,
+  type QueryResponse,
+  type ServerRequest,
+  type ServerResponse,
   DisconnectReason,
   InternalAction,
   PayloadType,
   ResponseErrorReason,
   type BaseAction,
   type InternalActions,
-} from '@script-bridge/protocol';
-import { NamespaceRequiredError } from '@script-bridge/server';
+  NamespaceRequiredError,
+} from '@discord-mcbe/shared';
 import { AddonNotInstalledError } from './errors';
 import { Logger } from '../../../util';
 
