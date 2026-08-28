@@ -9,18 +9,18 @@ import {
   type WorldInitializeAction,
 } from '@discord-mcbe/shared';
 import {
-  ScriptWorld,
   BdsWebSocketBridgeServer,
   type ClientActionHandler,
   type ISession,
   SocketBridgeServer,
   SocketSession,
-} from './bridge';
+} from './transport';
 import { _t, Logger } from '../util';
 import { WorldConnectEvent, WorldDisconnectEvent } from '../events';
 
 import type { RawMessage } from '@minecraft/server';
 import type { Application } from '../application';
+import { ScriptWorld } from './bridge';
 
 export class MinecraftHandler {
   private readonly logger: Logger;

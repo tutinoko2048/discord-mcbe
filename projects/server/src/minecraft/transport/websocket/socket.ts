@@ -17,11 +17,11 @@ import {
   type World as SocketWorld,
 } from 'socket-be';
 import { SocketSession } from './session';
-import { AddonNotInstalledError } from './errors';
+import { AddonNotInstalledError } from '../errors';
 import { Logger } from '../../../util';
 
-import type { ClientActionHandler } from './types';
-import type { ISession } from './interfaces';
+import type { ClientActionHandler } from '../types';
+import type { ISession } from '../interfaces';
 import type { Application } from '../../../application';
 
 interface ConnectionState {

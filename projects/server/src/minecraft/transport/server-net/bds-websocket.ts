@@ -18,8 +18,8 @@ import {
 } from '@discord-mcbe/shared';
 
 import type { RawData } from 'ws';
-import type { ClientActionHandler } from './types';
-import type { ISession } from './interfaces';
+import type { ClientActionHandler } from '../types';
+import type { ISession } from '../interfaces';
 
 type BdsSessionResponse<T = unknown> = BdsWebSocketResponse<T> & { sessionId: string };
 

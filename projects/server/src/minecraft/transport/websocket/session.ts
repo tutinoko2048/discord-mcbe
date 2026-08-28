@@ -13,10 +13,10 @@ import {
   type InternalActions,
   NamespaceRequiredError,
 } from '@discord-mcbe/shared';
-import { AddonNotInstalledError } from './errors';
+import { AddonNotInstalledError } from '../errors';
 import { Logger } from '../../../util';
 
-import type { ISession } from './interfaces';
+import type { ISession } from '../interfaces';
 import type { SocketBridgeServer } from './socket';
 import type { Application } from '../../../application';
 

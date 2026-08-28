@@ -15,7 +15,7 @@ import {
 import { ScriptScoreboardObjective } from './objective';
 import { ScriptScoreboardScoreInfo } from './score-info';
 import { BridgeActionError } from '../errors';
-import type { ISession } from '../transport';
+import type { ISession } from '../../transport';
 import type { ScriptPlayer } from '../player';
 
 export class ScriptScoreboard {
