@@ -1,9 +1,12 @@
 ---
 title: discord-mcbe
-description: A two-way bridge between Minecraft Bedrock Edition and Discord.
+description: A Discord bot that bridges chat between Minecraft Bedrock Edition and Discord.
 template: splash
 hero:
   tagline: Bring Minecraft Bedrock Edition and Discord into one conversation.
+  image:
+    alt: discord-mcbe screenshot
+    file: ../../../assets/minecraft.jpeg
   actions:
     - text: Get started
       link: /en/installation/setup-bot/
@@ -18,55 +21,51 @@ import { Aside, Card, CardGrid, Icon } from '@astrojs/starlight/components';
 import AddonDownloads from '../../../components/AddonDownloads.astro';
 import LauncherDownloads from '../../../components/LauncherDownloads.astro';
 
+{/* discord-mcbe is an open-source bridge between a Minecraft Bedrock Edition world and a text channel in your Discord server. It brings regular chat, join and leave notifications, player lists, command execution, and a status panel together in one bot. */}
+
+<CardGrid stagger>
+  <Card title="Two-way chat" icon="comment-alt">
+    Relay Minecraft chat to Discord and messages from a Discord channel to every connected world.
+  </Card>
+  <Card title="Multiple-world support" icon="server">
+    Supports both regular worlds and Bedrock Dedicated Server (BDS), with multiple worlds connected at the
+    same time.
+  </Card>
+  <Card title="Useful commands and tools" icon="seti:powershell">
+    View player lists, execute Minecraft commands, and check latency from Discord.
+  </Card>
+  <Card title="Extensible" icon="puzzle">
+    Customize message filters and display text, or freely extend functionality by writing JavaScript custom
+    scripts.
+  </Card>
+</CardGrid>
+
 <Aside type="note" title="Documentation for stable v4">
-  These docs cover stable v4 releases. When upgrading from v3, back up the existing installation and follow
-  the [installation guide](/en/installation/setup-bot/) to set up v4 in a separate directory. Downloads,
-  configuration, and commands have changed.
+  These docs cover discord-mcbe **v4** and later. When upgrading from v3 or earlier, back up the existing
+  installation and follow the [installation guide](/en/installation/setup-bot/) to set it up in a separate
+  directory.
 </Aside>
 
-discord-mcbe is an open-source bridge between a Minecraft Bedrock Edition world and a text channel in your Discord server. It relays chat, join and leave events, player lists, commands, and live status through one bot.
+## <Icon name="list-format" />Installation path
+
+1. [Set up the discord-mcbe server](/en/installation/setup-bot/)
+2. [Install the add-on in a regular world or BDS](/en/installation/setup-world/)
+3. Start the world and connect it
+
+If you run into trouble during setup, the [troubleshooting guide](/en/guides/troubleshooting/) collects checks by symptom and log message.
 
 ## <Icon name="download" />Downloads
 
 ### <Icon name="rocket" />Launcher
 
-Use the launcher to install and update the discord-mcbe server. When this device matches a supported build, its download button is selected automatically.
+Use the launcher to install and update the discord-mcbe server.
 
 <LauncherDownloads locale="en" />
 
 ### <Icon name="puzzle" />Minecraft add-ons
 
-Use the `local` asset for a regular hosted world and the `bds` asset for Bedrock Dedicated Server. Match its version to the server installed by the launcher.
+Installing an add-on in the world is required to connect. Install the same version as the server (bot).
 
 <AddonDownloads locale="en" />
 
 Continue with the [installation guide](/en/installation/setup-bot/) for Discord bot creation, extraction, and configuration.
-
-## <Icon name="star" />What it can do
-
-<CardGrid stagger>
-  <Card title="Two-way chat" icon="messages">
-    Relay Minecraft chat to Discord and messages from one Discord channel to every connected world. Replies
-    and attachment counts are represented in game too.
-  </Card>
-  <Card title="Multiple worlds" icon="puzzle">
-    Connect regular hosted worlds and Bedrock Dedicated Server (BDS) worlds at the same time, then target them
-    by name.
-  </Card>
-  <Card title="Operations commands" icon="terminal">
-    Check latency and player lists or execute Minecraft commands from Discord. Administrative commands are
-    restricted to Discord administrators by default.
-  </Card>
-  <Card title="Extensible" icon="setting">
-    Configure message filters and text overrides, then use JavaScript custom scripts to consume events and the
-    Minecraft API wrappers.
-  </Card>
-</CardGrid>
-
-## <Icon name="list-format" />Installation path
-
-1. [Set up the Discord bot and discord-mcbe server](/en/installation/setup-bot/)
-2. [Install the add-on in a local or BDS world](/en/installation/setup-world/)
-3. Tune the [configuration](/en/guides/configuration/) and learn the [commands](/en/guides/commands/)
-
-If something does not connect, the [troubleshooting guide](/en/guides/troubleshooting/) collects checks by symptom and log message.

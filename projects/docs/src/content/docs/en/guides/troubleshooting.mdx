@@ -7,7 +7,7 @@ import { Aside, Icon } from '@astrojs/starlight/components';
 
 First confirm that the server and add-on came from the same v4 release and that you restarted discord-mcbe after changing `.env` or `config.json`.
 
-## <Icon name="error" />The bot does not start
+## The bot does not start
 
 ### <Icon name="warning" />`Invalid environment variables`
 
@@ -28,16 +28,16 @@ Check `CHANNEL_ID`, the bot's View Channel permission, and that the ID belongs t
 
 Follow the key path in the error. Common causes are a trailing JSON comma, a missing quote, or `0` where a positive integer is required. If necessary, move the current file aside, let discord-mcbe generate defaults, then reapply only the settings you need.
 
-## <Icon name="question-circle" />Slash commands are missing
+## Slash commands are missing
 
-1. Confirm that `GUILD_ID` identifies the server where the bot was installed.
-2. Include the `applications.commands` scope when installing the bot.
-3. Restart discord-mcbe and check for errors after `Logged in as ...`.
-4. Reload the Discord client.
+- Confirm that `GUILD_ID` identifies the server where the bot was installed.
+- Include the `applications.commands` scope when installing the bot.
+- Restart discord-mcbe and check for errors after `Logged in as ...`.
+- Reload the Discord client. (Changes may take some time to appear.)
 
 `/command` and `/panel` are visible only to administrators. Use `/ping` and `/list` to confirm that registration worked.
 
-## <Icon name="comment-alt" />Discord chat does not relay
+## Discord chat does not relay
 
 - Post in the exact channel selected by `CHANNEL_ID`.
 - Grant View Channels, Send Messages, Embed Links, Attach Files, and Read Message History.
@@ -47,15 +47,16 @@ Follow the key path in the error. Common causes are a trailing JSON comma, a mis
 
 Messages authored by bots are intentionally ignored. Attachments relay only their count, not their contents.
 
-## <Icon name="link" />Minecraft does not connect
+## Minecraft does not connect
 
-### <Icon name="laptop" />Regular world
+### <Icon name="laptop" />For a regular world
 
-1. Activate `discord-mcbe-local-*.mcpack` as a behavior pack.
-2. Start the world and discord-mcbe, then run `/connect localhost:3063` as the host.
-3. From another device, replace `localhost` with the server machine's LAN address.
-4. If you changed `SOCKET_PORT`, use the same port in `/connect`.
-5. Allow inbound TCP on that port in the OS firewall. It does not need to be exposed to the public internet.
+- Use the `local` pack, not the `bds` pack.
+- Activate `discord-mcbe-local-*.mcpack` as a behavior pack.
+- Start the world and discord-mcbe, then run `/connect localhost:3063` as the host.
+- From another device, replace `localhost` with the server machine's LAN address.
+- If you changed `SOCKET_PORT`, use the same port in `/connect`.
+- Allow inbound TCP on that port in the OS firewall. It does not need to be exposed to the public internet.
 
 <Aside type="note" title="Encryption setting">
   v4 enables local connection encryption by default. The old instruction to disable Minecraft's “Require
@@ -65,35 +66,36 @@ Messages authored by bots are intentionally ignored. Attachments relay only thei
 
 ### <Icon name="puzzle" />`Required addon not installed`
 
-The WebSocket is open, but discord-mcbe cannot find the v4 local add-on's internal commands. Confirm the pack and Beta APIs are active and that the server and add-on versions match.
+The WebSocket is open, but discord-mcbe cannot find the v4 local add-on's internal commands. Confirm that the pack and Beta APIs are enabled and that the server and add-on versions match.
 
-### <Icon name="server" />BDS
+### <Icon name="server" />For Bedrock Dedicated Server
 
 - Use the `bds` pack, not the `local` pack.
-- Start discord-mcbe first and wait for `[BDS] Bridge server is listening` before BDS.
+- Confirm that the add-on is listed in a file such as `world_behavior_packs.json` and is enabled.
+- Enable Beta APIs too.
+- Confirm that discord-mcbe is running before starting BDS.
 - The prebuilt BDS add-on connects to `localhost:23191`, so run BDS and discord-mcbe on the same machine.
 - Changing `BRIDGE_PORT` makes it differ from the prebuilt add-on. Restore the default or build an add-on with a matching port.
-- Check the BDS content log to confirm the pack and Beta API are enabled.
 
-## <Icon name="random" />World names collide or cannot be selected
+## World names collide or cannot be selected
 
 An add-on's Client ID becomes its Discord world name. Save a unique value with `/dmc:setid survival`. For a regular world, run `/dmc:disconnect` and reconnect; for BDS, restart the server.
 
-## <Icon name="cloud-download" />Updates fail
+## Updates fail
 
 - Use `updater stable` for stable v4. Use `updater beta` only to try beta releases.
 - When moving from a v4 beta to stable, run `updater stable --force` and update the add-on to the same release.
 - If a minimum launcher version error appears, extract the [latest launcher release](https://github.com/tutinoko2048/discord-mcbe/releases?q=launcher).
 - Confirm that a proxy or firewall permits GitHub Releases and the npm registry.
 
-## <Icon name="notes" />Information to include when asking for help
+## Information to include when asking for help
 
 Temporarily set `debug` to `true` in `config.json`, reproduce the issue, and collect:
 
 - discord-mcbe, launcher, add-on, and Minecraft/BDS versions
-- OS and CPU architecture
 - Whether this is a regular world or BDS
+- OS and CPU architecture
 - Steps taken and expected behavior
 - Logs including the lines before and after the error
 
-Remove bot tokens, `.env`, and personal data, then ask in [GitHub Issues](https://github.com/tutinoko2048/discord-mcbe/issues) or the [Discord support server](https://discord.gg/XGR8FcCeFc).
+Remove bot tokens, `.env`, and personal data, then ask in the [Discord support server](https://discord.gg/XGR8FcCeFc) or [GitHub Issues](https://github.com/tutinoko2048/discord-mcbe/issues).

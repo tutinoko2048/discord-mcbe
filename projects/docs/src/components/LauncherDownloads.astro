@@ -33,22 +33,18 @@ const assets = [
 const copy =
   locale === 'ja'
     ? {
-        initialStatus: 'この端末に合うランチャーを判定しています。',
         allPlatforms: '別のOS・CPU向けを表示',
-        version: `ランチャー v${version}`,
         releasePage: 'リリース詳細を見る',
       }
     : {
-        initialStatus: 'Detecting the launcher for this device.',
         allPlatforms: 'Show downloads for another OS or CPU',
-        version: `Launcher v${version}`,
         releasePage: 'View release details',
       };
 ---
 
 <div class="download-picker" data-launcher-download data-locale={locale}>
-  <p class="version">{copy.version}</p>
-  <p class="status" data-download-status aria-live="polite">{copy.initialStatus}</p>
+  <p class="version">discord-mcbe launcher v{version}</p>
+  <p class="status" data-download-status aria-live="polite"></p>
   <div class="recommended-download" data-recommended-download-row hidden>
     <a class="recommended" data-recommended-download href={releaseUrl}></a>
     <span class="file-size" data-recommended-download-size></span>
@@ -107,7 +103,6 @@ const copy =
 
   const messages = {
     ja: {
-      detected: (label: string) => `${label}を検出しました。`,
       download: (label: string) => `${label}版をダウンロード`,
       macUnknown: 'macOSを検出しました。Apple SiliconまたはIntelを一覧から選んでください。',
       unsupportedMobile: (os?: string) =>
@@ -115,7 +110,6 @@ const copy =
       unknown: '環境を自動判定できませんでした。OSとCPUに合うものを一覧から選んでください。',
     },
     en: {
-      detected: (label: string) => `${label} detected.`,
       download: (label: string) => `Download for ${label}`,
       macUnknown: 'macOS detected. Choose Apple silicon or Intel from the list.',
       unsupportedMobile: (os?: string) =>
@@ -190,7 +184,7 @@ const copy =
     if (!source) return;
 
     const label = labels[detected.target][locale];
-    status.textContent = messages[locale].detected(label);
+    status.textContent = '';
     recommended.href = source.href;
     recommended.textContent = messages[locale].download(label);
     recommendedSize.textContent = source.dataset.downloadSize ?? '';

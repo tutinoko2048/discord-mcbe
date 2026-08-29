@@ -49,11 +49,11 @@ import { Icon, Steps } from '@astrojs/starlight/components';
 | `projects/addon-bds`       | BDS用ビヘイビアーパック                              |
 | `projects/docs`            | Astro + Starlightのドキュメントサイト                |
 | `packages/client`          | 両アドオンで使うMinecraft Script APIクライアント     |
-| `packages/shared`          | アクション、型、列挙、プロトコル共有コード           |
+| `packages/shared`          | 固定パケット、型、列挙、プロトコル共有コード         |
 | `packages/internal-config` | ワークスペース共通のビルド・チェック設定             |
 | `devapp`                   | ローカル開発用アプリ                                 |
 
-ローカルワールドはSocketBE、BDSは`@minecraft/server-net`のWebSocket経由で同じアクション層へ接続します。通信プロトコルの型・定数は`packages/shared`で管理しています。
+ローカルワールドはSocketBE、BDSは`@minecraft/server-net`のWebSocket経由で同じ固定パケット層へ接続します。通信プロトコルv2のValibotスキーマ・型・定数は`packages/shared`で管理しています。`ChatSend`・`PlayerJoin`・`PlayerLeave`は片方向通知、それ以外の操作は共通のrequest/response形式を使います。
 
 ## <Icon name="terminal" />よく使うコマンド
 

@@ -1,9 +1,12 @@
 ---
 title: discord-mcbe
-description: Minecraft Bedrock EditionとDiscordのチャットを双方向につなぐブリッジです。
+description: Minecraft Bedrock EditionとDiscordのチャットをつなぐDiscord Botです。
 template: splash
 hero:
-  tagline: Minecraft Bedrock EditionとDiscordを、ひとつのチャットに。
+  tagline: MinecraftとDiscordのチャットをつなぐDiscord BOT
+  image:
+    alt: discord-mcbeのスクリーンショット
+    file: ../../assets/minecraft.jpeg
   actions:
     - text: 導入を始める
       link: /installation/setup-bot/
@@ -18,51 +21,49 @@ import { Aside, Card, CardGrid, Icon } from '@astrojs/starlight/components';
 import AddonDownloads from '../../components/AddonDownloads.astro';
 import LauncherDownloads from '../../components/LauncherDownloads.astro';
 
+{/* discord-mcbeは、Minecraft Bedrock EditionのワールドとDiscordサーバーのテキストチャンネルをつなぐオープンソースのブリッジです。一般的なチャットに加え、参加・退出通知、プレイヤー一覧、コマンド実行、ステータスパネルをひとつのBotで扱えます。 */}
+
+<CardGrid stagger>
+  <Card title="双方向チャット" icon="comment-alt">
+    MinecraftのチャットをDiscordへ、Discordチャンネルのメッセージを接続中の全ワールドへ届けます。
+  </Card>
+  <Card title="複数ワールド対応" icon="server">
+    通常のワールドとBedrock Dedicated
+    Server（BDS）の両方に対応。複数のワールドを同時に接続することができます。
+  </Card>
+  <Card title="便利なコマンドやツール" icon="seti:powershell">
+    Discordからプレイヤー一覧、Minecraftコマンドの実行、応答速度を確認することができます。
+  </Card>
+  <Card title="拡張可能" icon="puzzle">
+    メッセージフィルターや表示テキストをカスタマイズできるほか、カスタムスクリプトとしてJavaScriptを書くことで、自由に機能を拡張できます。
+  </Card>
+</CardGrid>
+
 <Aside type="note" title="v4正式版のドキュメント">
-  このドキュメントはv4正式版を対象としています。v3から移行する場合は、既存環境をバックアップし、[導入ガイド](/installation/setup-bot/)に従って別のフォルダーへセットアップしてください。リリースアセット・設定ファイル・コマンドが変更されています。
+  このドキュメントはdiscord-mcbe
+  **v4**以降を対象としています。v3以前のバージョンから移行する場合は、既存環境をバックアップし、[導入ガイド](/installation/setup-bot/)に従って別のフォルダーへセットアップしてください。
 </Aside>
 
-discord-mcbeは、Minecraft Bedrock EditionのワールドとDiscordサーバーのテキストチャンネルをつなぐオープンソースのブリッジです。普段のチャットに加え、参加・退出通知、プレイヤー一覧、コマンド実行、ステータスパネルをひとつのBotで扱えます。
+## <Icon name="list-format" />導入の流れ
+
+1. [discord-mcbeサーバーをセットアップする](/installation/setup-bot/)
+2. [ローカルワールドまたはBDSにアドオンを導入する](/installation/setup-world/)
+3. ワールドを起動して接続する
+
+セットアップで詰まった場合は、[トラブルシューティング](/guides/troubleshooting/)にログ別の確認項目をまとめています。
 
 ## <Icon name="download" />ダウンロード
 
 ### <Icon name="rocket" />ランチャー
 
-discord-mcbeサーバーのインストールとアップデートに使用します。この端末に対応するランチャーがある場合は、自動判定したダウンロードボタンが表示されます。
+discord-mcbeサーバーのインストールとアップデートに使用します。
 
 <LauncherDownloads locale="ja" />
 
 ### <Icon name="puzzle" />Minecraftアドオン
 
-通常のワールドには`local`、Bedrock Dedicated Serverには`bds`アセットを使用します。ランチャーでインストールするサーバーと同じバージョンを選んでください。
+接続するにはワールドへのアドオンの導入が必須です。インストールするサーバー(bot)と同じバージョンのものを導入してください。
 
 <AddonDownloads locale="ja" />
 
 Botの作成や展開後の設定を含む手順は、[導入ガイド](/installation/setup-bot/)を参照してください。
-
-## <Icon name="star" />できること
-
-<CardGrid stagger>
-  <Card title="双方向チャット" icon="messages">
-    MinecraftのチャットをDiscordへ、指定したDiscordチャンネルのメッセージを接続中の全ワールドへ届けます。返信と添付ファイル数もゲーム内で確認できます。
-  </Card>
-  <Card title="複数ワールド" icon="puzzle">
-    通常のワールドとBedrock Dedicated
-    Server（BDS）の両方に対応。複数のワールドを同時に接続し、名前を指定して操作できます。
-  </Card>
-  <Card title="運用コマンド" icon="terminal">
-    Discordから応答速度、プレイヤー一覧、Minecraftコマンドの実行結果を確認できます。管理系コマンドはDiscordの管理者だけに制限されます。
-  </Card>
-  <Card title="拡張可能" icon="setting">
-    メッセージフィルターや表示テキストを設定できるほか、JavaScriptのカスタムスクリプトからイベントとMinecraft
-    APIラッパーを利用できます。
-  </Card>
-</CardGrid>
-
-## <Icon name="list-format" />導入の流れ
-
-1. [Discord Botとdiscord-mcbeサーバーをセットアップする](/installation/setup-bot/)
-2. [ローカルワールドまたはBDSにアドオンを導入する](/installation/setup-world/)
-3. [設定](/guides/configuration/)と[コマンド](/guides/commands/)を用途に合わせて調整する
-
-セットアップで詰まった場合は、[トラブルシューティング](/guides/troubleshooting/)にログ別の確認項目をまとめています。

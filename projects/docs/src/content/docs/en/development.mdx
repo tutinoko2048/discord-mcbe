@@ -49,11 +49,11 @@ import { Icon, Steps } from '@astrojs/starlight/components';
 | `projects/addon-bds`       | Behavior pack for BDS                                                |
 | `projects/docs`            | Astro + Starlight documentation site                                 |
 | `packages/client`          | Minecraft Script API client shared by both add-ons                   |
-| `packages/shared`          | Actions, types, enums, and shared protocol code                      |
+| `packages/shared`          | Fixed packets, types, enums, and shared protocol code                |
 | `packages/internal-config` | Workspace build and validation configuration                         |
 | `devapp`                   | Local development application                                        |
 
-Regular worlds use SocketBE over WebSocket. BDS uses the `@minecraft/server-net` WebSocket API. Both feed the same action layer, with protocol types and constants defined in `packages/shared`.
+Regular worlds use SocketBE over WebSocket. BDS uses the `@minecraft/server-net` WebSocket API. Both feed the same fixed-packet layer. Protocol v2 Valibot schemas, types, and constants live in `packages/shared`. `ChatSend`, `PlayerJoin`, and `PlayerLeave` are one-way notifications; operations use the common request/response envelope.
 
 ## <Icon name="terminal" />Common commands
 

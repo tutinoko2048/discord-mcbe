@@ -1,4 +1,5 @@
 ---
+import { Icon } from '@astrojs/starlight/components';
 import serverPackage from '../../../server/package.json';
 import { formatFileSize, getReleaseAssets } from '../lib/github-releases';
 
@@ -32,21 +33,19 @@ const assets = {
 const copy =
   locale === 'ja'
     ? {
-        version: `discord-mcbe v${version}`,
         localTitle: '通常のワールド',
         localDescription: 'Minecraftへ直接インポートする場合',
         bdsTitle: 'Bedrock Dedicated Server',
-        bdsDescription: 'behavior_packsへ手動で配置する場合',
+        bdsDescription: 'サーバーフォルダへ手動で配置する場合',
         mcpack: 'mcpackをダウンロード',
         zip: 'zipをダウンロード',
         releasePage: 'リリースノートと全アセットを見る',
       }
     : {
-        version: `discord-mcbe v${version}`,
         localTitle: 'Regular hosted world',
         localDescription: 'Import directly into Minecraft',
         bdsTitle: 'Bedrock Dedicated Server',
-        bdsDescription: 'Install manually under behavior_packs',
+        bdsDescription: 'Install manually into the server directory',
         mcpack: 'Download mcpack',
         zip: 'Download zip',
         releasePage: 'View release notes and all assets',
@@ -54,10 +53,13 @@ const copy =
 ---
 
 <div class="addon-downloads">
-  <p class="version">{copy.version}</p>
+  <p class="version">discord-mcbe addon v{version}</p>
   <div class="variants">
     <section>
-      <strong>{copy.localTitle}</strong>
+      <div class="type-heading">
+        <Icon name="laptop" size="large" />
+        <strong>{copy.localTitle}</strong>
+      </div>
       <p>{copy.localDescription}</p>
       <div class="links">
         {
@@ -71,7 +73,10 @@ const copy =
       </div>
     </section>
     <section>
-      <strong>{copy.bdsTitle}</strong>
+      <div class="type-heading">
+        <Icon name="server" size="large" />
+        <strong>{copy.bdsTitle}</strong>
+      </div>
       <p>{copy.bdsDescription}</p>
       <div class="links">
         {
@@ -110,10 +115,18 @@ const copy =
     gap: 0.75rem;
   }
 
+  .type-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.35rem;
+  }
+
   section {
-    padding: 0.85rem;
+    padding: 1rem;
     border: 1px solid var(--sl-color-gray-5);
     border-radius: 0.55rem;
+    margin: 0;
   }
 
   section p {
@@ -126,6 +139,7 @@ const copy =
     display: flex;
     flex-wrap: wrap;
     gap: 0.35rem 0.75rem;
+    flex-direction: column;
   }
 
   .download-link {
