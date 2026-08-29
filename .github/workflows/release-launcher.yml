@@ -26,6 +26,10 @@ jobs:
         working-directory: ./projects/launcher
         run: pnpm run check
 
+      - name: Test
+        working-directory: ./projects/launcher
+        run: pnpm run test
+
       - name: Read launcher version from package.json
         run: |
           VERSION="$(node -p "require('./projects/launcher/package.json').version")"

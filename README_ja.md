@@ -21,7 +21,7 @@ discord-mcbeは、MinecraftのワールドとDiscordのテキストチャンネ�
 
 ## 導入
 
-この案内はdiscord-mcbe v4を対象としています。ランチャーv2で`updater.exe latest`（Windows）または`./updater latest`（Linux / macOS）を実行して最新の正式版をインストールし、サーバーと同じリリースのアドオンを使用してください。
+この案内はdiscord-mcbe v4を対象としています。Windowsでは`updater.exe`をダブルクリックしてStableを選択するか、PowerShellで`updater.exe stable`を実行します。Linux / macOSでは`./updater stable`を実行してください。サーバーと同じリリースのアドオンを使用します。
 
 v3から移行する場合は、既存環境をバックアップして別のフォルダーにv4をセットアップしてください。ランチャー、アドオン、設定、コマンドが変更されており、v3用アドオンとv4サーバーには互換性がありません。
 

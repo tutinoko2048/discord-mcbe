@@ -1,11 +1,17 @@
 import { $, semver } from 'bun';
-import { join, resolve } from 'node:path';
+import { access, readFile, rename, rm } from 'node:fs/promises';
+import { dirname, join, resolve } from 'node:path';
 import confirm from '@inquirer/confirm';
+import { valid as isValidSemver } from 'semver';
 // import { SingleBar } from 'cli-progress';
 import { askVersion, resolveVersion } from './version';
 import { isCompiled } from './env';
+import { fetchWithRetry } from './fetch';
 
 const VERSION_FILE_NAME = '.VERSION';
+const APP_DIR_NAME = 'app';
+const BACKUP_DIR_NAME = 'app.backup';
+const STAGING_DIR_NAME = 'app.update';
 
 export interface InstallOptions {
   cwd?: string;
@@ -16,24 +22,31 @@ export interface InstallOptions {
 }
 
 export async function install(options: InstallOptions) {
-  const cwd = options.cwd ? resolve(options.cwd) : process.cwd();
+  const cwd = resolveLauncherRoot(options.cwd);
 
-  const appDir = join(cwd, 'app');
+  const appDir = join(cwd, APP_DIR_NAME);
+  const backupDir = join(cwd, BACKUP_DIR_NAME);
+  const stagingDir = join(cwd, STAGING_DIR_NAME);
   const versionFilePath = join(appDir, VERSION_FILE_NAME);
   const versionFile = Bun.file(versionFilePath);
 
   let currentVersion = '0.0.0';
   if (await versionFile.exists()) {
-    currentVersion = (await versionFile.text()).trim();
+    const version = (await versionFile.text()).trim();
+    if (isValidSemver(version)) {
+      currentVersion = version;
+    } else {
+      console.warn(`Invalid installed version in ${versionFilePath}. Treating it as not installed.`);
+    }
   }
 
   const resolved =
     options.interactive && !options.version
       ? await askVersion()
-      : await resolveVersion(options.version ?? 'latest');
+      : await resolveVersion(options.version ?? 'stable');
 
   if (!shouldUpdate(currentVersion, resolved.version)) {
-    console.log(`Current version (${currentVersion}) is up to date. No update needed.`);
+    logNonUpgradeReason(currentVersion, resolved.version);
 
     if (options.version && options.force) {
       console.log('Force option is enabled, proceeding with installation...');
@@ -52,25 +65,40 @@ export async function install(options: InstallOptions) {
   const downloadedData = await downloadAssetFile(resolved.assetsFileUrl);
   console.log('Download complete.');
 
-  await extractArchive(downloadedData, appDir, options.dryRun);
-  console.log(`Application is extracted to ${appDir}`);
-
-  // install discord-mcbe packages
   if (options.dryRun) {
-    console.log('Dry run enabled, skipping package installation.');
-  } else {
+    const archive = new Bun.Archive(downloadedData);
+    const files = await archive.files();
+    console.log(`${files.size} files would be extracted.`);
+    console.log(`Dry run complete. discord-mcbe v${resolved.version} would be installed.`);
+    return;
+  }
+
+  await rm(stagingDir, { recursive: true, force: true });
+  try {
+    await extractArchive(downloadedData, stagingDir);
+    await validateStagedApp(stagingDir, resolved.version);
+    console.log(`Application is staged in ${stagingDir}`);
+
     if (isCompiled) {
-      await $`../updater install`.env({ BUN_BE_BUN: '1' }).cwd(appDir);
+      await $`${process.execPath} install`.env({ BUN_BE_BUN: '1' }).cwd(stagingDir);
     } else {
-      await $`bun install`.cwd(appDir);
+      await $`bun install`.cwd(stagingDir);
     }
+
+    await activateStagedApp(appDir, backupDir, stagingDir);
+  } catch (error) {
+    await rm(stagingDir, { recursive: true, force: true });
+    throw error;
   }
 
   console.log(`Successfully installed discord-mcbe v${resolved.version}!`);
+  if (await pathExists(backupDir)) {
+    console.log('The previous installation is available via `updater rollback`.');
+  }
 }
 
 async function downloadAssetFile(url: string) {
-  const res = await fetch(url);
+  const res = await fetchWithRetry(url);
   if (!res.ok) {
     throw new Error(`Failed to download installer: ${res.status} ${res.statusText}`);
   }
@@ -125,35 +153,133 @@ async function downloadAssetFile(url: string) {
   // return result;
 }
 
-async function extractArchive(data: Uint8Array, destination: string, dryRun?: boolean) {
+async function extractArchive(data: Uint8Array, destination: string) {
   const archive = new Bun.Archive(data);
   try {
-    if (dryRun) {
-      const files = await archive.files();
-      console.log('Dry run enabled, skipping extraction.');
-      console.log(`${files.keys().toArray().length} files will be extracted.`);
-    } else {
-      process.stdout.write('Extracting archive...');
-      await archive.extract(destination);
-      console.log(' done');
-    }
+    process.stdout.write('Extracting archive...');
+    await archive.extract(destination);
+    console.log(' done');
   } catch (error) {
     console.error('Failed to extract archive:', error);
     throw error;
   }
 }
 
+async function validateStagedApp(stagingDir: string, expectedVersion: string): Promise<void> {
+  const requiredFiles = ['discord-mcbe.js', 'package.json', VERSION_FILE_NAME];
+  for (const file of requiredFiles) {
+    if (!(await pathExists(join(stagingDir, file)))) {
+      throw new Error(`Invalid release archive: missing ${file}`);
+    }
+  }
+
+  const stagedVersion = (await readFile(join(stagingDir, VERSION_FILE_NAME), 'utf8')).trim();
+  if (!isValidSemver(stagedVersion)) {
+    throw new Error(`Invalid release archive version: ${stagedVersion}`);
+  }
+  if (stagedVersion !== expectedVersion) {
+    throw new Error(
+      `Release archive version mismatch: expected ${expectedVersion}, received ${stagedVersion}`,
+    );
+  }
+}
+
+async function activateStagedApp(appDir: string, backupDir: string, stagingDir: string): Promise<void> {
+  await rm(backupDir, { recursive: true, force: true });
+
+  const hadCurrentApp = await pathExists(appDir);
+  if (hadCurrentApp) {
+    await rename(appDir, backupDir);
+  }
+
+  try {
+    await rename(stagingDir, appDir);
+  } catch (error) {
+    if (hadCurrentApp && !(await pathExists(appDir)) && (await pathExists(backupDir))) {
+      await rename(backupDir, appDir);
+    }
+    throw error;
+  }
+}
+
+export async function rollback(options: Pick<InstallOptions, 'cwd'> = {}): Promise<void> {
+  const cwd = resolveLauncherRoot(options.cwd);
+  const appDir = join(cwd, APP_DIR_NAME);
+  const backupDir = join(cwd, BACKUP_DIR_NAME);
+  const swapDir = join(cwd, 'app.rollback');
+
+  if (!(await pathExists(backupDir))) {
+    throw new Error(`No rollback installation found at ${backupDir}`);
+  }
+
+  if (!(await pathExists(appDir))) {
+    await rename(backupDir, appDir);
+    console.log('Rollback complete.');
+    return;
+  }
+
+  if (await pathExists(swapDir)) {
+    throw new Error(`Cannot rollback while ${swapDir} exists`);
+  }
+
+  await rename(appDir, swapDir);
+  try {
+    await rename(backupDir, appDir);
+  } catch (error) {
+    await rename(swapDir, appDir);
+    throw error;
+  }
+
+  await rename(swapDir, backupDir);
+  console.log('Rollback complete. Run `updater rollback` again to switch back.');
+}
+
+function resolveLauncherRoot(cwd?: string): string {
+  if (cwd) return resolve(cwd);
+  return isCompiled ? dirname(process.execPath) : process.cwd();
+}
+
+async function pathExists(path: string): Promise<boolean> {
+  try {
+    await access(path);
+    return true;
+  } catch (error) {
+    if (Error.isError(error) && 'code' in error && error.code === 'ENOENT') return false;
+    throw error;
+  }
+}
+
+function logNonUpgradeReason(current: string, target: string): void {
+  if (current === target) {
+    console.log(`Current version (${current}) is already installed.`);
+    return;
+  }
+
+  const currentIsPrerelease = isPrerelease(current);
+  const targetIsPrerelease = isPrerelease(target);
+  if (currentIsPrerelease !== targetIsPrerelease) {
+    console.log(`Changing release channel from ${current} to ${target}.`);
+    return;
+  }
+
+  console.log(`Target version (${target}) is not newer than the current version (${current}).`);
+}
+
 export function shouldUpdate(current: string, target: string): boolean {
   if (current === '0.0.0') return true;
 
   // プレリリース同士、または安定版同士のみ更新判定を行う
-  const currentIsPrerelease = current.split('+', 1)[0]!.includes('-');
-  const targetIsPrerelease = target.split('+', 1)[0]!.includes('-');
+  const currentIsPrerelease = isPrerelease(current);
+  const targetIsPrerelease = isPrerelease(target);
   if (currentIsPrerelease !== targetIsPrerelease) {
     return false;
   }
 
   return semver.order(current, target) < 0;
+}
+
+function isPrerelease(version: string): boolean {
+  return version.split('+', 1)[0]!.includes('-');
 }
 
 async function confirmUpdate(current: string, target: string): Promise<boolean> {

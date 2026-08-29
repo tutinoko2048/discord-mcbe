@@ -6,7 +6,7 @@ LAUNCHER_VERSION=$(./updater --version 2>/dev/null || true)
 if [ ! -d "app" ]; then
     echo "App folder not found. Running updater..."
 
-    ./updater latest
+    ./updater stable
     if [ $? -ne 0 ]; then
         echo "Failed to run updater"
         exit 1

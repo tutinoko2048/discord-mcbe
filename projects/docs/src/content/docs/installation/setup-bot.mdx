@@ -82,10 +82,14 @@ Discordの **ユーザー設定 → 詳細設定 → 開発者モード** を有
 
 3. 最新の正式版をインストールします。
 
-   **Windows（PowerShellまたはコマンドプロンプト）**
+   **Windows（ダブルクリック）**
+
+   `updater.exe`をダブルクリックし、**Stable**を選択します。インストールが完了したら、`start.bat`をダブルクリックして起動します。
+
+   PowerShellまたはコマンドプロンプトを使う場合は、次のコマンドでも実行できます。
 
    ```powershell
-   .\updater.exe latest
+   .\updater.exe stable
    .\start.bat
    ```
 
@@ -93,7 +97,7 @@ Discordの **ユーザー設定 → 詳細設定 → 開発者モード** を有
 
    ```bash
    chmod +x updater start.sh
-   ./updater latest
+   ./updater stable
    ./start.sh
    ```
 
@@ -107,11 +111,17 @@ Discordの **ユーザー設定 → 詳細設定 → 開発者モード** を有
 
 サーバーを停止してからランチャーを実行します。`config.json`、`.env`、`scripts/`は`app/`とは別に保存されるため更新後も引き継がれますが、更新前のバックアップを推奨します。
 
-| 操作                         | Windows              | Linux / macOS      |
-| ---------------------------- | -------------------- | ------------------ |
-| 最新安定版へ更新             | `updater.exe latest` | `./updater latest` |
-| 最新ベータへ更新（任意）     | `updater.exe beta`   | `./updater beta`   |
-| バージョンを選択             | `updater.exe`        | `./updater`        |
-| 指定バージョンをインストール | `updater.exe 4.0.0`  | `./updater 4.0.0`  |
+Windowsでは`updater.exe`をダブルクリックすると、インストールするバージョンを選択できます。`--force`、rollback、特定バージョンの指定が必要な場合は、PowerShellまたはコマンドプロンプトで以下のコマンドを実行します。
 
-v4ベータ版から正式版へ移行する場合は、`updater.exe latest --force`（Windows）または`./updater latest --force`（Linux / macOS）を実行し、アドオンも同じリリースへ更新します。ベータ版へ切り替える場合や、同じバージョンを再インストールする場合も、バージョン指定に`--force`を追加します。ランチャー自体の更新が必要と表示された場合は、ランチャーのリリースから新しいzipをダウンロードしてください。
+| 操作                         | Windows                       | Linux / macOS        |
+| ---------------------------- | ----------------------------- | -------------------- |
+| 最新安定版へ更新             | `updater.exe stable`          | `./updater stable`   |
+| 最新ベータへ更新（任意）     | `updater.exe beta`            | `./updater beta`     |
+| バージョンを選択             | `updater.exe`をダブルクリック | `./updater`          |
+| 指定バージョンをインストール | `updater.exe 4.0.0`           | `./updater 4.0.0`    |
+| 直前のバージョンへ戻す       | `updater.exe rollback`        | `./updater rollback` |
+
+安定版がまだ公開されていない場合、`stable`は警告を表示して最新のベータ版をインストールします。
+更新が成功すると直前の本体が`app.backup/`に残ります。問題がある場合はサーバーを停止して`updater rollback`を実行してください。もう一度実行すると、戻す前の版へ切り替わります。
+
+v4ベータ版から正式版へ移行する場合は、`updater.exe stable --force`（Windows）または`./updater stable --force`（Linux / macOS）を実行し、アドオンも同じリリースへ更新します。ベータ版へ切り替える場合や、同じバージョンを再インストールする場合も、バージョン指定に`--force`を追加します。ランチャー自体の更新が必要と表示された場合は、ランチャーのリリースから新しいzipをダウンロードしてください。

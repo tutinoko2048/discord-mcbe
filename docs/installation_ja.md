@@ -44,8 +44,8 @@
 | (`SOCKET_PORT`)     | 任意 | ローカル(通常の)ワールドとのWebSocket通信に使用するポート |
 | (`BRIDGE_PORT`)     | 任意 | Bedrock Dedicated Serverとの通信に使用するポート          |
 
-- Windowsでは`.\updater.exe latest`で正式版をインストールし、`.\start.bat`で起動する
-- Linux / macOSでは`chmod +x updater start.sh`を実行し、`./updater latest`でインストールしてから`./start.sh`で起動する
+- Windowsでは`updater.exe`をダブルクリックしてStableを選択するか、PowerShellで`.\updater.exe stable`を実行する。インストール後は`start.bat`をダブルクリックするか、`.\start.bat`で起動する
+- Linux / macOSでは`chmod +x updater start.sh`を実行し、`./updater stable`でインストールしてから`./start.sh`で起動する
 
 ## 3. Minecraft側の準備
 
@@ -62,10 +62,11 @@
 
 # アップデート方法
 
-discord-mcbe launcherには簡単に本体のアップデートを行えるCLIアップデートツールが同梱されています。
+discord-mcbe launcherには簡単に本体を更新できるアップデーターが同梱されています。
 
 - サーバーを停止し、更新前の環境をバックアップする
-- Windowsでは`.\updater.exe latest`、Linux / macOSでは`./updater latest`を実行する
+- Windowsでは`updater.exe`をダブルクリックしてバージョンを選択できる。バージョンやオプションを直接指定する場合はPowerShellまたはコマンドプロンプトで`.\updater.exe stable`などを実行する
+- Linux / macOSでは`./updater stable`を実行する
 - v4ベータ版から正式版へ移行する場合は、上記コマンドに`--force`を追加する
 - アドオンもサーバーと同じリリースへ更新してから起動する
 

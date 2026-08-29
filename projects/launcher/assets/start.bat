@@ -12,7 +12,7 @@ rem Check if app folder exists
 if not exist "app" (
     echo App folder not found. Running updater...
 
-    call updater.exe latest
+    call updater.exe stable
     if errorlevel 1 (
         echo Failed to run updater
         pause

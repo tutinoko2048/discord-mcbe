@@ -18,22 +18,26 @@
 # updater
 
 - bun executable
-- `updater` アプデ実行
+- `updater` インタラクティブモードでバージョンを選択してインストール
+- `updater stable` 最新の安定版をインストール
+  - 安定版が存在しない場合は警告を表示し、最新のベータ版をインストールする
 - `updater beta` 最新のベータ版をインストール
 - `updater 4.0.0` バージョンを指定してインストール
-- `updater --interactive` `-i` インタラクティブモードでバージョン選択してアプデ実行
+- `updater rollback` 直前のインストールへ戻す（再実行すると戻す前の版へ切り替わる）
+- `updater --no-interactive` バージョン選択や確認を表示せずに実行
 - `updater --dry-run`
 - `updater --help` `-h` ヘルプ表示
 - `updater --version` `-v` updaterのバージョン表示
 - アップデート方法
   - バージョン取得
-    - GitHub Releases API からリリース一覧を取得する。
+    - GitHub Releases API からリリース一覧を100件ずつ取得する。
     - ランチャー自体のリリースと混同しないよう、タグ名が `launcher@v` 等で始まらない（本体のバージョン `vX.X.X`）ものを対象にフィルタリングし、最新の `tag_name` などからバージョンとアセットURLを特定する。
     - リリースアセットから `_metadata.json` を取得して `minimumLauncherVersion` (連番) をチェックし、updater自体が古くないか確認する。
   - アップデート処理
-    - GitHub Releases から対象バージョンのアーカイブ (`_assets.tar.gz`) をダウンロードし、`Bun.Archive` を用いて `app/` フォルダへ展開する
+    - GitHub Releases から対象バージョンのアーカイブ (`_assets.tar.gz`) をダウンロードし、`Bun.Archive` を用いて一時フォルダへ展開する
       - アーカイブ内には `discord-mcbe.js`, depsを更新した `package.json`, `.VERSION`
-    - ランタイム内包のBun (`updater` を兼ねる) を使い、`app/` フォルダ内で `bun install` を実行。これにより `app/node_modules/` に本体機能がインストールされる (ユーザーのローカル環境のNode.jsやPMには依存しない)
+    - 一時フォルダ内で依存関係のインストールと検証が成功した後、既存の`app/`を`app.backup/`として残して入れ替える
+    - ランタイム内包のBun (`updater` を兼ねる) を使い、一時フォルダ内で `bun install` を実行。これにより本体機能がインストールされる (ユーザーのローカル環境のNode.jsやPMには依存しない)
     - ユーザーが `scripts/` ディレクトリ等から `@discord-mcbe/*` の型補完を効かせられるよう、ルートディレクトリの `tsconfig.json` に `paths` (`"@discord-mcbe/*": ["./app/node_modules/@discord-mcbe/*"]`) を事前に差し込んでおく
 
 # run
@@ -48,6 +52,7 @@
 
 - commanderを使う
 - repo: `tutinoko2048/discord-mcbe`
+- launcherのバージョンは単一の非負整数とし、`pnpm run bump-version launcher increment`で1増やす
 
 # TODO
 

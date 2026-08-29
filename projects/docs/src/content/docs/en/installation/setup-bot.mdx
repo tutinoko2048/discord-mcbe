@@ -84,10 +84,14 @@ Check the channel permission overrides as well. They must not deny the permissio
 
 3. Install the latest stable release and start the server.
 
-   **Windows (PowerShell or Command Prompt)**
+   **Windows (double-click)**
+
+   Double-click `updater.exe` and select **Stable**. When installation finishes, double-click `start.bat` to start the server.
+
+   You can instead run the following commands in PowerShell or Command Prompt.
 
    ```powershell
-   .\updater.exe latest
+   .\updater.exe stable
    .\start.bat
    ```
 
@@ -95,7 +99,7 @@ Check the channel permission overrides as well. They must not deny the permissio
 
    ```bash
    chmod +x updater start.sh
-   ./updater latest
+   ./updater stable
    ./start.sh
    ```
 
@@ -109,11 +113,17 @@ Next, [install the add-on in your Minecraft world](/en/installation/setup-world/
 
 Stop the server before running the launcher. `config.json`, `.env`, and `scripts/` live outside `app/` and are retained across updates, but keeping a backup is still recommended.
 
-| Action                 | Windows              | Linux / macOS      |
-| ---------------------- | -------------------- | ------------------ |
-| Latest stable          | `updater.exe latest` | `./updater latest` |
-| Latest beta (optional) | `updater.exe beta`   | `./updater beta`   |
-| Choose interactively   | `updater.exe`        | `./updater`        |
-| Install one version    | `updater.exe 4.0.0`  | `./updater 4.0.0`  |
+On Windows, double-click `updater.exe` to choose a version interactively. Use PowerShell or Command Prompt for `--force`, rollback, or an exact version by running the commands below.
 
-To move from a v4 beta to the stable release, run `updater.exe latest --force` (Windows) or `./updater latest --force` (Linux / macOS), then update the add-on to the same release. Add `--force` to an explicit version or track when switching back to beta or reinstalling the same version too. If the installer reports a minimum launcher version error, download a newer launcher archive.
+| Action                   | Windows                    | Linux / macOS        |
+| ------------------------ | -------------------------- | -------------------- |
+| Latest stable            | `updater.exe stable`       | `./updater stable`   |
+| Latest beta (optional)   | `updater.exe beta`         | `./updater beta`     |
+| Choose interactively     | Double-click `updater.exe` | `./updater`          |
+| Install one version      | `updater.exe 4.0.0`        | `./updater 4.0.0`    |
+| Restore previous version | `updater.exe rollback`     | `./updater rollback` |
+
+If no stable release has been published yet, `stable` displays a warning and installs the latest beta release.
+After a successful update, the previous application remains in `app.backup/`. If the update causes a problem, stop the server and run `updater rollback`. Run it again to switch back to the version used before the rollback.
+
+To move from a v4 beta to the stable release, run `updater.exe stable --force` (Windows) or `./updater stable --force` (Linux / macOS), then update the add-on to the same release. Add `--force` to an explicit version or track when switching back to beta or reinstalling the same version too. If the installer reports a minimum launcher version error, download a newer launcher archive.

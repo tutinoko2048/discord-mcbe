@@ -26,4 +26,4 @@ GitHub Actionsには`CLOUDFLARE_ACCOUNT_ID`と`CLOUDFLARE_API_TOKEN`のRepositor
 
 ## 正式版リリース時の確認
 
-インストール手順は`updater latest`で正式版を選ぶ案内です。アドオンのダウンロードリンクは`projects/server/package.json`、ランチャーのリンクは`projects/launcher/package.json`のバージョンから生成します。正式版を公開する際は、対象のパッケージとアドオンmanifestのバージョンを更新し、対応するGitHub Releaseとアセットの公開後にリンクを確認してください。本文の更新だけではダウンロード先は切り替わりません。
+インストール手順は`updater stable`で正式版を選ぶ案内です。アドオンのダウンロードリンクは`projects/server/package.json`、ランチャーのリンクは`projects/launcher/package.json`のバージョンから生成します。正式版を公開する際は、対象のパッケージとアドオンmanifestのバージョンを更新し、対応するGitHub Releaseとアセットの公開後にリンクを確認してください。本文の更新だけではダウンロード先は切り替わりません。

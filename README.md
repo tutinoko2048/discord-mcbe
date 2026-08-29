@@ -21,7 +21,7 @@ discord-mcbe connects Minecraft worlds to a Discord text channel. It relays chat
 
 ## Installation
 
-These instructions cover discord-mcbe v4. Use launcher v2 to install the latest stable release with `updater.exe latest` (Windows) or `./updater latest` (Linux / macOS), and use the add-on from the same release as the server.
+These instructions cover discord-mcbe v4. On Windows, double-click `updater.exe` and select Stable, or run `updater.exe stable` in PowerShell. On Linux / macOS, run `./updater stable`. Use the add-on from the same release as the server.
 
 When upgrading from v3, back up the existing installation and set up v4 in a separate directory. The launcher, add-ons, configuration, and commands have changed; v3 add-ons are not compatible with the v4 server.
 

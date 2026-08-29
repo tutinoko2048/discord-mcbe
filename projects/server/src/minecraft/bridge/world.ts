@@ -20,17 +20,16 @@ import type { ServerNetSession, ISession, SocketSession } from '../transport';
 import type { ScriptDimension } from './dimension';
 import type { Application } from '../../application';
 
-export class ScriptWorld<S extends ISession = ISession> {
+export class ScriptWorld<SESSION extends ISession = ISession> {
   private readonly app: Application;
   private readonly _isLocal: boolean;
 
-  public readonly session: S;
+  public readonly session: SESSION;
 
   public readonly logger: Logger;
 
   public readonly connectedAt: number = Date.now();
 
-  /** { [uniqueId]: ScriptPlayer } */
   public readonly players = new Map<UniqueId, ScriptPlayer>();
 
   /** { [dimensionId]: ScriptDimension } */
@@ -38,7 +37,7 @@ export class ScriptWorld<S extends ISession = ISession> {
 
   public readonly scoreboard: ScriptScoreboard;
 
-  constructor(app: Application, session: S, isLocal: boolean) {
+  constructor(app: Application, session: SESSION, isLocal: boolean) {
     this.app = app;
     this.session = session;
     this._isLocal = isLocal;

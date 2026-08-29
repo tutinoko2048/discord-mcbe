@@ -11,6 +11,7 @@
   "scripts": {
     "dev": "bun run src/main.ts -c test",
     "compile": "pnpm run clean && bun run compile.ts",
+    "test": "bun test",
     "lint": "vp lint",
     "lint:fix": "vp lint --fix",
     "format": "vp fmt",
