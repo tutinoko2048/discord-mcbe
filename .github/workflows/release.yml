@@ -1,6 +1,9 @@
 name: Release App
 
-on: workflow_dispatch
+on:
+  push:
+    tags:
+      - 'v*'
 
 permissions:
   contents: write
@@ -11,11 +14,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v6
         with:
           node-version: 24
-          cache: "pnpm"
+          cache: 'pnpm'
       - uses: oven-sh/setup-bun@v2
 
       - name: Install Dependencies
@@ -25,6 +30,29 @@ jobs:
         run: |
           VERSION="$(node -p "require('./projects/server/package.json').version")"
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - name: Verify release tag
+        run: |
+          EXPECTED_TAG="v$VERSION"
+
+          if [ "$GITHUB_REF_NAME" != "$EXPECTED_TAG" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match package version $VERSION (expected $EXPECTED_TAG)." >&2
+            exit 1
+          fi
+
+          if [ "$(git cat-file -t "refs/tags/$GITHUB_REF_NAME")" != "tag" ]; then
+            echo "Release tag must be an annotated tag." >&2
+            exit 1
+          fi
+
+          if [[ "$VERSION" != *-beta.* ]]; then
+            git fetch --no-tags origin main:refs/remotes/origin/main
+            TAG_COMMIT="$(git rev-list -n 1 "$GITHUB_REF_NAME")"
+            if ! git merge-base --is-ancestor "$TAG_COMMIT" origin/main; then
+              echo "Stable release tag must point to a commit on main." >&2
+              exit 1
+            fi
+          fi
 
       - name: Build
         run: pnpm run build
@@ -77,9 +105,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create "v$VERSION" \
+          gh release create "$GITHUB_REF_NAME" \
+            --verify-tag \
             --generate-notes \
-            --target main \
             --title "discord-mcbe v$VERSION" \
             --draft \
             $(if [ "$NPM_TAG" != "latest" ]; then echo "--prerelease"; fi) \

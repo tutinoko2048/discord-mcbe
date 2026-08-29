@@ -1,6 +1,9 @@
 name: Release Launcher
 
-on: workflow_dispatch
+on:
+  push:
+    tags:
+      - 'launcher@v*'
 
 permissions:
   contents: write
@@ -10,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v6
         with:
@@ -35,6 +40,20 @@ jobs:
           VERSION="$(node -p "require('./projects/launcher/package.json').version")"
           echo "LAUNCHER_VERSION=$VERSION" >> "$GITHUB_ENV"
 
+      - name: Verify release tag
+        run: |
+          EXPECTED_TAG="launcher@v$LAUNCHER_VERSION"
+
+          if [ "$GITHUB_REF_NAME" != "$EXPECTED_TAG" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match launcher version $LAUNCHER_VERSION (expected $EXPECTED_TAG)." >&2
+            exit 1
+          fi
+
+          if [ "$(git cat-file -t "refs/tags/$GITHUB_REF_NAME")" != "tag" ]; then
+            echo "Release tag must be an annotated tag." >&2
+            exit 1
+          fi
+
       - name: Build launcher
         working-directory: ./projects/launcher
         run: pnpm run compile
@@ -56,9 +75,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create "launcher@v$LAUNCHER_VERSION" \
+          gh release create "$GITHUB_REF_NAME" \
+            --verify-tag \
             --generate-notes \
-            --target main \
             --title "discord-mcbe launcher v$LAUNCHER_VERSION" \
             --draft \
             "$LAUNCHER_ASSET_DIR/discord-mcbe-darwin-arm64-v$LAUNCHER_VERSION.zip" \

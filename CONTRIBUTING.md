@@ -11,6 +11,7 @@ Translation files are located in the `lang/` directory.
 We follow the **[Discord Locale Standards](https://discord.com/developers/docs/reference#locales)** for file naming (e.g., `ja.lang`, `en-US.lang`).
 
 ### How to Add a New Language
+
 1.  Check the [Discord Locales](https://discord.com/developers/docs/reference#locales) list to find the correct code for your language.
 2.  Create a new file in `lang/` named `<locale>.lang`.
 3.  Copy the contents of `en-US.lang` (fallback language) into your new file.
@@ -20,11 +21,13 @@ We follow the **[Discord Locale Standards](https://discord.com/developers/docs/r
 ## 🛠️ Development Guide
 
 ### Prerequisites
+
 - [Node.js](https://nodejs.org/)
 - [Bun](https://bun.sh/)
 - [pnpm](https://pnpm.io/)
 
 ### Setup
+
 1.  **Clone the repository**
     ```bash
     git clone https://github.com/tutinoko2048/discord-mcbe.git
@@ -40,7 +43,9 @@ We follow the **[Discord Locale Standards](https://discord.com/developers/docs/r
     ```
 
 ### Project Structure
+
 This is a monorepo managed with pnpm workspaces:
+
 - `projects/server`: Main application server
 - `projects/addon-bds`: Minecraft addon for Bedrock Dedicated Server (BDS)
 - `projects/addon-local`: Minecraft addon for local worlds
@@ -48,15 +53,22 @@ This is a monorepo managed with pnpm workspaces:
 - `packages/client`: Client library used by addons
 - `packages/shared`: Shared utilities and types
 
+### Maintainer Releases
+
+App and Launcher releases are created through separate tag-triggered GitHub Actions workflows. Maintainers should follow the [App and Launcher release procedure](./docs/releasing.md), including version updates, annotated tags, draft verification, release ordering, and partial-failure recovery.
+
 ## 🤝 How to Contribute Code
 
 ### Reporting Bugs
+
 - Ensure the bug was not already reported.
 - Open a new issue with a clear title and description.
 - Include steps to reproduce, and details about your environment.
 
 ## 📜 License
+
 By contributing, you agree that your contributions will be licensed under the project's [LICENSE](./LICENSE).
 
 ## 💬 Questions?
+
 Feel free to join our [Discord Support Server](https://discord.gg/XGR8FcCeFc) if you have any questions.
