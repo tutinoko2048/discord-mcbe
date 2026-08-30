@@ -47,7 +47,7 @@ if (type === 'launcher') {
 
 async function runPnpmVersion(cwd: string) {
   try {
-    await $`pnpm version ${version} --no-git-tag-version`.cwd(cwd).quiet();
+    await $`pnpm version ${version} --no-git-tag-version --no-git-checks`.cwd(cwd).quiet();
   } catch (error) {
     console.error(error);
     process.exit(1);
