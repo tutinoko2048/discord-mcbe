@@ -1,13 +1,11 @@
 import { EventEmitter } from 'node:events';
 import { randomUUID } from 'node:crypto';
 import {
-  SocketBridge,
   type ConnectionResponse,
-  NamespaceRequiredError,
   DisconnectReason,
-  InternalAction,
-  type InternalActions,
-  type BaseAction,
+  WEBSOCKET_BRIDGE_PROTOCOL_VERSION,
+  type ServerBoundApplicationRequestPacket,
+  type ServerBoundNotificationPacket,
 } from '@discord-mcbe/shared';
 import {
   CommandStatusCode,
@@ -20,7 +18,7 @@ import { SocketSession } from './session';
 import { AddonNotInstalledError } from '../errors';
 import { Logger } from '../../../util';
 
-import type { ClientActionHandler } from '../types';
+import type { ServerBoundPacketHandler } from '../types';
 import type { ISession } from '../interfaces';
 import type { Application } from '../../../application';
 
@@ -29,19 +27,20 @@ interface ConnectionState {
   attemptCount: number;
 }
 
-export class SocketBridgeServer extends EventEmitter<ServerEvents> {
-  static readonly PROTOCOL_VERSION = SocketBridge.PROTOCOL_VERSION;
+class ProtocolVersionError extends Error {}
+
+export class WebSocketBridgeServer extends EventEmitter<ServerEvents> {
+  static readonly PROTOCOL_VERSION = WEBSOCKET_BRIDGE_PROTOCOL_VERSION;
 
   readonly server: SocketServer;
   readonly sessions = new Set<SocketSession>();
-  private readonly actionHandlers = new Map<string, ClientActionHandler<BaseAction>>();
-
   private readonly logger: Logger;
   private readonly maxReconnectAttempts = 10;
 
   constructor(
     private readonly app: Application,
     serverOptions: ServerOptions,
+    private readonly handleServerBoundPacket: ServerBoundPacketHandler,
   ) {
     super();
 
@@ -54,16 +53,6 @@ export class SocketBridgeServer extends EventEmitter<ServerEvents> {
     this.server.on(ServerEvent.WorldRemove, this.onWorldRemove.bind(this));
     this.server.on(ServerEvent.PlayerJoin, this.onPlayerJoin.bind(this));
     this.server.on(ServerEvent.PlayerLeave, this.onPlayerLeave.bind(this));
-    this.registerHandler<InternalActions.Disconnect>(InternalAction.Disconnect, (action) => {
-      const { session, data } = action;
-      this.emit('clientDisconnect', session, data.reason);
-      session.destroy();
-      action.respond();
-
-      if (session instanceof SocketSession) {
-        setTimeout(() => session.world.disconnect(), 200);
-      }
-    });
   }
 
   async connect(world: SocketWorld, state: ConnectionState = { attemptCount: 0 }) {
@@ -72,7 +61,7 @@ export class SocketBridgeServer extends EventEmitter<ServerEvents> {
 
       this.emit('clientConnect', session);
     } catch (err) {
-      if (err instanceof AddonNotInstalledError) throw err;
+      if (err instanceof AddonNotInstalledError || err instanceof ProtocolVersionError) throw err;
 
       this.logger.warn(`Failed to create session:`, err);
 
@@ -93,14 +82,6 @@ export class SocketBridgeServer extends EventEmitter<ServerEvents> {
     }
   }
 
-  registerHandler<A extends BaseAction = BaseAction>(channelId: A['id'], handler: ClientActionHandler<A>) {
-    if (!channelId.includes(':')) throw new NamespaceRequiredError(channelId);
-    if (this.actionHandlers.has(channelId)) {
-      this.logger.warn(`Overriding existing handler for channel '${channelId}'`);
-    }
-    this.actionHandlers.set(channelId, handler as unknown as ClientActionHandler<BaseAction>);
-  }
-
   getSessionByWorld(world: SocketWorld): SocketSession | undefined {
     for (const session of this.sessions) {
       if (session.world === world) {
@@ -109,13 +90,16 @@ export class SocketBridgeServer extends EventEmitter<ServerEvents> {
     }
   }
 
-  getActionHandler(channelId: string): ClientActionHandler<BaseAction> | undefined {
-    return this.actionHandlers.get(channelId);
+  handlePacket(
+    session: SocketSession,
+    packet: ServerBoundApplicationRequestPacket | ServerBoundNotificationPacket,
+  ): unknown {
+    return this.handleServerBoundPacket(session, packet);
   }
 
   private async createSession(world: SocketWorld, sessionId: string = randomUUID()): Promise<SocketSession> {
     const response = await world.runCommand(
-      `dmc:__connect__ ${SocketBridgeServer.PROTOCOL_VERSION} ${sessionId}`,
+      `dmc:__connect__ ${WebSocketBridgeServer.PROTOCOL_VERSION} ${sessionId}`,
     );
     if (response.statusCode === CommandStatusCode.FailedToParseCommand) {
       throw new AddonNotInstalledError();
@@ -130,7 +114,7 @@ export class SocketBridgeServer extends EventEmitter<ServerEvents> {
       throw new Error(`Failed to parse connection response.\nbody: ${response.statusMessage}`);
     }
 
-    if (body.error) throw new Error(DisconnectReason[body.errorReason]);
+    if (body.error) throw new ProtocolVersionError(DisconnectReason[body.errorReason]);
 
     return new SocketSession(this.app, this, world, sessionId, body.clientId);
   }

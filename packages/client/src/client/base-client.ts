@@ -1,12 +1,13 @@
 import { system, world } from '@minecraft/server';
-import { ActionId, type WorldInitializeAction } from '@discord-mcbe/shared';
-import { registerHandlers } from './handler';
+import { ActionId, DisconnectReason } from '@discord-mcbe/shared';
 import { registerEvents } from './event';
 import { registerCommands } from './command';
 import { createPlayerDescriptor } from './descriptors';
 import { Logger } from '../utils';
 
-import type { SocketBridgeClient, IBridgeClient, WebSocketBridgeClient } from '../transport';
+import type { ServerNetBridgeClient } from '../transport/server-net';
+import type { WebSocketBridgeClient } from '../transport/websocket';
+import type { IBridgeClient } from '../transport/interfaces';
 
 export enum ClientType {
   Local = 'Local',
@@ -18,19 +19,20 @@ export abstract class BaseClient<T extends IBridgeClient = IBridgeClient> {
 
   public readonly logger = new Logger('discord-mcbe');
 
+  private hasConnected = false;
+
   abstract readonly type: ClientType;
 
   constructor(bridge: T) {
     this.bridge = bridge;
 
-    // handle actions from server
-    registerHandlers(this.bridge);
     // register events to send to server
     registerEvents(this.bridge);
 
     system.beforeEvents.startup.subscribe((ev) => registerCommands(ev.customCommandRegistry, this));
 
-    this.bridge.on('connect', this.onConnect.bind(this));
+    this.bridge.on('connect', this.onBridgeConnect.bind(this));
+    this.bridge.on('disconnect', this.onBridgeDisconnect.bind(this));
   }
 
   setClientId(clientId: string) {
@@ -45,19 +47,33 @@ export abstract class BaseClient<T extends IBridgeClient = IBridgeClient> {
     const players = world.getPlayers();
 
     try {
-      await this.bridge.send<WorldInitializeAction>(ActionId.WorldInitialize, {
-        players: players.map(createPlayerDescriptor),
+      const result = await this.bridge.request({
+        type: ActionId.WorldInitialize,
+        data: { players: players.map(createPlayerDescriptor) },
       });
+      if (result.error) throw new Error(result.message);
     } catch (error) {
-      this.logger.error('Failed to send WorldInitializeAction:', error);
+      this.logger.error('Failed to send WorldInitialize packet:', error);
     }
   }
 
-  isLocal(): this is BaseClient<SocketBridgeClient> {
+  private onBridgeConnect({ sessionId }: { sessionId: string }): void {
+    if (this.hasConnected) {
+      this.logger.info(`Bridge reconnected (session: ${sessionId})`);
+    }
+    this.hasConnected = true;
+    void this.onConnect();
+  }
+
+  private onBridgeDisconnect({ reason }: { reason: DisconnectReason }): void {
+    this.logger.info(`Bridge disconnected (${DisconnectReason[reason]})`);
+  }
+
+  isLocal(): this is BaseClient<WebSocketBridgeClient> {
     return this.type === ClientType.Local;
   }
 
-  isBDS(): this is BaseClient<WebSocketBridgeClient> {
+  isBDS(): this is BaseClient<ServerNetBridgeClient> {
     return this.type === ClientType.BDS;
   }
 }

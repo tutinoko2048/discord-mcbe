@@ -1,7 +1,8 @@
 import { BaseClient, ClientType } from './client';
-import { WebSocketBridgeClient } from './transport';
+import { ServerNetBridgeClient } from './transport/server-net';
 import type { ExtractOptional } from '@discord-mcbe/shared';
 import { world } from '@minecraft/server';
+import { handleClientBoundRequest } from './client/handler';
 
 export interface BridgeClientOptions {
   host?: string;
@@ -15,15 +16,16 @@ const defaultOptions: ExtractOptional<BridgeClientOptions> = {
   clientId: () => (world.getDynamicProperty('clientId') as string) ?? 'discord-mcbe-bds',
 };
 
-export class BridgeClient extends BaseClient<WebSocketBridgeClient> {
+export class BridgeClient extends BaseClient<ServerNetBridgeClient> {
   readonly type = ClientType.BDS;
 
   constructor(options: BridgeClientOptions = {}) {
     const mergedOptions = { ...defaultOptions, ...options };
 
-    const bridge = new WebSocketBridgeClient({
+    const bridge = new ServerNetBridgeClient({
       url: `ws://${mergedOptions.host}:${mergedOptions.port}`,
       clientId: mergedOptions.clientId,
+      handleRequest: handleClientBoundRequest,
     });
 
     super(bridge);
@@ -36,5 +38,3 @@ export class BridgeClient extends BaseClient<WebSocketBridgeClient> {
     console.log(`[discord-mcbe] Connection established! (${Date.now() - requestedAt}ms)`);
   }
 }
-
-export { WebSocketBridgeClient } from './transport';

@@ -1,31 +1,27 @@
-import {
-  type ActionId,
-  type ActionHandler,
-  type BaseAction,
-  type DisconnectReason,
+import type {
+  ServerBoundNotificationPacket,
+  ServerBoundRequestInput,
+  DisconnectReason,
+  RequestResult,
+  ClientBoundRequestResponse,
+  ClientBoundApplicationRequestPacket,
 } from '@discord-mcbe/shared';
 
 type Listener<T> = (data: T) => void;
+type ClientBoundApplicationRequestType = ClientBoundApplicationRequestPacket['type'];
+type ClientBoundApplicationRequestResponse = ClientBoundRequestResponse<ClientBoundApplicationRequestType>;
 
-export type IResponse<T = unknown> =
-  | {
-      error?: false;
-      data: T;
-    }
-  | {
-      error: true;
-      message: string;
-    };
+/** Requests handled by the application; transport-internal packets are intercepted first. */
+export type ClientBoundRequestHandler = (
+  request: ClientBoundApplicationRequestPacket,
+) => ClientBoundApplicationRequestResponse | PromiseLike<ClientBoundApplicationRequestResponse>;
 
 export interface IBridgeClient {
   isConnected: boolean;
 
-  send<T extends BaseAction = BaseAction>(
-    channelId: ActionId,
-    data?: T['request'],
-  ): Promise<IResponse<T['response']>>;
+  request(packet: ServerBoundRequestInput): Promise<RequestResult<unknown>>;
 
-  registerHandler<A extends BaseAction = BaseAction>(channelId: A['id'], handler: ActionHandler<A>): void;
+  notify(packet: ServerBoundNotificationPacket): void;
 
   disconnect(reason?: DisconnectReason): Promise<void>;
 

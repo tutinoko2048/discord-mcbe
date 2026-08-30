@@ -1,12 +1,6 @@
 import {
   ActionId,
   type PlayerDescriptor,
-  type SendMessageAction,
-  type GetEntityLocationAction,
-  type GetEntityDimensionAction,
-  type GetGameModeAction,
-  type SetGameModeAction,
-  type KickPlayerAction,
   type GameMode,
   type UniqueId,
   type Pfid,
@@ -45,7 +39,7 @@ export class ScriptPlayer {
   }
 
   async sendMessage(message: string | RawMessage | (string | RawMessage)[]): Promise<void> {
-    const res = await this.world.session.send<SendMessageAction>(ActionId.SendMessage, {
+    const res = await this.world.session.send(ActionId.SendMessage, {
       message,
       playerUniqueId: this.uniqueId,
     });
@@ -53,7 +47,7 @@ export class ScriptPlayer {
   }
 
   async getLocation(): Promise<Vector3> {
-    const res = await this.world.session.send<GetEntityLocationAction>(ActionId.GetEntityLocation, {
+    const res = await this.world.session.send(ActionId.GetEntityLocation, {
       entityUniqueId: this.uniqueId,
     });
     if (res.error) throw new BridgeActionError(res);
@@ -62,7 +56,7 @@ export class ScriptPlayer {
   }
 
   async getDimension(): Promise<ScriptDimension> {
-    const res = await this.world.session.send<GetEntityDimensionAction>(ActionId.GetEntityDimension, {
+    const res = await this.world.session.send(ActionId.GetEntityDimension, {
       entityUniqueId: this.uniqueId,
     });
     if (res.error) throw new BridgeActionError(res);
@@ -77,7 +71,7 @@ export class ScriptPlayer {
   }
 
   async getGameMode(): Promise<GameMode> {
-    const res = await this.world.session.send<GetGameModeAction>(ActionId.GetGameMode, {
+    const res = await this.world.session.send(ActionId.GetGameMode, {
       playerUniqueId: this.uniqueId,
     });
     if (res.error) throw new BridgeActionError(res);
@@ -86,7 +80,7 @@ export class ScriptPlayer {
   }
 
   async setGameMode(gameMode: GameMode): Promise<void> {
-    const res = await this.world.session.send<SetGameModeAction>(ActionId.SetGameMode, {
+    const res = await this.world.session.send(ActionId.SetGameMode, {
       playerUniqueId: this.uniqueId,
       gameMode,
     });
@@ -94,7 +88,7 @@ export class ScriptPlayer {
   }
 
   async kick(reason?: string): Promise<void> {
-    const res = await this.world.session.send<KickPlayerAction>(ActionId.KickPlayer, {
+    const res = await this.world.session.send(ActionId.KickPlayer, {
       playerUniqueId: this.uniqueId,
       reason,
     });

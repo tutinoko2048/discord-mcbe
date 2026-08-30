@@ -1,82 +1,76 @@
 import {
-  world,
-  system,
   CommandPermissionLevel,
   CustomCommandParamType,
   CustomCommandStatus,
-  type StartupEvent,
+  system,
+  world,
   type CustomCommandResult,
+  type StartupEvent,
 } from '@minecraft/server';
 import {
-  SocketBridge,
-  type ClientRequest,
-  type ClientResponse,
+  type ServerBoundNotificationPacket,
+  type ServerBoundPacket,
+  type ServerBoundRequestInput,
+  type ServerBoundRequestPacket,
   type ConnectionResponse,
-  type ServerRequest,
-  type ServerResponse,
-  type QueryResponse,
   DisconnectReason,
+  errorResponse,
   InternalAction,
-  type InternalActions,
-  PayloadType,
+  PendingRequests,
+  RESPONSE_PACKET_TYPE,
+  type RequestResult,
   ResponseErrorReason,
-  type BaseAction,
-  type ActionHandler,
+  safeParseResponseData,
+  safeParseClientBoundPacket,
+  type ClientBoundRequestPacket,
+  WEBSOCKET_BRIDGE_PROTOCOL_VERSION,
+  successResponse,
 } from '@discord-mcbe/shared';
 import { Emitter } from '../utils/emitter';
 import { Logger } from '../utils';
+import type { ClientBoundRequestHandler, IBridgeClient } from './interfaces';
 
-import type { IBridgeClient, IResponse } from './interfaces';
-
-export interface SocketEvents {
+export interface WebSocketBridgeEvents {
   ready: {};
-  connect: {
-    sessionId: string;
-  };
-  disconnect: {
-    reason: DisconnectReason;
-  };
+  connect: { sessionId: string };
+  disconnect: { reason: DisconnectReason };
 }
 
-export interface ClientOptions {
+export interface WebSocketBridgeClientOptions {
   clientId: string | (() => string);
+  handleRequest: ClientBoundRequestHandler;
 }
 
-export class SocketBridgeClient extends Emitter<SocketEvents> implements IBridgeClient {
-  static readonly PROTOCOL_VERSION = SocketBridge.PROTOCOL_VERSION;
+type QueryResponse =
+  | { error: true; errorReason: ResponseErrorReason }
+  | { error?: false; data: ServerBoundPacket[] };
 
-  private readonly _clientId: string | (() => string);
+export class WebSocketBridgeClient extends Emitter<WebSocketBridgeEvents> implements IBridgeClient {
+  static readonly PROTOCOL_VERSION = WEBSOCKET_BRIDGE_PROTOCOL_VERSION;
 
-  private readonly sendQueue: (ClientRequest | ClientResponse)[] = [];
-  private readonly awaitingResponses = new Map<number, (response: ServerResponse) => void>();
-  private readonly actionHandlers = new Map<string, ActionHandler<BaseAction>>();
+  private readonly sendQueue: ServerBoundPacket[] = [];
+  private readonly pending = new PendingRequests<number>({
+    set: (callback, ticks) => system.runTimeout(callback, ticks),
+    clear: (timer) => system.clearRun(timer),
+  });
   private readonly deltaTimes: number[] = [];
-
   private readonly logger = new Logger('discord-mcbe');
 
   private previousRequestId = 0;
   private currentSessionId: string | null = null;
   private lastQueryReceivedAt: number | null = null;
+  private pendingDisconnectReason: DisconnectReason | null = null;
 
-  constructor(options: ClientOptions) {
+  constructor(private readonly options: WebSocketBridgeClientOptions) {
     super();
-
-    this._clientId = options.clientId;
-
     system.beforeEvents.startup.subscribe(this.onStartup.bind(this));
-
     system.afterEvents.scriptEventReceive.subscribe(
       (event) => {
         if (event.id === 'bridge:message') this.onMessage(event.message.trim());
       },
-      {
-        namespaces: ['bridge'],
-      },
+      { namespaces: ['bridge'] },
     );
-
-    world.afterEvents.worldLoad.subscribe(() => {
-      this.emit('ready', {});
-    });
+    world.afterEvents.worldLoad.subscribe(() => this.emit('ready', {}));
   }
 
   get isConnected(): boolean {
@@ -84,161 +78,112 @@ export class SocketBridgeClient extends Emitter<SocketEvents> implements IBridge
   }
 
   get clientId(): string {
-    return typeof this._clientId === 'function' ? this._clientId() : this._clientId;
+    return typeof this.options.clientId === 'function' ? this.options.clientId() : this.options.clientId;
   }
 
-  async send<A extends BaseAction = BaseAction>(
-    channelId: A['id'],
-    data?: A['request'],
-  ): Promise<IResponse<A['response']>> {
-    if (!this.currentSessionId) throw new Error('No active session');
-
-    const requestId = ++this.previousRequestId;
-
-    this.sendQueue.push({
-      type: PayloadType.Request,
-      channelId,
-      data,
-      sessionId: this.currentSessionId,
-      requestId,
-    });
-
-    return new Promise((resolve) => {
-      this.awaitingResponses.set(requestId, (response) => {
-        resolve(response);
-      });
+  request(packet: ServerBoundRequestInput): Promise<RequestResult<unknown>> {
+    const sessionId = this.currentSessionId;
+    if (!sessionId) throw new Error('No active session');
+    const requestId = `${sessionId}:${++this.previousRequestId}`;
+    const request = { ...packet, requestId } as ServerBoundRequestPacket;
+    return this.pending.request(packet.type, requestId, 200, () => {
+      this.sendQueue.push(request);
     });
   }
 
-  registerHandler<A extends BaseAction = BaseAction>(channelId: A['id'], handler: ActionHandler<A>): void {
-    if (this.actionHandlers.has(channelId)) {
-      console.warn('[SocketBridge] Overwriting existing handler for channel:', channelId);
-    }
-    //REVIEW - temporary cast to unknown to bypass type issue
-    this.actionHandlers.set(channelId, handler as unknown as ActionHandler<BaseAction>);
+  notify(packet: ServerBoundNotificationPacket): void {
+    if (!this.currentSessionId) return;
+    this.sendQueue.push(packet);
   }
 
   async disconnect(reason: DisconnectReason = DisconnectReason.Disconnect): Promise<void> {
     try {
-      await this.send<InternalActions.Disconnect>(InternalAction.Disconnect, { reason });
-    } catch (e) {
-      this.logger.warn('Failed to send disconnect message', e);
+      await this.request({ type: InternalAction.Disconnect, data: { reason } });
+    } catch (error) {
+      this.logger.warn('Failed to send disconnect message', error);
     }
-
     this.destroy();
-
     this.emit('disconnect', { reason });
   }
 
-  destroy() {
-    this.clearResponses();
+  destroy(): void {
+    this.pending.abortAll('Session disconnected before response was received');
     this.sendQueue.length = 0;
     this.deltaTimes.length = 0;
     this.lastQueryReceivedAt = null;
     this.currentSessionId = null;
-  }
-
-  private clearResponses() {
-    for (const [requestId, resolve] of this.awaitingResponses.entries()) {
-      resolve({
-        type: PayloadType.Response,
-        error: true,
-        message: 'Session disconnected before response was received',
-        errorReason: ResponseErrorReason.Abort,
-        sessionId: this.currentSessionId!,
-        requestId,
-      });
-    }
-    this.awaitingResponses.clear();
+    this.pendingDisconnectReason = null;
+    this.previousRequestId = 0;
   }
 
   private handleConnection(protocolVersion: number, sessionId: string): CustomCommandResult {
     let body: ConnectionResponse;
-
-    if (SocketBridgeClient.PROTOCOL_VERSION > protocolVersion) {
+    if (WebSocketBridgeClient.PROTOCOL_VERSION > protocolVersion) {
       body = { error: true, errorReason: DisconnectReason.OutdatedServer };
-    } else if (SocketBridgeClient.PROTOCOL_VERSION < protocolVersion) {
+    } else if (WebSocketBridgeClient.PROTOCOL_VERSION < protocolVersion) {
       body = { error: true, errorReason: DisconnectReason.OutdatedClient };
     } else {
       body = {
-        protocolVersion: SocketBridgeClient.PROTOCOL_VERSION,
+        protocolVersion: WebSocketBridgeClient.PROTOCOL_VERSION,
         clientId: this.clientId,
       };
-
       this.destroy();
       this.currentSessionId = sessionId;
       this.emit('connect', { sessionId });
     }
-
-    return {
-      status: CustomCommandStatus.Success,
-      message: JSON.stringify(body),
-    };
+    return { status: CustomCommandStatus.Success, message: JSON.stringify(body) };
   }
 
-  private async handleResponse(response: ServerResponse) {
-    const { requestId } = response;
-    const resolve = this.awaitingResponses.get(requestId);
-    if (resolve) {
-      resolve(response);
-      this.awaitingResponses.delete(requestId);
-    }
-  }
-
-  private async handleRequest(request: ServerRequest) {
-    const { requestId, sessionId, channelId } = request;
-
-    const handler = this.actionHandlers.get(channelId);
-    if (!handler) {
-      console.error('[SocketBridge] No handler for channel:', channelId);
-      this.sendQueue.push({
-        type: PayloadType.Response,
-        error: true,
-        errorReason: ResponseErrorReason.UnhandledRequest,
-        message: `No handler found for channel: ${channelId}`,
-        requestId,
-        sessionId,
-      });
-      return;
-    }
-
+  private async handleRequest(request: ClientBoundRequestPacket): Promise<void> {
+    let data: unknown;
     try {
-      await handler({
-        data: request.data,
-        respond: (data) => {
-          this.sendQueue.push({
-            type: PayloadType.Response,
-            data,
-            requestId,
-            sessionId,
-          });
-        },
-      });
-    } catch (err) {
-      console.error('[SocketBridge] Error while handling request:', channelId, err);
-      this.sendQueue.push({
-        type: PayloadType.Response,
-        error: true,
-        errorReason: ResponseErrorReason.InternalError,
-        message: `An error occurred while handling the request\n${String(err)}`,
-        requestId,
-        sessionId,
-      });
+      if (request.type === InternalAction.Ping) {
+        data = { receivedAt: Date.now() };
+      } else if (request.type === InternalAction.Disconnect) {
+        this.pendingDisconnectReason = request.data.reason;
+        data = null;
+      } else {
+        data = (await this.options.handleRequest(request)).data;
+      }
+
+      const parsed = safeParseResponseData(request.type, data);
+      this.sendQueue.push(
+        parsed.success
+          ? successResponse(request.requestId, parsed.output)
+          : errorResponse(
+              request.requestId,
+              ResponseErrorReason.InvalidPayload,
+              `Invalid response data for ${request.type}`,
+            ),
+      );
+    } catch (error) {
+      this.sendQueue.push(
+        errorResponse(
+          request.requestId,
+          ResponseErrorReason.InternalError,
+          `An error occurred while handling ${request.type}\n${String(error)}`,
+        ),
+      );
     }
   }
 
-  private getQueue() {
-    const queue = this.sendQueue.slice(); // copy the queue
+  private getQueue(): ServerBoundPacket[] {
+    const queue = this.sendQueue.slice();
     this.sendQueue.length = 0;
+    if (this.pendingDisconnectReason !== null) {
+      const reason = this.pendingDisconnectReason;
+      system.run(() => {
+        this.destroy();
+        this.emit('disconnect', { reason });
+      });
+    }
     return queue;
   }
 
   private onQuery(sessionId: string): CustomCommandResult {
     let result: QueryResponse;
-
     if (this.currentSessionId === sessionId) {
       result = { error: false, data: this.getQueue() };
-
       const now = Date.now();
       if (this.lastQueryReceivedAt !== null) {
         this.deltaTimes.push(now - this.lastQueryReceivedAt);
@@ -248,70 +193,60 @@ export class SocketBridgeClient extends Emitter<SocketEvents> implements IBridge
     } else {
       result = { error: true, errorReason: ResponseErrorReason.InvalidSession };
     }
-
-    return {
-      status: CustomCommandStatus.Success,
-      message: JSON.stringify(result),
-    };
+    return { status: CustomCommandStatus.Success, message: JSON.stringify(result) };
   }
 
-  /** Process incoming messages from server */
   private onMessage(rawMessage: string): void {
-    // console.log('Received message from bridge:', rawMessage);
-
-    let message: ServerRequest | ServerResponse;
+    let parsed: unknown;
     try {
-      message = JSON.parse(rawMessage);
-    } catch (e) {
-      console.error('[SocketBridge] Failed to parse message from bridge:', e);
+      parsed = JSON.parse(rawMessage);
+    } catch (error) {
+      console.error('[SocketBridge] Failed to parse message:', error);
       return;
     }
 
-    if (message.type === PayloadType.Response) {
-      this.handleResponse(message).catch((error) => {
-        console.error('[SocketBridge] Failed to handle response:', error);
-      });
-    } else if (message.type === PayloadType.Request) {
-      this.handleRequest(message).catch((error) => {
-        console.error('[SocketBridge] Failed to handle request:', error);
-      });
+    const result = safeParseClientBoundPacket(parsed);
+    if (!result.success) {
+      console.error('[SocketBridge] Invalid packet:', result.issues);
+      if (typeof parsed === 'object' && parsed !== null) {
+        const record = parsed as Record<string, unknown>;
+        if (record.type === RESPONSE_PACKET_TYPE) return;
+        const requestId = record.requestId;
+        if (typeof requestId === 'string') {
+          this.sendQueue.push(
+            errorResponse(requestId, ResponseErrorReason.InvalidPayload, 'Invalid request packet'),
+          );
+        }
+      }
+      return;
+    }
+
+    if (result.output.type === RESPONSE_PACKET_TYPE) {
+      this.pending.handle(result.output);
+    } else {
+      void this.handleRequest(result.output);
     }
   }
 
-  /**
-   * Register internal commands
-   */
-  private onStartup(ev: StartupEvent) {
-    const registry = ev.customCommandRegistry;
+  private onStartup(event: StartupEvent): void {
+    const registry = event.customCommandRegistry;
     registry.registerCommand(
       {
         name: 'dmc:__query__',
         description: '§8[internal] query messages for SocketBridge',
         permissionLevel: CommandPermissionLevel.Host,
-        mandatoryParameters: [
-          {
-            name: 'sessionId',
-            type: CustomCommandParamType.String,
-          },
-        ],
+        mandatoryParameters: [{ name: 'sessionId', type: CustomCommandParamType.String }],
       },
       (_, sessionId: string) => this.onQuery(sessionId),
     );
-
     registry.registerCommand(
       {
         name: 'dmc:__connect__',
         description: '§8[internal] initialize connection for SocketBridge',
         permissionLevel: CommandPermissionLevel.Host,
         mandatoryParameters: [
-          {
-            name: 'protocolVersion',
-            type: CustomCommandParamType.Integer,
-          },
-          {
-            name: 'sessionId', // sessionId is generated on server side
-            type: CustomCommandParamType.String,
-          },
+          { name: 'protocolVersion', type: CustomCommandParamType.Integer },
+          { name: 'sessionId', type: CustomCommandParamType.String },
         ],
       },
       (_, protocolVersion: number, sessionId: string) => this.handleConnection(protocolVersion, sessionId),

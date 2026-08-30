@@ -1,67 +1,76 @@
 import { CommandStatusCode, type World as SocketWorld } from 'socket-be';
 import {
-  type ClientRequest,
-  type ClientResponse,
-  type QueryResponse,
-  type ServerRequest,
-  type ServerResponse,
+  type ServerBoundNotificationPacket,
+  type ServerBoundPacket,
+  type ServerBoundRequestPacket,
   DisconnectReason,
+  errorResponse,
   InternalAction,
-  PayloadType,
+  PendingRequests,
+  RESPONSE_PACKET_TYPE,
+  type RequestResult,
   ResponseErrorReason,
-  type BaseAction,
-  type InternalActions,
-  NamespaceRequiredError,
+  safeParseServerBoundPacket,
+  safeParseResponseData,
+  type ClientBoundPacket,
+  type ClientBoundRequestData,
+  type ClientBoundRequestPacket,
+  type ClientBoundRequestType,
+  type ClientBoundResponseData,
+  successResponse,
 } from '@discord-mcbe/shared';
 import { AddonNotInstalledError } from '../errors';
 import { Logger } from '../../../util';
-
 import type { ISession } from '../interfaces';
-import type { SocketBridgeServer } from './server';
+import type { WebSocketBridgeServer } from './server';
 import type { Application } from '../../../application';
 
+type QueryResponse = { error: true; errorReason: ResponseErrorReason } | { error?: false; data: unknown[] };
+
 export class SocketSession implements ISession {
-  private readonly server: SocketBridgeServer;
+  readonly id: string;
+  readonly clientId: string;
   readonly world: SocketWorld;
 
-  /** session id */
-  readonly id: string;
-
-  readonly clientId: string;
-
-  readonly _awaitingResponses = new Map<number, (response: ClientResponse) => void>();
-
+  private readonly pending = new PendingRequests<NodeJS.Timeout>({
+    set: (callback, delay) => setTimeout(callback, delay),
+    clear: (timer) => clearTimeout(timer),
+  });
   private readonly logger: Logger;
   private readonly deltaTimes: number[] = [];
-  private readonly requestInterval: number = 500;
+  private readonly requestInterval = 500;
+  private readonly sentAt = new Map<string, number>();
+
   private previousRequestId = 0;
   private queryInterval: NodeJS.Timeout | null = null;
   private isReconnecting = false;
-  /** Number of failed query requests */
   private failCount = 0;
 
   constructor(
     private readonly app: Application,
-    server: SocketBridgeServer,
+    private readonly server: WebSocketBridgeServer,
     world: SocketWorld,
     id: string,
     clientId: string,
   ) {
-    this.server = server;
     this.world = world;
     this.id = id;
     this.clientId = clientId;
     this.logger = new Logger('SocketSession', this.app.config);
     this.server.sessions.add(this);
-
     this.startInterval(this.requestInterval);
   }
 
+  get averagePing(): number {
+    if (this.deltaTimes.length === 0) return -1;
+    return this.deltaTimes.reduce((sum, value) => sum + value, 0) / this.deltaTimes.length;
+  }
+
   destroy(): void {
-    this.clearResponses();
+    this.pending.abortAll('Session disconnected before response was received');
+    this.sentAt.clear();
     this.server.sessions.delete(this);
     this.stopInterval();
-    this._awaitingResponses.clear();
     this.deltaTimes.length = 0;
     this.previousRequestId = 0;
     this.isReconnecting = false;
@@ -71,148 +80,106 @@ export class SocketSession implements ISession {
   }
 
   async disconnect(reason: DisconnectReason = DisconnectReason.Disconnect): Promise<void> {
-    await this.send<InternalActions.Disconnect>(InternalAction.Disconnect, { reason }, 5_000);
+    await this.send(InternalAction.Disconnect, { reason }, 5_000);
     this.server.emit('clientDisconnect', this, reason);
     this.destroy();
   }
 
-  async reconnect() {
-    this.destroy();
-
+  async reconnect(): Promise<void> {
     if (this.isReconnecting) {
       this.logger.warn('Already reconnecting, skipping...');
       return;
     }
-
+    this.destroy();
     this.isReconnecting = true;
-
-    await this.server.connect(this.world);
-
-    this.isReconnecting = false;
-  }
-
-  async send<A extends BaseAction = BaseAction>(
-    channelId: A['id'],
-    data?: A['request'],
-    timeout: number = 10_000,
-  ): Promise<ClientResponse<A['response']>> {
-    if (!channelId.includes(':')) throw new NamespaceRequiredError(channelId);
-
-    const requestId = ++this.previousRequestId;
-    const payload: ServerRequest = {
-      type: PayloadType.Request,
-      channelId,
-      sessionId: this.id,
-      requestId,
-      data,
-    };
-
-    await this.sendPayload(payload);
-
-    const sentAt = Date.now();
-
-    return new Promise((resolve) => {
-      const to = setTimeout(() => {
-        this._awaitingResponses.delete(requestId);
-        resolve({
-          type: PayloadType.Response,
-          error: true,
-          errorReason: ResponseErrorReason.Timeout,
-          message: 'Request timed out',
-          sessionId: this.id,
-          requestId,
-        });
-      }, timeout);
-
-      this._awaitingResponses.set(requestId, (response: ClientResponse<A['response']>) => {
-        this._awaitingResponses.delete(requestId);
-        clearTimeout(to);
-        resolve(response);
-
-        if (this.deltaTimes.length >= 10) this.deltaTimes.shift();
-        this.deltaTimes.push(Date.now() - sentAt);
-      });
-    });
-  }
-
-  get averagePing(): number {
-    if (this.deltaTimes.length === 0) return -1;
-    return this.deltaTimes.reduce((a, b) => a + b, 0) / this.deltaTimes.length;
-  }
-
-  private async sendPayload(payload: ServerRequest | ServerResponse) {
-    const res = await this.world.runCommand(`scriptevent bridge:message ${JSON.stringify(payload)}`);
-    if (res.statusCode < CommandStatusCode.Success) throw new Error(res.statusMessage);
-  }
-
-  private async handleRequest(request: ClientRequest): Promise<ServerResponse> {
-    const { requestId, sessionId, channelId, data } = request;
-    const handler = this.server.getActionHandler(channelId);
-    if (!handler) {
-      this.logger.error(`Unhandled request for channel: ${channelId}`);
-      return {
-        type: PayloadType.Response,
-        error: true,
-        message: `No handler found for channel: ${channelId}`,
-        errorReason: ResponseErrorReason.UnhandledRequest,
-        sessionId,
-        requestId,
-      };
-    }
-
     try {
-      const response: ServerResponse = {
-        type: PayloadType.Response,
-        error: false,
-        sessionId,
-        requestId,
-        data: undefined,
-      };
-
-      await handler({
-        data,
-        session: this,
-        respond: (data) => {
-          response.data = data;
-        },
-      });
-
-      return response;
-    } catch (err) {
-      this.logger.error('Error while handling request:', channelId, err);
-      return {
-        type: PayloadType.Response,
-        error: true,
-        message: `An error occurred while handling the request\n${String(err)}`,
-        errorReason: ResponseErrorReason.InternalError,
-        sessionId,
-        requestId,
-      };
+      await this.server.connect(this.world);
+    } finally {
+      this.isReconnecting = false;
     }
   }
 
-  private handleResponse(response: ClientResponse) {
-    const { requestId } = response;
-    const resolve = this._awaitingResponses.get(requestId);
-    if (resolve) {
-      resolve(response);
-      this._awaitingResponses.delete(requestId);
+  send<T extends ClientBoundRequestType>(
+    type: T,
+    data: ClientBoundRequestData<T>,
+    timeout: number = 10_000,
+  ): Promise<RequestResult<ClientBoundResponseData<T>>> {
+    const requestId = `${this.id}:${++this.previousRequestId}`;
+    const packet = { type, requestId, data } as ClientBoundRequestPacket;
+    this.sentAt.set(requestId, Date.now());
+    return this.pending
+      .request(type, requestId, timeout, () => this.sendPayload(packet))
+      .finally(() => this.sentAt.delete(requestId));
+  }
+
+  private async sendPayload(payload: ClientBoundPacket): Promise<void> {
+    const response = await this.world.runCommand(`scriptevent bridge:message ${JSON.stringify(payload)}`);
+    if (response.statusCode < CommandStatusCode.Success) throw new Error(response.statusMessage);
+  }
+
+  private handleResponse(response: Extract<ServerBoundPacket, { type: typeof RESPONSE_PACKET_TYPE }>): void {
+    const sentAt = this.sentAt.get(response.requestId);
+    this.sentAt.delete(response.requestId);
+    if (!this.pending.handle(response) || sentAt === undefined) return;
+    this.deltaTimes.push(Date.now() - sentAt);
+    if (this.deltaTimes.length > 10) this.deltaTimes.shift();
+  }
+
+  private async handleRequest(request: ServerBoundRequestPacket): Promise<void> {
+    try {
+      let data: unknown;
+      if (request.type === InternalAction.Disconnect) data = null;
+      else if (request.type === InternalAction.Connect) {
+        data = null;
+      } else {
+        data = await this.server.handlePacket(this, request);
+      }
+
+      const parsed = safeParseResponseData(request.type, data);
+      await this.sendPayload(
+        parsed.success
+          ? successResponse(request.requestId, parsed.output)
+          : errorResponse(
+              request.requestId,
+              ResponseErrorReason.InvalidPayload,
+              `Invalid response data for ${request.type}`,
+            ),
+      );
+
+      if (request.type === InternalAction.Disconnect && parsed.success) {
+        this.server.emit('clientDisconnect', this, request.data.reason);
+        this.destroy();
+        setTimeout(() => this.world.disconnect(), 200);
+      }
+    } catch (error) {
+      this.logger.error('Error while handling request:', request.type, error);
+      await this.sendPayload(
+        errorResponse(
+          request.requestId,
+          ResponseErrorReason.InternalError,
+          `An error occurred while handling ${request.type}\n${String(error)}`,
+        ),
+      );
     }
   }
 
-  private async queryData() {
+  private async handleNotification(notification: ServerBoundNotificationPacket): Promise<void> {
+    try {
+      await this.server.handlePacket(this, notification);
+    } catch (error) {
+      this.logger.error('Error while handling notification:', notification.type, error);
+    }
+  }
+
+  private async queryData(): Promise<ServerBoundPacket[]> {
     if (!this.world.isValid) return [];
-
-    const res = await this.world.runCommand(`dmc:__query__ ${this.id}`);
-    if (res.statusCode === CommandStatusCode.FailedToParseCommand) {
-      // コマンドが見つからない=ワールドから退出しているはずなのでいったん無視する
-      return [];
-    }
-    if (res.statusCode < CommandStatusCode.Success) throw new Error(res.statusMessage);
+    const response = await this.world.runCommand(`dmc:__query__ ${this.id}`);
+    if (response.statusCode === CommandStatusCode.FailedToParseCommand) return [];
+    if (response.statusCode < CommandStatusCode.Success) throw new Error(response.statusMessage);
 
     let body: QueryResponse;
     try {
-      body = JSON.parse(res.statusMessage);
+      body = JSON.parse(response.statusMessage) as QueryResponse;
     } catch {
       this.logger.error('Failed to parse query response');
       return [];
@@ -226,82 +193,78 @@ export class SocketSession implements ISession {
         this.logger.error('[query] Unexpected error:', ResponseErrorReason[body.errorReason]);
       }
       return [];
-    } else {
-      return body.data;
     }
+
+    const packets: ServerBoundPacket[] = [];
+    for (const input of body.data) {
+      const parsed = safeParseServerBoundPacket(input);
+      if (parsed.success) {
+        packets.push(parsed.output);
+      } else {
+        this.logger.error('Invalid packet in query response');
+        if (getPacketType(input) === RESPONSE_PACKET_TYPE) continue;
+        const requestId = getRequestId(input);
+        if (requestId) {
+          await this.sendPayload(
+            errorResponse(requestId, ResponseErrorReason.InvalidPayload, 'Invalid client packet'),
+          );
+        }
+      }
+    }
+    return packets;
   }
 
   private startInterval(interval: number): void {
     if (this.queryInterval !== null) return;
+    this.queryInterval = setInterval(() => {
+      void this.poll();
+    }, interval);
+  }
 
-    this.queryInterval = setInterval(async () => {
-      if (this.isReconnecting) return;
-
-      const sentAt = Date.now();
-      let requests: (ClientRequest | ClientResponse)[];
-      try {
-        requests = await this.queryData();
-        this.failCount = 0;
-      } catch (e) {
-        if (e instanceof AddonNotInstalledError) {
-          this.logger.error(e.message);
-          return;
-        }
-
-        this.logger.error(`[query] fetch failed:`, e);
-
-        this.failCount++;
-        if (this.failCount >= 3) {
-          this.logger.error('Multiple timeouts detected, reconnecting...');
-          this.scheduleReconnect();
-        }
+  private async poll(): Promise<void> {
+    if (this.isReconnecting) return;
+    try {
+      const packets = await this.queryData();
+      this.failCount = 0;
+      for (const packet of packets) {
+        if (packet.type === RESPONSE_PACKET_TYPE) this.handleResponse(packet);
+        else if ('requestId' in packet) await this.handleRequest(packet);
+        else await this.handleNotification(packet);
+      }
+    } catch (error) {
+      if (error instanceof AddonNotInstalledError) {
+        this.logger.error(error.message);
         return;
       }
-
-      for (const request of requests) {
-        if (request.type === PayloadType.Response) {
-          this.handleResponse(request);
-        } else if (request.type === PayloadType.Request) {
-          const response = await this.handleRequest(request);
-          try {
-            await this.sendPayload(response);
-          } catch (e) {
-            this.logger.error(`Failed to send response:`, e);
-          }
-        }
+      this.logger.error('[query] fetch failed:', error);
+      this.failCount++;
+      if (this.failCount >= 3) {
+        this.logger.error('Multiple timeouts detected, reconnecting...');
+        this.scheduleReconnect();
       }
-
-      this.deltaTimes.push(Date.now() - sentAt);
-      if (this.deltaTimes.length > 10) this.deltaTimes.shift();
-    }, interval);
+    }
   }
 
   private scheduleReconnect(): void {
     if (this.isReconnecting) return;
-
     this.server.emit('clientDisconnect', this, DisconnectReason.ConnectionLost);
-
     void this.reconnect();
   }
 
   private stopInterval(): void {
-    if (this.queryInterval !== null) {
-      clearInterval(this.queryInterval);
-      this.queryInterval = null;
-    }
+    if (this.queryInterval === null) return;
+    clearInterval(this.queryInterval);
+    this.queryInterval = null;
   }
+}
 
-  private clearResponses(): void {
-    for (const [requestId, respond] of this._awaitingResponses) {
-      respond({
-        type: PayloadType.Response,
-        error: true,
-        message: 'Session disconnected before response was received',
-        errorReason: ResponseErrorReason.Abort,
-        sessionId: this.id,
-        requestId,
-      });
-    }
-    this._awaitingResponses.clear();
-  }
+function getRequestId(input: unknown): string | undefined {
+  if (typeof input !== 'object' || input === null) return undefined;
+  const requestId = (input as Record<string, unknown>).requestId;
+  return typeof requestId === 'string' ? requestId : undefined;
+}
+
+function getPacketType(input: unknown): unknown {
+  if (typeof input !== 'object' || input === null) return undefined;
+  return (input as Record<string, unknown>).type;
 }

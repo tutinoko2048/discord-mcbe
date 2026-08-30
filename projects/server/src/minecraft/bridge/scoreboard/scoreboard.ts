@@ -1,17 +1,4 @@
-import {
-  ActionId,
-  type DisplaySlotId,
-  type GetAllObjectivesAction,
-  type GetObjectiveAction,
-  type GetScoreAction,
-  type ObjectiveSortOrder,
-  type UpdateObjectiveAction,
-  type UpdateScoreAction,
-  type ScoreboardParticipantDescriptor,
-  type RemoveParticipantAction,
-  type SetObjectiveDisplayAction,
-  type GetAllScoresAction,
-} from '@discord-mcbe/shared';
+import { ActionId, type DisplaySlotId, type ObjectiveSortOrder } from '@discord-mcbe/shared';
 import { ScriptScoreboardObjective } from './objective';
 import { ScriptScoreboardScoreInfo } from './score-info';
 import { BridgeActionError } from '../errors';
@@ -31,7 +18,7 @@ export class ScriptScoreboard {
    * Returns all defined objectives.
    */
   async getObjectives(): Promise<ScriptScoreboardObjective[]> {
-    const res = await this.session.send<GetAllObjectivesAction>(ActionId.GetAllObjectives);
+    const res = await this.session.send(ActionId.GetAllObjectives, null);
     if (res.error) throw new BridgeActionError(res);
 
     const objectives: ScriptScoreboardObjective[] = [];
@@ -50,7 +37,7 @@ export class ScriptScoreboard {
    * Returns a specific objective (by id).
    */
   async getObjective(objectiveId: string): Promise<ScriptScoreboardObjective | undefined> {
-    const res = await this.session.send<GetObjectiveAction>(ActionId.GetObjective, { objectiveId });
+    const res = await this.session.send(ActionId.GetObjective, { objectiveId });
     if (res.error) throw new BridgeActionError(res);
 
     if (!res.data.objective) return undefined;
@@ -66,7 +53,7 @@ export class ScriptScoreboard {
    * Adds a new objective to the scoreboard.
    */
   async addObjective(objectiveId: string, displayName?: string): Promise<ScriptScoreboardObjective> {
-    const res = await this.session.send<UpdateObjectiveAction>(ActionId.UpdateObjective, {
+    const res = await this.session.send(ActionId.UpdateObjective, {
       type: 'add',
       objectiveId,
       displayName,
@@ -85,7 +72,7 @@ export class ScriptScoreboard {
    */
   async removeObjective(objective: ScriptScoreboardObjective | string): Promise<void> {
     const objectiveId = this.createObjectiveId(objective);
-    const res = await this.session.send<UpdateObjectiveAction>(ActionId.UpdateObjective, {
+    const res = await this.session.send(ActionId.UpdateObjective, {
       type: 'remove',
       objectiveId,
     });
@@ -100,7 +87,7 @@ export class ScriptScoreboard {
     target: ScriptPlayer | string,
     objective: ScriptScoreboardObjective | string,
   ): Promise<number | null> {
-    const res = await this.session.send<GetScoreAction>(ActionId.GetScore, {
+    const res = await this.session.send(ActionId.GetScore, {
       objectiveId: this.createObjectiveId(objective),
       participant: this.createParticipant(target),
     });
@@ -110,7 +97,7 @@ export class ScriptScoreboard {
   }
 
   async getScores(objective: ScriptScoreboardObjective | string): Promise<ScriptScoreboardScoreInfo[]> {
-    const res = await this.session.send<GetAllScoresAction>(ActionId.GetAllScores, {
+    const res = await this.session.send(ActionId.GetAllScores, {
       objectiveId: this.createObjectiveId(objective),
     });
     if (res.error) throw new BridgeActionError(res);
@@ -127,7 +114,7 @@ export class ScriptScoreboard {
     objective: ScriptScoreboardObjective | string,
     score: number,
   ): Promise<number> {
-    const res = await this.session.send<UpdateScoreAction>(ActionId.UpdateScore, {
+    const res = await this.session.send(ActionId.UpdateScore, {
       type: 'set',
       objectiveId: this.createObjectiveId(objective),
       participant: this.createParticipant(target),
@@ -146,7 +133,7 @@ export class ScriptScoreboard {
     objective: ScriptScoreboardObjective | string,
     score: number,
   ): Promise<number> {
-    const res = await this.session.send<UpdateScoreAction>(ActionId.UpdateScore, {
+    const res = await this.session.send(ActionId.UpdateScore, {
       type: 'add',
       objectiveId: this.createObjectiveId(objective),
       participant: this.createParticipant(target),
@@ -165,7 +152,7 @@ export class ScriptScoreboard {
     objective: ScriptScoreboardObjective | string,
     score: number,
   ): Promise<number> {
-    const res = await this.session.send<UpdateScoreAction>(ActionId.UpdateScore, {
+    const res = await this.session.send(ActionId.UpdateScore, {
       type: 'add',
       objectiveId: this.createObjectiveId(objective),
       participant: this.createParticipant(target),
@@ -183,7 +170,7 @@ export class ScriptScoreboard {
     target: ScriptPlayer | string,
     objective: ScriptScoreboardObjective | string,
   ): Promise<void> {
-    const res = await this.session.send<RemoveParticipantAction>(ActionId.RemoveParticipant, {
+    const res = await this.session.send(ActionId.RemoveParticipant, {
       objectiveId: this.createObjectiveId(objective),
       participant: this.createParticipant(target),
     });
@@ -198,7 +185,7 @@ export class ScriptScoreboard {
     objective?: ScriptScoreboardObjective | string,
     sortOrder?: ObjectiveSortOrder,
   ): Promise<void> {
-    const res = await this.session.send<SetObjectiveDisplayAction>(ActionId.SetObjectiveDisplay, {
+    const res = await this.session.send(ActionId.SetObjectiveDisplay, {
       displaySlotId,
       objectiveId: objective ? this.createObjectiveId(objective) : undefined,
       sortOrder,
@@ -210,7 +197,9 @@ export class ScriptScoreboard {
     return typeof id === 'string' ? id : id.id;
   }
 
-  private createParticipant(player: ScriptPlayer | string): ScoreboardParticipantDescriptor {
+  private createParticipant(
+    player: ScriptPlayer | string,
+  ): { fakePlayer: string } | { uniqueId: ScriptPlayer['uniqueId'] } {
     return typeof player === 'string' ? { fakePlayer: player } : { uniqueId: player.uniqueId };
   }
 }

@@ -1,11 +1,7 @@
 import {
   ActionId,
-  type SendMessageAction,
-  type RunCommandAction,
-  type SendScriptEventAction,
-  type GetTPSAction,
+  type ServerBoundRequestPacket,
   type PlayerDescriptor,
-  type WorldInitializeAction,
   type UniqueId,
   type DisconnectReason,
 } from '@discord-mcbe/shared';
@@ -65,19 +61,19 @@ export class ScriptWorld<SESSION extends ISession = ISession> {
   }
 
   async runCommand(command: string): Promise<{ successCount: number }> {
-    const res = await this.session.send<RunCommandAction>(ActionId.RunCommand, { command });
+    const res = await this.session.send(ActionId.RunCommand, { command });
     if (res.error) throw new BridgeActionError(res);
     if (res.data.error) throw new CommandError(res.data.message);
     return { successCount: res.data.successCount };
   }
 
   async sendMessage(message: string | RawMessage | (string | RawMessage)[]): Promise<void> {
-    const res = await this.session.send<SendMessageAction>(ActionId.SendMessage, { message });
+    const res = await this.session.send(ActionId.SendMessage, { message });
     if (res.error) throw new BridgeActionError(res);
   }
 
   async sendScriptEvent(id: string, message: string): Promise<void> {
-    const res = await this.session.send<SendScriptEventAction>(ActionId.SendScriptEvent, {
+    const res = await this.session.send(ActionId.SendScriptEvent, {
       id,
       message,
     });
@@ -85,7 +81,7 @@ export class ScriptWorld<SESSION extends ISession = ISession> {
   }
 
   async getTPS(): Promise<number> {
-    const res = await this.session.send<GetTPSAction>(ActionId.GetTPS);
+    const res = await this.session.send(ActionId.GetTPS, null);
     if (res.error) throw new BridgeActionError(res);
     return res.data.tps;
   }
@@ -102,7 +98,7 @@ export class ScriptWorld<SESSION extends ISession = ISession> {
     return !this._isLocal;
   }
 
-  onInitialize(data: WorldInitializeAction['request']) {
+  onInitialize(data: Extract<ServerBoundRequestPacket, { type: ActionId.WorldInitialize }>['data']) {
     for (const player of data.players) {
       this.initializePlayer(player);
     }

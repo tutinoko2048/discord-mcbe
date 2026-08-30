@@ -1,20 +1,11 @@
 import { green } from 'colorette';
 import {
-  type BaseAction,
   DisconnectReason,
   ActionId,
-  type ChatSendAction,
-  type PlayerJoinAction,
-  type PlayerLeaveAction,
-  type WorldInitializeAction,
+  type ServerBoundApplicationRequestPacket,
+  type ServerBoundNotificationPacket,
 } from '@discord-mcbe/shared';
-import {
-  ServerNetBridgeServer,
-  type ClientActionHandler,
-  type ISession,
-  SocketBridgeServer,
-  SocketSession,
-} from './transport';
+import { ServerNetBridgeServer, type ISession, WebSocketBridgeServer, SocketSession } from './transport';
 import { _t, Logger } from '../util';
 import { WorldConnectEvent, WorldDisconnectEvent } from '../events';
 
@@ -25,19 +16,30 @@ import { ScriptWorld } from './bridge';
 export class MinecraftHandler {
   private readonly logger: Logger;
 
-  public readonly socket: SocketBridgeServer;
+  public readonly socket: WebSocketBridgeServer;
   public readonly script: ServerNetBridgeServer;
 
   public readonly worlds = new Map<ISession, ScriptWorld>();
 
   constructor(private readonly app: Application) {
     this.logger = new Logger('Minecraft', this.app.config);
-    this.script = new ServerNetBridgeServer({ port: this.app.env.BRIDGE_PORT });
-    this.socket = new SocketBridgeServer(this.app, {
-      port: this.app.env.SOCKET_PORT,
-      debug: this.app.config.debug,
-      disableEncryption: this.app.config.bridge.disable_encryption,
+    const handlePacket = (
+      session: ISession,
+      packet: ServerBoundApplicationRequestPacket | ServerBoundNotificationPacket,
+    ) => this.handlePacket(session, packet);
+    this.script = new ServerNetBridgeServer({
+      port: this.app.env.BRIDGE_PORT,
+      handlePacket,
     });
+    this.socket = new WebSocketBridgeServer(
+      this.app,
+      {
+        port: this.app.env.SOCKET_PORT,
+        debug: this.app.config.debug,
+        disableEncryption: this.app.config.bridge.disable_encryption,
+      },
+      handlePacket,
+    );
 
     this.socket.on('clientConnect', this.onClientConnect.bind(this));
     this.script.on('clientConnect', this.onClientConnect.bind(this));
@@ -47,36 +49,6 @@ export class MinecraftHandler {
     this.script.on('sessionDestroy', this.onSessionDestroy.bind(this));
     this.socket.on('open', this.onOpen.bind(this));
     this.script.on('error', this.onError.bind(this));
-
-    this.registerHandler<WorldInitializeAction>(ActionId.WorldInitialize, (action) => {
-      const world = new ScriptWorld(this.app, action.session, action.session instanceof SocketSession);
-      this.worlds.set(action.session, world);
-      world.onInitialize(action.data);
-      new WorldConnectEvent(this.app, world).emit();
-      action.respond();
-    });
-
-    this.registerHandler<PlayerJoinAction>(ActionId.PlayerJoin, (action) => {
-      const world = this.getWorldBySession(action.session);
-      if (!world) throw new Error(`World not found: ${action.session.id}`);
-      world.onPlayerJoin(action.data.player);
-      action.respond();
-    });
-
-    this.registerHandler<PlayerLeaveAction>(ActionId.PlayerLeave, (action) => {
-      const world = this.getWorldBySession(action.session);
-      if (!world) throw new Error(`World not found: ${action.session.id}`);
-      world.onPlayerLeave(action.data.playerUniqueId);
-      action.respond();
-    });
-
-    this.registerHandler<ChatSendAction>(ActionId.ChatSend, (action) => {
-      const world = this.getWorldBySession(action.session);
-      if (!world) throw new Error(`World not found: ${action.session.id}`);
-      const { senderUniqueId, message } = action.data;
-      world.onChatSend(senderUniqueId, message);
-      action.respond();
-    });
 
     this.logger.debug('Initialized');
   }
@@ -97,11 +69,6 @@ export class MinecraftHandler {
 
   getWorldBySession(session: ISession): ScriptWorld | undefined {
     return this.worlds.get(session);
-  }
-
-  registerHandler<A extends BaseAction>(channelId: A['id'], handler: ClientActionHandler<A>): void {
-    this.script.registerHandler(channelId, handler);
-    this.socket.registerHandler(channelId, handler);
   }
 
   async broadcastCommand(command: string) {
@@ -136,4 +103,47 @@ export class MinecraftHandler {
   private onError(error: Error) {
     this.logger.error(error);
   }
+
+  private handlePacket(
+    session: ISession,
+    packet: ServerBoundApplicationRequestPacket | ServerBoundNotificationPacket,
+  ): null {
+    switch (packet.type) {
+      case ActionId.WorldInitialize: {
+        const world = new ScriptWorld(this.app, session, session instanceof SocketSession);
+        this.worlds.set(session, world);
+        world.onInitialize(packet.data);
+        new WorldConnectEvent(this.app, world).emit();
+        return null;
+      }
+
+      case ActionId.PlayerJoin: {
+        const world = this.getWorldBySession(session);
+        if (!world) throw new Error(`World not found: ${session.id}`);
+        world.onPlayerJoin(packet.data.player);
+        return null;
+      }
+
+      case ActionId.PlayerLeave: {
+        const world = this.getWorldBySession(session);
+        if (!world) throw new Error(`World not found: ${session.id}`);
+        world.onPlayerLeave(packet.data.playerUniqueId);
+        return null;
+      }
+
+      case ActionId.ChatSend: {
+        const world = this.getWorldBySession(session);
+        if (!world) throw new Error(`World not found: ${session.id}`);
+        world.onChatSend(packet.data.senderUniqueId, packet.data.message);
+        return null;
+      }
+
+      default:
+        return assertNever(packet);
+    }
+  }
+}
+
+function assertNever(value: never): never {
+  throw new Error(`Unsupported server-bound packet: ${String(value)}`);
 }

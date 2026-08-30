@@ -1,12 +1,6 @@
 import type { RawMessage } from '@minecraft/server';
 import type { ScriptPlayer } from './player';
-import {
-  ActionId,
-  type SetTitleAction,
-  type UpdateSubtitleAction,
-  type SetActionBarAction,
-  type TitleDisplayOptions,
-} from '@discord-mcbe/shared';
+import { ActionId, type TitleDisplayOptions } from '@discord-mcbe/shared';
 import { BridgeActionError } from './errors';
 
 export class ScreenDisplay {
@@ -24,7 +18,7 @@ export class ScreenDisplay {
     title: string | RawMessage | (string | RawMessage)[],
     options?: TitleDisplayOptions,
   ): Promise<void> {
-    const res = await this.player.world.session.send<SetTitleAction>(ActionId.SetTitle, {
+    const res = await this.player.world.session.send(ActionId.SetTitle, {
       playerUniqueId: this.player.uniqueId,
       title,
       options,
@@ -33,7 +27,7 @@ export class ScreenDisplay {
   }
 
   async updateSubtitle(subtitle: string | RawMessage | (string | RawMessage)[]): Promise<void> {
-    const res = await this.player.world.session.send<UpdateSubtitleAction>(ActionId.UpdateSubtitle, {
+    const res = await this.player.world.session.send(ActionId.UpdateSubtitle, {
       playerUniqueId: this.player.uniqueId,
       subtitle,
     });
@@ -41,7 +35,7 @@ export class ScreenDisplay {
   }
 
   async setActionBar(text: string | RawMessage | (string | RawMessage)[]): Promise<void> {
-    const res = await this.player.world.session.send<SetActionBarAction>(ActionId.SetActionBar, {
+    const res = await this.player.world.session.send(ActionId.SetActionBar, {
       playerUniqueId: this.player.uniqueId,
       text,
     });

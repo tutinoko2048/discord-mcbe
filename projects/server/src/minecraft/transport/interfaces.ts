@@ -1,6 +1,10 @@
-import type { BaseAction, ServerNetResponse, ClientResponse, DisconnectReason } from '@discord-mcbe/shared';
-
-type IClientResponse<T> = ClientResponse<T> | (ServerNetResponse<T> & { sessionId: string });
+import type {
+  DisconnectReason,
+  RequestResult,
+  ClientBoundRequestData,
+  ClientBoundRequestType,
+  ClientBoundResponseData,
+} from '@discord-mcbe/shared';
 
 export interface ISession {
   readonly id: string;
@@ -9,9 +13,9 @@ export interface ISession {
 
   disconnect(reason?: DisconnectReason): Promise<void>;
   destroy(): void;
-  send<A extends BaseAction = BaseAction>(
-    channelId: A['id'],
-    data?: A['request'],
+  send<T extends ClientBoundRequestType>(
+    type: T,
+    data: ClientBoundRequestData<T>,
     timeout?: number,
-  ): Promise<IClientResponse<A['response']>>;
+  ): Promise<RequestResult<ClientBoundResponseData<T>>>;
 }

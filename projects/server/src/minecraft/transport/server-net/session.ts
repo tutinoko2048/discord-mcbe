@@ -1,36 +1,37 @@
+import { randomUUID } from 'node:crypto';
+import { WebSocket } from 'ws';
 import {
-  BaseAction,
-  ServerNetPayload,
-  ServerNetRequest,
-  ServerNetResponse,
   DisconnectReason,
   InternalAction,
-  InternalActions,
-  NamespaceRequiredError,
-  PayloadType,
-  ResponseErrorReason,
+  PendingRequests,
+  type RequestResult,
+  type ResponsePacket,
+  type ClientBoundPacket,
+  type ClientBoundRequestData,
+  type ClientBoundRequestPacket,
+  type ClientBoundRequestType,
+  type ClientBoundResponseData,
 } from '@discord-mcbe/shared';
-import { randomUUID } from 'crypto';
-import { WebSocket } from 'ws';
-import { ISession } from '../interfaces';
-import { ServerNetBridgeServer } from './server';
-
-export type ServerNetSessionResponse<T = unknown> = ServerNetResponse<T> & { sessionId: string };
+import type { ISession } from '../interfaces';
+import type { ServerNetBridgeServer } from './server';
 
 export class ServerNetSession implements ISession {
   readonly id = randomUUID();
-  readonly _awaitingResponses = new Map<
-    string,
-    { resolve: (response: ServerNetSessionResponse) => void; sentAt: number; timeout: NodeJS.Timeout }
-  >();
 
   clientId = '';
   isConnected = false;
   isDestroyed = false;
   disconnectReason: DisconnectReason | null = null;
 
+  private readonly pending = new PendingRequests<NodeJS.Timeout>({
+    set: (callback, delay) => setTimeout(callback, delay),
+    clear: (timer) => clearTimeout(timer),
+  });
+  private readonly sentAt = new Map<string, number>();
   private readonly deltaTimes: number[] = [];
   private readonly handshakeTimeout: NodeJS.Timeout;
+  private previousRequestId = 0;
+  private incoming = Promise.resolve();
 
   constructor(
     private readonly server: ServerNetBridgeServer,
@@ -53,10 +54,9 @@ export class ServerNetSession implements ISession {
   async disconnect(reason: DisconnectReason = DisconnectReason.Disconnect): Promise<void> {
     if (this.isDestroyed) return;
     this.disconnectReason = reason;
-
     try {
       if (this.isConnected) {
-        await this.send<InternalActions.Disconnect>(InternalAction.Disconnect, { reason }, 5_000);
+        await this.send(InternalAction.Disconnect, { reason }, 5_000);
       }
     } finally {
       if (!this.isDestroyed) {
@@ -70,81 +70,43 @@ export class ServerNetSession implements ISession {
     if (this.isDestroyed) return;
     this.isDestroyed = true;
     clearTimeout(this.handshakeTimeout);
-
-    for (const [requestId, pending] of this._awaitingResponses) {
-      clearTimeout(pending.timeout);
-      pending.resolve({
-        type: PayloadType.Response,
-        error: true,
-        errorReason: ResponseErrorReason.Abort,
-        message: 'Session disconnected',
-        sessionId: this.id,
-        requestId,
-      });
-    }
-    this._awaitingResponses.clear();
+    this.pending.abortAll('Session disconnected');
+    this.sentAt.clear();
     this.server.sessions.delete(this);
-
     if (this.socket.readyState === WebSocket.OPEN) this.socket.close();
     if (this.isConnected) this.server.emit('sessionDestroy', this);
     this.isConnected = false;
   }
 
-  send<A extends BaseAction = BaseAction>(
-    channelId: A['id'],
-    data?: A['request'],
+  send<T extends ClientBoundRequestType>(
+    type: T,
+    data: ClientBoundRequestData<T>,
     timeout: number = 10_000,
-  ): Promise<ServerNetSessionResponse<A['response']>> {
-    if (!channelId.includes(':')) throw new NamespaceRequiredError(channelId);
+  ): Promise<RequestResult<ClientBoundResponseData<T>>> {
     if (!this.isConnected || this.isDestroyed) throw new Error('No active WebSocket session');
-
-    const requestId = randomUUID();
-    const payload: ServerNetRequest<A['request']> = {
-      type: PayloadType.Request,
-      channelId,
-      requestId,
-      data,
-    };
-    return new Promise((resolve, reject) => {
-      const pending = {
-        resolve: resolve as (response: ServerNetSessionResponse) => void,
-        sentAt: Date.now(),
-        timeout: setTimeout(() => {
-          this._awaitingResponses.delete(requestId);
-          resolve({
-            type: PayloadType.Response,
-            error: true,
-            errorReason: ResponseErrorReason.Timeout,
-            message: 'Request timed out',
-            sessionId: this.id,
-            requestId,
-          });
-        }, timeout),
-      };
-
-      this._awaitingResponses.set(requestId, pending);
-      try {
-        this.sendPayload(payload);
-      } catch (error) {
-        clearTimeout(pending.timeout);
-        this._awaitingResponses.delete(requestId);
-        reject(error as Error);
-      }
-    });
+    const requestId = `${this.id}:${++this.previousRequestId}`;
+    const packet = { type, requestId, data } as ClientBoundRequestPacket;
+    this.sentAt.set(requestId, Date.now());
+    return this.pending
+      .request(type, requestId, timeout, () => this.sendPayload(packet))
+      .finally(() => this.sentAt.delete(requestId));
   }
 
-  handleResponse(response: ServerNetResponse): void {
-    const pending = this._awaitingResponses.get(response.requestId);
-    if (!pending) return;
-
-    clearTimeout(pending.timeout);
-    this._awaitingResponses.delete(response.requestId);
-    this.deltaTimes.push(Date.now() - pending.sentAt);
+  handleResponse(response: ResponsePacket): void {
+    const sentAt = this.sentAt.get(response.requestId);
+    this.sentAt.delete(response.requestId);
+    if (!this.pending.handle(response) || sentAt === undefined) return;
+    this.deltaTimes.push(Date.now() - sentAt);
     if (this.deltaTimes.length > 10) this.deltaTimes.shift();
-    pending.resolve({ ...response, sessionId: this.id });
   }
 
-  sendPayload(payload: ServerNetPayload): void {
+  enqueueIncomingTask(task: () => PromiseLike<void> | void): Promise<void> {
+    const next = this.incoming.then(task);
+    this.incoming = next.catch(() => {});
+    return next;
+  }
+
+  sendPayload(payload: ClientBoundPacket): void {
     if (this.socket.readyState !== WebSocket.OPEN) throw new Error('WebSocket is not open');
     this.socket.send(JSON.stringify(payload));
   }

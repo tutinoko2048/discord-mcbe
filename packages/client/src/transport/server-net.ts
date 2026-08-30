@@ -6,44 +6,46 @@ import {
   type WebSocketClientReceiveAfterEvent,
 } from '@minecraft/server-net';
 import {
-  ServerNetBridge,
-  isServerNetPayload,
-  type ServerNetPayload,
-  type ServerNetRequest,
-  type ServerNetResponse,
+  type ServerBoundNotificationPacket,
+  type ServerBoundRequestInput,
+  type ServerBoundRequestPacket,
   DisconnectReason,
+  errorResponse,
   InternalAction,
-  PayloadType,
+  PendingRequests,
+  RESPONSE_PACKET_TYPE,
+  type RequestResult,
+  type ResponseData,
   ResponseErrorReason,
-  type BaseAction,
-  type ConnectAction,
-  type InternalActions,
-  type ActionHandler,
+  safeParseResponseData,
+  safeParseClientBoundPacket,
+  SERVER_NET_BRIDGE_PROTOCOL_VERSION,
+  type ClientBoundRequestPacket,
+  successResponse,
 } from '@discord-mcbe/shared';
 import { Emitter } from '../utils/emitter';
+import type { ClientBoundRequestHandler, IBridgeClient } from './interfaces';
 
-import type { IBridgeClient, IResponse } from './interfaces';
-
-interface WebSocketBridgeEvents {
+interface ServerNetBridgeEvents {
   connect: { sessionId: string };
   disconnect: { reason: DisconnectReason };
 }
 
-export interface WebSocketBridgeClientOptions {
+export interface ServerNetBridgeClientOptions {
   url: string;
   clientId: string | (() => string);
+  handleRequest: ClientBoundRequestHandler;
 }
 
-interface PendingResponse {
-  timeoutId: number;
-  resolve: (response: ServerNetResponse) => void;
-}
+class ProtocolVersionError extends Error {}
 
-export class WebSocketBridgeClient extends Emitter<WebSocketBridgeEvents> implements IBridgeClient {
-  static readonly PROTOCOL_VERSION = ServerNetBridge.PROTOCOL_VERSION;
+export class ServerNetBridgeClient extends Emitter<ServerNetBridgeEvents> implements IBridgeClient {
+  static readonly PROTOCOL_VERSION = SERVER_NET_BRIDGE_PROTOCOL_VERSION;
 
-  private readonly actionHandlers = new Map<string, ActionHandler<BaseAction>>();
-  private readonly awaitingResponses = new Map<string, PendingResponse>();
+  private readonly pending = new PendingRequests<number>({
+    set: (callback, ticks) => system.runTimeout(callback, ticks),
+    clear: (timer) => system.clearRun(timer),
+  });
   private readonly maxReconnectAttempts = 10;
 
   private socket: WebSocketClient | null = null;
@@ -52,7 +54,7 @@ export class WebSocketBridgeClient extends Emitter<WebSocketBridgeEvents> implem
   private connecting: Promise<void> | null = null;
   private closeReason: DisconnectReason | null = null;
 
-  constructor(private readonly options: WebSocketBridgeClientOptions) {
+  constructor(private readonly options: ServerNetBridgeClientOptions) {
     super();
   }
 
@@ -67,35 +69,33 @@ export class WebSocketBridgeClient extends Emitter<WebSocketBridgeEvents> implem
   connect(): Promise<void> {
     if (this.isConnected) return Promise.resolve();
     if (this.connecting) return this.connecting;
-
     this.connecting = this.connectWithRetry().finally(() => {
       this.connecting = null;
     });
     return this.connecting;
   }
 
-  async send<A extends BaseAction = BaseAction>(
-    channelId: A['id'],
-    data?: A['request'],
-  ): Promise<IResponse<A['response']>> {
-    if (!this.isConnected) throw new Error('No active session');
-    return await this.request<A['response']>(channelId, data);
+  request(packet: ServerBoundRequestInput): Promise<RequestResult<unknown>> {
+    const socket = this.socket;
+    if (!socket?.isOpen) throw new Error('WebSocket is not connected');
+    if (packet.type !== InternalAction.Connect && !this.currentSessionId)
+      throw new Error('No active session');
+
+    const requestId = `${this.currentSessionId ?? 'connect'}:${++this.previousRequestId}`;
+    const request = { ...packet, requestId } as ServerBoundRequestPacket;
+    return this.pending.request(packet.type, requestId, 200, () => socket.send(JSON.stringify(request)));
   }
 
-  registerHandler<A extends BaseAction = BaseAction>(channelId: A['id'], handler: ActionHandler<A>): void {
-    if (!channelId.includes(':')) throw new Error(`Channel ID "${channelId}" must include a namespace`);
-    if (this.actionHandlers.has(channelId)) {
-      console.warn('[ServerNet] Overwriting existing handler for channel:', channelId);
-    }
-    this.actionHandlers.set(channelId, handler as unknown as ActionHandler<BaseAction>);
+  notify(packet: ServerBoundNotificationPacket): void {
+    if (!this.isConnected || !this.socket) return;
+    this.socket.send(JSON.stringify(packet));
   }
 
   async disconnect(reason: DisconnectReason = DisconnectReason.Disconnect): Promise<void> {
     if (!this.isConnected) return;
-
     this.closeReason = reason;
     try {
-      await this.send<InternalActions.Disconnect>(InternalAction.Disconnect, { reason });
+      await this.request({ type: InternalAction.Disconnect, data: { reason } });
     } catch (error) {
       console.warn('[ServerNet] Failed to send disconnect message:', error);
     } finally {
@@ -105,17 +105,16 @@ export class WebSocketBridgeClient extends Emitter<WebSocketBridgeEvents> implem
 
   private async connectWithRetry(): Promise<void> {
     let attempt = 0;
-
     while (!this.isConnected) {
       try {
         await this.connectOnce();
         return;
       } catch (error) {
         this.closeSocket(false);
+        if (error instanceof ProtocolVersionError) throw error;
         if (attempt >= this.maxReconnectAttempts) {
           throw new Error('Max reconnect attempts reached', { cause: error });
         }
-
         const backoffSeconds = Math.min(2 ** attempt, 60);
         attempt++;
         console.error(
@@ -132,169 +131,121 @@ export class WebSocketBridgeClient extends Emitter<WebSocketBridgeEvents> implem
     const socket = await websocket.connect(this.options.url);
     this.socket = socket;
     this.closeReason = null;
-
     socket.afterEvents.message.subscribe((event) => this.onMessage(socket, event));
     socket.afterEvents.close.subscribe((event) => this.onClose(socket, event));
 
-    const response = await this.request<{ sessionId: string }, ConnectAction['request']>(
-      InternalAction.Connect,
-      {
+    const response = await this.request({
+      type: InternalAction.Connect,
+      data: {
         clientId: this.clientId,
-        protocolVersion: WebSocketBridgeClient.PROTOCOL_VERSION,
+        protocolVersion: ServerNetBridgeClient.PROTOCOL_VERSION,
       },
-    );
-
-    if (response.error) throw new Error(response.message);
-    const { sessionId } = response.data;
-    this.currentSessionId = sessionId;
-    this.emit('connect', { sessionId });
-  }
-
-  private request<Response, Request = unknown>(
-    channelId: string,
-    data?: Request,
-    timeoutTicks: number = 200,
-  ): Promise<ServerNetResponse<Response>> {
-    const socket = this.socket;
-    if (!socket?.isOpen) throw new Error('WebSocket is not connected');
-
-    const requestId = String(++this.previousRequestId);
-    const payload: ServerNetRequest<Request> = {
-      type: PayloadType.Request,
-      channelId,
-      requestId,
-      data,
-    };
-
-    return new Promise((resolve, reject) => {
-      const timeoutId = system.runTimeout(() => {
-        this.awaitingResponses.delete(requestId);
-        resolve({
-          type: PayloadType.Response,
-          error: true,
-          errorReason: ResponseErrorReason.Timeout,
-          message: `Request timed out: ${channelId}`,
-          requestId,
-        });
-      }, timeoutTicks);
-
-      this.awaitingResponses.set(requestId, {
-        timeoutId,
-        resolve: resolve as (response: ServerNetResponse) => void,
-      });
-      try {
-        socket.send(JSON.stringify(payload));
-      } catch (error) {
-        system.clearRun(timeoutId);
-        this.awaitingResponses.delete(requestId);
-        reject(error as Error);
-      }
     });
+    if (response.error) {
+      if (
+        response.errorReason === ResponseErrorReason.InvalidPayload &&
+        (response.message === DisconnectReason[DisconnectReason.OutdatedClient] ||
+          response.message === DisconnectReason[DisconnectReason.OutdatedServer])
+      ) {
+        throw new ProtocolVersionError(response.message);
+      }
+      throw new Error(response.message);
+    }
+    const data = response.data as ResponseData<InternalAction.Connect>;
+    this.currentSessionId = data.sessionId;
+    this.emit('connect', { sessionId: data.sessionId });
   }
 
   private onMessage(socket: WebSocketClient, event: WebSocketClientReceiveAfterEvent): void {
     if (socket !== this.socket) return;
 
-    let payload: ServerNetPayload;
+    let parsed: unknown;
     try {
-      const parsed: unknown = JSON.parse(event.message);
-      if (!isServerNetPayload(parsed)) throw new Error('Invalid WebSocket payload');
-      payload = parsed;
+      parsed = JSON.parse(event.message);
     } catch (error) {
       console.error('[ServerNet] Failed to parse message:', error);
       return;
     }
 
-    if (payload.type === PayloadType.Response) {
-      this.handleResponse(payload);
-    } else if (payload.type === PayloadType.Request) {
-      this.handleRequest(socket, payload).catch((error) => {
-        console.error('[ServerNet] Failed to handle request:', error);
-      });
+    const result = safeParseClientBoundPacket(parsed);
+    if (!result.success) {
+      console.error('[ServerNet] Invalid WebSocket packet:', result.issues);
+      this.respondToInvalidRequest(socket, parsed);
+      return;
     }
+
+    if (result.output.type === RESPONSE_PACKET_TYPE) {
+      this.pending.handle(result.output);
+      return;
+    }
+
+    void this.handleRequest(socket, result.output);
   }
 
-  private handleResponse(response: ServerNetResponse): void {
-    const pending = this.awaitingResponses.get(response.requestId);
-    if (!pending) return;
-
-    system.clearRun(pending.timeoutId);
-    this.awaitingResponses.delete(response.requestId);
-    pending.resolve(response);
-  }
-
-  private async handleRequest(socket: WebSocketClient, request: ServerNetRequest): Promise<void> {
-    let response: ServerNetResponse;
+  private async handleRequest(socket: WebSocketClient, request: ClientBoundRequestPacket): Promise<void> {
+    let data: unknown;
     let disconnectReason: DisconnectReason | null = null;
 
-    if (request.channelId === InternalAction.Ping) {
-      response = this.successResponse(request.requestId, { receivedAt: Date.now() });
-    } else if (request.channelId === InternalAction.Disconnect) {
-      disconnectReason = (request.data as InternalActions.Disconnect['request']).reason;
-      response = this.successResponse(request.requestId, undefined);
-    } else {
-      const handler = this.actionHandlers.get(request.channelId);
-      if (!handler) {
-        response = {
-          type: PayloadType.Response,
-          error: true,
-          errorReason: ResponseErrorReason.UnhandledRequest,
-          message: `No handler found for channel: ${request.channelId}`,
-          requestId: request.requestId,
-        };
+    try {
+      if (request.type === InternalAction.Ping) {
+        data = { receivedAt: Date.now() };
+      } else if (request.type === InternalAction.Disconnect) {
+        disconnectReason = request.data.reason;
+        data = null;
       } else {
-        try {
-          let data: unknown;
-          await handler({
-            data: request.data,
-            respond: (responseData) => {
-              data = responseData;
-            },
-          });
-          response = this.successResponse(request.requestId, data);
-        } catch (error) {
-          response = {
-            type: PayloadType.Response,
-            error: true,
-            errorReason: ResponseErrorReason.InternalError,
-            message: `An error occurred while handling the request\n${String(error)}`,
-            requestId: request.requestId,
-          };
-        }
+        data = (await this.options.handleRequest(request)).data;
+      }
+
+      const parsed = safeParseResponseData(request.type, data);
+      const response = parsed.success
+        ? successResponse(request.requestId, parsed.output)
+        : errorResponse(
+            request.requestId,
+            ResponseErrorReason.InvalidPayload,
+            `Invalid response data for ${request.type}`,
+          );
+      if (socket.isOpen) socket.send(JSON.stringify(response));
+    } catch (error) {
+      if (socket.isOpen) {
+        socket.send(
+          JSON.stringify(
+            errorResponse(
+              request.requestId,
+              ResponseErrorReason.InternalError,
+              `An error occurred while handling ${request.type}\n${String(error)}`,
+            ),
+          ),
+        );
       }
     }
 
-    if (socket.isOpen) socket.send(JSON.stringify(response));
     if (disconnectReason !== null) {
       this.closeReason = disconnectReason;
       this.closeSocket();
     }
   }
 
-  private successResponse<T>(requestId: string, data: T): ServerNetResponse<T> {
-    return {
-      type: PayloadType.Response,
-      error: false,
-      data,
-      requestId,
-    };
+  private respondToInvalidRequest(socket: WebSocketClient, input: unknown): void {
+    if (typeof input !== 'object' || input === null) return;
+    const record = input as Record<string, unknown>;
+    if (record.type === RESPONSE_PACKET_TYPE) return;
+    const requestId = record.requestId;
+    if (typeof requestId !== 'string' || !socket.isOpen) return;
+    socket.send(
+      JSON.stringify(errorResponse(requestId, ResponseErrorReason.InvalidPayload, 'Invalid request packet')),
+    );
   }
 
   private onClose(socket: WebSocketClient, _event: WebSocketClientCloseAfterEvent): void {
     if (socket !== this.socket) return;
-
     const wasConnected = this.currentSessionId !== null;
     const reason = this.closeReason ?? DisconnectReason.ConnectionLost;
     this.resetConnection();
-
     if (!wasConnected) return;
     this.emit('disconnect', { reason });
-
     if (reason === DisconnectReason.ConnectionLost) {
       system.run(() => {
-        this.connect().catch((error) => {
-          console.error('[ServerNet] Reconnection failed:', error);
-        });
+        this.connect().catch((error) => console.error('[ServerNet] Reconnection failed:', error));
       });
     }
   }
@@ -302,32 +253,15 @@ export class WebSocketBridgeClient extends Emitter<WebSocketBridgeEvents> implem
   private closeSocket(reset: boolean = false): void {
     const socket = this.socket;
     if (reset) this.resetConnection();
-    if (socket?.isOpen) {
-      socket.close();
-    } else if (!reset) {
-      this.resetConnection();
-    }
+    if (socket?.isOpen) socket.close();
+    else if (!reset) this.resetConnection();
   }
 
   private resetConnection(): void {
     this.socket = null;
     this.currentSessionId = null;
     this.previousRequestId = 0;
-    this.clearResponses();
-  }
-
-  private clearResponses(): void {
-    for (const [requestId, pending] of this.awaitingResponses) {
-      system.clearRun(pending.timeoutId);
-      pending.resolve({
-        type: PayloadType.Response,
-        error: true,
-        errorReason: ResponseErrorReason.Abort,
-        message: 'WebSocket disconnected before response was received',
-        requestId,
-      });
-    }
-    this.awaitingResponses.clear();
+    this.pending.abortAll('WebSocket disconnected before response was received');
   }
 
   private wait(ticks: number): Promise<void> {

@@ -1,39 +1,38 @@
 import { world } from '@minecraft/server';
 import { createPlayerDescriptor } from './descriptors';
-import {
-  ActionId,
-  type PlayerJoinAction,
-  type PlayerLeaveAction,
-  type ChatSendAction,
-  type UniqueId,
-} from '@discord-mcbe/shared';
+import { ActionId, type UniqueId } from '@discord-mcbe/shared';
 
-import type { IBridgeClient } from '../transport';
+import type { IBridgeClient } from '../transport/interfaces';
 
 export function registerEvents(bridge: IBridgeClient) {
   world.afterEvents.playerSpawn.subscribe((ev) => {
     if (!bridge.isConnected || !ev.initialSpawn) return;
 
-    void bridge.send<PlayerJoinAction>(ActionId.PlayerJoin, {
-      player: createPlayerDescriptor(ev.player),
+    bridge.notify({
+      type: ActionId.PlayerJoin,
+      data: { player: createPlayerDescriptor(ev.player) },
     });
   });
 
   world.afterEvents.playerLeave.subscribe((ev) => {
     if (!bridge.isConnected) return;
 
-    void bridge.send<PlayerLeaveAction>(ActionId.PlayerLeave, {
-      playerUniqueId: ev.playerId as UniqueId,
+    bridge.notify({
+      type: ActionId.PlayerLeave,
+      data: { playerUniqueId: ev.playerId as UniqueId },
     });
   });
 
   world.afterEvents.chatSend.subscribe((ev) => {
     if (!bridge.isConnected) return;
 
-    void bridge.send<ChatSendAction>(ActionId.ChatSend, {
-      senderName: ev.sender.name,
-      senderUniqueId: ev.sender.id as UniqueId,
-      message: ev.message,
+    bridge.notify({
+      type: ActionId.ChatSend,
+      data: {
+        senderName: ev.sender.name,
+        senderUniqueId: ev.sender.id as UniqueId,
+        message: ev.message,
+      },
     });
   });
 
