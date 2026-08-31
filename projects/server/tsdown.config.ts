@@ -6,6 +6,9 @@ export default defineConfig(
   {
     entry: './src/index.ts',
     format: ['esm'],
+    exports: {
+      devExports: 'dev',
+    },
   },
   isDev,
 );
