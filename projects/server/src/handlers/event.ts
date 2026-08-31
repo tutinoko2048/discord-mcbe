@@ -1,10 +1,11 @@
 import { EmbedBuilder } from 'discord.js';
-import { _t, Logger, applyMessageFilters, FILTER_MASK, SHORTEN_SUFFIX } from '../util';
+import { _t, Logger, applyMessageFilters, FILTER_MASK, SHORTEN_SUFFIX, formatDeathMessage } from '../util';
 import { Palette } from '../discord';
 import type {
   DiscordMessageEvent,
   DiscordReadyEvent,
   MinecraftMessageEvent,
+  PlayerDieEvent,
   PlayerJoinEvent,
   PlayerLeaveEvent,
   WorldConnectEvent,
@@ -32,6 +33,7 @@ export class EventHandler {
     this.app.on('discordMessage', this.onDiscordMessage.bind(this));
     this.app.on('playerJoin', this.onPlayerJoin.bind(this));
     this.app.on('playerLeave', this.onPlayerLeave.bind(this));
+    if (this.app.config.bot.show_death_messages) this.app.on('playerDie', this.onPlayerDie.bind(this));
   }
 
   private async onDiscordReady(_event: DiscordReadyEvent) {
@@ -223,6 +225,27 @@ export class EventHandler {
     const embed = new EmbedBuilder();
     embed.setColor(Palette.Leave);
     embed.setDescription(_t('discord.leave', player.name));
+    if (app.minecraft.getWorlds().length > 2) embed.setFooter({ text: world.name });
+
+    try {
+      await this.app.bot.sendMessage({ embeds: [embed] });
+    } catch (error) {
+      this.logger.error(error);
+    }
+  }
+
+  private async onPlayerDie(event: PlayerDieEvent) {
+    const { world, player, damagingEntity, app } = event;
+    const message = formatDeathMessage({
+      playerName: player.name,
+      cause: event.cause,
+      damagingEntity,
+    });
+
+    this.logger.info(`[${world.name}] ${message}`);
+
+    //TODO: change color?
+    const embed = new EmbedBuilder().setColor(Palette.Leave).setDescription(message);
     if (app.minecraft.getWorlds().length > 2) embed.setFooter({ text: world.name });
 
     try {

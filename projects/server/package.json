@@ -30,7 +30,8 @@
     "clean": "rimraf dist build .turbo",
     "generate-schema": "bun ./scripts/generate-schema.ts",
     "generate-logo": "bun ./scripts/generate-logo.ts",
-    "generate-lang-types": "bun ./scripts/generate-lang-types.ts"
+    "generate-lang-types": "bun ./scripts/generate-lang-types.ts",
+    "extract-minecraft-lang": "bun ./scripts/extract-minecraft-lang.ts"
   },
   "dependencies": {
     "@akki256/discord-interaction": "^3.1.1",

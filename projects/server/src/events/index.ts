@@ -5,6 +5,7 @@ export * from './discord-send';
 export * from './discord';
 export * from './minecraft-message';
 export * from './minecraft';
+export * from './player-die';
 export * from './player-join';
 export * from './player-leave';
 export * from './shutdown';

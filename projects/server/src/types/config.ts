@@ -39,6 +39,7 @@ const avatarUrlTemplateSchema = z
   );
 
 const botSchema = z.object({
+  show_death_messages: z.boolean().describe('Whether to send Minecraft player death messages to Discord'),
   reply_preview_max_length: z
     .number()
     .int()

@@ -131,6 +131,13 @@ export class MinecraftHandler {
         return null;
       }
 
+      case ActionId.PlayerDie: {
+        const world = this.getWorldBySession(session);
+        if (!world) throw new Error(`World not found: ${session.id}`);
+        world.onPlayerDie(packet.data.playerUniqueId, packet.data.cause, packet.data.damagingEntity);
+        return null;
+      }
+
       case ActionId.ChatSend: {
         const world = this.getWorldBySession(session);
         if (!world) throw new Error(`World not found: ${session.id}`);

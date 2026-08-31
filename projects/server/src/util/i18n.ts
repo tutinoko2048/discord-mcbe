@@ -4,11 +4,13 @@ import { yellow } from 'colorette';
 import type { Arg, LangArgs, LangKey } from '../types/lang.generated';
 
 import enUS from '../assets/locales/en-US.json' with { type: 'json' };
+import enUSGenerated from '../assets/locales/en-US.generated.json' with { type: 'json' };
 import ja from '../assets/locales/ja.json' with { type: 'json' };
+import jaGenerated from '../assets/locales/ja.generated.json' with { type: 'json' };
 
 const templateMap = new Map<Locale, Record<string, string>>([
-  [Locale.EnglishUS, enUS],
-  [Locale.Japanese, ja],
+  [Locale.EnglishUS, { ...enUS, ...enUSGenerated }],
+  [Locale.Japanese, { ...ja, ...jaGenerated }],
 ]);
 
 const FALLBACK_LANG = Locale.EnglishUS;
@@ -69,6 +71,14 @@ function getTranslationMap(key: LangKey): LocalizationMap {
 }
 
 export { translate as _t, getTranslationMap as _tm };
+
+export function translateMinecraftKey(key: string, fallback: string): string {
+  if (!templates) {
+    throw new Error('Language templates are not initialized. Call initialize() first.');
+  }
+
+  return templates[key] ?? fallbackTemplates[key] ?? fallback;
+}
 
 function replaceTemplates(text: string, values: Arg[]): string {
   let result = text;

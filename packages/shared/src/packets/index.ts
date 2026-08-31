@@ -11,6 +11,7 @@ export * from './kick-player';
 export * from './minecraft-message';
 export * from './pending-requests';
 export * from './ping';
+export * from './player-die';
 export * from './player-join';
 export * from './player-leave';
 export * from './response';

@@ -22,6 +22,38 @@ describe('protocol v2 packet validation', () => {
       data: { playerUniqueId: 'player-1' },
     });
     expect(result.success).toBe(true);
+
+    expect(
+      safeParseServerBoundPacket({
+        type: ActionId.PlayerDie,
+        data: {
+          playerUniqueId: 'player-1',
+          cause: 'fall',
+          damagingEntity: {
+            isPlayer: true,
+            name: 'Alex',
+            nameTag: 'Alex',
+            typeId: 'minecraft:player',
+            localizationKey: 'entity.player.name',
+          },
+        },
+      }).success,
+    ).toBe(true);
+
+    expect(
+      safeParseServerBoundPacket({
+        type: ActionId.PlayerDie,
+        data: {
+          playerUniqueId: 'player-1',
+          cause: 'entityAttack',
+          damagingEntity: {
+            isPlayer: false,
+            typeId: 'minecraft:zombie',
+            localizationKey: 'entity.zombie.name',
+          },
+        },
+      }).success,
+    ).toBe(true);
   });
 
   test('rejects extra notification fields and invalid nested descriptors', () => {
@@ -30,6 +62,13 @@ describe('protocol v2 packet validation', () => {
         type: ActionId.PlayerLeave,
         requestId: 'unexpected',
         data: { playerUniqueId: 'player-1' },
+      }).success,
+    ).toBe(false);
+
+    expect(
+      safeParseServerBoundPacket({
+        type: ActionId.PlayerDie,
+        data: { playerUniqueId: 'player-1', cause: 1 },
       }).success,
     ).toBe(false);
 

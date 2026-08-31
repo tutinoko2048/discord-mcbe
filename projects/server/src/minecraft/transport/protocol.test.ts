@@ -26,8 +26,9 @@ describe('shared bridge protocol v2', () => {
       ActionId.WorldInitialize,
       ActionId.PlayerJoin,
       ActionId.PlayerLeave,
+      ActionId.PlayerDie,
       ActionId.ChatSend,
-    ]).toEqual(['dm:world_initialize', 'dm:player_join', 'dm:player_leave', 'dm:chat_send']);
+    ]).toEqual(['dm:world_initialize', 'dm:player_join', 'dm:player_leave', 'dm:player_die', 'dm:chat_send']);
   });
 
   test('keeps disconnect and error codes stable', () => {

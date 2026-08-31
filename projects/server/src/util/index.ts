@@ -1,5 +1,6 @@
 export * from './config';
 export * from './constants';
+export * from './death-message';
 export * from './environment';
 export * from './i18n';
 export * from './logger';

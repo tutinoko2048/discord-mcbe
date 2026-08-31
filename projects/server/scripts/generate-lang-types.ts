@@ -6,8 +6,15 @@ const targetPath = path.resolve(__dirname, '../src/types/lang.generated.ts');
 
 console.log(`🚧 Generating lang types from ${langDir}...`);
 const FALLBACK_LANG = 'en-US';
-const langJson = JSON.parse(fs.readFileSync(path.join(langDir, `${FALLBACK_LANG}.json`), 'utf-8'));
+const langJson = {
+  ...readJson(`${FALLBACK_LANG}.json`),
+  ...readJson(`${FALLBACK_LANG}.generated.json`),
+};
 const langMap = new Map(Object.entries(langJson));
+
+function readJson(file: string): Record<string, string> {
+  return JSON.parse(fs.readFileSync(path.join(langDir, file), 'utf-8')) as Record<string, string>;
+}
 
 /** "%0", "%1" ... の最大値 + 1 */
 function countArgs(text: string): number {
@@ -19,7 +26,7 @@ function countArgs(text: string): number {
 /* ---------- Locale ---------- */
 const locales = fs
   .readdirSync(langDir)
-  .filter((file) => file.endsWith('.json'))
+  .filter((file) => file.endsWith('.json') && !file.endsWith('.generated.json'))
   .map((file) => file.slice(0, -5));
 
 /* ---------- flatten: key -> max arg count ---------- */
