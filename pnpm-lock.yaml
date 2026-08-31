@@ -24,6 +24,9 @@ catalogs:
     bun-types:
       specifier: ^1.3.13
       version: 1.3.13
+    valibot:
+      specifier: ^1.4.2
+      version: 1.4.2
     ws:
       specifier: ^8.21.3
       version: 8.21.3
@@ -93,6 +96,9 @@ importers:
       '@minecraft/server-ui':
         specifier: 'catalog:'
         version: 2.1.0(@minecraft/common@1.2.0)(@minecraft/server@2.10.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70))
+      valibot:
+        specifier: 'catalog:'
+        version: 1.4.2(typescript@6.0.3)
     devDependencies:
       '@bedrock-apis/env-types':
         specifier: 'catalog:'
@@ -109,7 +115,7 @@ importers:
         specifier: 2.10.0-beta.1.26.44-stable
         version: 2.10.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
       valibot:
-        specifier: ^1.1.0
+        specifier: 'catalog:'
         version: 1.4.2(typescript@6.0.3)
     devDependencies:
       '@discord-mcbe/internal-config':

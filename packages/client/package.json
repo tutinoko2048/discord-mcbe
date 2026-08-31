@@ -29,7 +29,8 @@
     "@minecraft/server": "catalog:",
     "@minecraft/server-admin": "catalog:",
     "@minecraft/server-net": "catalog:",
-    "@minecraft/server-ui": "catalog:"
+    "@minecraft/server-ui": "catalog:",
+    "valibot": "catalog:"
   },
   "devDependencies": {
     "@bedrock-apis/env-types": "catalog:",

@@ -74,8 +74,11 @@ The WebSocket is open, but discord-mcbe cannot find the v4 local add-on's intern
 - Confirm that the add-on is listed in a file such as `world_behavior_packs.json` and is enabled.
 - Enable Beta APIs too.
 - Confirm that discord-mcbe is running before starting BDS.
-- The prebuilt BDS add-on connects to `localhost:23191`, so run BDS and discord-mcbe on the same machine.
-- Changing `BRIDGE_PORT` makes it differ from the prebuilt add-on. Restore the default or build an add-on with a matching port.
+- The BDS add-on reads its connection settings from
+  `config/195cf53c-ae53-4437-82d9-a84e08694ffc/variables.json` in the BDS installation folder. Create or edit this file and
+  restart BDS.
+- Set `BRIDGE_HOST` to the discord-mcbe host as seen from BDS, and set `BRIDGE_PORT` to the same value as the
+  server's `.env`.
 
 ## World names collide or cannot be selected
 

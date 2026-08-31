@@ -81,9 +81,9 @@ Give every concurrently connected world a unique ID such as `survival` or `creat
 </Steps>
 
 <Aside type="note" title="Running on separate machines">
-  The prebuilt BDS add-on connects to `localhost:23191` over WebSocket. To run BDS and discord-mcbe on
-  separate hosts, build a custom add-on that passes `host` and `port` to `BridgeClient` from
-  `@discord-mcbe/client/bds`.
+  Create `config/195cf53c-ae53-4437-82d9-a84e08694ffc/variables.json` in the BDS installation folder, then set
+  `BRIDGE_HOST` to the discord-mcbe host. Set `BRIDGE_PORT` to the same value as the server's `.env` and
+  restart BDS.
 </Aside>
 
 ## <Icon name="terminal" />Minecraft administration commands
