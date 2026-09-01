@@ -4,6 +4,7 @@ description: Configure environment variables, config.json, message filters, and 
 ---
 
 import { Aside, Icon, Tabs, TabItem } from '@astrojs/starlight/components';
+import { BDS_SCRIPT_MODULE_UUID } from '../../../../lib/bds-config';
 
 discord-mcbe splits its settings between two files:
 
@@ -150,13 +151,13 @@ See the [API reference](https://discord-mcbe.tn2048.workers.dev/reference/) and 
   </TabItem>
   <TabItem label="BDS">
     Set the same value in `.env`'s `BRIDGE_PORT` and the BDS
-    `config/195cf53c-ae53-4437-82d9-a84e08694ffc/variables.json` file. `BRIDGE_HOST` changes the host seen by
-    the add-on, and `DEFAULT_CLIENT_ID` changes its initial Client ID. Restart BDS after changing these
+    <code>{`config/${BDS_SCRIPT_MODULE_UUID}/variables.json`}</code> file. `BRIDGE_HOST` changes the host seen
+    by the add-on, and `DEFAULT_CLIENT_ID` changes its initial Client ID. Restart BDS after changing these
     values.
   </TabItem>
 </Tabs>
 
-`variables.json` belongs in the `config` folder in the BDS installation folder, not in the add-on. Use this content:
+`variables.json` belongs in the <code>{`config/${BDS_SCRIPT_MODULE_UUID}/variables.json`}</code> path in the BDS installation folder, not in the add-on. Use this content:
 
 ```json
 {

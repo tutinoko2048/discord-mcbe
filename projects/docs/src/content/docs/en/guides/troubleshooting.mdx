@@ -4,6 +4,7 @@ description: Diagnose bot, Discord command, regular-world, and BDS connection pr
 ---
 
 import { Aside, Icon } from '@astrojs/starlight/components';
+import { BDS_SCRIPT_MODULE_UUID } from '../../../../lib/bds-config';
 
 First confirm that the server and add-on came from the same v4 release and that you restarted discord-mcbe after changing `.env` or `config.json`.
 
@@ -75,8 +76,8 @@ The WebSocket is open, but discord-mcbe cannot find the v4 local add-on's intern
 - Enable Beta APIs too.
 - Confirm that discord-mcbe is running before starting BDS.
 - The BDS add-on reads its connection settings from
-  `config/195cf53c-ae53-4437-82d9-a84e08694ffc/variables.json` in the BDS installation folder. Create or edit this file and
-  restart BDS.
+  <code>{`config/${BDS_SCRIPT_MODULE_UUID}/variables.json`}</code> in the BDS installation folder. Create or
+  edit this file and restart BDS.
 - Set `BRIDGE_HOST` to the discord-mcbe host as seen from BDS, and set `BRIDGE_PORT` to the same value as the
   server's `.env`.
 
