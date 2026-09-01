@@ -7,13 +7,13 @@ import { handleClientBoundRequest } from './client/handler';
 export interface BridgeClientOptions {
   host?: string;
   port?: number;
-  clientId?: string | (() => string);
+  worldName?: string | (() => string);
 }
 
 const defaultOptions: ExtractOptional<BridgeClientOptions> = {
   host: 'localhost',
   port: 23191,
-  clientId: () => (world.getDynamicProperty('clientId') as string) ?? 'discord-mcbe-bds',
+  worldName: () => (world.getDynamicProperty('worldName') as string) ?? 'Server',
 };
 
 export class BridgeClient extends BaseClient<ServerNetBridgeClient> {
@@ -24,7 +24,7 @@ export class BridgeClient extends BaseClient<ServerNetBridgeClient> {
 
     const bridge = new ServerNetBridgeClient({
       url: `ws://${mergedOptions.host}:${mergedOptions.port}`,
-      clientId: mergedOptions.clientId,
+      worldName: mergedOptions.worldName,
       handleRequest: handleClientBoundRequest,
     });
 

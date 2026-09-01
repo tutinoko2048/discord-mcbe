@@ -217,7 +217,7 @@ export class ServerNetBridgeServer extends EventEmitter<ServerNetBridgeEvents> {
           : DisconnectReason.OutdatedClient;
       return errorResponse(request.requestId, ResponseErrorReason.InvalidPayload, DisconnectReason[reason]);
     }
-    session.connect(request.data.clientId);
+    session.connect(request.data.worldName);
     this.emit('clientConnect', session);
     return successResponse(request.requestId, {
       sessionId: session.id,

@@ -116,7 +116,7 @@ export class WebSocketBridgeServer extends EventEmitter<ServerEvents> {
 
     if (body.error) throw new ProtocolVersionError(DisconnectReason[body.errorReason]);
 
-    return new SocketSession(this.app, this, world, sessionId, body.clientId);
+    return new SocketSession(this.app, this, world, sessionId, body.worldName);
   }
 
   private async onWorldInitialize(ev: { world: SocketWorld }) {
@@ -142,7 +142,7 @@ export class WebSocketBridgeServer extends EventEmitter<ServerEvents> {
     if (session) {
       session.destroy();
       this.sessions.delete(session);
-      this.logger.info(`Disconnected session "${session.clientId}" as websocket closed.`);
+      this.logger.info(`Disconnected session "${session.worldName}" as websocket closed.`);
     }
   }
 
@@ -163,7 +163,7 @@ export class WebSocketBridgeServer extends EventEmitter<ServerEvents> {
     const session = this.getSessionByWorld(ev.world);
     if (session && ev.world.maxPlayers === 0) {
       session.destroy();
-      this.logger.info(`Disconnected session "${session.clientId}" as player left the world.`);
+      this.logger.info(`Disconnected session "${session.worldName}" as player left the world.`);
     }
   }
 }

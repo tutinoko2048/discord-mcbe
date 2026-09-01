@@ -18,7 +18,7 @@ import type { ServerNetBridgeServer } from './server';
 export class ServerNetSession implements ISession {
   readonly id = randomUUID();
 
-  clientId = '';
+  worldName = '';
   isConnected = false;
   isDestroyed = false;
   disconnectReason: DisconnectReason | null = null;
@@ -45,9 +45,9 @@ export class ServerNetSession implements ISession {
     return this.deltaTimes.reduce((sum, value) => sum + value, 0) / this.deltaTimes.length;
   }
 
-  connect(clientId: string): void {
+  connect(worldName: string): void {
     clearTimeout(this.handshakeTimeout);
-    this.clientId = clientId;
+    this.worldName = worldName;
     this.isConnected = true;
   }
 

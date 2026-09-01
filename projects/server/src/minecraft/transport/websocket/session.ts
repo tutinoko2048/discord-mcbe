@@ -29,7 +29,7 @@ type QueryResponse = { error: true; errorReason: ResponseErrorReason } | { error
 
 export class SocketSession implements ISession {
   readonly id: string;
-  readonly clientId: string;
+  readonly worldName: string;
   readonly world: SocketWorld;
 
   private readonly pending = new PendingRequests<NodeJS.Timeout>({
@@ -51,11 +51,11 @@ export class SocketSession implements ISession {
     private readonly server: WebSocketBridgeServer,
     world: SocketWorld,
     id: string,
-    clientId: string,
+    worldName: string,
   ) {
     this.world = world;
     this.id = id;
-    this.clientId = clientId;
+    this.worldName = worldName;
     this.logger = new Logger('SocketSession', this.app.config);
     this.server.sessions.add(this);
     this.startInterval(this.requestInterval);

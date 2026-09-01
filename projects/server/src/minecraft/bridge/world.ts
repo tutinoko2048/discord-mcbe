@@ -43,7 +43,7 @@ export class ScriptWorld<SESSION extends ISession = ISession> {
   }
 
   get name(): string {
-    return this.session.clientId;
+    return this.session.worldName;
   }
 
   get averagePing(): number {

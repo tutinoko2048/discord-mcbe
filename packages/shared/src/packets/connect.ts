@@ -5,7 +5,7 @@ import { requestPacket } from './common';
 export const ConnectPacket = requestPacket(
   InternalAction.Connect,
   v.strictObject({
-    clientId: v.string(),
+    worldName: v.string(),
     protocolVersion: v.number(),
   }),
   v.strictObject({ sessionId: v.string() }),

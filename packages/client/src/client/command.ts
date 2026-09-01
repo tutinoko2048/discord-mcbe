@@ -35,20 +35,20 @@ export function registerCommands(registry: CustomCommandRegistry, client: BaseCl
 
   registry.registerCommand(
     {
-      name: 'dmc:setid',
-      description: 'Set the clientId for discord-mcbe (requires reconnect)',
+      name: 'dmc:setname',
+      description: 'Set the world name for discord-mcbe (requires reconnect)',
       permissionLevel: CommandPermissionLevel.Host,
       mandatoryParameters: [
         {
           type: CustomCommandParamType.String,
-          name: 'clientId',
+          name: 'worldName',
         },
       ],
     },
-    (_, clientId: string) => {
-      client.setClientId(clientId);
+    (_, worldName: string) => {
+      client.setWorldName(worldName);
 
-      return { status: CustomCommandStatus.Success, message: `Updated clientId to "${clientId}".` };
+      return { status: CustomCommandStatus.Success, message: `Updated world name to "${worldName}".` };
     },
   );
 

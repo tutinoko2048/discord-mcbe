@@ -5,11 +5,11 @@ import { handleClientBoundRequest } from './client/handler';
 import type { ExtractOptional } from '@discord-mcbe/shared';
 
 export interface BridgeClientOptions {
-  clientId?: string | (() => string);
+  worldName?: string | (() => string);
 }
 
 const defaultOptions: ExtractOptional<BridgeClientOptions> = {
-  clientId: () => (world.getDynamicProperty('clientId') as string) ?? 'discord-mcbe-local',
+  worldName: () => (world.getDynamicProperty('worldName') as string) ?? 'World',
 };
 
 export class BridgeClient extends BaseClient<WebSocketBridgeClient> {

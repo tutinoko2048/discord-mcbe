@@ -53,11 +53,11 @@ discord-mcbe v4には接続方式の異なる2種類のビヘイビアーパッ�
 
 ### <Icon name="pencil" />ワールド名を変更する
 
-接続先の選択やステータスパネルでは、アドオンのClient IDがワールド名になります。デフォルトは`discord-mcbe-local`です。オペレーターが次のいずれかを実行して変更し、接続し直します。
+接続先の選択やステータスパネルでは、アドオンのワールド名が表示されます。デフォルトは`discord-mcbe-local`です。オペレーターが次のいずれかを実行して変更し、接続し直します。
 
 ```text
 /dmc:dmc
-/dmc:setid survival
+/dmc:setname survival
 /dmc:disconnect
 /connect localhost:3063
 ```
@@ -86,11 +86,11 @@ discord-mcbe v4には接続方式の異なる2種類のビヘイビアーパッ�
 
 ## <Icon name="terminal" />Minecraft側の管理コマンド
 
-| コマンド            | 権限   | 説明                                    |
-| ------------------- | ------ | --------------------------------------- |
-| `/dmc:dmc`          | 管理者 | Client IDを編集する設定画面を開く       |
-| `/dmc:discord-mcbe` | 管理者 | 同じ設定画面を開くエイリアス            |
-| `/dmc:setid <名前>` | ホスト | Client IDを直接保存する。再接続後に反映 |
-| `/dmc:disconnect`   | 管理者 | 現在のdiscord-mcbe接続を切断する        |
+| コマンド              | 権限   | 説明                                     |
+| --------------------- | ------ | ---------------------------------------- |
+| `/dmc:dmc`            | 管理者 | ワールド名を編集する設定画面を開く       |
+| `/dmc:discord-mcbe`   | 管理者 | 同じ設定画面を開くエイリアス             |
+| `/dmc:setname <名前>` | ホスト | ワールド名を直接保存する。再接続後に反映 |
+| `/dmc:disconnect`     | 管理者 | 現在のdiscord-mcbe接続を切断する         |
 
 接続できない場合は[トラブルシューティング](/guides/troubleshooting/#minecraftと接続できない)を確認してください。

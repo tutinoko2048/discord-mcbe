@@ -130,7 +130,7 @@ describe('protocol v2 packet validation', () => {
       safeParseClientBoundPacket({
         type: InternalAction.Connect,
         requestId: 'connect-1',
-        data: { clientId: 'client-1', protocolVersion: 2 },
+        data: { worldName: 'client-1', protocolVersion: 2 },
       }).success,
     ).toBe(false);
   });

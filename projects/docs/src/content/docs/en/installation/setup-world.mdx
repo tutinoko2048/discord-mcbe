@@ -53,16 +53,16 @@ discord-mcbe v4 ships two behavior packs with different transports. Use the one 
 
 ### <Icon name="pencil" />Change the world name
 
-The add-on's Client ID becomes its world name in selectors and the status panel. The default is `discord-mcbe-local`. An operator can change it with either command below, then reconnect.
+The add-on's world name is shown in selectors and the status panel. The default is `discord-mcbe-local`. An operator can change it with either command below, then reconnect.
 
 ```text
 /dmc:dmc
-/dmc:setid survival
+/dmc:setname survival
 /dmc:disconnect
 /connect localhost:3063
 ```
 
-Give every concurrently connected world a unique ID such as `survival` or `creative`.
+Give every concurrently connected world a unique name such as `survival` or `creative`.
 
 ## <Icon name="server" />Bedrock Dedicated Server
 
@@ -88,11 +88,11 @@ Give every concurrently connected world a unique ID such as `survival` or `creat
 
 ## <Icon name="terminal" />Minecraft administration commands
 
-| Command             | Permission | Description                                       |
-| ------------------- | ---------- | ------------------------------------------------- |
-| `/dmc:dmc`          | Admin      | Open a form that edits the Client ID              |
-| `/dmc:discord-mcbe` | Admin      | Alias for the same settings form                  |
-| `/dmc:setid <name>` | Host       | Save a Client ID; takes effect after reconnecting |
-| `/dmc:disconnect`   | Admin      | Disconnect the current discord-mcbe session       |
+| Command               | Permission | Description                                        |
+| --------------------- | ---------- | -------------------------------------------------- |
+| `/dmc:dmc`            | Admin      | Open a form that edits the world name              |
+| `/dmc:discord-mcbe`   | Admin      | Alias for the same settings form                   |
+| `/dmc:setname <name>` | Host       | Save a world name; takes effect after reconnecting |
+| `/dmc:disconnect`     | Admin      | Disconnect the current discord-mcbe session        |
 
 If the world does not connect, continue with [troubleshooting](/en/guides/troubleshooting/#minecraft-does-not-connect).
