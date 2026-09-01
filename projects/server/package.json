@@ -26,9 +26,9 @@
     }
   },
   "scripts": {
-    "build": "tsdown",
-    "build:silent": "tsdown --log-level error",
-    "watch": "tsdown --watch",
+    "build": "vp pack",
+    "build:silent": "vp pack --log-level error",
+    "watch": "vp pack --watch",
     "compile": "bun build --define __BUN_EXE__=true ./src/main.ts --compile --outfile=./build/discord-mcbe",
     "lint": "vp lint",
     "lint:fix": "vp lint --fix",

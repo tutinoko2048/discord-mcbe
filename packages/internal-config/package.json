@@ -3,9 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "exports": {
-    "./tsdown": {
-      "default": "./tsdown/tsdown.config.base.mts"
-    },
     "./typescript": {
       "default": "./typescript/tsconfig.base.json"
     },

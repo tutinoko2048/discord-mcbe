@@ -21,8 +21,8 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "tsdown",
-    "watch": "tsdown --watch",
+    "build": "vp pack",
+    "watch": "vp pack --watch",
     "lint": "vp lint",
     "lint:fix": "vp lint --fix",
     "format": "vp fmt",

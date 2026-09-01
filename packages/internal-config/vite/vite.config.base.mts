@@ -1,29 +1,41 @@
-import { defineConfig as defineVitePlusConfig, type UserConfig } from 'vite-plus';
-import { deepMerge } from '../utils.mts';
+import { type UserConfig, mergeConfig } from 'vite-plus';
 
-type FormatConfig = NonNullable<UserConfig['fmt']>;
-const defaultFormatConfig: FormatConfig = {
-  ignorePatterns: ['dist/**'],
-  singleQuote: true,
-  printWidth: 110,
-  endOfLine: 'lf',
-};
-
-type LintConfig = NonNullable<UserConfig['lint']>;
-const defaultLintConfig: LintConfig = {
-  ignorePatterns: ['dist/**'],
-  options: {
-    typeAware: true,
-    typeCheck: true,
-  },
-};
-
-export function defineConfig(config: UserConfig) {
-  return defineVitePlusConfig({
-    ...config,
-    fmt: deepMerge(defaultFormatConfig, config.fmt ?? {}),
-    lint: deepMerge(defaultLintConfig, config.lint ?? {}),
-  });
+export function defineConfig(config: UserConfig, emitSourceMap = false) {
+  return mergeConfig(
+    {
+      ...(config.pack && {
+        pack: {
+          tsconfig: true,
+          dts: true,
+          deps: {
+            neverBundle: /^@minecraft\/(?!vanilla-data|math)[\w-/]+$/,
+          },
+          ...(emitSourceMap && {
+            sourcemap: true,
+            dts: {
+              compilerOptions: {
+                declarationMap: true,
+              },
+            },
+          }),
+        },
+      }),
+      fmt: {
+        ignorePatterns: ['dist/**'],
+        singleQuote: true,
+        printWidth: 110,
+        endOfLine: 'lf',
+      },
+      lint: {
+        ignorePatterns: ['dist/**'],
+        options: {
+          typeAware: true,
+          typeCheck: true,
+        },
+      },
+    },
+    config,
+  );
 }
 
 // predefined config for vscode settings
