@@ -1,5 +1,6 @@
 import type {
   MinecraftMessageEvent,
+  PlayerDieEvent,
   PlayerJoinEvent,
   PlayerLeaveEvent,
   StartupEvent,
@@ -20,6 +21,7 @@ export interface ApplicationEvents {
   discordMessage: [DiscordMessageEvent];
   playerJoin: [PlayerJoinEvent];
   playerLeave: [PlayerLeaveEvent];
+  playerDie: [PlayerDieEvent];
   discordReady: [DiscordReadyEvent];
   discordSend: [DiscordSendEvent];
 }

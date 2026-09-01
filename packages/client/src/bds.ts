@@ -9,7 +9,7 @@ import * as v from 'valibot';
 export interface BridgeClientOptions {
   host?: string;
   port?: number;
-  clientId?: string | (() => string);
+  worldName?: string | (() => string);
 }
 
 const BdsVariablesSchema = v.object({
@@ -27,9 +27,9 @@ const vars = v.parse(BdsVariablesSchema, {
 const defaultOptions: ExtractOptional<BridgeClientOptions> = {
   host: vars.BRIDGE_HOST,
   port: vars.BRIDGE_PORT,
-  clientId: () => {
-    const clientId = world.getDynamicProperty('clientId');
-    if (typeof clientId === 'string') return clientId;
+  worldName: () => {
+    const worldName = world.getDynamicProperty('worldName');
+    if (typeof worldName === 'string') return worldName;
     return vars.DEFAULT_CLIENT_ID;
   },
 };
@@ -42,7 +42,7 @@ export class BridgeClient extends BaseClient<ServerNetBridgeClient> {
 
     const bridge = new ServerNetBridgeClient({
       url: `ws://${mergedOptions.host}:${mergedOptions.port}`,
-      clientId: mergedOptions.clientId,
+      worldName: mergedOptions.worldName,
       handleRequest: handleClientBoundRequest,
     });
 
@@ -56,3 +56,6 @@ export class BridgeClient extends BaseClient<ServerNetBridgeClient> {
     console.log(`[discord-mcbe] Connection established! (${Date.now() - requestedAt}ms)`);
   }
 }
+
+export { ServerNetBridgeClient };
+export * from './client';

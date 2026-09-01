@@ -26,7 +26,7 @@ Enter the Minecraft command in `command` without a leading slash.
 ```
 
 - Omitting `world` executes the command in every connected world.
-- World suggestions use each add-on's Client ID.
+- World suggestions use each add-on's world name.
 - `raw` displays the raw result as JSON.
 - A result longer than the embed threshold is attached as `results.txt`.
 - `silent` makes the response visible only to the person who ran it.
@@ -77,11 +77,11 @@ Anyone with console access can execute unrestricted Minecraft commands. Protect 
 
 ## <Icon name="puzzle" />Minecraft commands
 
-| Command             | Permission | Description                                    |
-| ------------------- | ---------- | ---------------------------------------------- |
-| `/dmc:dmc`          | Admin      | Open the discord-mcbe settings form            |
-| `/dmc:discord-mcbe` | Admin      | Alias for the settings form                    |
-| `/dmc:setid <name>` | Host       | Save the Client ID used to identify this world |
-| `/dmc:disconnect`   | Admin      | Disconnect the current bridge session          |
+| Command               | Permission | Description                           |
+| --------------------- | ---------- | ------------------------------------- |
+| `/dmc:dmc`            | Admin      | Open the discord-mcbe settings form   |
+| `/dmc:discord-mcbe`   | Admin      | Alias for the settings form           |
+| `/dmc:setname <name>` | Host       | Save the world name                   |
+| `/dmc:disconnect`     | Admin      | Disconnect the current bridge session |
 
-A Client ID change takes effect on the next connection. Use a unique ID for every concurrently connected world.
+A world name change takes effect on the next connection. Use a unique name for every concurrently connected world.

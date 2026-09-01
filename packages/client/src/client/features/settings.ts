@@ -17,14 +17,14 @@ export class SettingsForm {
   async main() {
     const form = new ModalFormData()
       .title('discord-mcbe settings')
-      .textField('clientId', 'Client ID', { defaultValue: this.client.getClientId() });
+      .textField('World Name', 'World Name', { defaultValue: this.client.getWorldName() });
 
     const res = await form.show(this.player);
     if (res.canceled || !res.formValues) return;
 
-    const newClientId = res.formValues[0] as string;
+    const newWorldName = res.formValues[0] as string;
 
-    this.client.setClientId(newClientId);
+    this.client.setWorldName(newWorldName);
   }
 
   // async messageFilter() {}

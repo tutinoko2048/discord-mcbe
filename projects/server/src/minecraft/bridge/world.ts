@@ -4,14 +4,15 @@ import {
   type PlayerDescriptor,
   type UniqueId,
   type DisconnectReason,
+  type PlayerDieDamagingEntity,
 } from '@discord-mcbe/shared';
 import { ScriptPlayer } from './player';
 import { ScriptScoreboard } from './scoreboard';
 import { BridgeActionError, CommandError } from './errors';
-import { MinecraftMessageEvent, PlayerJoinEvent, PlayerLeaveEvent } from '../../events';
+import { MinecraftMessageEvent, PlayerDieEvent, PlayerJoinEvent, PlayerLeaveEvent } from '../../events';
 import { Logger } from '../../util';
 
-import type { RawMessage } from '@minecraft/server';
+import type { EntityDamageCause, RawMessage } from '@minecraft/server';
 import type { ServerNetSession, ISession, SocketSession } from '../transport';
 import type { ScriptDimension } from './dimension';
 import type { Application } from '../../application';
@@ -42,7 +43,7 @@ export class ScriptWorld<SESSION extends ISession = ISession> {
   }
 
   get name(): string {
-    return this.session.clientId;
+    return this.session.worldName;
   }
 
   get averagePing(): number {
@@ -98,6 +99,7 @@ export class ScriptWorld<SESSION extends ISession = ISession> {
     return !this._isLocal;
   }
 
+  /** @internal */
   onInitialize(data: Extract<ServerBoundRequestPacket, { type: ActionId.WorldInitialize }>['data']) {
     for (const player of data.players) {
       this.initializePlayer(player);
@@ -106,12 +108,14 @@ export class ScriptWorld<SESSION extends ISession = ISession> {
     this.logger.debug(`World initialized: ${this.name}`);
   }
 
+  /** @internal */
   onPlayerJoin(descriptor: PlayerDescriptor) {
     const player = this.initializePlayer(descriptor);
 
     new PlayerJoinEvent(this.app, this, player).emit();
   }
 
+  /** @internal */
   onPlayerLeave(playerUniqueId: UniqueId) {
     const player = this.players.get(playerUniqueId);
     if (!player) throw new Error(`Player not found: ${playerUniqueId}`);
@@ -121,6 +125,15 @@ export class ScriptWorld<SESSION extends ISession = ISession> {
     this.players.delete(playerUniqueId);
   }
 
+  /** @internal */
+  onPlayerDie(playerUniqueId: UniqueId, cause: EntityDamageCause, damagingEntity?: PlayerDieDamagingEntity) {
+    const player = this.players.get(playerUniqueId);
+    if (!player) throw new Error(`Player not found: ${playerUniqueId}`);
+
+    new PlayerDieEvent(this.app, this, player, cause, damagingEntity).emit();
+  }
+
+  /** @internal */
   onChatSend(senderUniqueId: UniqueId, message: string) {
     const sender = this.players.get(senderUniqueId);
     if (!sender) throw new Error(`Player not found: ${senderUniqueId}`);

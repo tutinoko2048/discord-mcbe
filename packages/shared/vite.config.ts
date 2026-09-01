@@ -1,7 +1,16 @@
 import { defineConfig } from '@discord-mcbe/internal-config/vite';
 
-export default defineConfig({
-  fmt: {
-    ignorePatterns: [],
+const isDev = process.env.CI !== 'true';
+
+export default defineConfig(
+  {
+    pack: {
+      format: ['esm', 'cjs'],
+      exports: true,
+    },
+    fmt: {
+      ignorePatterns: [],
+    },
   },
-});
+  isDev,
+);

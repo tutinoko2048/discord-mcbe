@@ -35,12 +35,12 @@ export abstract class BaseClient<T extends IBridgeClient = IBridgeClient> {
     this.bridge.on('disconnect', this.onBridgeDisconnect.bind(this));
   }
 
-  setClientId(clientId: string) {
-    world.setDynamicProperty('clientId', clientId);
+  setWorldName(worldName: string) {
+    world.setDynamicProperty('worldName', worldName);
   }
 
-  getClientId(): string | undefined {
-    return world.getDynamicProperty('clientId') as string | undefined;
+  getWorldName(): string | undefined {
+    return world.getDynamicProperty('worldName') as string | undefined;
   }
 
   private async onConnect() {

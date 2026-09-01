@@ -81,7 +81,7 @@ export default defineConfig({
             {
               label: 'APIリファレンス',
               translations: { en: 'API reference' },
-              link: 'https://discord-mcbe.tn2048.workers.dev/reference/',
+              link: '/reference/',
             },
           ],
         },

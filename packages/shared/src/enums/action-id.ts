@@ -14,6 +14,7 @@ export enum ActionId {
   KickPlayer = 'dm:kick_player',
   PlayerJoin = 'dm:player_join',
   PlayerLeave = 'dm:player_leave',
+  PlayerDie = 'dm:player_die',
   ChatSend = 'dm:chat_send',
   GetScore = 'dm:get_score',
   UpdateScore = 'dm:update_score',

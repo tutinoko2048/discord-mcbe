@@ -42,7 +42,7 @@ describe('ServerNetBridgeServer protocol v2', () => {
         JSON.stringify({
           type: InternalAction.Connect,
           requestId: 'connect-wire',
-          data: { clientId: 'wire-client', protocolVersion: 2 },
+          data: { worldName: 'wire-client', protocolVersion: 2 },
         }),
       );
       expect(await handshake).toMatchObject({
@@ -79,7 +79,7 @@ describe('ServerNetBridgeServer protocol v2', () => {
         JSON.stringify({
           type: InternalAction.Connect,
           requestId: 'connect-v1',
-          data: { clientId: 'old-client', protocolVersion: 1 },
+          data: { worldName: 'old-client', protocolVersion: 1 },
         }),
       );
       expect(await response).toEqual({
@@ -280,7 +280,7 @@ async function connect(socket: WebSocket): Promise<void> {
     JSON.stringify({
       type: InternalAction.Connect,
       requestId: 'connect-1',
-      data: { clientId: 'test-client', protocolVersion: SERVER_NET_BRIDGE_PROTOCOL_VERSION },
+      data: { worldName: 'test-client', protocolVersion: SERVER_NET_BRIDGE_PROTOCOL_VERSION },
     }),
   );
   expect(await handshake).toMatchObject({

@@ -8,5 +8,5 @@ export type ConnectionResponse =
   | {
       error?: false;
       protocolVersion: number;
-      clientId: string;
+      worldName: string;
     };

@@ -46,6 +46,7 @@ BRIDGE_PORT=23191
   "language": "ja",
   "timezone_offset": 0,
   "bot": {
+    "show_death_messages": true,
     "reply_preview_max_length": 9,
     "strip_color_prefix": true,
     "panel_update_interval": 10000,
@@ -67,6 +68,7 @@ BRIDGE_PORT=23191
 | `config_version`               | 設定形式のバージョン。移行処理用なので変更しない              |
 | `language`                     | Botとコンソールの言語。`ja`または`en-US`                      |
 | `timezone_offset`              | 表示時刻のUTCからのオフセット（整数時間）。日本標準時は`9`    |
+| `bot.show_death_messages`      | プレイヤーの死亡メッセージをDiscordへ送る。既定値は`true`     |
 | `bot.reply_preview_max_length` | Discordの返信元本文をMinecraftに表示する最大文字数            |
 | `bot.strip_color_prefix`       | MinecraftからDiscordへ送る本文の`§`カラーコードを除去する     |
 | `bot.panel_update_interval`    | ステータスパネルの更新間隔（ミリ秒）                          |

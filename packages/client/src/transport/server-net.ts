@@ -33,7 +33,7 @@ interface ServerNetBridgeEvents {
 
 export interface ServerNetBridgeClientOptions {
   url: string;
-  clientId: string | (() => string);
+  worldName: string | (() => string);
   handleRequest: ClientBoundRequestHandler;
 }
 
@@ -62,8 +62,8 @@ export class ServerNetBridgeClient extends Emitter<ServerNetBridgeEvents> implem
     return this.socket?.isOpen === true && this.currentSessionId !== null;
   }
 
-  get clientId(): string {
-    return typeof this.options.clientId === 'function' ? this.options.clientId() : this.options.clientId;
+  get worldName(): string {
+    return typeof this.options.worldName === 'function' ? this.options.worldName() : this.options.worldName;
   }
 
   connect(): Promise<void> {
@@ -137,7 +137,7 @@ export class ServerNetBridgeClient extends Emitter<ServerNetBridgeEvents> implem
     const response = await this.request({
       type: InternalAction.Connect,
       data: {
-        clientId: this.clientId,
+        worldName: this.worldName,
         protocolVersion: ServerNetBridgeClient.PROTOCOL_VERSION,
       },
     });

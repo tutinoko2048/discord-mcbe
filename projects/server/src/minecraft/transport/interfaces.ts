@@ -8,7 +8,7 @@ import type {
 
 export interface ISession {
   readonly id: string;
-  clientId: string;
+  worldName: string;
   averagePing: number;
 
   disconnect(reason?: DisconnectReason): Promise<void>;

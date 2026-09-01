@@ -9,6 +9,7 @@ import { GetGameModePacket } from './get-game-mode';
 import { GetTpsPacket } from './get-tps';
 import { KickPlayerPacket } from './kick-player';
 import { PingPacket } from './ping';
+import { PlayerDiePacket } from './player-die';
 import { PlayerJoinPacket } from './player-join';
 import { PlayerLeavePacket } from './player-leave';
 import { ResponsePacket } from './response';
@@ -34,6 +35,7 @@ import { WorldInitializePacket } from './world-initialize';
 export const ServerBoundNotificationPacket = v.variant('type', [
   PlayerJoinPacket,
   PlayerLeavePacket,
+  PlayerDiePacket,
   ChatSendPacket,
 ]);
 

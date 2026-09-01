@@ -37,7 +37,7 @@ export interface WebSocketBridgeEvents {
 }
 
 export interface WebSocketBridgeClientOptions {
-  clientId: string | (() => string);
+  worldName: string | (() => string);
   handleRequest: ClientBoundRequestHandler;
 }
 
@@ -77,8 +77,8 @@ export class WebSocketBridgeClient extends Emitter<WebSocketBridgeEvents> implem
     return this.currentSessionId !== null;
   }
 
-  get clientId(): string {
-    return typeof this.options.clientId === 'function' ? this.options.clientId() : this.options.clientId;
+  get worldName(): string {
+    return typeof this.options.worldName === 'function' ? this.options.worldName() : this.options.worldName;
   }
 
   request(packet: ServerBoundRequestInput): Promise<RequestResult<unknown>> {
@@ -125,7 +125,7 @@ export class WebSocketBridgeClient extends Emitter<WebSocketBridgeEvents> implem
     } else {
       body = {
         protocolVersion: WebSocketBridgeClient.PROTOCOL_VERSION,
-        clientId: this.clientId,
+        worldName: this.worldName,
       };
       this.destroy();
       this.currentSessionId = sessionId;
