@@ -1,4 +1,4 @@
-import { BaseClient, ClientType } from './client';
+import { BaseClient, ClientType, WORLD_NAME_DYNAMIC_PROPERTY_KEY } from './client';
 import { ServerNetBridgeClient } from './transport/server-net';
 import type { ExtractOptional } from '@discord-mcbe/shared';
 import { world } from '@minecraft/server';
@@ -28,7 +28,7 @@ const defaultOptions: ExtractOptional<BridgeClientOptions> = {
   host: vars.BRIDGE_HOST,
   port: vars.BRIDGE_PORT,
   worldName: () => {
-    const worldName = world.getDynamicProperty('worldName');
+    const worldName = world.getDynamicProperty(WORLD_NAME_DYNAMIC_PROPERTY_KEY);
     if (typeof worldName === 'string') return worldName;
     return vars.DEFAULT_CLIENT_ID;
   },

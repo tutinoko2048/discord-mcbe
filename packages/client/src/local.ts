@@ -1,5 +1,5 @@
 import { world } from '@minecraft/server';
-import { BaseClient, ClientType } from './client';
+import { BaseClient, ClientType, WORLD_NAME_DYNAMIC_PROPERTY_KEY } from './client';
 import { WebSocketBridgeClient } from './transport/websocket';
 import { handleClientBoundRequest } from './client/handler';
 import type { ExtractOptional } from '@discord-mcbe/shared';
@@ -9,7 +9,7 @@ export interface BridgeClientOptions {
 }
 
 const defaultOptions: ExtractOptional<BridgeClientOptions> = {
-  worldName: () => (world.getDynamicProperty('worldName') as string) ?? 'World',
+  worldName: () => (world.getDynamicProperty(WORLD_NAME_DYNAMIC_PROPERTY_KEY) as string) ?? 'World',
 };
 
 export class BridgeClient extends BaseClient<WebSocketBridgeClient> {

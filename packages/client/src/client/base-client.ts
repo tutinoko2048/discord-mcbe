@@ -8,6 +8,7 @@ import { Logger } from '../utils';
 import type { ServerNetBridgeClient } from '../transport/server-net';
 import type { WebSocketBridgeClient } from '../transport/websocket';
 import type { IBridgeClient } from '../transport/interfaces';
+import { WORLD_NAME_DYNAMIC_PROPERTY_KEY } from './constants';
 
 export enum ClientType {
   Local = 'Local',
@@ -36,11 +37,11 @@ export abstract class BaseClient<T extends IBridgeClient = IBridgeClient> {
   }
 
   setWorldName(worldName: string) {
-    world.setDynamicProperty('worldName', worldName);
+    world.setDynamicProperty(WORLD_NAME_DYNAMIC_PROPERTY_KEY, worldName);
   }
 
   getWorldName(): string | undefined {
-    return world.getDynamicProperty('worldName') as string | undefined;
+    return world.getDynamicProperty(WORLD_NAME_DYNAMIC_PROPERTY_KEY) as string | undefined;
   }
 
   private async onConnect() {
