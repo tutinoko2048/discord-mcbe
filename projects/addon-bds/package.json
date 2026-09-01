@@ -19,11 +19,13 @@
     "clean": "rimraf scripts .turbo"
   },
   "dependencies": {
-    "@discord-mcbe/client": "workspace:*"
+    "@discord-mcbe/client": "workspace:*",
+    "valibot": "catalog:"
   },
   "devDependencies": {
     "@bedrock-apis/env-types": "catalog:",
     "@discord-mcbe/internal-config": "workspace:*",
-    "@minecraft/server": "catalog:"
+    "@minecraft/server": "catalog:",
+    "@minecraft/server-admin": "catalog:"
   }
 }

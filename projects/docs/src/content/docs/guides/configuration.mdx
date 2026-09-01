@@ -4,6 +4,7 @@ description: .env、config.json、メッセージフィルター、表示テキ�
 ---
 
 import { Aside, Icon, Tabs, TabItem } from '@astrojs/starlight/components';
+import { BDS_SCRIPT_MODULE_UUID } from '../../../lib/bds-config';
 
 discord-mcbeの設定は2つのファイルに分かれています。
 
@@ -151,9 +152,23 @@ BRIDGE_PORT=23191
     `.env`の`SOCKET_PORT`を変更し、`/connect localhost:変更後のポート`で接続します。
   </TabItem>
   <TabItem label="BDS">
-    `.env`の`BRIDGE_PORT`と、独自にビルドしたBDSアドオンの`BridgeClient`に渡す`port`を同じ値にします。公式BDSアドオンのポートは`23191`固定です。BDSの通信方式はWebSocketのみで、サーバー・アドオンともに通信方式の設定は不要です。
+    BDS本体のフォルダに<code>{`config/${BDS_SCRIPT_MODULE_UUID}/variables.json`}</code>
+    を作成し、`.env`の`BRIDGE_PORT`と同じ値を`BRIDGE_PORT`へ設定します。`BRIDGE_HOST`でアドオンから見たサーバーのホスト名、`DEFAULT_CLIENT_ID`で初期Client
+    IDも変更できます。設定変更後はBDSを再起動してください。
   </TabItem>
 </Tabs>
+
+`variables.json`はアドオンではなく、BDS本体のフォルダにある<code>{`config/${BDS_SCRIPT_MODULE_UUID}/variables.json`}</code>へ配置します。内容は次のとおりです。
+
+```json
+{
+  "BRIDGE_HOST": "localhost",
+  "BRIDGE_PORT": 23191,
+  "DEFAULT_CLIENT_ID": "discord-mcbe-bds"
+}
+```
+
+`/dmc:setid`で保存済みのClient IDがある場合は、`DEFAULT_CLIENT_ID`より優先されます。
 
 ## <Icon name="code" />高度な設定: MinecraftチャットWebhook
 

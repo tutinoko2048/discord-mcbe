@@ -5,6 +5,7 @@ description: Install and connect the v4 add-on in a regular world or Bedrock Ded
 
 import { Aside, Icon, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
 import AddonDownloads from '../../../../components/AddonDownloads.astro';
+import { BDS_SCRIPT_MODULE_UUID } from '../../../../lib/bds-config';
 
 discord-mcbe v4 ships two behavior packs with different transports. Use the one that matches the kind of world you run.
 
@@ -81,9 +82,9 @@ Give every concurrently connected world a unique name such as `survival` or `cre
 </Steps>
 
 <Aside type="note" title="Running on separate machines">
-  The prebuilt BDS add-on connects to `localhost:23191` over WebSocket. To run BDS and discord-mcbe on
-  separate hosts, build a custom add-on that passes `host` and `port` to `BridgeClient` from
-  `@discord-mcbe/client/bds`.
+  Create <code>{`config/${BDS_SCRIPT_MODULE_UUID}/variables.json`}</code> in the BDS installation folder, then
+  set `BRIDGE_HOST` to the discord-mcbe host. Set `BRIDGE_PORT` to the same value as the server's `.env` and
+  restart BDS.
 </Aside>
 
 ## <Icon name="terminal" />Minecraft administration commands

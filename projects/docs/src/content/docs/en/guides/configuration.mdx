@@ -4,6 +4,7 @@ description: Configure environment variables, config.json, message filters, and 
 ---
 
 import { Aside, Icon, Tabs, TabItem } from '@astrojs/starlight/components';
+import { BDS_SCRIPT_MODULE_UUID } from '../../../../lib/bds-config';
 
 discord-mcbe splits its settings between two files:
 
@@ -151,11 +152,24 @@ See the [API reference](https://discord-mcbe.tn2048.workers.dev/reference/) and 
     Change `SOCKET_PORT` in `.env` and connect with `/connect localhost:new-port`.
   </TabItem>
   <TabItem label="BDS">
-    Set the same value in `BRIDGE_PORT` and `BridgeClient({port})` in a custom-built BDS add-on. The prebuilt
-    add-on is fixed to `23191`. BDS uses WebSocket exclusively; neither the server nor the add-on needs a
-    transport setting.
+    Set the same value in `.env`'s `BRIDGE_PORT` and the BDS
+    <code>{`config/${BDS_SCRIPT_MODULE_UUID}/variables.json`}</code> file. `BRIDGE_HOST` changes the host seen
+    by the add-on, and `DEFAULT_CLIENT_ID` changes its initial Client ID. Restart BDS after changing these
+    values.
   </TabItem>
 </Tabs>
+
+`variables.json` belongs in the <code>{`config/${BDS_SCRIPT_MODULE_UUID}/variables.json`}</code> path in the BDS installation folder, not in the add-on. Use this content:
+
+```json
+{
+  "BRIDGE_HOST": "localhost",
+  "BRIDGE_PORT": 23191,
+  "DEFAULT_CLIENT_ID": "discord-mcbe-bds"
+}
+```
+
+A Client ID saved with `/dmc:setid` takes precedence over `DEFAULT_CLIENT_ID`.
 
 ## <Icon name="code" />Advanced: Minecraft chat webhooks
 

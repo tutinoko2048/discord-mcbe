@@ -5,6 +5,7 @@ description: ローカルワールドまたはBedrock Dedicated Serverへv4ア�
 
 import { Aside, Icon, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
 import AddonDownloads from '../../../components/AddonDownloads.astro';
+import { BDS_SCRIPT_MODULE_UUID } from '../../../lib/bds-config';
 
 discord-mcbe v4には接続方式の異なる2種類のビヘイビアーパックがあります。利用するワールドに合うものを選んでください。
 
@@ -81,7 +82,8 @@ discord-mcbe v4には接続方式の異なる2種類のビヘイビアーパッ�
 </Steps>
 
 <Aside type="note" title="別の端末で動かす場合">
-  公式BDSアドオンの接続先は`localhost:23191`で、通信方式はWebSocketです。BDSとdiscord-mcbeを別端末で動かすには、`@discord-mcbe/client/bds`の`BridgeClient`へ`host`と`port`を渡す独自アドオンのビルドが必要です。
+  BDS本体のフォルダに<code>{`config/${BDS_SCRIPT_MODULE_UUID}/variables.json`}</code>
+  を作成し、`BRIDGE_HOST`をdiscord-mcbeが動作するホスト名へ変更します。`BRIDGE_PORT`は`.env`の`BRIDGE_PORT`と同じ値にしてください。変更後はBDSを再起動します。
 </Aside>
 
 ## <Icon name="terminal" />Minecraft側の管理コマンド

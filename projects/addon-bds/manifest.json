@@ -33,6 +33,10 @@
       "version": "beta"
     },
     {
+      "module_name": "@minecraft/server-admin",
+      "version": "beta"
+    },
+    {
       "module_name": "@minecraft/server-ui",
       "version": "2.1.0"
     }

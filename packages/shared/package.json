@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@minecraft/server": "catalog:",
-    "valibot": "^1.1.0"
+    "valibot": "catalog:"
   },
   "devDependencies": {
     "@discord-mcbe/internal-config": "workspace:*"

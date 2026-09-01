@@ -4,6 +4,7 @@ description: Bot、Discordコマンド、ローカルワールド、BDSの接続
 ---
 
 import { Aside, Icon } from '@astrojs/starlight/components';
+import { BDS_SCRIPT_MODULE_UUID } from '../../../lib/bds-config';
 
 最初に、サーバーとアドオンが同じv4リリースであること、`.env`と`config.json`を変更後に再起動したことを確認します。
 
@@ -73,8 +74,8 @@ WebSocket自体には接続できていますが、v4ローカルアドオンの
 - `world_behavior_packs.json`等にアドオンが追加されていて、有効化されているか確認します。
 - ベータ API も有効化してください。
 - discord-mcbeが起動していることを確認してからBDSを起動してください。
-- 公式BDSアドオンは`localhost:23191`へ接続します。BDSとdiscord-mcbeを同じ端末で動かします。
-- `BRIDGE_PORT`を変更した場合、公式アドオンとは一致しなくなります。デフォルト値へ戻すか、接続先を変更したアドオンをビルドします。
+- 公式BDSアドオンはBDS本体のフォルダにある<code>{`config/${BDS_SCRIPT_MODULE_UUID}/variables.json`}</code>から接続先を読み取ります。ファイルを作成・編集し、BDSを再起動してください。
+- `BRIDGE_HOST`はBDSから見たdiscord-mcbeのホスト名、`BRIDGE_PORT`は`.env`の`BRIDGE_PORT`と同じ値にします。
 
 ## ワールド名が重複する・選べない
 
