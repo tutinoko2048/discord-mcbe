@@ -84,18 +84,12 @@ importers:
       '@minecraft/server':
         specifier: 2.10.0-beta.1.26.44-stable
         version: 2.10.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
-      '@minecraft/server-admin':
-        specifier: 'catalog:'
-        version: 1.0.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/server@2.10.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70))
       '@minecraft/server-net':
         specifier: 'catalog:'
         version: 1.0.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/server-admin@1.0.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/server@2.10.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)))(@minecraft/server@2.10.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70))
       '@minecraft/server-ui':
         specifier: 'catalog:'
         version: 2.1.0(@minecraft/common@1.2.0)(@minecraft/server@2.10.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70))
-      valibot:
-        specifier: 'catalog:'
-        version: 1.4.2(typescript@6.0.3)
     devDependencies:
       '@bedrock-apis/env-types':
         specifier: 'catalog:'
@@ -124,6 +118,9 @@ importers:
       '@discord-mcbe/client':
         specifier: workspace:*
         version: link:../../packages/client
+      valibot:
+        specifier: 'catalog:'
+        version: 1.4.2(typescript@6.0.3)
     devDependencies:
       '@bedrock-apis/env-types':
         specifier: 'catalog:'
@@ -134,6 +131,9 @@ importers:
       '@minecraft/server':
         specifier: 2.10.0-beta.1.26.44-stable
         version: 2.10.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
+      '@minecraft/server-admin':
+        specifier: 'catalog:'
+        version: 1.0.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/server@2.10.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70))
 
   projects/addon-local:
     dependencies:

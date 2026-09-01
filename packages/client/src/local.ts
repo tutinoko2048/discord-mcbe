@@ -18,7 +18,9 @@ export class BridgeClient extends BaseClient<WebSocketBridgeClient> {
   constructor(options: BridgeClientOptions = {}) {
     if (__DEV__) console.log('§7[discord-mcbe] Initializing bridge client...');
 
-    const mergedOptions = { ...defaultOptions, ...options };
+    const mergedOptions = {
+      worldName: options.worldName ?? defaultOptions.worldName,
+    };
 
     const bridge = new WebSocketBridgeClient({ ...mergedOptions, handleRequest: handleClientBoundRequest });
     super(bridge);

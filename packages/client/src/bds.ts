@@ -2,35 +2,22 @@ import { BaseClient, ClientType, WORLD_NAME_DYNAMIC_PROPERTY_KEY } from './clien
 import { ServerNetBridgeClient } from './transport/server-net';
 import type { ExtractOptional } from '@discord-mcbe/shared';
 import { world } from '@minecraft/server';
-import { variables } from '@minecraft/server-admin';
 import { handleClientBoundRequest } from './client/handler';
-import * as v from 'valibot';
 
 export interface BridgeClientOptions {
   host?: string;
   port?: number;
-  worldName?: string | (() => string);
+  worldName?: string | (() => string | undefined);
 }
 
-const BdsVariablesSchema = v.object({
-  BRIDGE_HOST: v.fallback(v.pipe(v.string(), v.nonEmpty()), 'localhost'),
-  BRIDGE_PORT: v.fallback(v.pipe(v.number(), v.integer(), v.minValue(1)), 23191),
-  DEFAULT_CLIENT_ID: v.fallback(v.pipe(v.string(), v.nonEmpty()), 'discord-mcbe-bds'),
-});
-
-const vars = v.parse(BdsVariablesSchema, {
-  BRIDGE_HOST: variables.get('BRIDGE_HOST'),
-  BRIDGE_PORT: variables.get('BRIDGE_PORT'),
-  DEFAULT_CLIENT_ID: variables.get('DEFAULT_CLIENT_ID'),
-});
+const DEFAULT_WORLD_NAME = 'Server';
 
 const defaultOptions: ExtractOptional<BridgeClientOptions> = {
-  host: vars.BRIDGE_HOST,
-  port: vars.BRIDGE_PORT,
+  host: 'localhost',
+  port: 23191,
   worldName: () => {
     const worldName = world.getDynamicProperty(WORLD_NAME_DYNAMIC_PROPERTY_KEY);
     if (typeof worldName === 'string') return worldName;
-    return vars.DEFAULT_CLIENT_ID;
   },
 };
 
@@ -38,11 +25,17 @@ export class BridgeClient extends BaseClient<ServerNetBridgeClient> {
   readonly type = ClientType.BDS;
 
   constructor(options: BridgeClientOptions = {}) {
-    const mergedOptions = { ...defaultOptions, ...options };
+    const mergedOptions = {
+      host: options.host ?? defaultOptions.host,
+      port: options.port ?? defaultOptions.port,
+      worldName: options.worldName ?? defaultOptions.worldName,
+    };
+
+    const worldName = mergedOptions.worldName;
 
     const bridge = new ServerNetBridgeClient({
       url: `ws://${mergedOptions.host}:${mergedOptions.port}`,
-      worldName: mergedOptions.worldName,
+      worldName: typeof worldName === 'string' ? worldName : () => worldName() ?? DEFAULT_WORLD_NAME,
       handleRequest: handleClientBoundRequest,
     });
 
