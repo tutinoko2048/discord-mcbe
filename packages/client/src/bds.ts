@@ -38,3 +38,6 @@ export class BridgeClient extends BaseClient<ServerNetBridgeClient> {
     console.log(`[discord-mcbe] Connection established! (${Date.now() - requestedAt}ms)`);
   }
 }
+
+export { ServerNetBridgeClient };
+export * from './client';

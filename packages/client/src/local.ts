@@ -32,3 +32,6 @@ export class BridgeClient extends BaseClient<WebSocketBridgeClient> {
     });
   }
 }
+
+export { WebSocketBridgeClient };
+export * from './client';
