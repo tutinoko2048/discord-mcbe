@@ -26,23 +26,27 @@ for (const platform of platforms) {
     const targetDir = join('build', target);
     await fs.mkdir(targetDir, { recursive: true });
 
-    // copy run script
-    await fs.copyFile(platform.run, join(targetDir, basename(platform.run)));
-    // copy package.json
-    await fs.copyFile('assets/package.json', join(targetDir, 'package.json'));
-    // copy tsconfig.json
-    await fs.copyFile('assets/tsconfig.json', join(targetDir, 'tsconfig.json'));
-    // copy scripts
-    await fs.cp('assets/scripts', join(targetDir, 'scripts'), { recursive: true });
-    // create .env from .env.example
-    await fs.copyFile('../../devapp/.env.example', join(targetDir, '.env'));
-    // copy .vscode
-    await fs.cp('assets/.vscode', join(targetDir, '.vscode'), { recursive: true });
+    await Promise.all([
+      // copy run script
+      fs.copyFile(platform.run, join(targetDir, basename(platform.run))),
+      // copy package.json
+      fs.copyFile('assets/package.json', join(targetDir, 'package.json')),
+      // copy tsconfig.json
+      fs.copyFile('assets/tsconfig.json', join(targetDir, 'tsconfig.json')),
+      // copy scripts
+      fs.cp('assets/scripts', join(targetDir, 'scripts'), { recursive: true }),
+      // create .env from .env.example
+      fs.copyFile('../../devapp/.env.example', join(targetDir, '.env')),
+      // copy .vscode
+      fs.cp('assets/.vscode', join(targetDir, '.vscode'), { recursive: true }),
+    ]);
 
     // compile with bun
     const startAt = Date.now();
     await Bun.build({
       entrypoints: ['src/main.ts'],
+      minify: true,
+      bytecode: true,
       compile: {
         target: `bun-${target}`,
         outfile: join(targetDir, `updater${platform.ext}`),

@@ -1,6 +1,10 @@
 import { $ } from 'bun';
 import { join } from 'path';
-import { packages } from './_packages';
+
+const packages = {
+  app: ['../projects/server', '../packages/client', '../packages/shared'],
+  launcher: ['../projects/launcher'],
+};
 
 const type = process.argv[2] as 'app' | 'launcher' | undefined;
 const version = process.argv[3];
@@ -8,6 +12,8 @@ if (!type || !version || !['app', 'launcher'].includes(type)) {
   printUsage();
   process.exit(1);
 }
+
+const validVersionTypes = ['major', 'minor', 'patch', 'premajor', 'preminor', 'prepatch', 'prerelease'];
 
 const addons = ['../projects/addon-bds', '../projects/addon-local'];
 
@@ -32,13 +38,14 @@ if (type === 'launcher') {
   const isSpecified = /^\d+\.\d+\.\d+(-\w+\.\d+)?$/.test(version.trim());
   if (isSpecified) {
     console.log(`Setting app version to ${version}...`);
-  } else {
+  } else if (validVersionTypes.includes(version)) {
     console.log(`Bumping app ${version} version...`);
+  } else {
+    printUsage();
+    process.exit(1);
   }
 
-  for (const pkg of packages.app) {
-    await runPnpmVersion(join(__dirname, pkg));
-  }
+  await Promise.all(packages.app.map((pkg) => runPnpmVersion(join(__dirname, pkg))));
 
   const updatedVersion = await readCurrentAppVersion();
   await updateAddonVersion(updatedVersion);
@@ -64,7 +71,12 @@ async function readCurrentAppVersion() {
 
 function printUsage() {
   console.error(
-    'Usage:\npnpm run bump-version app <major|minor|patch|pre|version>\npnpm run bump-version launcher increment',
+    [
+      'Usage:',
+      `  pnpm run bump-version app <${validVersionTypes.join('|')}>`,
+      '  pnpm run bump-version app x.y.z',
+      '  pnpm run bump-version launcher increment',
+    ].join('\n'),
   );
 }
 
