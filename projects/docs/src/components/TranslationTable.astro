@@ -1,0 +1,114 @@
+---
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+interface Props {
+  defaultLocale: string;
+}
+const { defaultLocale } = Astro.props;
+const t = useTranslations(getLangFromUrl(Astro.url));
+
+const FALLBACK_LOCALE = 'en-US';
+const localeFiles = import.meta.glob<Record<string, string>>('../../../server/src/assets/locales/*.json', {
+  eager: true,
+  import: 'default',
+});
+const localeMaps: Record<string, Record<string, string>> = {};
+const sourceMaps: Record<string, Set<string>> = {};
+
+for (const [filePath, map] of Object.entries(localeFiles).sort(
+  ([a], [b]) => Number(a.includes('.generated.json')) - Number(b.includes('.generated.json')) || a.localeCompare(b),
+)) {
+  const fileName = filePath.split('/').at(-1)!;
+  const locale = fileName.replace(/\.generated\.json$/, '').replace(/\.json$/, '');
+  localeMaps[locale] ??= {};
+  sourceMaps[locale] ??= new Set();
+  Object.assign(localeMaps[locale], map);
+  Object.keys(map).forEach((key) => sourceMaps[locale].add(key));
+}
+
+const keys = Object.keys(localeMaps[FALLBACK_LOCALE]);
+const locales = Object.keys(localeMaps).toSorted().map((id) => ({ id }));
+const selectedLocale = localeMaps[defaultLocale] ? defaultLocale : FALLBACK_LOCALE;
+
+function getInheritedFrom(locale: string, key: string): string {
+  return sourceMaps[locale].has(key) ? '' : `${FALLBACK_LOCALE} (${t('translation.fallback')})`;
+}
+---
+
+<div class="translation-preview" data-translation-preview>
+  <label>
+    {t('translation.previewLanguage')}
+    <select aria-label={t('translation.previewLanguage')} data-translation-select>
+      {locales.map((locale) => <option value={locale.id} selected={locale.id === selectedLocale}>{locale.id}</option>)}
+    </select>
+  </label>
+
+  {locales.map((locale) => (
+    <div data-translation-locale={locale.id} hidden={locale.id !== selectedLocale}>
+      <div class="translation-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>{t('translation.key')}</th>
+              <th>{t('translation.value')}</th>
+              <th>{t('translation.inheritedFrom')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {keys.map((key) => {
+              const value = localeMaps[locale.id][key];
+              return (
+                <tr>
+                  <td><code>{key}</code></td>
+                  <td>{value ?? localeMaps[FALLBACK_LOCALE][key] ?? t('translation.missing')}</td>
+                  <td>{getInheritedFrom(locale.id, key)}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  ))}
+</div>
+
+<script is:inline>
+  for (const root of document.querySelectorAll('[data-translation-preview]')) {
+    const select = root.querySelector('[data-translation-select]');
+    const tables = root.querySelectorAll('[data-translation-locale]');
+    const update = () => tables.forEach((table) => { table.hidden = table.dataset.translationLocale !== select.value; });
+    select?.addEventListener('change', update);
+    update();
+  }
+</script>
+
+<style>
+  .translation-preview label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-block: 1rem;
+    font-weight: 600;
+  }
+
+  .translation-preview select {
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--sl-color-gray-4);
+    border-radius: 0.4rem;
+    background: var(--sl-color-black);
+    color: var(--sl-color-white);
+  }
+
+  .translation-table-wrap {
+    overflow-x: auto;
+  }
+
+  .translation-preview table {
+    min-width: 52rem;
+  }
+
+  .translation-preview td:nth-child(2),
+  .translation-preview td:nth-child(3) {
+    white-space: pre-wrap;
+  }
+</style>

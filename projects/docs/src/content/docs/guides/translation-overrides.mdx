@@ -1,0 +1,112 @@
+---
+title: 翻訳と表示テキストのカスタマイズ
+description: discord-mcbeの表示メッセージを自分向けに変更する方法と、翻訳にコントリビュートする方法を説明します。
+---
+
+import { Aside, Icon } from '@astrojs/starlight/components';
+import TranslationTable from '../../../components/TranslationTable.astro';
+
+discord-mcbeには、さまざまな場面で表示されるメッセージが用意されています。表示する文言を変更したいときは、configファイルの`translationOverrides`を使って、コードを編集せずにカスタマイズできます。
+
+## <Icon name="pencil" />表示テキストの変更方法
+
+変更したい内容に合わせて、`config.json`の次の設定を使います。
+
+| 変えたいもの              | 設定                         |
+| ------------------------- | ---------------------------- |
+| Botやコンソール全体の言語 | `language`（利用可能な言語） |
+| 特定のメッセージだけ      | `translationOverrides`       |
+
+特定のメッセージだけを変更したい場合は、以下のように`translationOverrides`へ変更したい文言を追加してください:
+
+```json
+{
+  "language": "ja",
+  "translationOverrides": {
+    "minecraft.message": "§b[チャット]§r <%0§r> %1§r",
+    "discord.join": "🎉 %0 さんが参加しました！",
+    "command.help.commands": "使えるコマンドはこちら："
+  }
+}
+```
+
+### 変更時のポイント
+
+- 設定全体は消さず、既存の`config.json`の`translationOverrides`の部分を編集してください。
+- キーは下の表にあるものだけです。キーの綴りが違う場合や、表にないキーを追加した場合は設定エラーになります。
+- `%0`などのプレースホルダーは、必要なものを残してください。プレイヤー名やメッセージなどの差し込み部分です。
+- Minecraft向けの文章では`§a`などのカラーコードを使えます。Discord向けの文章ではDiscordのMarkdownとして解釈される記号に注意してください。
+- 変更後はdiscord-mcbeを再起動してください。
+
+## <Icon name="list-format" />翻訳キー一覧
+
+<TranslationTable defaultLocale="ja" />
+
+## <Icon name="seti:json" />開発者・コントリビューター向け
+
+### 翻訳システムの仕組み
+
+翻訳は「キー」と「値」の組み合わせです。コードは画面に表示する文章を直接書かず、たとえば`discord.join`というキーを指定します。
+
+| 層                      | 場所                                               | 役割                                                         |
+| ----------------------- | -------------------------------------------------- | ------------------------------------------------------------ |
+| 通常の表示テキスト      | `projects/server/src/assets/locales/<locale>.json` | Discord、コンソール、Minecraftチャット、コマンド説明など     |
+| Minecraft由来のテキスト | `<locale>.generated.json`                          | 死亡メッセージとエンティティ名。Mojangの言語ファイルから生成 |
+| 実行時の言語            | `config.json`の`language`                          | 利用可能なロケールを選択                                     |
+| 利用者の上書き          | `config.json`の`translationOverrides`              | 選択中の言語の値を個別に置換                                 |
+
+起動時には、選択した言語の通常ファイルと`.generated.json`を結合し、そのあと`translationOverrides`を適用します。選択した言語にキーがない場合は基準ロケール（`en-US`）へフォールバックし、それでもなければキーそのものを表示します。
+
+`translationOverrides`は言語別の入れ子オブジェクトではなく、`config.language`で選んだ実行時マップへ適用されます。Botの言語を切り替えると、同じ上書き値がその言語にも適用されます。言語ごとに異なる文面にしたい場合は、各JSONを変更してください。
+
+`config.translationOverrides`で上書きできるのは、基準ロケール（`en-US`）に存在するキーです。言語ファイルにだけ存在するキーは上書き対象ではありません。表の`継承元 (Inherited from)`は、選択言語に値がなく基準ロケールから補われた場合だけ表示されます。
+
+文章に値を埋め込む場合は`%0`、`%1`のようなプレースホルダーを使います。コードから渡された値が順番に置き換わります。
+
+```text
+キー: minecraft.message
+値: §9[Discord]§r <%0§r> %1§r
+結果: §9[Discord]§r <Steve> hello§r
+```
+
+### 通常の表示テキストを変更する
+
+Discord、コンソール、Minecraftチャットの枠やコマンド説明など、discord-mcbe独自の文章は次のファイルを編集します。
+
+```text
+projects/server/src/assets/locales/<locale>.json
+```
+
+基準となるロケール（現在は`en-US`）のキーと引数を基準に、各ロケールで同じキーを持たせ、引数の数と`%0`から始まる番号を揃えてください。キーを追加・削除したら次を実行して、型と設定スキーマを更新します。
+
+```powershell
+pnpm --filter @discord-mcbe/server generate-lang-types
+pnpm --filter @discord-mcbe/server generate-schema
+```
+
+### Minecraftの死亡メッセージとエンティティ名について
+
+`death.*`と`entity.*`は、通常ファイルではなく次の生成ファイルに入ります。
+
+```text
+projects/server/src/assets/locales/<locale>.generated.json
+```
+
+これらは `extract-minecraft-lang` スクリプトを用いて [Mojang/bedrock-samples](https://github.com/Mojang/bedrock-samples) の言語ファイルから抽出しています。`%1$s`のようなMojang形式のプレースホルダーは、discord-mcbeでは`%0`形式に変換されます。
+そのため、**手動では書き換えないでください**。
+
+```powershell
+pnpm --filter @discord-mcbe/server extract-minecraft-lang
+pnpm --filter @discord-mcbe/server generate-lang-types
+pnpm --filter @discord-mcbe/server generate-schema
+```
+
+Mojang由来ではない独自メッセージを追加するなら、各ロケールの通常JSONへ追加してください。
+
+### 言語の追加方法
+
+1. `projects/server/src/assets/locales/<locale>.json`へ翻訳を追加する。
+2. Minecraftから追加する言語の翻訳を抽出するため、`projects/server/scripts/extract-minecraft-lang.ts`の変数`locales`へ言語を追加する。
+3. `projects/server/src/util/i18n.ts`の`templateMap`へそれらのJSONをimportして登録する。
+4. `generate-lang-types`と`generate-schema`を実行する。
+5. 正しく表示されるか確認する。

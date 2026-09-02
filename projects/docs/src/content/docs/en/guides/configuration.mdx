@@ -66,7 +66,7 @@ When `config.json` does not exist, the first start with a valid `.env` creates i
 | Key                            | Description                                                           |
 | ------------------------------ | --------------------------------------------------------------------- |
 | `config_version`               | Configuration format version used for migration. Do not edit          |
-| `language`                     | Bot and console language: `ja` or `en-US`                             |
+| `language`                     | Bot and console language: specify an available locale                 |
 | `timezone_offset`              | Integer-hour offset from UTC used for displayed times                 |
 | `bot.show_death_messages`      | Send player death messages to Discord. Defaults to `true`             |
 | `bot.reply_preview_max_length` | Maximum Discord reply-preview characters shown in Minecraft           |
@@ -143,7 +143,7 @@ The same filters also process quoted reply previews. A reply source rejected by 
 }
 ```
 
-See the [API reference](https://discord-mcbe.tn2048.workers.dev/reference/) and the locale files under `projects/server/src/assets/locales/` for the available keys and arguments.
+For the full i18n model, key table, and contributor workflow, see [Translation and displayed text customization](/en/guides/translation-overrides/).
 
 ## <Icon name="server" />Change a port
 
@@ -154,22 +154,23 @@ See the [API reference](https://discord-mcbe.tn2048.workers.dev/reference/) and 
   <TabItem label="BDS">
     Set the same value in `.env`'s `BRIDGE_PORT` and the BDS
     <code>{`config/${BDS_SCRIPT_MODULE_UUID}/variables.json`}</code> file. `BRIDGE_HOST` changes the host seen
-    by the add-on, and `DEFAULT_CLIENT_ID` changes its initial Client ID. Restart BDS after changing these
+    by the add-on, and `DEFAULT_WORLD_NAME` changes its initial world name. Restart BDS after changing these
     values.
+
+    `variables.json` belongs in the <code>{`config/${BDS_SCRIPT_MODULE_UUID}/variables.json`}</code> path in the BDS installation folder, not in the add-on. Use this content:
+
+    ```json
+    {
+      "BRIDGE_HOST": "localhost",
+      "BRIDGE_PORT": 23191,
+      "DEFAULT_WORLD_NAME": "discord-mcbe-bds"
+    }
+    ```
+
+    A world name saved with `/dmc:setid` takes precedence over `DEFAULT_WORLD_NAME`.
+
   </TabItem>
 </Tabs>
-
-`variables.json` belongs in the <code>{`config/${BDS_SCRIPT_MODULE_UUID}/variables.json`}</code> path in the BDS installation folder, not in the add-on. Use this content:
-
-```json
-{
-  "BRIDGE_HOST": "localhost",
-  "BRIDGE_PORT": 23191,
-  "DEFAULT_CLIENT_ID": "discord-mcbe-bds"
-}
-```
-
-A Client ID saved with `/dmc:setid` takes precedence over `DEFAULT_CLIENT_ID`.
 
 ## <Icon name="code" />Advanced: Minecraft chat webhooks
 

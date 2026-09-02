@@ -1,0 +1,115 @@
+---
+title: Translation and displayed text customization
+description: How to customize discord-mcbe's displayed messages and contribute improvements to its translations.
+---
+
+import { Icon } from '@astrojs/starlight/components';
+import TranslationTable from '../../../../components/TranslationTable.astro';
+
+discord-mcbe provides messages for the different places where it displays information. When you want to change a message, you can customize it through `translationOverrides` in the config file without editing the code.
+
+## <Icon name="pencil" />How to customize displayed text
+
+Use the setting that matches what you want to change:
+
+| What you want to change      | Setting                          |
+| ---------------------------- | -------------------------------- |
+| The Bot and console language | `language` (an available locale) |
+| One specific message         | `translationOverrides`           |
+
+To change one specific message, add its replacement to `translationOverrides` as follows:
+
+```json
+{
+  "language": "en-US",
+  "translationOverrides": {
+    "minecraft.message": "§b[Chat]§r <%0§r> %1§r",
+    "discord.join": "🎉 %0 joined the game!",
+    "command.help.commands": "Available commands:"
+  }
+}
+```
+
+### Tips
+
+- Edit only the `translationOverrides` section of your existing `config.json`; do not delete the rest of the configuration.
+- Use keys shown in the table below. A misspelled or unknown key is rejected by configuration validation.
+- Preserve placeholders such as `%0`; they are where values such as player names and message text are inserted.
+- Minecraft messages can use color codes such as `§a`. Discord messages are interpreted as Discord Markdown, so format characters matter.
+- Restart discord-mcbe after changing the configuration.
+
+## <Icon name="list-format" />Translation key list
+
+Find the key you want to change in the table. Its language selector is independent from the docs site's display language.
+
+<TranslationTable defaultLocale="en-US" />
+
+## <Icon name="seti:json" />For developers and contributors
+
+### How the translation system works
+
+Translations are pairs of keys and values. Code refers to a key such as `discord.join` instead of embedding the displayed sentence directly.
+
+| Layer                  | Location                                           | Purpose                                                              |
+| ---------------------- | -------------------------------------------------- | -------------------------------------------------------------------- |
+| Regular displayed text | `projects/server/src/assets/locales/<locale>.json` | Discord, console, Minecraft chat, and command descriptions           |
+| Minecraft-derived text | `<locale>.generated.json`                          | Death messages and entity names generated from Mojang language files |
+| Runtime language       | `config.json` → `language`                         | Selects an available locale                                          |
+| User overrides         | `config.json` → `translationOverrides`             | Replaces individual values in the selected language                  |
+
+At startup, discord-mcbe merges the regular and `.generated.json` files for the selected language, then applies `translationOverrides`. If a key is missing in the selected language, it falls back to the baseline locale (`en-US`); if the baseline also has no value, the key itself is displayed.
+
+`translationOverrides` is not a nested per-language object; it is applied to the runtime map selected by `config.language`. If the Bot language changes, the same override value is applied to that language. For different text per language, change each source JSON.
+
+`config.translationOverrides` can override keys that exist in the baseline locale (`en-US`). Extra keys found only in a locale file are not valid override targets. `Inherited from` is shown only when the selected language has no value and the value is supplied by the baseline locale.
+
+Values can contain `%0`, `%1`, and other placeholders. They are replaced by arguments passed from the code in order.
+
+```text
+Key: minecraft.message
+Value: §9[Discord]§r <%0§r> %1§r
+Result: §9[Discord]§r <Steve> hello§r
+```
+
+### Change regular displayed text
+
+Edit these files for discord-mcbe-owned text such as Discord messages, console messages, Minecraft chat wrappers, and command descriptions:
+
+```text
+projects/server/src/assets/locales/<locale>.json
+```
+
+Use the baseline locale (currently `en-US`) for keys and arguments. Keep the same keys in every locale and keep the placeholder count and `%0`-based numbering aligned. After adding or removing keys, regenerate the types and config schema:
+
+```powershell
+pnpm --filter @discord-mcbe/server generate-lang-types
+pnpm --filter @discord-mcbe/server generate-schema
+```
+
+### About Minecraft death messages and entity names
+
+`death.*` and `entity.*` belong in generated files:
+
+```text
+projects/server/src/assets/locales/<locale>.generated.json
+```
+
+These files are generated by the `extract-minecraft-lang` script from the language files in [Mojang/bedrock-samples](https://github.com/Mojang/bedrock-samples). Mojang-style placeholders such as `%1$s` are converted to discord-mcbe's zero-based `%0` format. **Do not edit these files manually.**
+
+```powershell
+pnpm --filter @discord-mcbe/server extract-minecraft-lang
+pnpm --filter @discord-mcbe/server generate-lang-types
+pnpm --filter @discord-mcbe/server generate-schema
+```
+
+Add non-Mojang, discord-mcbe-owned messages to the regular JSON for each locale.
+
+### Add a language
+
+To add a language:
+
+1. Add translations to `projects/server/src/assets/locales/<locale>.json`.
+2. Add the locale to the `locales` variable in `projects/server/scripts/extract-minecraft-lang.ts` to extract its Minecraft translations.
+3. Import and register the JSON files in `templateMap` in `projects/server/src/util/i18n.ts`.
+4. Run `generate-lang-types` and `generate-schema`.
+5. Verify that the translations are displayed correctly.

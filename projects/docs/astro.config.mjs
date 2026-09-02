@@ -58,6 +58,11 @@ export default defineConfig({
               slug: 'guides/commands',
             },
             {
+              label: '翻訳とテキストのカスタマイズ',
+              translations: { en: 'Translations and text customization' },
+              slug: 'guides/translation-overrides',
+            },
+            {
               label: 'カスタムスクリプト',
               translations: { en: 'Custom scripts' },
               slug: 'guides/custom-scripts',

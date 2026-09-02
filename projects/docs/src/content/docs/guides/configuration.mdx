@@ -66,7 +66,7 @@ BRIDGE_PORT=23191
 | キー                           | 説明                                                          |
 | ------------------------------ | ------------------------------------------------------------- |
 | `config_version`               | 設定形式のバージョン。移行処理用なので変更しない              |
-| `language`                     | Botとコンソールの言語。`ja`または`en-US`                      |
+| `language`                     | Botとコンソールの言語。利用可能なロケールを指定               |
 | `timezone_offset`              | 表示時刻のUTCからのオフセット（整数時間）。日本標準時は`9`    |
 | `bot.show_death_messages`      | プレイヤーの死亡メッセージをDiscordへ送る。既定値は`true`     |
 | `bot.reply_preview_max_length` | Discordの返信元本文をMinecraftに表示する最大文字数            |
@@ -143,7 +143,7 @@ BRIDGE_PORT=23191
 }
 ```
 
-利用できるキーと引数は[APIリファレンス](https://discord-mcbe.tn2048.workers.dev/reference/)および`projects/server/src/assets/locales/`の言語ファイルで確認できます。
+詳しい仕組み、全キーの一覧、コントリビューター向けの変更方法は[翻訳と表示テキストのカスタマイズ](/guides/translation-overrides/)を参照してください。
 
 ## <Icon name="server" />ポートを変更する
 
@@ -153,22 +153,23 @@ BRIDGE_PORT=23191
   </TabItem>
   <TabItem label="BDS">
     BDS本体のフォルダに<code>{`config/${BDS_SCRIPT_MODULE_UUID}/variables.json`}</code>
-    を作成し、`.env`の`BRIDGE_PORT`と同じ値を`BRIDGE_PORT`へ設定します。`BRIDGE_HOST`でアドオンから見たサーバーのホスト名、`DEFAULT_CLIENT_ID`で初期Client
+    を作成し、`.env`の`BRIDGE_PORT`と同じ値を`BRIDGE_PORT`へ設定します。`BRIDGE_HOST`でアドオンから見たサーバーのホスト名、`DEFAULT_WORLD_NAME`で初期Client
     IDも変更できます。設定変更後はBDSを再起動してください。
+
+    `variables.json`はアドオンではなく、BDS本体のフォルダにある<code>{`config/${BDS_SCRIPT_MODULE_UUID}/variables.json`}</code>へ配置します。内容は次のとおりです。
+
+    ```json
+    {
+      "BRIDGE_HOST": "localhost",
+      "BRIDGE_PORT": 23191,
+      "DEFAULT_WORLD_NAME": "discord-mcbe-bds"
+    }
+    ```
+
+    `/dmc:setid`で保存済みのworld nameがある場合は、`DEFAULT_WORLD_NAME`より優先されます。
+
   </TabItem>
 </Tabs>
-
-`variables.json`はアドオンではなく、BDS本体のフォルダにある<code>{`config/${BDS_SCRIPT_MODULE_UUID}/variables.json`}</code>へ配置します。内容は次のとおりです。
-
-```json
-{
-  "BRIDGE_HOST": "localhost",
-  "BRIDGE_PORT": 23191,
-  "DEFAULT_CLIENT_ID": "discord-mcbe-bds"
-}
-```
-
-`/dmc:setid`で保存済みのClient IDがある場合は、`DEFAULT_CLIENT_ID`より優先されます。
 
 ## <Icon name="code" />高度な設定: MinecraftチャットWebhook
 
