@@ -7,10 +7,13 @@ import enUS from '../assets/locales/en-US.json' with { type: 'json' };
 import enUSGenerated from '../assets/locales/en-US.generated.json' with { type: 'json' };
 import ja from '../assets/locales/ja.json' with { type: 'json' };
 import jaGenerated from '../assets/locales/ja.generated.json' with { type: 'json' };
+import fr from '../assets/locales/fr.generated.json' with { type: 'json' };
+import frGenerated from '../assets/locales/fr.generated.json' with { type: 'json' };
 
 const templateMap = new Map<Locale, Record<string, string>>([
   [Locale.EnglishUS, { ...enUS, ...enUSGenerated }],
   [Locale.Japanese, { ...ja, ...jaGenerated }],
+  [Locale.French, { ...fr, ...frGenerated }],
 ]);
 
 const FALLBACK_LANG = Locale.EnglishUS;

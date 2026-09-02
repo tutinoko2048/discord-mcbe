@@ -7,6 +7,7 @@ const sourceRef = Bun.argv[2] ?? 'main';
 const locales = [
   { source: 'en_US.lang', target: 'en-US' },
   { source: 'ja_JP.lang', target: 'ja' },
+  { source: 'fr_FR.lang', target: 'fr' },
 ] as const;
 
 const MINECRAFT_KEY_PREFIXES = ['death.attack.', 'death.fell.', 'entity.'];

@@ -10,7 +10,7 @@
     },
     "language": {
       "type": "string",
-      "enum": ["en-US", "ja"],
+      "enum": ["en-US", "ja", "fr"],
       "description": "Language"
     },
     "timezone_offset": {
