@@ -6,14 +6,14 @@ const packages = {
   launcher: ['../projects/launcher'],
 };
 
+const validVersionTypes = ['major', 'minor', 'patch', 'premajor', 'preminor', 'prepatch', 'prerelease'];
+
 const type = process.argv[2] as 'app' | 'launcher' | undefined;
 const version = process.argv[3];
 if (!type || !version || !['app', 'launcher'].includes(type)) {
   printUsage();
   process.exit(1);
 }
-
-const validVersionTypes = ['major', 'minor', 'patch', 'premajor', 'preminor', 'prepatch', 'prerelease'];
 
 const addons = ['../projects/addon-bds', '../projects/addon-local'];
 
