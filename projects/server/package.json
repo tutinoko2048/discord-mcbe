@@ -11,7 +11,6 @@
     "schema.config.json"
   ],
   "type": "module",
-  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "dev": "./src/index.ts",

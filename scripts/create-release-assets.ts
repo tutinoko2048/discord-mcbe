@@ -26,7 +26,6 @@ const packageJson = {
   type: 'module',
   dependencies: {
     '@discord-mcbe/server': version,
-    '@discord-mcbe/client': version,
     '@discord-mcbe/shared': version,
   },
 };
