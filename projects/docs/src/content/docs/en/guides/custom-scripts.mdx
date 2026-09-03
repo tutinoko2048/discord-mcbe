@@ -37,8 +37,8 @@ export default function main(app) {
 
 ## <Icon name="clock" />Subscribe to events
 
-<Tabs syncKey='code'>
-<TabItem label="TypeScript" icon='seti:typescript'>
+<Tabs syncKey="code">
+<TabItem label="TypeScript" icon="seti:typescript">
 ```ts title="scripts/main.ts"
 import type { Application } from '@discord-mcbe/server';
 
@@ -60,7 +60,7 @@ app.logger.info('Chat:', event.world.name, event.sender.name, event.message);
 
 ````
 </TabItem>
-<TabItem label="JavaScript" icon='seti:javascript'>
+<TabItem label="JavaScript" icon="seti:javascript">
 ```js title="scripts/main.js"
 /**
  * @param {import('@discord-mcbe/server').Application} app
@@ -80,6 +80,8 @@ export default function main(app) {
     app.logger.info('Chat:', event.world.name, event.sender.name, event.message);
   });
 }
+````
+
 </TabItem>
 </Tabs>
 
@@ -98,8 +100,8 @@ The main events are listed below. See the [API reference](/reference/interfaces/
 
 ## <Icon name="puzzle" />Control a world
 
-<Tabs syncKey='code'>
-<TabItem label="TypeScript" icon='seti:typescript'>
+<Tabs syncKey="code">
+<TabItem label="TypeScript" icon="seti:typescript">
 ```ts title="scripts/main.ts"
 import type { Application } from '@discord-mcbe/server';
 
@@ -109,12 +111,14 @@ export default function main(app: Application) {
     const tps = await world.getTPS();
 
     app.logger.info(world.name, result, 'TPS:', tps);
-  });
+
+});
 }
+
 ````
 
 </TabItem>
-<TabItem label="JavaScript" icon='seti:javascript'>
+<TabItem label="JavaScript" icon="seti:javascript">
 ```js title="scripts/main.js"
 /**
  * @param {import('@discord-mcbe/server').Application} app
@@ -128,6 +132,7 @@ export default function main(app) {
 
 });
 }
+````
 
 </TabItem>
 </Tabs>

@@ -34,6 +34,7 @@ if (type === 'launcher') {
   packageJson.version = String(updatedVersion);
   await Bun.write(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`);
   console.log(`Launcher version incremented from ${currentVersion} to ${updatedVersion}.`);
+  console.log(`See 'docs/releasing.md' to create release.`);
 } else {
   const isSpecified = /^\d+\.\d+\.\d+(-\w+\.\d+)?$/.test(version.trim());
   if (isSpecified) {
@@ -50,6 +51,7 @@ if (type === 'launcher') {
   const updatedVersion = await readCurrentAppVersion();
   await updateAddonVersion(updatedVersion);
   console.log(`App version updated to ${updatedVersion} successfully!`);
+  console.log(`See 'docs/releasing.md' to create release.`);
 }
 
 async function runPnpmVersion(cwd: string) {

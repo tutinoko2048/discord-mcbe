@@ -13,8 +13,8 @@ import { Aside, Icon, Tabs, TabItem } from '@astrojs/starlight/components';
 
 JavaScript/TypeScriptの両方に対応しています。
 
-<Tabs syncKey='code'>
-<TabItem label="TypeScript" icon='seti:typescript'>
+<Tabs syncKey="code">
+<TabItem label="TypeScript" icon="seti:typescript">
 ```ts title="scripts/main.ts"
 import type { Application } from '@discord-mcbe/server';
 
@@ -37,8 +37,8 @@ export default function main(app) {
 
 ## <Icon name="clock" />イベントを受け取る
 
-<Tabs syncKey='code'>
-<TabItem label="TypeScript" icon='seti:typescript'>
+<Tabs syncKey="code">
+<TabItem label="TypeScript" icon="seti:typescript">
 ```ts title="scripts/main.ts"
 import type { Application } from '@discord-mcbe/server';
 
@@ -60,7 +60,7 @@ app.logger.info('Chat:', event.world.name, event.sender.name, event.message);
 
 ````
 </TabItem>
-<TabItem label="JavaScript" icon='seti:javascript'>
+<TabItem label="JavaScript" icon="seti:javascript">
 ```js title="scripts/main.js"
 /**
  * @param {import('@discord-mcbe/server').Application} app
@@ -100,8 +100,8 @@ export default function main(app) {
 
 ## <Icon name="puzzle" />ワールドを操作する
 
-<Tabs syncKey='code'>
-<TabItem label="TypeScript" icon='seti:typescript'>
+<Tabs syncKey="code">
+<TabItem label="TypeScript" icon="seti:typescript">
 ```ts title="scripts/main.ts"
 import type { Application } from '@discord-mcbe/server';
 
@@ -117,7 +117,7 @@ export default function main(app: Application) {
 
 ````
 </TabItem>
-<TabItem label="JavaScript" icon='seti:javascript'>
+<TabItem label="JavaScript" icon="seti:javascript">
 ```js title="scripts/main.js"
 /**
  * @param {import('@discord-mcbe/server').Application} app
