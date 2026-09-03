@@ -15,6 +15,7 @@ JavaScript/TypeScriptの両方に対応しています。
 
 <Tabs syncKey="code">
 <TabItem label="TypeScript" icon="seti:typescript">
+
 ```ts title="scripts/main.ts"
 import type { Application } from '@discord-mcbe/server';
 
@@ -22,8 +23,10 @@ export default function main(app: Application) {
   app.logger.info('Custom script loaded');
 }
 ```
+
 </TabItem>
 <TabItem label="JavaScript" icon='seti:javascript'>
+
 ```js title="scripts/main.js"
 /**
  * @param {import('@discord-mcbe/server').Application} app
@@ -32,6 +35,7 @@ export default function main(app) {
   app.logger.info('Custom script loaded');
 }
 ```
+
 </TabItem>
 </Tabs>
 
@@ -39,6 +43,7 @@ export default function main(app) {
 
 <Tabs syncKey="code">
 <TabItem label="TypeScript" icon="seti:typescript">
+
 ```ts title="scripts/main.ts"
 import type { Application } from '@discord-mcbe/server';
 
@@ -48,19 +53,22 @@ export default function main(app: Application) {
     await event.world.sendMessage('§aDiscord bridge connected');
   });
 
-app.on('playerJoin', async (event) => {
-const location = await event.player.getLocation();
-app.logger.info(`${event.player.name}がログインしました。座標: [${location.x}, ${location.y}, ${location.z}]`);
-});
+  app.on('playerJoin', async (event) => {
+    const location = await event.player.getLocation();
+    app.logger.info(
+      `${event.player.name}がログインしました。座標: [${location.x}, ${location.y}, ${location.z}]`,
+    );
+  });
 
-app.on('minecraftMessage', (event) => {
-app.logger.info('Chat:', event.world.name, event.sender.name, event.message);
-});
+  app.on('minecraftMessage', (event) => {
+    app.logger.info('Chat:', event.world.name, event.sender.name, event.message);
+  });
 }
+```
 
-````
 </TabItem>
 <TabItem label="JavaScript" icon="seti:javascript">
+
 ```js title="scripts/main.js"
 /**
  * @param {import('@discord-mcbe/server').Application} app
@@ -73,14 +81,16 @@ export default function main(app) {
 
   app.on('playerJoin', async (event) => {
     const location = await event.player.getLocation();
-    app.logger.info(`${event.player.name}がログインしました。座標: [${location.x}, ${location.y}, ${location.z}]`);
+    app.logger.info(
+      `${event.player.name}がログインしました。座標: [${location.x}, ${location.y}, ${location.z}]`,
+    );
   });
 
   app.on('minecraftMessage', (event) => {
     app.logger.info('Chat:', event.world.name, event.sender.name, event.message);
   });
 }
-````
+```
 
 </TabItem>
 </Tabs>
@@ -102,6 +112,7 @@ export default function main(app) {
 
 <Tabs syncKey="code">
 <TabItem label="TypeScript" icon="seti:typescript">
+
 ```ts title="scripts/main.ts"
 import type { Application } from '@discord-mcbe/server';
 
@@ -111,13 +122,13 @@ export default function main(app: Application) {
     const tps = await world.getTPS();
 
     app.logger.info(world.name, result, 'TPS:', tps);
-
-});
+  });
 }
+```
 
-````
 </TabItem>
 <TabItem label="JavaScript" icon="seti:javascript">
+
 ```js title="scripts/main.js"
 /**
  * @param {import('@discord-mcbe/server').Application} app
@@ -130,14 +141,14 @@ export default function main(app) {
     app.logger.info(world.name, result, 'TPS:', tps);
   });
 }
-````
+```
 
 </TabItem>
 </Tabs>
 
 `ScriptWorld`からメッセージ送信、コマンド、TPS、Script Event、プレイヤー、スコアボードを操作できます。`ScriptPlayer`では個別メッセージ、座標・ディメンション・ゲームモード取得、ゲームモード変更、キック、画面表示を扱えます。
 
-全メソッドと型は[APIリファレンス](https://discord-mcbe.tn2048.workers.dev/reference/)を参照してください。
+全メソッドと型は[APIリファレンス](/reference/)を参照してください。
 
 ## <Icon name="add-document" />依存パッケージを追加する
 

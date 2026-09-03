@@ -13,8 +13,9 @@ At startup, discord-mcbe loads the file specified by `script.entry` in `config.j
 
 Both JavaScript and TypeScript are supported.
 
-<Tabs syncKey='code'>
-<TabItem label="TypeScript" icon='seti:typescript'>
+<Tabs syncKey="code">
+<TabItem label="TypeScript" icon="seti:typescript">
+
 ```ts title="scripts/main.ts"
 import type { Application } from '@discord-mcbe/server';
 
@@ -22,8 +23,10 @@ export default function main(app: Application) {
   app.logger.info('Custom script loaded');
 }
 ```
+
 </TabItem>
-<TabItem label="JavaScript" icon='seti:javascript'>
+<TabItem label="JavaScript" icon="seti:javascript">
+
 ```js title="scripts/main.js"
 /**
  * @param {import('@discord-mcbe/server').Application} app
@@ -32,6 +35,7 @@ export default function main(app) {
   app.logger.info('Custom script loaded');
 }
 ```
+
 </TabItem>
 </Tabs>
 
@@ -39,6 +43,7 @@ export default function main(app) {
 
 <Tabs syncKey="code">
 <TabItem label="TypeScript" icon="seti:typescript">
+
 ```ts title="scripts/main.ts"
 import type { Application } from '@discord-mcbe/server';
 
@@ -48,19 +53,20 @@ export default function main(app: Application) {
     await event.world.sendMessage('§aDiscord bridge connected');
   });
 
-app.on('playerJoin', async (event) => {
-const location = await event.player.getLocation();
-app.logger.info(`${event.player.name} joined. Location: [${location.x}, ${location.y}, ${location.z}]`);
-});
+  app.on('playerJoin', async (event) => {
+    const location = await event.player.getLocation();
+    app.logger.info(`${event.player.name} joined. Location: [${location.x}, ${location.y}, ${location.z}]`);
+  });
 
-app.on('minecraftMessage', (event) => {
-app.logger.info('Chat:', event.world.name, event.sender.name, event.message);
-});
+  app.on('minecraftMessage', (event) => {
+    app.logger.info('Chat:', event.world.name, event.sender.name, event.message);
+  });
 }
+```
 
-````
 </TabItem>
 <TabItem label="JavaScript" icon="seti:javascript">
+
 ```js title="scripts/main.js"
 /**
  * @param {import('@discord-mcbe/server').Application} app
@@ -80,7 +86,7 @@ export default function main(app) {
     app.logger.info('Chat:', event.world.name, event.sender.name, event.message);
   });
 }
-````
+```
 
 </TabItem>
 </Tabs>
@@ -102,6 +108,7 @@ The main events are listed below. See the [API reference](/reference/interfaces/
 
 <Tabs syncKey="code">
 <TabItem label="TypeScript" icon="seti:typescript">
+
 ```ts title="scripts/main.ts"
 import type { Application } from '@discord-mcbe/server';
 
@@ -111,14 +118,13 @@ export default function main(app: Application) {
     const tps = await world.getTPS();
 
     app.logger.info(world.name, result, 'TPS:', tps);
-
-});
+  });
 }
-
-````
+```
 
 </TabItem>
 <TabItem label="JavaScript" icon="seti:javascript">
+
 ```js title="scripts/main.js"
 /**
  * @param {import('@discord-mcbe/server').Application} app
@@ -129,17 +135,16 @@ export default function main(app) {
     const tps = await world.getTPS();
 
     app.logger.info(world.name, result, 'TPS:', tps);
-
-});
+  });
 }
-````
+```
 
 </TabItem>
 </Tabs>
 
 `ScriptWorld` provides messaging, commands, TPS, script events, player access, and scoreboards. `ScriptPlayer` provides direct messages, position, dimension and game-mode queries, game-mode changes, kicking, and screen display controls.
 
-See the [API reference](https://discord-mcbe.tn2048.workers.dev/reference/) for the full set of methods and types.
+See the [API reference](/reference/) for the full set of methods and types.
 
 ## <Icon name="add-document" />Add dependencies
 
