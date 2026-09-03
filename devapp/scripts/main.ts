@@ -1,8 +1,7 @@
-/**
- * @param {import('@discord-mcbe/server').Application} app
- */
-export default function main(app) {
-  console.log('[Script] loaded!', app.config);
+import type { Application } from '@discord-mcbe/server';
+
+export default function main(app: Application) {
+  app.logger.info('[Script] loaded!');
 }
 
 // const PREFIX = '.';

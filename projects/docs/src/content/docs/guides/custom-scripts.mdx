@@ -1,19 +1,30 @@
 ---
 title: カスタムスクリプト
-description: JavaScriptからdiscord-mcbeのイベントとワールドAPIを拡張します。
+description: JavaScript/TypeScriptでdiscord-mcbeの機能を拡張する方法を説明します。
 ---
 
-import { Aside, Icon } from '@astrojs/starlight/components';
+import { Aside, Icon, Tabs, TabItem } from '@astrojs/starlight/components';
 
-起動時に`config.json`の`script.entry`で指定したJavaScriptモジュールを読み込み、`default export`へ`Application`インスタンスを渡します。デフォルトのエントリーポイントは`scripts/main.js`です。
+カスタムスクリプト機能は、discord-mcbeの機能をJavaScript/TypeScriptで拡張するための仕組みです。Botの起動時にスクリプトを読み込み、イベントを受け取ったり、ワールドやプレイヤーを操作できます。
 
-<Aside type="danger" title="カスタムスクリプトは信頼できるものだけ実行してください">
-  スクリプトはdiscord-mcbeと同じOS権限で実行され、Botトークン、ファイル、ネットワーク、Minecraftコマンドへアクセスできます。
-</Aside>
+起動時に`config.json`の`script.entry`で指定したファイルが読み込まれ、`default export`した関数が呼び出されます。関数の引数には、discord-mcbe本体の`Application`インスタンスが渡されます。
 
 ## <Icon name="document" />最小構成
 
-```js
+JavaScript/TypeScriptの両方に対応しています。
+
+<Tabs syncKey='code'>
+<TabItem label="TypeScript" icon='seti:typescript'>
+```ts title="scripts/main.ts"
+import type { Application } from '@discord-mcbe/server';
+
+export default function main(app: Application) {
+  app.logger.info('Custom script loaded');
+}
+```
+</TabItem>
+<TabItem label="JavaScript" icon='seti:javascript'>
+```js title="scripts/main.js"
 /**
  * @param {import('@discord-mcbe/server').Application} app
  */
@@ -21,12 +32,36 @@ export default function main(app) {
   app.logger.info('Custom script loaded');
 }
 ```
-
-ファイルを保存してdiscord-mcbeを再起動します。ホットリロードはありません。現在のランチャーはJavaScriptを直接読み込むため、TypeScriptは事前にJavaScriptへ変換してください。
+</TabItem>
+</Tabs>
 
 ## <Icon name="clock" />イベントを受け取る
 
-```js
+<Tabs syncKey='code'>
+<TabItem label="TypeScript" icon='seti:typescript'>
+```ts title="scripts/main.ts"
+import type { Application } from '@discord-mcbe/server';
+
+export default function main(app: Application) {
+  app.on('worldConnect', async (event) => {
+    app.logger.info('Connected:', event.world.name);
+    await event.world.sendMessage('§aDiscord bridge connected');
+  });
+
+app.on('playerJoin', async (event) => {
+const location = await event.player.getLocation();
+app.logger.info(`${event.player.name}がログインしました。座標: [${location.x}, ${location.y}, ${location.z}]`);
+});
+
+app.on('minecraftMessage', (event) => {
+app.logger.info('Chat:', event.world.name, event.sender.name, event.message);
+});
+}
+
+````
+</TabItem>
+<TabItem label="JavaScript" icon='seti:javascript'>
+```js title="scripts/main.js"
 /**
  * @param {import('@discord-mcbe/server').Application} app
  */
@@ -38,16 +73,19 @@ export default function main(app) {
 
   app.on('playerJoin', async (event) => {
     const location = await event.player.getLocation();
-    app.logger.info(event.player.name, location);
+    app.logger.info(`${event.player.name}がログインしました。座標: [${location.x}, ${location.y}, ${location.z}]`);
   });
 
   app.on('minecraftMessage', (event) => {
     app.logger.info('Chat:', event.world.name, event.sender.name, event.message);
   });
 }
-```
+````
 
-主なイベントは次のとおりです。
+</TabItem>
+</Tabs>
+
+主なイベントは次のとおりです。詳しくは[APIリファレンス](/reference/interfaces/_discord-mcbe_server.ApplicationEvents)を参照してください。
 
 | イベント                     | 主な値                       | タイミング                                         |
 | ---------------------------- | ---------------------------- | -------------------------------------------------- |
@@ -62,7 +100,25 @@ export default function main(app) {
 
 ## <Icon name="puzzle" />ワールドを操作する
 
-```js
+<Tabs syncKey='code'>
+<TabItem label="TypeScript" icon='seti:typescript'>
+```ts title="scripts/main.ts"
+import type { Application } from '@discord-mcbe/server';
+
+export default function main(app: Application) {
+  app.on('worldConnect', async ({ world }) => {
+    const result = await world.runCommand('weather clear');
+    const tps = await world.getTPS();
+
+    app.logger.info(world.name, result, 'TPS:', tps);
+
+});
+}
+
+````
+</TabItem>
+<TabItem label="JavaScript" icon='seti:javascript'>
+```js title="scripts/main.js"
 /**
  * @param {import('@discord-mcbe/server').Application} app
  */
@@ -74,7 +130,10 @@ export default function main(app) {
     app.logger.info(world.name, result, 'TPS:', tps);
   });
 }
-```
+````
+
+</TabItem>
+</Tabs>
 
 `ScriptWorld`からメッセージ送信、コマンド、TPS、Script Event、プレイヤー、スコアボードを操作できます。`ScriptPlayer`では個別メッセージ、座標・ディメンション・ゲームモード取得、ゲームモード変更、キック、画面表示を扱えます。
 
@@ -82,19 +141,6 @@ export default function main(app) {
 
 ## <Icon name="add-document" />依存パッケージを追加する
 
-ランチャーの`app/`は更新時に再展開されるため、独自コードは`scripts/`へ置きます。外部パッケージはランチャーのルートにある`package.json`へ追加します。内蔵Bunを使う場合は、サーバーを停止して次を実行します。
+カスタムスクリプトでは、npmで公開されているパッケージを自由に利用できます。ランチャーと同じディレクトリにある`package.json`へ、使いたいパッケージを追加してください。パッケージマネージャーはnpm、pnpm、Bunなどから自由に選べます。
 
-**Windows PowerShell**
-
-```powershell
-$env:BUN_BE_BUN = '1'
-.\updater.exe add package-name
-```
-
-**Linux / macOS**
-
-```bash
-BUN_BE_BUN=1 ./updater add package-name
-```
-
-`package-name`は使用するパッケージ名に置き換えます。更新前には`package.json`、`scripts/`、設定ファイルをバックアップしてください。
+追加したパッケージは、`scripts/`内のファイルから通常どおり`import`できます。`@discord-mcbe/server`と`@discord-mcbe/shared`はdiscord-mcbe本体が提供するため、別途インストールする必要はありません。

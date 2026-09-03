@@ -17,7 +17,7 @@ discord-mcbe connects Minecraft worlds to a Discord text channel. It relays chat
 - Regular hosted worlds and Bedrock Dedicated Server support
 - Multiple world connections
 - Player lists, command execution, and a live status panel
-- Configurable message filters and custom JavaScript scripts
+- Configurable message filters and custom JavaScript/TypeScript scripts
 
 ## Installation
 

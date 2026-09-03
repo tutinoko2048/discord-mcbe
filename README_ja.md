@@ -17,7 +17,7 @@ discord-mcbeは、MinecraftのワールドとDiscordのテキストチャンネ�
 - 通常のワールドとBedrock Dedicated Serverへの対応
 - 複数ワールドの同時接続
 - プレイヤー一覧、コマンド実行、リアルタイムのステータスパネル
-- メッセージフィルターとJavaScriptカスタムスクリプト
+- メッセージフィルターとJavaScript/TypeScriptによるカスタムスクリプト
 
 ## 導入
 
