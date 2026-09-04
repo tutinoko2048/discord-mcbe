@@ -41,7 +41,7 @@ export type LangArgs = {
   'console.reply': [Arg, Arg, Arg, Arg, Arg];
   'console.reply.withAttachments': [Arg, Arg, Arg, Arg, Arg];
   'console.script.ready': [Arg];
-  'console.socket.command': [Arg];
+  'console.socket.command': [];
   'console.socket.ready': [Arg];
   'death.attack.anvil': [Arg];
   'death.attack.arrow': [Arg, Arg];

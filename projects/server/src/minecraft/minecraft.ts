@@ -1,4 +1,5 @@
-import { green } from 'colorette';
+import { networkInterfaces, type NetworkInterfaceInfo } from 'node:os';
+import { gray, green } from 'colorette';
 import {
   DisconnectReason,
   ActionId,
@@ -97,7 +98,16 @@ export class MinecraftHandler {
 
   private onOpen() {
     this.logger.info(_t('console.socket.ready', this.app.env.SOCKET_PORT));
-    this.logger.info(_t('console.socket.command', green(`/connect localhost:${this.app.env.SOCKET_PORT}`)));
+    this.logger.info(_t('console.socket.command'));
+    this.logger.info(`  Local:   ${green(`/connect localhost:${this.app.env.SOCKET_PORT}`)}`);
+    const networkCommands = getNetworkIPv4Addresses().map(({ address, interfaceName }) => ({
+      command: `/connect ${address}:${this.app.env.SOCKET_PORT}`,
+      interfaceName,
+    }));
+    const commandWidth = Math.max(0, ...networkCommands.map(({ command }) => command.length));
+    for (const { command, interfaceName } of networkCommands) {
+      this.logger.info(`  Network: ${green(command.padEnd(commandWidth))}  ${gray(interfaceName)}`);
+    }
   }
 
   private onError(error: Error) {
@@ -149,6 +159,21 @@ export class MinecraftHandler {
         return assertNever(packet);
     }
   }
+}
+
+export function getNetworkIPv4Addresses(
+  interfaces: Record<
+    string,
+    Pick<NetworkInterfaceInfo, 'address' | 'family' | 'internal'>[] | undefined
+  > = networkInterfaces(),
+): { address: string; interfaceName: string }[] {
+  const addresses = new Map<string, string>();
+  for (const [interfaceName, entries] of Object.entries(interfaces)) {
+    for (const { address, family, internal } of entries ?? []) {
+      if (family === 'IPv4' && !internal && !addresses.has(address)) addresses.set(address, interfaceName);
+    }
+  }
+  return [...addresses].map(([address, interfaceName]) => ({ address, interfaceName }));
 }
 
 function assertNever(value: never): never {
