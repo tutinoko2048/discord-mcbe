@@ -10,11 +10,17 @@ import PickaxeIcon from '~icons/lucide/pickaxe';
 
 ### Minecraft → Discord
 
+![minecraftチャット連携のイメージ](../../../assets/discord_ja.png)
+
 接続中のワールドでプレイヤーが送信した通常のチャットを`CHANNEL_ID`へ転送します。参加、退出、ワールド接続、切断も埋め込みメッセージで通知します。
 
-複数ワールド接続時には、識別のためにワールド名がメッセージへ追加されます。Minecraftの`§`カラーコードはデフォルトで除去されます。
+- 複数ワールド接続時には、識別のためにワールド名がメッセージへ追加されます。
+- Minecraftの`§`カラーコードはデフォルトで除去されます。
+- [Webhookモードに切り替える](/guides/configuration/#チャット連携にwebhookを使う)ことで、プレイヤー名をdiscordメッセージの送信者として表示することができます
 
 ### Discord → Minecraft
+
+![minecraftチャット連携のイメージ](../../../assets/minecraft_ja.png)
 
 `CHANNEL_ID`でユーザーが送ったメッセージを、接続中のすべてのワールドへ送ります。
 
@@ -23,6 +29,22 @@ import PickaxeIcon from '~icons/lucide/pickaxe';
 - 返信メッセージは返信先の名前と短い本文プレビューも表示します。
 - 添付ファイルのあるメッセージはファイル数を通知します。
 - [メッセージフィルター](/guides/configuration/#discordメッセージフィルター)で長文や正規表現に一致する内容を短縮・置換・破棄できます。
+
+## <Icon name="server" />複数ワールドへの接続
+
+discord-mcbeは、複数のMinecraftワールドを同時に接続できます。各ワールドに重複しない名前を設定すると、Discord上で送信元を識別できます。接続方法は[ワールドのセットアップ](/installation/setup-world/)を参照してください。
+
+`/dmc:setname <名前>`でワールド名を設定したあと、Discordの`/list`や`/command`で`world`を指定すると、対象ワールドだけを選択できます。`world`を省略した場合は、接続中のすべてのワールドが対象です。
+
+![複数ワールド接続時の表示例](../../../assets/multiple-world.png)
+
+## 死亡ログの送信
+
+プレイヤーが死亡すると、死亡原因に応じたMinecraftの死亡メッセージをDiscordへ送信します。複数ワールドを接続している場合は、送信元のワールド名も表示されます。
+
+死亡ログの送信は、`config.json`の`bot.show_death_messages`で切り替えられます。既定値は`true`です。送信しない場合は`false`に設定してください。詳しくは[設定](/guides/configuration/#configjson)を参照してください。
+
+![死亡ログの表示例](../../../assets/death_log_ja.png)
 
 ## <Icon name="discord" />Discord側の追加コマンド
 

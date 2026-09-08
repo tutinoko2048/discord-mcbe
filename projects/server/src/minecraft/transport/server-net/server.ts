@@ -66,7 +66,9 @@ export class ServerNetBridgeServer extends EventEmitter<ServerNetBridgeEvents> {
   async stop(): Promise<void> {
     const server = this.server;
     if (!server) return;
-    await Promise.allSettled([...this.sessions].map((session) => session.disconnect()));
+    await Promise.allSettled(
+      [...this.sessions].map((session) => session.disconnect(DisconnectReason.ConnectionLost)),
+    );
     await new Promise<void>((resolve, reject) => {
       server.close((error) => (error ? reject(error) : resolve()));
     });

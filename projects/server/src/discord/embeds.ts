@@ -8,6 +8,7 @@ export const enum Palette {
   Disconnect = 0x757575,
   Join = 0x66bb6a,
   Leave = 0xef5350,
+  Death = 0xffb300,
 }
 
 export const createErrorEmbed = (desc: string) => {

@@ -10,11 +10,17 @@ import PickaxeIcon from '~icons/lucide/pickaxe';
 
 ### Minecraft → Discord
 
+![Example of Minecraft chat relay](../../../../assets/discord_en.png)
+
 Normal chat from players in a connected world is sent to `CHANNEL_ID`. Join, leave, world-connect, and disconnect events are sent as embeds.
 
-When multiple worlds are connected, the world name is added to identify the source. Minecraft `§` color codes are removed by default.
+- When multiple worlds are connected, the world name is added to identify the source.
+- Minecraft `§` color codes are removed by default.
+- [Switch to webhook mode](/en/guides/configuration/#use-webhooks-for-chat-relay) to show the player name as the sender of the Discord message.
 
 ### Discord → Minecraft
+
+![Example of Minecraft chat relay](../../../../assets/minecraft_en.png)
 
 Messages from users in `CHANNEL_ID` are broadcast to every connected world.
 
@@ -23,6 +29,22 @@ Messages from users in `CHANNEL_ID` are broadcast to every connected world.
 - Replies include the source author's name and a short content preview.
 - Messages with attachments show the file count.
 - [Message filters](/en/guides/configuration/#discord-message-filters) can shorten long messages or replace or reject content matching a regular expression.
+
+## <Icon name="server" />Connecting to multiple worlds
+
+discord-mcbe can connect multiple Minecraft worlds at the same time. Give each world a unique name so that messages can be identified by their source. See [world setup](/en/installation/setup-world/) for connection instructions.
+
+After setting a world name with `/dmc:setname <name>`, specify `world` in Discord's `/list` or `/command` to target one world. Omitting `world` targets every connected world.
+
+![Example of multiple connected worlds](../../../../assets/multiple-world.png)
+
+## Send death logs
+
+When a player dies, discord-mcbe sends the Minecraft death message for the cause of death to Discord. When multiple worlds are connected, the source world name is also shown.
+
+Use `bot.show_death_messages` in `config.json` to control death logs. It defaults to `true`; set it to `false` to disable them. See [configuration](/en/guides/configuration/#configjson) for details.
+
+![Example of a death log](../../../../assets/death_log_en.png)
 
 ## <Icon name="discord" />Additional Discord commands
 

@@ -5,6 +5,7 @@ description: Diagnose bot, Discord command, regular-world, and BDS connection pr
 
 import { Aside, Icon } from '@astrojs/starlight/components';
 import { BDS_SCRIPT_MODULE_UUID } from '../../../../lib/bds-config';
+import { DISCORD_URL } from '../../../../variables';
 
 First confirm that the server and add-on came from the same release. If you changed `.env` or `config.json`, confirm that you restarted discord-mcbe afterward.
 
@@ -94,7 +95,7 @@ The WebSocket is connected, but the add-on is not working correctly. Confirm tha
 
 ## If you still cannot solve the problem
 
-Ask in the [Discord community](https://discord.gg/XJ8mK3G8cw). Including the following information will help:
+Ask in the <a href={DISCORD_URL} target="_blank" rel="noopener noreferrer">Discord community</a>. Including the following information will help:
 
 - Minecraft version
 - discord-mcbe version for both the bot and add-on

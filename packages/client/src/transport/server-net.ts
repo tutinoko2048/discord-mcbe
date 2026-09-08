@@ -221,7 +221,6 @@ export class ServerNetBridgeClient extends Emitter<ServerNetBridgeEvents> implem
 
     if (disconnectReason !== null) {
       this.closeReason = disconnectReason;
-      this.closeSocket();
     }
   }
 

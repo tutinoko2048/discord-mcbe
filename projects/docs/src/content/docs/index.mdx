@@ -1,12 +1,17 @@
 ---
 title: discord-mcbe
-description: Minecraft Bedrock EditionとDiscordのチャットをつなぐDiscord Botです。
+description: Minecraft統合版のための高機能Discord連携Bot
+head:
+  - tag: meta
+    attrs:
+      property: og:type
+      content: website
 template: splash
 hero:
-  tagline: MinecraftとDiscordのチャットをつなぐDiscord BOT
+  tagline: Minecraft統合版のための高機能Discord連携Bot
   image:
-    alt: discord-mcbeのスクリーンショット
-    file: ../../assets/minecraft.jpeg
+    alt: ロゴ
+    file: ../../../../addon-bds/pack_icon.png
   actions:
     - text: 導入を始める
       link: /installation/setup-bot/
@@ -20,8 +25,6 @@ hero:
 import { Aside, Card, CardGrid, Icon } from '@astrojs/starlight/components';
 import AddonDownloads from '../../components/AddonDownloads.astro';
 import LauncherDownloads from '../../components/LauncherDownloads.astro';
-
-{/* discord-mcbeは、Minecraft Bedrock EditionのワールドとDiscordサーバーのテキストチャンネルをつなぐオープンソースのブリッジです。一般的なチャットに加え、参加・退出通知、プレイヤー一覧、コマンド実行、ステータスパネルをひとつのBotで扱えます。 */}
 
 <CardGrid stagger>
   <Card title="双方向チャット" icon="comment-alt">

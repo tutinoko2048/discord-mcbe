@@ -3,13 +3,14 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import starlightThemeRapide from 'starlight-theme-rapide';
 import Icons from 'unplugin-icons/vite';
+import { DISCORD_URL } from './src/variables';
 
 // Pagefind's Linux ARM64 binary does not support hosts with a 16 KiB page size.
 const supportsPagefind = process.platform !== 'linux' || process.arch !== 'arm64';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://discord-mcbe.tn2048.workers.dev',
+  site: 'https://discord-mcbe.retomc.dev',
   integrations: [
     starlight({
       title: 'discord-mcbe',
@@ -32,7 +33,7 @@ export default defineConfig({
       },
       social: [
         { icon: 'github', label: 'GitHub', href: 'https://github.com/tutinoko2048/discord-mcbe' },
-        { icon: 'discord', label: 'Discord', href: 'https://discord.gg/XGR8FcCeFc' },
+        { icon: 'discord', label: 'Discord', href: DISCORD_URL },
       ],
       sidebar: [
         {
@@ -40,13 +41,13 @@ export default defineConfig({
           translations: { en: 'Installation' },
           items: [
             {
-              label: 'Botとサーバー',
-              translations: { en: 'Bot and server' },
+              label: 'Botの準備',
+              translations: { en: 'Setup bot' },
               slug: 'installation/setup-bot',
             },
             {
-              label: 'Minecraftワールド',
-              translations: { en: 'Minecraft world' },
+              label: 'Minecraftワールドの準備',
+              translations: { en: 'Setup Minecraft world' },
               slug: 'installation/setup-world',
             },
           ],
@@ -56,14 +57,14 @@ export default defineConfig({
           translations: { en: 'Guides' },
           items: [
             {
+              label: '機能とコマンド',
+              translations: { en: 'Features and commands' },
+              slug: 'guides/commands',
+            },
+            {
               label: '設定',
               translations: { en: 'Configuration' },
               slug: 'guides/configuration',
-            },
-            {
-              label: 'コマンドと機能',
-              translations: { en: 'Commands and features' },
-              slug: 'guides/commands',
             },
             {
               label: '翻訳とテキストのカスタマイズ',

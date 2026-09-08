@@ -5,6 +5,7 @@ description: Bot、Discordコマンド、ローカルワールド、BDSの接続
 
 import { Aside, Icon } from '@astrojs/starlight/components';
 import { BDS_SCRIPT_MODULE_UUID } from '../../../lib/bds-config';
+import { DISCORD_URL } from '../../../variables';
 
 最初に、サーバーとアドオンが同じリリースであること、`.env`や`config.json`を変更した場合は再起動済みであることを確認してください。
 
@@ -85,7 +86,10 @@ WebSocket自体には接続できていますが、アドオンが正しく動�
 
 ## どうしても解決しないときは
 
-[Discordコミュニティ](https://discord.gg/XJ8mK3G8cw)で質問してみましょう。以下の情報も添えていただくと助かります
+<a href={DISCORD_URL} target="_blank" rel="noopener noreferrer">
+  Discordコミュニティ
+</a>
+で質問してみましょう。以下の情報も添えていただくと助かります
 
 - Minecraftのバージョン
 - discord-mcbeのバージョン (bot, アドオンそれぞれ)

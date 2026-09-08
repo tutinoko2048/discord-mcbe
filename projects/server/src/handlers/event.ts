@@ -108,7 +108,7 @@ export class EventHandler {
           content: message,
           avatarUrlTemplate: this.app.config.bot.minecraft_chat_avatar_url,
         });
-      } else if (worldCount > 2) {
+      } else if (worldCount >= 2) {
         await this.app.bot.sendMessage(_t('discord.chat.multipleWorlds', world.name, sender.name, message));
       } else {
         await this.app.bot.sendMessage(_t('discord.chat', sender.name, message));
@@ -208,7 +208,7 @@ export class EventHandler {
     const embed = new EmbedBuilder();
     embed.setColor(Palette.Join);
     embed.setDescription(_t('discord.join', player.name));
-    if (app.minecraft.getWorlds().length > 2) embed.setFooter({ text: world.name });
+    if (app.minecraft.getWorlds().length >= 2) embed.setFooter({ text: world.name });
 
     try {
       await this.app.bot.sendMessage({ embeds: [embed] });
@@ -225,7 +225,7 @@ export class EventHandler {
     const embed = new EmbedBuilder();
     embed.setColor(Palette.Leave);
     embed.setDescription(_t('discord.leave', player.name));
-    if (app.minecraft.getWorlds().length > 2) embed.setFooter({ text: world.name });
+    if (app.minecraft.getWorlds().length >= 2) embed.setFooter({ text: world.name });
 
     try {
       await this.app.bot.sendMessage({ embeds: [embed] });
@@ -245,8 +245,8 @@ export class EventHandler {
     this.logger.info(`[${world.name}] ${message}`);
 
     //TODO: change color?
-    const embed = new EmbedBuilder().setColor(Palette.Leave).setDescription(message);
-    if (app.minecraft.getWorlds().length > 2) embed.setFooter({ text: world.name });
+    const embed = new EmbedBuilder().setColor(Palette.Death).setDescription(message);
+    if (app.minecraft.getWorlds().length >= 2) embed.setFooter({ text: world.name });
 
     try {
       await this.app.bot.sendMessage({ embeds: [embed] });
