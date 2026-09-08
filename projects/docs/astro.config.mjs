@@ -22,6 +22,13 @@ export default defineConfig({
       },
       head: [
         {
+          tag: 'meta',
+          attrs: {
+            property: 'og:image',
+            content: 'https://discord-mcbe.retomc.dev/thumbnail.webp',
+          },
+        },
+        {
           tag: 'script',
           content:
             "if (localStorage.getItem('starlight-theme') === null) localStorage.setItem('starlight-theme', 'dark');",
