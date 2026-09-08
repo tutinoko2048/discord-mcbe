@@ -1,87 +1,82 @@
 ---
 title: Commands and features
-description: Learn the Discord and Minecraft commands, chat relay, and status panel.
+description: Learn about Discord and Minecraft commands and other features.
 ---
 
-import { Aside, Icon } from '@astrojs/starlight/components';
+import { Icon } from '@astrojs/starlight/components';
+import PickaxeIcon from '~icons/lucide/pickaxe';
 
-## <Icon name="terminal" />Discord commands
+## <Icon name="comment-alt" />Chat relay
+
+### Minecraft → Discord
+
+Normal chat from players in a connected world is sent to `CHANNEL_ID`. Join, leave, world-connect, and disconnect events are sent as embeds.
+
+When multiple worlds are connected, the world name is added to identify the source. Minecraft `§` color codes are removed by default.
+
+### Discord → Minecraft
+
+Messages from users in `CHANNEL_ID` are broadcast to every connected world.
+
+- Messages sent by this bot or other bots are not relayed.
+- The member's Discord display name is used as the sender.
+- Replies include the source author's name and a short content preview.
+- Messages with attachments show the file count.
+- [Message filters](/en/guides/configuration/#discord-message-filters) can shorten long messages or replace or reject content matching a regular expression.
+
+## <Icon name="discord" />Additional Discord commands
 
 At startup, the bot registers commands in the Discord server specified by `GUILD_ID`.
 
-| Command                                             | Permission    | Description                                                     |
-| --------------------------------------------------- | ------------- | --------------------------------------------------------------- |
-| `/ping`                                             | Everyone      | Show latency for the bot and every connected world              |
-| `/list [silent] [world]`                            | Everyone      | Show player counts and names; `silent` makes the result private |
-| `/command command:<command> [raw] [world] [silent]` | Administrator | Execute a Minecraft command and display its result              |
-| `/panel create`                                     | Administrator | Create the status panel in the current channel                  |
-| `/panel show`                                       | Administrator | Show a link to the stored status panel                          |
+| Command                                     | Permission    | Description                                        |
+| ------------------------------------------- | ------------- | -------------------------------------------------- |
+| `/ping`                                     | Everyone      | Show latency for the bot and every connected world |
+| `/list [silent] [world]`                    | Everyone      | Show player counts and names                       |
+| `/command <command> [raw] [world] [silent]` | Administrator | Execute a Minecraft command and display its result |
+| `/panel create`                             | Administrator | Create the status panel in the current channel     |
+| `/panel show`                               | Administrator | Show a link to the stored status panel             |
 
-### <Icon name="right-arrow" />/command
+### `/command`
 
 Enter the Minecraft command in `command` without a leading slash.
 
 ```text
-/command command:time set day world:survival silent:true
+/command time set day world:survival silent:true
 ```
 
 - Omitting `world` executes the command in every connected world.
-- World suggestions use each add-on's world name.
 - `raw` displays the raw result as JSON.
 - A result longer than the embed threshold is attached as `results.txt`.
 - `silent` makes the response visible only to the person who ran it.
 
-<Aside type="caution" title="Only Discord administrators can execute Minecraft commands">
-  `/command` and `/panel` default to Discord's Administrator member permission. This does not mean the bot
-  itself needs Administrator. You can restrict command access further in Discord's Integrations settings.
-</Aside>
-
-### <Icon name="analytics" />Status panel
+### `/panel` - Status panel
 
 `/panel create` posts an embed that periodically refreshes with:
 
-- Discord Gateway latency and bot uptime
+- Discord bot ping and uptime
 - World name, host type, latency, and connection time
 - Player count and player names
 - The discord-mcbe version
 
-Only one panel is stored. Creating another removes the old panel, and its message ID is persisted in `.discord-mcbe/data.json`. If the message is deleted manually, the stored value is cleared the next time it is fetched. Change the refresh interval in [configuration](/en/guides/configuration/#configjson).
+Only one panel is stored. Creating another removes the old panel. Change the refresh interval in [configuration](/en/guides/configuration/#configjson).
 
-## <Icon name="messages" />Chat relay
+### Command permissions
 
-### <Icon name="right-arrow" />Minecraft to Discord
+By default, commands marked as requiring Administrator permission can only be run by users with the server's Administrator permission. To change access for individual commands, open `Server Settings > Apps > Integrations > [Bot name] > Commands`.
 
-Normal chat from players in a connected world is sent to `CHANNEL_ID`. Join, leave, world-connect, and disconnect events are sent as embeds.
+## <PickaxeIcon font-size="0.85em" />Additional Minecraft commands
 
-When multiple worlds are connected, a world name is included where needed. Minecraft `§` color codes are removed by default.
-
-### <Icon name="left-arrow" />Discord to Minecraft
-
-Messages from users in `CHANNEL_ID` are broadcast to every connected world.
-
-- Messages authored by bots are ignored to prevent loops.
-- The member's Discord display name is used as the sender.
-- Replies include the source author's name and a short content preview.
-- Attachment data is not downloaded; only the file count is shown.
-- [Message filters](/en/guides/configuration/#discord-message-filters) can trim, replace, or reject content.
+| Command               | Permission | Description                   |
+| --------------------- | ---------- | ----------------------------- |
+| `/dmc:discord-mcbe`   | Operator   | Open the settings form        |
+| `/dmc:dmc`            | Operator   | Alias for `/dmc:discord-mcbe` |
+| `/dmc:setname <name>` | Operator   | Change the world name         |
+| `/dmc:disconnect`     | Host       | Disconnect from discord-mcbe  |
 
 ## <Icon name="desktop" />Server console
 
-Type a Minecraft command into the terminal running discord-mcbe to execute it in every connected world. A leading slash is optional.
+Type a Minecraft command into the terminal running discord-mcbe to execute it in every connected world.
 
-```text
+```ansi
 say Server maintenance starts in 10 minutes
 ```
-
-Anyone with console access can execute unrestricted Minecraft commands. Protect the host OS account and its files accordingly.
-
-## <Icon name="puzzle" />Minecraft commands
-
-| Command               | Permission | Description                           |
-| --------------------- | ---------- | ------------------------------------- |
-| `/dmc:dmc`            | Admin      | Open the discord-mcbe settings form   |
-| `/dmc:discord-mcbe`   | Admin      | Alias for the settings form           |
-| `/dmc:setname <name>` | Host       | Save the world name                   |
-| `/dmc:disconnect`     | Admin      | Disconnect the current bridge session |
-
-A world name change takes effect on the next connection. Use a unique name for every concurrently connected world.

@@ -141,7 +141,12 @@ export class DiscordBot<READY extends boolean = false> {
   private async onReady(client: Client<true>) {
     this.logger.info(_t('console.login', client.user.tag));
 
-    const channel = client.channels.cache.get(this.app.env.CHANNEL_ID);
+    const guild = client.guilds.cache.get(this.app.env.GUILD_ID);
+    if (!guild) {
+      throw new Error(`Failed to find the guild (ID: ${this.app.env.GUILD_ID})`);
+    }
+
+    const channel = guild.channels.cache.get(this.app.env.CHANNEL_ID);
     this.validateChannel(channel);
 
     await this.interactions.register(client);

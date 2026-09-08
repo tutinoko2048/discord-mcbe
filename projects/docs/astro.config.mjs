@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import starlightThemeRapide from 'starlight-theme-rapide';
+import Icons from 'unplugin-icons/vite';
 
 // Pagefind's Linux ARM64 binary does not support hosts with a 16 KiB page size.
 const supportsPagefind = process.platform !== 'linux' || process.arch !== 'arm64';
@@ -18,6 +19,13 @@ export default defineConfig({
         src: '../addon-local/pack_icon.png',
         alt: 'discord-mcbe',
       },
+      head: [
+        {
+          tag: 'script',
+          content:
+            "if (localStorage.getItem('starlight-theme') === null) localStorage.setItem('starlight-theme', 'dark');",
+        },
+      ],
       locales: {
         root: { label: '日本語', lang: 'ja' },
         en: { label: 'English', lang: 'en' },
@@ -100,4 +108,7 @@ export default defineConfig({
       customCss: ['./src/styles/custom.css'],
     }),
   ],
+  vite: {
+    plugins: [Icons({ compiler: 'astro' })],
+  },
 });

@@ -1,25 +1,24 @@
 ---
 title: Set up the bot and server
-description: Create a Discord bot and run the current v4 server with launcher v2.
+description: Learn how to create a Discord bot and run the discord-mcbe server.
 ---
 
 import { Aside, Icon, Steps } from '@astrojs/starlight/components';
 import LauncherDownloads from '../../../../components/LauncherDownloads.astro';
 
-<Aside type="note" title="This page targets stable v4">
-  Install stable v4 with launcher v2. When upgrading from v3, back up the existing installation, set up v4 in
-  a separate directory, and create its configuration using the steps below. The v3 add-on is not compatible
-  with the v4 server.
+<Aside type="note" title="This page targets discord-mcbe v4 and later">
+  When upgrading from v3 or earlier, back up the existing installation and set up discord-mcbe in a separate
+  directory using the steps below. The old `config.json` cannot be used with v4.
 </Aside>
 
 ## <Icon name="list-format" />Requirements
 
-| Item      | Requirement                                                      |
-| --------- | ---------------------------------------------------------------- |
-| Discord   | A server where you have Manage Server permission                 |
-| Host      | Windows x64, Linux x64/arm64, or macOS x64/arm64                 |
-| Minecraft | Bedrock Edition 1.21.100 or later                                |
-| Network   | Access to the Discord API, GitHub Releases, and the npm registry |
+| Item      | Requirement                                      |
+| --------- | ------------------------------------------------ |
+| Discord   | Permission to add a bot                          |
+| Bot host  | Windows x64, Linux x64/arm64, or macOS x64/arm64 |
+| Minecraft | Bedrock Edition 1.26.40 or later                 |
+| Network   | Access to services such as Discord and GitHub    |
 
 The launcher includes its runtime. A normal installation does not require a separate Node.js or Bun installation.
 
@@ -36,7 +35,7 @@ The launcher includes its runtime. A normal installation does not require a sepa
      Developer Portal immediately.
    </Aside>
 
-3. Under **Bot → Privileged Gateway Intents**, enable **Message Content Intent**. Without it, messages cannot be relayed from Discord and the bot's connection may be rejected.
+3. Under **Bot → Privileged Gateway Intents**, enable **Message Content Intent**. Without it, message content cannot be relayed from Discord to Minecraft.
 
 4. In the Guild Install settings under **Installation** (or **OAuth2 → URL Generator**), select the `bot` and `applications.commands` scopes and grant these bot permissions:
    - View Channels
@@ -45,9 +44,9 @@ The launcher includes its runtime. A normal installation does not require a sepa
    - Attach Files
    - Read Message History
 
-   Bypass Slowmode is optional for a busy relay channel. The bot does not need Manage Channels or Administrator.
+   Bypass Slowmode is optional for a busy relay channel.
 
-5. Open the generated install link and add the bot to the Discord server you will use.
+5. Open the generated URL and add the bot to the Discord server you will use.
 
 </Steps>
 
@@ -60,17 +59,17 @@ Enable **User Settings → Advanced → Developer Mode** in Discord. Right-click
 | `GUILD_ID`   | The Discord server that contains the bot |
 | `CHANNEL_ID` | The text channel used for Minecraft chat |
 
-Check the channel permission overrides as well. They must not deny the permissions granted above.
+Check the channel permission overrides as well. They must not deny the bot's access. If the bot cannot view the channel, it cannot send messages from Minecraft to Discord.
 
-## <Icon name="rocket" />Prepare the launcher
+## <Icon name="rocket" />Prepare the discord-mcbe server
 
 <LauncherDownloads locale="en" />
 
 <Steps>
 
-1. Extract the downloaded zip to a dedicated writable directory. On Windows, if the zip's Properties dialog shows **Unblock**, enable it before extracting.
+1. Extract the downloaded zip.
 
-2. Create a file named `.env` next to `start.bat` or `start.sh` and insert the values you copied:
+2. Open the `.env` file included in the archive and insert the values you copied:
 
    ```dotenv
    DISCORD_TOKEN=your_bot_token
@@ -78,15 +77,16 @@ Check the channel permission overrides as well. They must not deny the permissio
    CHANNEL_ID=your_relay_channel_id
    # SOCKET_PORT=3063
    # BRIDGE_PORT=23191
+   # DISCORD_WEBHOOK_URL=url
    ```
 
-   Values do not need quotes. Only set `SOCKET_PORT` or `BRIDGE_PORT` when the default port conflicts with another service. BDS uses WebSocket by default.
+   Values do not need quotes (`""`). See [configuration](/en/guides/configuration/#environment-variables) for details about each value.
 
-3. Install the latest stable release and start the server.
+3. Use the updater to install the discord-mcbe server.
 
    **Windows (double-click)**
 
-   Double-click `updater.exe` and select **Stable**. When installation finishes, double-click `start.bat` to start the server.
+   Double-click `updater.exe` and select **Stable**. Windows Defender SmartScreen may warn you when starting the exe, but it is safe to continue. After installation finishes, double-click `start.bat` to start the server.
 
    You can instead run the following commands in PowerShell or Command Prompt.
 
@@ -123,7 +123,8 @@ On Windows, double-click `updater.exe` to choose a version interactively. Use Po
 | Install one version      | `updater.exe 4.0.0`        | `./updater 4.0.0`    |
 | Restore previous version | `updater.exe rollback`     | `./updater rollback` |
 
-If no stable release has been published yet, `stable` displays a warning and installs the latest beta release.
-After a successful update, the previous application remains in `app.backup/`. If the update causes a problem, stop the server and run `updater rollback`. Run it again to switch back to the version used before the rollback.
+After a successful update, the previous application remains in `app.backup/`. If the update causes a problem, stop the server and run `updater rollback` to restore the previous version.
 
-To move from a v4 beta to the stable release, run `updater.exe stable --force` (Windows) or `./updater stable --force` (Linux / macOS), then update the add-on to the same release. Add `--force` to an explicit version or track when switching back to beta or reinstalling the same version too. If the installer reports a minimum launcher version error, download a newer launcher archive.
+To move from a beta release to the stable release, run `updater.exe stable --force` (Windows) or `./updater stable --force` (Linux / macOS). Add `--force` when switching from stable to beta or reinstalling the same version as well.
+
+If the launcher itself needs an update, download a new zip from the launcher release.

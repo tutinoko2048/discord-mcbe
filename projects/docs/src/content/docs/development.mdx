@@ -8,8 +8,8 @@ import { Icon, Steps } from '@astrojs/starlight/components';
 ## <Icon name="setting" />必要なツール
 
 - Node.js 24以降
-- リポジトリの`packageManager`に従うpnpm（Corepack推奨）
-- Bun（ランチャーの開発・コンパイルとリリースアセット生成に使用）
+- Bun 1.4.0以降
+- pnpm
 - Git
 
 ## <Icon name="rocket" />セットアップ
@@ -23,10 +23,9 @@ import { Icon, Steps } from '@astrojs/starlight/components';
    cd discord-mcbe
    ```
 
-2. Corepackを有効にし、依存関係をインストールします。
+2. 依存関係をインストールします。
 
    ```bash
-   corepack enable
    pnpm install
    ```
 
@@ -39,23 +38,25 @@ import { Icon, Steps } from '@astrojs/starlight/components';
 
 </Steps>
 
+おすすめ: `.vscode/discord-mcbe.code-workspace`を開くと、VSCodeでワークスペース全体を扱いやすくなります。
+
 ## <Icon name="code-branch" />モノレポ構成
 
-| パス                       | 役割                                                 |
-| -------------------------- | ---------------------------------------------------- |
-| `projects/server`          | Discord Bot、設定、イベント、Minecraft接続サーバー   |
-| `projects/launcher`        | リリースアセットのインストール・更新と内蔵ランタイム |
-| `projects/addon-local`     | 通常ワールド用ビヘイビアーパック                     |
-| `projects/addon-bds`       | BDS用ビヘイビアーパック                              |
-| `projects/docs`            | Astro + Starlightのドキュメントサイト                |
-| `packages/client`          | 両アドオンで使うMinecraft Script APIクライアント     |
-| `packages/shared`          | 固定パケット、型、列挙、プロトコル共有コード         |
-| `packages/internal-config` | ワークスペース共通のビルド・チェック設定             |
-| `devapp`                   | ローカル開発用アプリ                                 |
+| パス                       | 役割                                           |
+| -------------------------- | ---------------------------------------------- |
+| `projects/server`          | Discord Bot / Minecraft接続サーバー本体        |
+| `projects/launcher`        | Launcher / Updater                             |
+| `projects/addon-local`     | 通常ワールド用ビヘイビアーパック               |
+| `projects/addon-bds`       | BDS用ビヘイビアーパック                        |
+| `projects/docs`            | ドキュメントWebサイト                          |
+| `packages/client`          | 両アドオンで使うScriptAPI用クライアント        |
+| `packages/shared`          | パケット定義、型、enum等プロトコル共有のコード |
+| `packages/internal-config` | ワークスペース共通のビルド・チェック設定       |
+| `devapp`                   | ローカル開発用環境                             |
 
-ローカルワールドはSocketBE、BDSは`@minecraft/server-net`のWebSocket経由で同じ固定パケット層へ接続します。通信プロトコルv2のValibotスキーマ・型・定数は`packages/shared`で管理しています。`ChatSend`・`PlayerJoin`・`PlayerLeave`は片方向通知、それ以外の操作は共通のrequest/response形式を使います。
+ローカルワールドは[SocketBE](https://github.com/tutinoko2048/SocketBE)、BDSは`@minecraft/server-net`のWebSocket経由で同じ固定パケット層へ接続します。
 
-## <Icon name="terminal" />よく使うコマンド
+## <Icon name="add-document" />よく使うコマンド
 
 | コマンド                                 | 内容                                                  |
 | ---------------------------------------- | ----------------------------------------------------- |
@@ -69,9 +70,7 @@ import { Icon, Steps } from '@astrojs/starlight/components';
 
 ## <Icon name="translate" />翻訳とドキュメント
 
-Botの組み込み翻訳は`projects/server/src/assets/locales/`にあります。英語を基準にキーと`%0`形式のプレースホルダーを揃え、必要に応じて`generate-lang-types`で型を再生成します。
-
-Webドキュメントは`projects/docs/src/content/docs/`直下が日本語、`en/`以下が英語です。同じslugを両言語に用意すると、言語切り替えに対応できます。
+[翻訳とテキストのカスタマイズ](/guides/translation-overrides) を参照してください。
 
 ## <Icon name="heart" />コントリビュート
 

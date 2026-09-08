@@ -56,7 +56,32 @@
     }
   }
 
-  .sl-markdown-content a:not(:where(.not-content *)) {
+  .download-button {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    align-items: baseline;
+    padding: 0.55rem 0.85rem;
+    border: 1px solid var(--sl-color-accent);
+    border-radius: 0.5rem;
+    background: var(--sl-color-accent-low);
+    color: var(--sl-color-accent-high);
+    font-weight: 650;
+    text-decoration: none;
+
+    &:is(:hover, :focus-visible) {
+      border-color: color-mix(in srgb, var(--sl-color-accent) 85%, black);
+      background: color-mix(in srgb, var(--sl-color-accent-low) 85%, black);
+      color: color-mix(in srgb, var(--sl-color-accent-high) 85%, black);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--sl-color-accent);
+      outline-offset: 2px;
+    }
+  }
+
+  .sl-markdown-content a:not(:where(.not-content *)):not(.download-button) {
     color: var(--sl-color-text-accent);
     text-decoration: underline;
     text-underline-offset: 2px;

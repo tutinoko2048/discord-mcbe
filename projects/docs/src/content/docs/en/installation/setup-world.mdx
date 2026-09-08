@@ -1,27 +1,17 @@
 ---
 title: Set up a Minecraft world
-description: Install and connect the v4 add-on in a regular world or Bedrock Dedicated Server.
+description: Learn how to install discord-mcbe in a regular world or Bedrock Dedicated Server.
 ---
 
-import { Aside, Icon, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+import { Aside, Icon, Steps } from '@astrojs/starlight/components';
 import AddonDownloads from '../../../../components/AddonDownloads.astro';
 import { BDS_SCRIPT_MODULE_UUID } from '../../../../lib/bds-config';
 
-discord-mcbe v4 ships two behavior packs with different transports. Use the one that matches the kind of world you run.
-
-| World                            | Download                             | Connection                | Default port |
-| -------------------------------- | ------------------------------------ | ------------------------- | ------------ |
-| Regular single/multiplayer world | `discord-mcbe-local-*.mcpack`        | Minecraft `/connect`      | `3063`       |
-| Bedrock Dedicated Server         | `discord-mcbe-bds-*.mcpack` / `.zip` | Automatic from the add-on | `23191`      |
-
-<Aside type="caution" title="Match the add-on and server versions">
-  The v3 add-on is not compatible with the v4 server. Use the server and add-on assets attached to the same
-  GitHub release.
-</Aside>
+discord-mcbe provides two add-ons for different environments. Both must be installed as behavior packs in the world.
 
 <AddonDownloads locale="en" />
 
-## <Icon name="laptop" />Regular hosted world
+## <Icon name="laptop" />Regular (local) world
 
 <Steps>
 
@@ -29,71 +19,58 @@ discord-mcbe v4 ships two behavior packs with different transports. Use the one 
 
 2. Open the mcpack with Minecraft, then activate `discord-mcbe local client` under the world's **Behavior Packs**.
 
-3. The current pack uses beta Script APIs. Enable **Beta APIs** if the world settings ask for it. Testing in a copy of the world is recommended.
+3. The pack uses beta Script APIs. Enable **Beta APIs** under `World Settings > Experiments`.
 
 4. Start the discord-mcbe server. The terminal prints instructions similar to:
 
-   ```text
+   ```ansi
    [Local] SocketBridge server is listening on port: 3063
-   [Local] Type /connect localhost:3063 in Minecraft to connect.
+   [Local] Enter one of the following commands in Minecraft to connect:
+     Local:   /connect localhost:3063
+     Network: /connect 192.168.11.7:3063   Wi-Fi
    ```
 
-5. Run the connection command as the player hosting the world.
+   As the player hosting the world, run the displayed command in Minecraft.
+   Choose `Local` when connecting from the same device, or `Network` when connecting from another device.
 
-   <Tabs>
-     <TabItem label="Same PC">`/connect localhost:3063`</TabItem>
-     <TabItem label="Another device">
-       `/connect 192.168.1.10:3063` — replace `192.168.1.10` with the LAN address of the machine running
-       discord-mcbe.
-     </TabItem>
-   </Tabs>
-
-6. The setup is complete when both Minecraft and Discord display the world connection message.
+5. The setup is complete when both Minecraft and Discord display the world connection message.
 
 </Steps>
-
-### <Icon name="pencil" />Change the world name
-
-The add-on's world name is shown in selectors and the status panel. The default is `discord-mcbe-local`. An operator can change it with either command below, then reconnect.
-
-```text
-/dmc:dmc
-/dmc:setname survival
-/dmc:disconnect
-/connect localhost:3063
-```
-
-Give every concurrently connected world a unique name such as `survival` or `creative`.
 
 ## <Icon name="server" />Bedrock Dedicated Server
 
 <Steps>
 
-1. Download the zip under **Bedrock Dedicated Server** above. Do not use the `local` pack.
+1. Download the zip under **Bedrock Dedicated Server** above.
 
-2. Extract the behavior pack into the BDS `behavior_packs` directory and register it for the target world. You can instead apply the mcpack to a world in a Minecraft client, then move that world to BDS.
+2. Extract the behavior pack into the BDS `development_behavior_packs` directory or the world's `behavior_packs` directory. Edit `world_behavior_packs.json` to enable it for the world. You can instead apply the mcpack to a world in a Minecraft client, then move that world to BDS.
 
-3. The pack uses Beta APIs and the `@minecraft/server-net` WebSocket API. Use BDS 1.26.20 or later and enable the required experimental world features.
+3. Enable Beta APIs because the pack uses beta Script APIs. You can edit `level.dat` directly or open the world once in Minecraft before moving it to BDS. If you prefer a tool, see [bds-utils](https://github.com/tutinoko2048/bds-utils).
 
-4. Start discord-mcbe first, then start BDS. When both run on the same machine with the defaults, the add-on connects to `localhost:23191` over WebSocket automatically. Do not run `/connect`.
+4. Confirm that `@minecraft/server-net` is included in the `allowed_modules` list in BDS's `config/default/permissions.json`. If it is not listed, add it.
 
-5. Confirm that the discord-mcbe log contains `[BDS] Bridge server is listening on port: 23191` followed by the world connection message.
+5. Start discord-mcbe first, then start BDS. When both run on the same machine with the defaults, the add-on connects to `localhost:23191` over WebSocket automatically. Do not run `/connect`.
+
+6. Confirm that the discord-mcbe log contains `[BDS] Bridge server is listening on port: 23191` followed by the world connection message.
 
 </Steps>
 
 <Aside type="note" title="Running on separate machines">
-  Create <code>{`config/${BDS_SCRIPT_MODULE_UUID}/variables.json`}</code> in the BDS installation folder, then
-  set `BRIDGE_HOST` to the discord-mcbe host. Set `BRIDGE_PORT` to the same value as the server's `.env` and
-  restart BDS.
+  In the BDS configuration, set `BRIDGE_HOST` to the host running discord-mcbe. Set `BRIDGE_PORT` to the same
+  value as the bot's `.env`. See the BDS tab in [Change a port](/en/guides/configuration/#change-a-port) for
+  details.
 </Aside>
 
-## <Icon name="terminal" />Minecraft administration commands
+## <Icon name="pencil" />Change the world name
 
-| Command               | Permission | Description                                        |
-| --------------------- | ---------- | -------------------------------------------------- |
-| `/dmc:dmc`            | Admin      | Open a form that edits the world name              |
-| `/dmc:discord-mcbe`   | Admin      | Alias for the same settings form                   |
-| `/dmc:setname <name>` | Host       | Save a world name; takes effect after reconnecting |
-| `/dmc:disconnect`     | Admin      | Disconnect the current discord-mcbe session        |
+When selecting a world with Discord commands or connecting multiple worlds, discord-mcbe uses the world name to identify each world.
 
-If the world does not connect, continue with [troubleshooting](/en/guides/troubleshooting/#minecraft-does-not-connect).
+When connecting multiple worlds at once, use unique names such as `lobby` or `survival`.
+
+The default world names are `World` / `Server`. Run the following command in the world to change its name.
+
+```text
+/dmc:setname
+```
+
+After changing the world name, restart the bot or disconnect with `/dmc:disconnect` and reconnect.

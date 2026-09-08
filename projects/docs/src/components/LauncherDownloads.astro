@@ -46,7 +46,7 @@ const copy =
   <p class="version">discord-mcbe launcher v{version}</p>
   <p class="status" data-download-status aria-live="polite"></p>
   <div class="recommended-download" data-recommended-download-row hidden>
-    <a class="recommended" data-recommended-download href={releaseUrl}></a>
+    <a class="download-button" data-recommended-download href={releaseUrl}></a>
     <span class="file-size" data-recommended-download-size></span>
   </div>
 
@@ -215,17 +215,6 @@ const copy =
 
   .status {
     margin-block: 0.35rem 0.75rem;
-  }
-
-  .recommended {
-    display: inline-flex;
-    padding: 0.55rem 0.85rem;
-    border: 1px solid var(--sl-color-accent);
-    border-radius: 0.5rem;
-    background: var(--sl-color-accent-low);
-    color: var(--sl-color-accent-high);
-    font-weight: 650;
-    text-decoration: none;
   }
 
   .recommended-download {

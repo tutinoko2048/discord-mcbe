@@ -6,47 +6,59 @@ description: Bot、Discordコマンド、ローカルワールド、BDSの接続
 import { Aside, Icon } from '@astrojs/starlight/components';
 import { BDS_SCRIPT_MODULE_UUID } from '../../../lib/bds-config';
 
-最初に、サーバーとアドオンが同じv4リリースであること、`.env`と`config.json`を変更後に再起動したことを確認します。
+最初に、サーバーとアドオンが同じリリースであること、`.env`や`config.json`を変更した場合は再起動済みであることを確認してください。
 
 ## Botが起動しない
 
-### <Icon name="warning" />`Invalid environment variables`
+### `Invalid environment variables`と表示される場合
 
 - `.env`が`start.bat`または`start.sh`と同じフォルダーにあるか確認します。
 - `DISCORD_TOKEN`、`GUILD_ID`、`CHANNEL_ID`が空でないか確認します。
 - IDにはチャンネル名やURLではなく、18〜20桁程度の数値IDを指定します。
 - ポートには正の整数を指定します。
 
-### <Icon name="warning" />Discordエラー`4014`またはBotがすぐオフラインになる
+### `error: An invalid token was provided`と表示される場合
 
-Developer Portalの **Bot → Privileged Gateway Intents → Message Content Intent** を有効にして再起動します。トークンを再発行した場合は`.env`も更新します。
+- `DISCORD_TOKEN`に設定したBotのトークンを間違えていないか、正しく設定されているかを確認します。
+- トークンを設定しているのにこのエラーが出る場合は、[Discord Developer Portal](https://discord.com/developers/applications)から新しいトークンを設定してください。
 
-### <Icon name="magnifier" />`Failed to find the channel`
+### `error: Used disallowed intents`と表示される場合
 
-`CHANNEL_ID`が正しいか、Botがそのチャンネルを見られるか、対象チャンネルが通常のサーバーテキストチャンネルかを確認します。スレッド、DM、別サーバーのチャンネルIDは使用できません。
+[Discord Developer Portal](https://discord.com/developers/applications)の `Bot > Privileged Gateway Intents > Message Content Intent` を有効にして再起動してください。
 
-### <Icon name="warning" />`Invalid config.json`
+### `Error: Failed to find the guild`と表示される場合
+
+- `GUILD_ID`に設定したサーバーIDが正しいか確認します。
+- Botがそのサーバーに参加しているか確認します。
+
+### `Error: Failed to find the channel`と表示される場合
+
+- `CHANNEL_ID`に設定したチャンネルIDが正しいか確認します。
+- Botにそのチャンネルを見る権限があるか確認します。
+
+### `Error: The channel (ID: 0000000000) is not a text channel`と表示される場合
+
+`CHANNEL_ID`に設定したチャンネルがテキストチャンネルであることを確認します。ボイスチャンネルやスレッドでは動作しません。
+
+### `Invalid config.json`と表示される場合
 
 エラーに表示されたキーを確認します。JSONの末尾カンマ、文字列の引用符、正の整数が必要な項目の`0`に注意してください。直せない場合は現在のファイルをバックアップし、再起動して初期設定を生成してから必要な値だけ戻します。
 
 ## スラッシュコマンドが表示されない
 
-- `GUILD_ID`がBotを追加したDiscordサーバーと一致しているか確認します。
-- Botの招待時に`applications.commands`スコープを含めます。
 - discord-mcbeを再起動し、`Logged in as ...`の後にエラーがないか確認します。
 - Discordクライアントを再読み込みします。(反映に時間がかかる場合があります。)
 
-`/command`と`/panel`は管理者にだけ表示されます。`/ping`と`/list`で登録自体を確認できます。
+`/command`と`/panel`は管理者にだけ表示されます。`/ping`と`/list`があれば正常です。
 
-## Discordとチャット連携できない
+## チャット連携が動作しない
 
 - メッセージを送ったチャンネルが`CHANNEL_ID`と同じか確認します。
 - Botに「チャンネルを見る」「メッセージを送信」「埋め込みリンク」「ファイルを添付」「メッセージ履歴を読む」が許可されているか確認します。
-- Message Content Intentが有効か確認します。
 - `bot.discord_message_filter`の`cancel`条件に一致していないか確認します。
 - ワールドが接続済みか`/ping`で確認します。
 
-Botが送信したメッセージはループ防止のためMinecraftへ転送されません。添付ファイルは内容ではなく個数だけが転送されます。
+Botが送信したメッセージはループ防止のためMinecraftへ転送されません。
 
 ## Minecraftと接続できない
 
@@ -55,47 +67,29 @@ Botが送信したメッセージはループ防止のためMinecraftへ転送�
 - `bds`ではなく`local`用パックを使ってください。
 - `discord-mcbe-local-*.mcpack`をビヘイビアーパックとして有効にしたか確認します。
 - ワールドとdiscord-mcbeサーバーを起動してから、ホストが`/connect localhost:3063`を実行します。
-- 別端末からは`localhost`ではなくサーバー端末のLAN内IPを使います。
-- `SOCKET_PORT`を変更した場合、`/connect`側も同じポートにします。
-- OSのファイアウォールでTCPの待受ポートを許可します。インターネットへ公開する必要はありません。
+- 別端末からは`localhost`ではなく、discord-mcbeが動作している端末のIPアドレスを指定します。
 
-<Aside type="note" title="暗号化設定">
-  v4はローカル接続の暗号化をデフォルトで有効にします。古い手順にあるMinecraftの「Require Encrypted
-  Websocketsを無効化」は通常不要です。互換性調査のときだけ`bridge.disable_encryption`を使用してください。
-</Aside>
+#### `Required addon not installed`と表示される場合
 
-### <Icon name="puzzle" />`Required addon not installed`
-
-WebSocket自体には接続できていますが、v4ローカルアドオンの内部コマンドが見つかりません。パックが有効か、ベータ API が有効か、アドオンとサーバーのバージョンが一致しているかを確認します。
+WebSocket自体には接続できていますが、アドオンが正しく動作していません。パックが有効か、ベータAPI が有効かを確認します。
 
 ### <Icon name="server" />Bedrock Dedicated Serverの場合
 
 - `local`ではなく`bds`用パックを使ってください。
 - `world_behavior_packs.json`等にアドオンが追加されていて、有効化されているか確認します。
 - ベータ API も有効化してください。
-- discord-mcbeが起動していることを確認してからBDSを起動してください。
+- `config/default/permissions.json`の`allowed_modules`リストに`@minecraft/server-net`モジュールが追加されているか確認します。
+- discord-mcbeのbot側が起動していることを確認してからBDSを起動してください。
 - 公式BDSアドオンはBDS本体のフォルダにある<code>{`config/${BDS_SCRIPT_MODULE_UUID}/variables.json`}</code>から接続先を読み取ります。ファイルを作成・編集し、BDSを再起動してください。
 - `BRIDGE_HOST`はBDSから見たdiscord-mcbeのホスト名、`BRIDGE_PORT`は`.env`の`BRIDGE_PORT`と同じ値にします。
 
-## ワールド名が重複する・選べない
+## どうしても解決しないときは
 
-各アドオンのワールド名がDiscord上の表示名です。`/dmc:setname survival`などで一意な名前を保存し、ローカルワールドでは`/dmc:disconnect`の後に`/connect`し直します。BDSは再起動します。
+[Discordコミュニティ](https://discord.gg/XJ8mK3G8cw)で質問してみましょう。以下の情報も添えていただくと助かります
 
-## アップデートできない
-
-- v4正式版を使う場合は`updater stable`を指定します。`updater beta`はベータ版を試す場合だけ使用します。
-- v4ベータ版から正式版へ移行する場合は`updater stable --force`を指定し、アドオンも同じリリースへ更新します。
-- 最小ランチャーバージョンのエラーが出た場合は、[ランチャーの最新リリース](https://github.com/tutinoko2048/discord-mcbe/releases?q=launcher)を展開し直します。
-- プロキシやファイアウォールがGitHub Releasesとnpmレジストリへの通信を止めていないか確認します。
-
-## 問い合わせ時に添える情報
-
-`config.json`の`debug`を一時的に`true`にして再現し、次をまとめると診断しやすくなります。
-
-- discord-mcbe、ランチャー、アドオン、Minecraft/BDSのバージョン
-- ローカルワールドかBDSか
-- OSとCPUアーキテクチャ
-- 実行した手順と期待した結果
-- エラー前後を含むログ
-
-Botトークン、`.env`、個人情報は除いて、[Discordサポートサーバー](https://discord.gg/XGR8FcCeFc) または [GitHub Issues](https://github.com/tutinoko2048/discord-mcbe/issues) で相談してください。
+- Minecraftのバージョン
+- discord-mcbeのバージョン (bot, アドオンそれぞれ)
+- 実行環境
+  - 通常のワールド or BDS
+  - botを動かすpcのOSとバージョン
+- バグの場合: 簡単な再現手順

@@ -8,8 +8,8 @@ import { Icon, Steps } from '@astrojs/starlight/components';
 ## <Icon name="setting" />Prerequisites
 
 - Node.js 24 or later
-- pnpm matching the repository's `packageManager` field (Corepack recommended)
-- Bun for launcher development, compilation, and release assets
+- Bun 1.4.0 or later
+- pnpm
 - Git
 
 ## <Icon name="rocket" />Setup
@@ -23,10 +23,9 @@ import { Icon, Steps } from '@astrojs/starlight/components';
    cd discord-mcbe
    ```
 
-2. Enable Corepack and install dependencies.
+2. Install dependencies.
 
    ```bash
-   corepack enable
    pnpm install
    ```
 
@@ -39,23 +38,25 @@ import { Icon, Steps } from '@astrojs/starlight/components';
 
 </Steps>
 
+Recommendation: Open `.vscode/discord-mcbe.code-workspace` to work with the entire workspace more easily in VS Code.
+
 ## <Icon name="code-branch" />Monorepo layout
 
-| Path                       | Responsibility                                                       |
-| -------------------------- | -------------------------------------------------------------------- |
-| `projects/server`          | Discord bot, configuration, events, and Minecraft connection servers |
-| `projects/launcher`        | Distribution installer/updater and bundled runtime                   |
-| `projects/addon-local`     | Behavior pack for regular worlds                                     |
-| `projects/addon-bds`       | Behavior pack for BDS                                                |
-| `projects/docs`            | Astro + Starlight documentation site                                 |
-| `packages/client`          | Minecraft Script API client shared by both add-ons                   |
-| `packages/shared`          | Fixed packets, types, enums, and shared protocol code                |
-| `packages/internal-config` | Workspace build and validation configuration                         |
-| `devapp`                   | Local development application                                        |
+| Path                       | Responsibility                                                    |
+| -------------------------- | ----------------------------------------------------------------- |
+| `projects/server`          | Discord bot and Minecraft connection server                       |
+| `projects/launcher`        | Launcher and updater                                              |
+| `projects/addon-local`     | Behavior pack for regular worlds                                  |
+| `projects/addon-bds`       | Behavior pack for BDS                                             |
+| `projects/docs`            | Documentation website                                             |
+| `packages/client`          | Script API client shared by both add-ons                          |
+| `packages/shared`          | Shared protocol code such as packet definitions, types, and enums |
+| `packages/internal-config` | Workspace build and validation configuration                      |
+| `devapp`                   | Local development environment                                     |
 
-Regular worlds use SocketBE over WebSocket. BDS uses the `@minecraft/server-net` WebSocket API. Both feed the same fixed-packet layer. Protocol v2 Valibot schemas, types, and constants live in `packages/shared`. `ChatSend`, `PlayerJoin`, and `PlayerLeave` are one-way notifications; operations use the common request/response envelope.
+Regular worlds use [SocketBE](https://github.com/tutinoko2048/SocketBE), while BDS uses the `@minecraft/server-net` WebSocket API. Both connect to the same fixed-packet layer.
 
-## <Icon name="terminal" />Common commands
+## <Icon name="add-document" />Common commands
 
 | Command                                  | Purpose                                              |
 | ---------------------------------------- | ---------------------------------------------------- |
@@ -69,9 +70,7 @@ Regular worlds use SocketBE over WebSocket. BDS uses the `@minecraft/server-net`
 
 ## <Icon name="translate" />Translation and documentation
 
-Built-in bot translations live in `projects/server/src/assets/locales/`. Keep keys and `%0` placeholders aligned with English and regenerate types with `generate-lang-types` when required.
-
-For the website, Japanese pages are directly under `projects/docs/src/content/docs/` and English pages are under `en/`. Give translations matching slugs so the language picker can pair them.
+See [Translation and text customization](/en/guides/translation-overrides/).
 
 ## <Icon name="heart" />Contributing
 

@@ -64,10 +64,10 @@ const copy =
       <div class="links">
         {
           assets.local.map((asset) => (
-            <span class="download-link">
-              <a href={asset.url}>{copy[asset.extension]}</a>
+            <a class="download-button" href={asset.url}>
+              {copy[asset.extension]}
               {asset.size && <span class="file-size">{asset.size}</span>}
-            </span>
+            </a>
           ))
         }
       </div>
@@ -81,10 +81,10 @@ const copy =
       <div class="links">
         {
           assets.bds.map((asset) => (
-            <span class="download-link">
-              <a href={asset.url}>{copy[asset.extension]}</a>
+            <a class="download-button" href={asset.url}>
+              {copy[asset.extension]}
               {asset.size && <span class="file-size">{asset.size}</span>}
-            </span>
+            </a>
           ))
         }
       </div>
@@ -142,16 +142,15 @@ const copy =
     flex-direction: column;
   }
 
-  .download-link {
-    display: inline-flex;
-    flex-wrap: wrap;
-    gap: 0.3rem;
-    align-items: baseline;
+  .download-button {
+    justify-content: center;
+    text-align: center;
   }
 
   .file-size {
     color: var(--sl-color-gray-3);
     font-size: var(--sl-text-xs);
+    font-weight: 400;
     white-space: nowrap;
   }
 

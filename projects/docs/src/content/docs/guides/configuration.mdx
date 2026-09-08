@@ -3,13 +3,14 @@ title: 設定
 description: .env、config.json、メッセージフィルター、表示テキストを設定します。
 ---
 
-import { Aside, Icon, Tabs, TabItem } from '@astrojs/starlight/components';
+import { Aside, Code, Icon, Tabs, TabItem } from '@astrojs/starlight/components';
 import { BDS_SCRIPT_MODULE_UUID } from '../../../lib/bds-config';
+import { defaultConfig } from '../../../../../server/src/assets/default-config';
 
 discord-mcbeの設定は2つのファイルに分かれています。
 
-- `.env`: トークン、DiscordのID、待ち受けポートなど、環境ごとに異なる機密値
-- `config.json`: 言語、表示、フィルター、スクリプトなど、動作を調整する値
+- `.env`: BOTトークン、DiscordのID、待ち受けポートなど、環境ごとに異なる値や機密情報
+- `config.json`: 言語、表示テキスト、チャットフィルター、スクリプトなどの細かい設定
 
 どちらもランチャーの`start.bat`または`start.sh`と同じフォルダーに置きます。変更後はdiscord-mcbeを再起動してください。
 
@@ -31,44 +32,18 @@ BRIDGE_PORT=23191
 | `SOCKET_PORT`   |      | `3063`     | ローカルワールドから`/connect`するWebSocketポート     |
 | `BRIDGE_PORT`   |      | `23191`    | BDSアドオンが接続するBridgeポート                     |
 
-<Aside type="danger" title=".envを共有しないでください">
-  `.env`はGitの管理対象にせず、ログを共有するときもトークンを含めないでください。漏えいしたトークンはDeveloper
-  Portalで再発行します。
-</Aside>
-
 ## <Icon name="setting" />config.json
 
-`config.json`がない場合は、有効な`.env`で初めて起動したときに自動生成されます。生成される初期値は次のとおりです。
+初回起動時に以下のような`config.json`が生成されます。必要に応じて値を変更してください。
 
-```json
-{
-  "config_version": 1,
-  "language": "ja",
-  "timezone_offset": 0,
-  "bot": {
-    "show_death_messages": true,
-    "reply_preview_max_length": 9,
-    "strip_color_prefix": true,
-    "panel_update_interval": 10000,
-    "discord_message_filter": []
-  },
-  "bridge": {
-    "disable_encryption": false
-  },
-  "script": {
-    "entry": "scripts/main.js"
-  },
-  "translationOverrides": {},
-  "debug": false
-}
-```
+<Code code={JSON.stringify(defaultConfig, null, 2)} lang="json" title="config.json" />
 
 | キー                           | 説明                                                          |
 | ------------------------------ | ------------------------------------------------------------- |
 | `config_version`               | 設定形式のバージョン。移行処理用なので変更しない              |
 | `language`                     | Botとコンソールの言語。利用可能なロケールを指定               |
 | `timezone_offset`              | 表示時刻のUTCからのオフセット（整数時間）。日本標準時は`9`    |
-| `bot.show_death_messages`      | プレイヤーの死亡メッセージをDiscordへ送る。既定値は`true`     |
+| `bot.show_death_messages`      | プレイヤーの死亡メッセージをDiscordへ送る。                   |
 | `bot.reply_preview_max_length` | Discordの返信元本文をMinecraftに表示する最大文字数            |
 | `bot.strip_color_prefix`       | MinecraftからDiscordへ送る本文の`§`カラーコードを除去する     |
 | `bot.panel_update_interval`    | ステータスパネルの更新間隔（ミリ秒）                          |
@@ -76,13 +51,13 @@ BRIDGE_PORT=23191
 | `bridge.disable_encryption`    | ローカルワールド接続の暗号化を無効にする。通常は`false`のまま |
 | `script.entry`                 | 起動時に読み込むスクリプトファイル                            |
 | `translationOverrides`         | 組み込み翻訳の一部を上書きするオブジェクト                    |
-| `debug`                        | 詳細ログを有効にする                                          |
+| `debug`                        | デバッグログを有効にする                                      |
 
 定義されていないキーは警告とともに無視されます。型や値が不正な場合はエラー箇所を表示して起動を中止します。
 
 ## <Icon name="comment-alt" />Discordメッセージフィルター
 
-フィルターは、`CHANNEL_ID`で受信したDiscordメッセージをMinecraftへ送る前に適用されます。1個のオブジェクト、または適用順の配列を指定できます。
+フィルターは、`CHANNEL_ID`で受信したDiscordメッセージをMinecraftへ送る前に適用されます。1つのオブジェクト、または適用順の配列を指定できます。
 
 ### <Icon name="list-format" />長さを制限する
 
@@ -109,7 +84,7 @@ BRIDGE_PORT=23191
 ```
 
 - `on_fail: "replace"`: 一致箇所を`***`に置き換える
-- `on_fail: "cancel"`: 一致したメッセージ全体を転送しない
+- `on_fail: "cancel"`: 一致箇所を含むメッセージ全体を転送しない
 
 `ignore_pattern`はJavaScriptの正規表現として解釈されます。JSON内ではバックスラッシュを`\\`のようにエスケープしてください。
 
@@ -129,7 +104,7 @@ BRIDGE_PORT=23191
 ]
 ```
 
-フィルターは返信元のプレビューにも適用されます。`cancel`された返信元は`***`として表示されます。
+フィルターは返信元のプレビューにも適用されます。`cancel`で除外された返信元は`***`として表示されます。
 
 ## <Icon name="pencil" />表示テキストをカスタマイズする
 
@@ -153,42 +128,42 @@ BRIDGE_PORT=23191
   </TabItem>
   <TabItem label="BDS">
     BDS本体のフォルダに<code>{`config/${BDS_SCRIPT_MODULE_UUID}/variables.json`}</code>
-    を作成し、`.env`の`BRIDGE_PORT`と同じ値を`BRIDGE_PORT`へ設定します。`BRIDGE_HOST`でアドオンから見たサーバーのホスト名、`DEFAULT_WORLD_NAME`で初期Client
-    IDも変更できます。設定変更後はBDSを再起動してください。
+    を作成し、`.env`の`BRIDGE_PORT`と同じ値を`BRIDGE_PORT`に設定します。`BRIDGE_HOST`でアドオンから見たサーバーのホスト名、`DEFAULT_WORLD_NAME`で初期ワールド名も変更できます。設定変更後はBDSを再起動してください。
 
     `variables.json`はアドオンではなく、BDS本体のフォルダにある<code>{`config/${BDS_SCRIPT_MODULE_UUID}/variables.json`}</code>へ配置します。内容は次のとおりです。
 
     ```json
     {
       "BRIDGE_HOST": "localhost",
-      "BRIDGE_PORT": 23191,
-      "DEFAULT_WORLD_NAME": "discord-mcbe-bds"
+      "BRIDGE_PORT": 23191
     }
     ```
 
-    `/dmc:setid`で保存済みのworld nameがある場合は、`DEFAULT_WORLD_NAME`より優先されます。
+    `/dmc:setname`で保存済みのワールド名がある場合は、`DEFAULT_WORLD_NAME`より優先されます。
 
   </TabItem>
 </Tabs>
 
-## <Icon name="code" />高度な設定: MinecraftチャットWebhook
+## <Icon name="link" />チャット連携にWebhookを使う
 
-通常は`CHANNEL_ID`へBotとして送信されるチャット連携だけで利用できます。Webhookは、Minecraftからのチャットだけを
-別名義で表示したい場合の任意機能です。使用する場合は`.env`にWebhook URLを追加します。
+通常はBotがMinecraftからのチャットを送信しますが、Webhookを使うこともできます。使用する場合は`.env`にWebhook URLを追加します。
 
 ```dotenv
-DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/123456789012345678/token
+DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/123456789012345678/...
 ```
 
-設定すると、Minecraftから中継されるチャットだけをWebhookで送信します。`username`はプレイヤー名（複数ワールドの
-接続中は`ワールド名 | プレイヤー名`）、`content`はチャット本文です。起動・参加・退出・ステータスパネル・コマンドの
-メッセージは、これまでどおりBotとして送信されます。
+`username`はプレイヤー名、`content`にはチャット本文が入ります。起動・参加・退出・ステータスパネル・コマンドの
+メッセージは、これまで通りBotから送信されます。
 
 ### Webhookアイコンを指定する
 
-独自のアバターサービスを使う開発者向けに、`bot.minecraft_chat_avatar_url`でWebhookのアイコンURLテンプレートを
-指定できます。`{name}`と`{pfid}`はURLエンコードして置換され、`{pfid}`にはScript APIの`Player.persistentId`を使います。
+独自のアイコンを設定したい場合は、`bot.minecraft_chat_avatar_url`でアイコンURLを指定できます。
+また、URL中の`{name}`はプレイヤー名に、`{pfid}`はScriptAPIの`Player.persistentId`に置き換えられます。
 
 ```json
-"minecraft_chat_avatar_url": "https://example.com/faces/{name}/{pfid}"
+"minecraft_chat_avatar_url": "https://example.com/faces/{pfid}"
+```
+
+```json
+"minecraft_chat_avatar_url": "https://example.com/faces/{name}"
 ```

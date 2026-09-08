@@ -23,7 +23,9 @@
   },
   "devDependencies": {
     "@discord-mcbe/internal-config": "workspace:",
+    "@iconify-json/lucide": "^1.2.129",
     "typescript": "^6.0.3",
+    "unplugin-icons": "^23.0.1",
     "wrangler": "^4.87.0"
   }
 }

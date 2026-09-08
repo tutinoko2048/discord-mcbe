@@ -1,86 +1,82 @@
 ---
 title: コマンドと機能
-description: DiscordとMinecraftのコマンド、チャット連携、ステータスパネルを説明します。
+description: DiscordとMinecraftのコマンドやその他機能について紹介するページです。
 ---
 
 import { Aside, Icon } from '@astrojs/starlight/components';
+import PickaxeIcon from '~icons/lucide/pickaxe';
 
-## <Icon name="terminal" />Discordコマンド
+## <Icon name="comment-alt" />チャット連携
+
+### Minecraft → Discord
+
+接続中のワールドでプレイヤーが送信した通常のチャットを`CHANNEL_ID`へ転送します。参加、退出、ワールド接続、切断も埋め込みメッセージで通知します。
+
+複数ワールド接続時には、識別のためにワールド名がメッセージへ追加されます。Minecraftの`§`カラーコードはデフォルトで除去されます。
+
+### Discord → Minecraft
+
+`CHANNEL_ID`でユーザーが送ったメッセージを、接続中のすべてのワールドへ送ります。
+
+- Bot自身や他のBotが送信したメッセージは転送しません。
+- Discord上の表示名を送信者名に使用します。
+- 返信メッセージは返信先の名前と短い本文プレビューも表示します。
+- 添付ファイルのあるメッセージはファイル数を通知します。
+- [メッセージフィルター](/guides/configuration/#discordメッセージフィルター)で長文や正規表現に一致する内容を短縮・置換・破棄できます。
+
+## <Icon name="discord" />Discord側の追加コマンド
 
 Botは起動時に`GUILD_ID`で指定したDiscordサーバーへコマンドを登録します。
 
-| コマンド                                             | 権限   | 説明                                               |
-| ---------------------------------------------------- | ------ | -------------------------------------------------- |
-| `/ping`                                              | 全員   | Botと接続中の各ワールドの応答時間を表示            |
-| `/list [silent] [world]`                             | 全員   | プレイヤー数と一覧を表示。`silent`で自分だけに表示 |
-| `/command command:<コマンド> [raw] [world] [silent]` | 管理者 | Minecraftコマンドを実行し、結果を表示              |
-| `/panel create`                                      | 管理者 | 実行したチャンネルにステータスパネルを作成         |
-| `/panel show`                                        | 管理者 | 保存されているステータスパネルへのリンクを表示     |
+| コマンド                                     | 権限   | 説明                                           |
+| -------------------------------------------- | ------ | ---------------------------------------------- |
+| `/ping`                                      | 全員   | Botと接続中の各ワールドのpingを表示            |
+| `/list [silent] [world]`                     | 全員   | プレイヤー数と一覧を表示                       |
+| `/command <コマンド> [raw] [world] [silent]` | 管理者 | Minecraftでコマンドを実行し、結果を表示        |
+| `/panel create`                              | 管理者 | 実行したチャンネルにステータスパネルを作成     |
+| `/panel show`                                | 管理者 | 保存されているステータスパネルへのリンクを表示 |
 
-### <Icon name="right-arrow" />/command
+### `/command`
 
 `command`には先頭の`/`を付けずにMinecraftコマンドを入力します。
 
 ```text
-/command command:time set day world:survival silent:true
+/command time set day world:survival silent:true
 ```
 
-- `world`を省略すると、接続中のすべてのワールドで実行します。
-- `world`の候補には各アドオンのワールド名が表示されます。
+- 引数`world`を省略すると、接続中のすべてのワールドで実行します。
 - `raw`を有効にすると、実行結果をJSONで表示します。
 - 結果が長い場合は`results.txt`として添付されます。
-- `silent`を有効にすると、結果は実行者だけに見えます。
+- `silent`を有効にすると、結果を実行者だけに見える形で表示します。
 
-<Aside type="caution" title="Minecraftコマンドを実行できるのはDiscord管理者です">
-  `/command`と`/panel`は、Discord上のデフォルト権限が「管理者」です。Botへ管理者権限を付けるという意味ではありません。Discordの「連携サービス」設定からコマンド権限をさらに絞ることもできます。
-</Aside>
+### `/panel` - ステータスパネル
 
-### <Icon name="analytics" />ステータスパネル
+`/panel create`は、次の情報を定期的に更新する埋め込みメッセージを現在のチャンネルに作成します。
 
-`/panel create`は、次の情報を定期更新するEmbedを現在のチャンネルに作成します。
-
-- BotのDiscord Gateway Pingと稼働時間
+- Discord Botのpingと稼働時間
 - 接続中のワールド名、ホスト種別、Ping、接続時刻
 - プレイヤー数とプレイヤー名
 - discord-mcbeのバージョン
 
-保存できるパネルは1つです。新しく作成すると古いパネルは削除され、メッセージIDは`.discord-mcbe/data.json`へ保存されます。パネルのメッセージを手動で削除すると、次回更新時に保存データからも削除されます。更新間隔は[設定](/guides/configuration/#configjson)で変更できます。
+保存できるパネルは1つです。新しく作成すると古いパネルは削除されます。更新間隔は[設定](/guides/configuration/#configjson)で変更できます。
 
-## <Icon name="messages" />チャット連携
+### コマンドの実行権限について
 
-### <Icon name="right-arrow" />MinecraftからDiscord
+実行権限が「管理者」のコマンドは、デフォルトではサーバーの管理者権限を持つユーザーのみが実行できます。実行権限を変更したい場合は、`サーバー設定 > アプリ > 連携サービス > [BOT名] > コマンド` からコマンドごとに権限を変更できます。
 
-接続中のワールドでプレイヤーが送信した通常チャットを`CHANNEL_ID`へ転送します。参加、退出、ワールド接続、切断もEmbedで通知します。
+## <PickaxeIcon font-size="0.85em" />Minecraft側の追加コマンド
 
-複数ワールド接続時には、必要に応じてワールド名がメッセージへ追加されます。Minecraftの`§`カラーコードはデフォルトで除去されます。
-
-### <Icon name="left-arrow" />DiscordからMinecraft
-
-`CHANNEL_ID`でユーザーが送ったメッセージを、接続中のすべてのワールドへ送ります。
-
-- Bot自身と他のBotのメッセージは転送しません。
-- Discord上の表示名を送信者名に使用します。
-- 返信では、返信先の名前と短い本文プレビューも表示します。
-- 添付ファイル本体は送らず、ファイル数だけを通知します。
-- [メッセージフィルター](/guides/configuration/#discordメッセージフィルター)で長文や正規表現に一致する内容を短縮・置換・破棄できます。
+| コマンド              | 権限         | 説明                            |
+| --------------------- | ------------ | ------------------------------- |
+| `/dmc:discord-mcbe`   | オペレーター | 設定画面を開く                  |
+| `/dmc:dmc`            | オペレーター | `/dmc:discord-mcbe`のエイリアス |
+| `/dmc:setname <名前>` | オペレーター | ワールド名を変更する            |
+| `/dmc:disconnect`     | ホスト       | discord-mcbeから接続を切断する  |
 
 ## <Icon name="desktop" />サーバーコンソール
 
-discord-mcbeが動作しているターミナルへMinecraftコマンドを入力すると、接続中の全ワールドで実行します。先頭の`/`はあってもなくても構いません。
+discord-mcbeが動作しているターミナルへMinecraftコマンドを入力すると、接続中の全ワールドで実行します。
 
-```text
+```ansi
 say Server maintenance starts in 10 minutes
 ```
-
-コンソールへアクセスできるユーザーはMinecraftコマンドを無制限に実行できます。サーバーのOSアカウントとファイル権限を適切に保護してください。
-
-## <Icon name="puzzle" />Minecraftコマンド
-
-| コマンド              | 権限   | 説明                           |
-| --------------------- | ------ | ------------------------------ |
-| `/dmc:dmc`            | 管理者 | discord-mcbe設定フォームを開く |
-| `/dmc:discord-mcbe`   | 管理者 | 設定フォームを開くエイリアス   |
-| `/dmc:setname <名前>` | ホスト | ワールド名を保存               |
-| `/dmc:disconnect`     | 管理者 | 現在のブリッジ接続を切断       |
-
-ワールド名の変更は次回接続時に反映されます。複数ワールドでは必ず一意な名前にしてください。
