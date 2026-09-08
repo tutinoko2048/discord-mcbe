@@ -19,6 +19,7 @@ import type { Application } from '../../application';
 
 export class ScriptWorld<SESSION extends ISession = ISession> {
   private readonly app: Application;
+
   private readonly _isLocal: boolean;
 
   public readonly session: SESSION;
@@ -29,7 +30,10 @@ export class ScriptWorld<SESSION extends ISession = ISession> {
 
   public readonly players = new Map<UniqueId, ScriptPlayer>();
 
-  /** { [dimensionId]: ScriptDimension } */
+  /**
+   * `{ [dimensionId]: ScriptDimension }`
+   * @ignore
+   */
   public readonly _dimensions = new Map<string, ScriptDimension>();
 
   public readonly scoreboard: ScriptScoreboard;
@@ -99,7 +103,7 @@ export class ScriptWorld<SESSION extends ISession = ISession> {
     return !this._isLocal;
   }
 
-  /** @internal */
+  /** @ignore */
   onInitialize(data: Extract<ServerBoundRequestPacket, { type: ActionId.WorldInitialize }>['data']) {
     for (const player of data.players) {
       this.initializePlayer(player);
@@ -108,14 +112,14 @@ export class ScriptWorld<SESSION extends ISession = ISession> {
     this.logger.debug(`World initialized: ${this.name}`);
   }
 
-  /** @internal */
+  /** @ignore */
   onPlayerJoin(descriptor: PlayerDescriptor) {
     const player = this.initializePlayer(descriptor);
 
     new PlayerJoinEvent(this.app, this, player).emit();
   }
 
-  /** @internal */
+  /** @ignore */
   onPlayerLeave(playerUniqueId: UniqueId) {
     const player = this.players.get(playerUniqueId);
     if (!player) throw new Error(`Player not found: ${playerUniqueId}`);
@@ -125,7 +129,7 @@ export class ScriptWorld<SESSION extends ISession = ISession> {
     this.players.delete(playerUniqueId);
   }
 
-  /** @internal */
+  /** @ignore */
   onPlayerDie(playerUniqueId: UniqueId, cause: EntityDamageCause, damagingEntity?: PlayerDieDamagingEntity) {
     const player = this.players.get(playerUniqueId);
     if (!player) throw new Error(`Player not found: ${playerUniqueId}`);
@@ -133,7 +137,7 @@ export class ScriptWorld<SESSION extends ISession = ISession> {
     new PlayerDieEvent(this.app, this, player, cause, damagingEntity).emit();
   }
 
-  /** @internal */
+  /** @ignore */
   onChatSend(senderUniqueId: UniqueId, message: string) {
     const sender = this.players.get(senderUniqueId);
     if (!sender) throw new Error(`Player not found: ${senderUniqueId}`);
