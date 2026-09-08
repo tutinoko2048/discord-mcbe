@@ -32,14 +32,16 @@ export class BridgeClient extends BaseClient<ServerNetBridgeClient> {
     };
 
     const worldName = mergedOptions.worldName;
+    const resolvedWorldName =
+      typeof worldName === 'string' ? worldName : () => worldName() ?? DEFAULT_WORLD_NAME;
 
     const bridge = new ServerNetBridgeClient({
       url: `ws://${mergedOptions.host}:${mergedOptions.port}`,
-      worldName: typeof worldName === 'string' ? worldName : () => worldName() ?? DEFAULT_WORLD_NAME,
+      worldName: resolvedWorldName,
       handleRequest: handleClientBoundRequest,
     });
 
-    super(bridge);
+    super(bridge, resolvedWorldName);
   }
 
   async start(): Promise<void> {

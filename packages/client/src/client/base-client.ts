@@ -21,11 +21,13 @@ export abstract class BaseClient<T extends IBridgeClient = IBridgeClient> {
   public readonly logger = new Logger('discord-mcbe');
 
   private hasConnected = false;
+  private readonly defaultWorldName?: string | (() => string | undefined);
 
   abstract readonly type: ClientType;
 
-  constructor(bridge: T) {
+  constructor(bridge: T, defaultWorldName?: string | (() => string | undefined)) {
     this.bridge = bridge;
+    this.defaultWorldName = defaultWorldName;
 
     // register events to send to server
     registerEvents(this.bridge);
@@ -41,7 +43,10 @@ export abstract class BaseClient<T extends IBridgeClient = IBridgeClient> {
   }
 
   getWorldName(): string | undefined {
-    return world.getDynamicProperty(WORLD_NAME_DYNAMIC_PROPERTY_KEY) as string | undefined;
+    return (
+      (world.getDynamicProperty(WORLD_NAME_DYNAMIC_PROPERTY_KEY) as string | undefined) ??
+      (typeof this.defaultWorldName === 'function' ? this.defaultWorldName() : this.defaultWorldName)
+    );
   }
 
   private async onConnect() {

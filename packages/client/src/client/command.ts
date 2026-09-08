@@ -37,7 +37,7 @@ export function registerCommands(registry: CustomCommandRegistry, client: BaseCl
     {
       name: 'dmc:setname',
       description: 'Set the world name for discord-mcbe (requires reconnect)',
-      permissionLevel: CommandPermissionLevel.Host,
+      permissionLevel: CommandPermissionLevel.Admin,
       mandatoryParameters: [
         {
           type: CustomCommandParamType.String,
@@ -56,7 +56,7 @@ export function registerCommands(registry: CustomCommandRegistry, client: BaseCl
     {
       name: 'dmc:disconnect',
       description: 'Disconnect from discord-mcbe server',
-      permissionLevel: CommandPermissionLevel.Admin,
+      permissionLevel: CommandPermissionLevel.Host,
     },
     () => {
       if (client.bridge.isConnected) {

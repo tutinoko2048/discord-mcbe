@@ -23,7 +23,7 @@ export class BridgeClient extends BaseClient<WebSocketBridgeClient> {
     };
 
     const bridge = new WebSocketBridgeClient({ ...mergedOptions, handleRequest: handleClientBoundRequest });
-    super(bridge);
+    super(bridge, mergedOptions.worldName);
 
     bridge.on('ready', () => {
       console.info('[discord-mcbe] Listening connection from discord-mcbe server...');
