@@ -1,4 +1,3 @@
-import * as moment from 'moment-timezone';
 import type { Application } from '../application';
 import { EmbedBuilder, RESTJSONErrorCodes, type Message, time, DiscordAPIError } from 'discord.js';
 import { Palette } from './embeds';
@@ -172,10 +171,11 @@ export class StatusPanel {
 }
 
 function getDuration(t1: number, t2: number): [number, number, number] {
-  const duration = moment.duration(t2 - t1);
-  const hours = Math.floor(duration.asHours());
-  const minutes = duration.minutes();
-  const seconds = duration.seconds();
+  const totalSeconds = Math.floor((t2 - t1) / 1000);
+
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
 
   return [hours, minutes, seconds];
 }
