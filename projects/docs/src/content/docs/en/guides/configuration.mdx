@@ -125,26 +125,28 @@ The same filters also process quoted reply previews. A reply source rejected by 
 
 For the full i18n model, key table, and contributor workflow, see [Translation and displayed text customization](/en/guides/translation-overrides/).
 
-## <Icon name="server" />Change a port
+## <Icon name="server" />Change connection settings
 
 <Tabs>
   <TabItem label="Regular world">
     Change `SOCKET_PORT` in `.env` and connect with `/connect localhost:new-port`.
   </TabItem>
   <TabItem label="BDS">
-    Set the same value in `.env`'s `BRIDGE_PORT` and the BDS
-    <code>{`config/${BDS_SCRIPT_MODULE_UUID}/variables.json`}</code> file. `BRIDGE_HOST` changes the host seen
-    by the add-on, and `DEFAULT_WORLD_NAME` changes its initial world name. Restart BDS after changing these
-    values.
+    Create <code>{`config/${BDS_SCRIPT_MODULE_UUID}/variables.json`}</code> in the BDS installation folder.
+    Set `BRIDGE_URL` to the discord-mcbe WebSocket URL seen by the add-on, using the same port as
+    `BRIDGE_PORT` in `.env`. `DEFAULT_WORLD_NAME` changes the initial world name. Restart BDS after changing
+    these values.
 
     `variables.json` belongs in the <code>{`config/${BDS_SCRIPT_MODULE_UUID}/variables.json`}</code> path in the BDS installation folder, not in the add-on. Use this content:
 
     ```json
     {
-      "BRIDGE_HOST": "localhost",
-      "BRIDGE_PORT": 23191
+      "BRIDGE_URL": "ws://localhost:23191"
     }
     ```
+
+    When omitted, `BRIDGE_URL` defaults to `ws://localhost:23191`. To use Bearer authentication, see
+    [Authenticate BDS connections](/en/guides/custom-scripts/#authenticate-bds-connections).
 
     A world name saved with `/dmc:setname` takes precedence over `DEFAULT_WORLD_NAME`.
 

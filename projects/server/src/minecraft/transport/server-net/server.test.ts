@@ -11,9 +11,33 @@ import {
   SERVER_NET_BRIDGE_PROTOCOL_VERSION,
   type ClientBoundPacket,
 } from '@discord-mcbe/shared';
-import { ServerNetBridgeServer } from './server';
+import { bearerAuth, ServerNetBridgeServer } from './server';
 
 describe('ServerNetBridgeServer protocol v2', () => {
+  test('authenticates before creating a session', async () => {
+    const port = await getAvailablePort();
+    const server = createBridge(port);
+    const authenticate = bearerAuth('secret');
+    server.setAuthenticator(async (request) => authenticate(request));
+    await server.start();
+    try {
+      expect(await rejectedStatus(`ws://127.0.0.1:${port}`)).toBe(401);
+      expect(await rejectedStatus(`ws://127.0.0.1:${port}`, { Authorization: 'Bearer wrong' })).toBe(401);
+      expect(server.sessions.size).toBe(0);
+
+      const socket = new WebSocket(`ws://127.0.0.1:${port}`, {
+        headers: { Authorization: 'Bearer secret' },
+      });
+      await once(socket, 'open');
+      expect(server.sessions.size).toBe(1);
+      expect(() => server.setAuthenticator(authenticate)).toThrow('before the server starts');
+      socket.close();
+      await once(socket, 'close');
+    } finally {
+      await server.stop();
+    }
+  });
+
   test('does not expose HTTP session or query endpoints', async () => {
     const port = await getAvailablePort();
     const server = createBridge(port);
@@ -307,6 +331,17 @@ function hasMessage(socket: WebSocket, timeout: number): Promise<boolean> {
       resolve(true);
     };
     socket.once('message', onMessage);
+  });
+}
+
+function rejectedStatus(url: string, headers?: Record<string, string>): Promise<number | undefined> {
+  return new Promise((resolve) => {
+    const socket = new WebSocket(url, { headers });
+    socket.on('error', () => {});
+    socket.once('unexpected-response', (_request, response) => {
+      response.resume();
+      resolve(response.statusCode);
+    });
   });
 }
 

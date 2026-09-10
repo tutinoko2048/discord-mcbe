@@ -120,7 +120,7 @@ BRIDGE_PORT=23191
 
 詳しい仕組み、全キーの一覧、コントリビューター向けの変更方法は[翻訳と表示テキストのカスタマイズ](/guides/translation-overrides/)を参照してください。
 
-## <Icon name="server" />ポートを変更する
+## <Icon name="server" />接続先を変更する
 
 <Tabs>
   <TabItem label="ローカルワールド">
@@ -128,16 +128,17 @@ BRIDGE_PORT=23191
   </TabItem>
   <TabItem label="BDS">
     BDS本体のフォルダに<code>{`config/${BDS_SCRIPT_MODULE_UUID}/variables.json`}</code>
-    を作成し、`.env`の`BRIDGE_PORT`と同じ値を`BRIDGE_PORT`に設定します。`BRIDGE_HOST`でアドオンから見たサーバーのホスト名、`DEFAULT_WORLD_NAME`で初期ワールド名も変更できます。設定変更後はBDSを再起動してください。
+    を作成し、`BRIDGE_URL`にアドオンから見たdiscord-mcbeのWebSocket URLを設定します。ポートは`.env`の`BRIDGE_PORT`と同じ値にしてください。`DEFAULT_WORLD_NAME`で初期ワールド名も変更できます。設定変更後はBDSを再起動してください。
 
     `variables.json`はアドオンではなく、BDS本体のフォルダにある<code>{`config/${BDS_SCRIPT_MODULE_UUID}/variables.json`}</code>へ配置します。内容は次のとおりです。
 
     ```json
     {
-      "BRIDGE_HOST": "localhost",
-      "BRIDGE_PORT": 23191
+      "BRIDGE_URL": "ws://localhost:23191"
     }
     ```
+
+    `BRIDGE_URL`を省略した場合は`ws://localhost:23191`へ接続します。Bearer認証を使う場合は[カスタムスクリプトの認証設定](/guides/custom-scripts/#bds接続を認証する)も参照してください。
 
     `/dmc:setname`で保存済みのワールド名がある場合は、`DEFAULT_WORLD_NAME`より優先されます。
 

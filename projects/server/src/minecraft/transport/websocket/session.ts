@@ -66,6 +66,10 @@ export class SocketSession implements ISession {
     return this.deltaTimes.reduce((sum, value) => sum + value, 0) / this.deltaTimes.length;
   }
 
+  get requestInfo() {
+    return this.world.connection.info;
+  }
+
   destroy(): void {
     this.pending.abortAll('Session disconnected before response was received');
     this.sentAt.clear();

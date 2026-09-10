@@ -39,6 +39,36 @@ export default function main(app) {
 </TabItem>
 </Tabs>
 
+## <Icon name="shield-check" />Authenticate BDS connections (optional)
+
+BDS ServerNet connections are unauthenticated by default. To use Bearer authentication, add a token to `.env` and configure the authenticator from a custom script.
+
+```dotenv title=".env"
+BRIDGE_TOKEN=your-token
+```
+
+```ts title="scripts/main.ts"
+import { bearerAuth, type Application } from '@discord-mcbe/server';
+
+export default function main(app: Application) {
+  const token = process.env.BRIDGE_TOKEN;
+  if (!token) throw new Error('BRIDGE_TOKEN is not set');
+
+  app.minecraft.script.setAuthenticator(bearerAuth(token));
+}
+```
+
+Set the same token in the BDS `variables.json` file:
+
+```json title="variables.json"
+{
+  "BRIDGE_URL": "ws://localhost:23191",
+  "BRIDGE_TOKEN": "your-token"
+}
+```
+
+For custom authentication, pass a function receiving the request to `setAuthenticator`. It can return a `boolean` or `Promise<boolean>`. A rejected connection never creates a world session.
+
 ## <Icon name="clock" />Subscribe to events
 
 <Tabs syncKey="code">

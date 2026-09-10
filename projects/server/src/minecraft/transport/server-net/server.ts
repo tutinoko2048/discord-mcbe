@@ -1,5 +1,7 @@
 import { EventEmitter } from 'node:events';
-import { WebSocket, WebSocketServer, type RawData } from 'ws';
+import type { IncomingMessage } from 'node:http';
+import { timingSafeEqual } from 'node:crypto';
+import { ServerOptions, WebSocket, WebSocketServer, type RawData } from 'ws';
 import {
   type ServerBoundNotificationPacket,
   type ServerBoundRequestPacket,
@@ -26,6 +28,19 @@ export interface ServerNetBridgeOptions {
   handlePacket: ServerBoundPacketHandler;
 }
 
+export type ServerNetAuthenticator = (request: IncomingMessage) => boolean | Promise<boolean>;
+
+export function bearerAuth(token: string): ServerNetAuthenticator {
+  if (!token) throw new TypeError('Bearer token must not be empty');
+  const expected = Buffer.from(token);
+  return ({ headers }) => {
+    const match = /^Bearer ([^\s]+)$/i.exec(headers.authorization ?? '');
+    if (!match) return false;
+    const actual = Buffer.from(match[1] ?? '');
+    return actual.length === expected.length && timingSafeEqual(actual, expected);
+  };
+}
+
 export class ServerNetBridgeServer extends EventEmitter<ServerNetBridgeEvents> {
   static readonly PROTOCOL_VERSION = SERVER_NET_BRIDGE_PROTOCOL_VERSION;
 
@@ -33,6 +48,7 @@ export class ServerNetBridgeServer extends EventEmitter<ServerNetBridgeEvents> {
   readonly sessions = new Set<ServerNetSession>();
 
   private readonly handlePacket: ServerBoundPacketHandler;
+  private authenticator: ServerNetAuthenticator | null = null;
   private server: WebSocketServer | null = null;
 
   constructor(options: ServerNetBridgeOptions) {
@@ -41,10 +57,27 @@ export class ServerNetBridgeServer extends EventEmitter<ServerNetBridgeEvents> {
     this.handlePacket = options.handlePacket;
   }
 
+  setAuthenticator(authenticator: ServerNetAuthenticator): void {
+    if (this.server) throw new Error('Authenticator must be configured before the server starts');
+    this.authenticator = authenticator;
+  }
+
   start(): Promise<void> {
     if (this.server) return Promise.resolve();
     return new Promise((resolve, reject) => {
-      const server = new WebSocketServer({ port: this.port });
+      const options: ServerOptions = { port: this.port };
+      const authenticator = this.authenticator;
+      if (authenticator) {
+        options.verifyClient = ({ req }, callback) => {
+          Promise.resolve(authenticator(req))
+            .then((authenticated) => callback(authenticated, 401, 'Unauthorized'))
+            .catch((error) => {
+              callback(false, 500, 'Internal Server Error');
+              this.emit('error', error instanceof Error ? error : new Error(String(error)));
+            });
+        };
+      }
+      const server = new WebSocketServer(options);
       this.server = server;
       const onStartupError = (error: Error) => {
         server.off('listening', onListening);
@@ -59,7 +92,7 @@ export class ServerNetBridgeServer extends EventEmitter<ServerNetBridgeEvents> {
       };
       server.once('error', onStartupError);
       server.once('listening', onListening);
-      server.on('connection', (socket) => this.onConnection(socket));
+      server.on('connection', (socket, req) => this.onConnection(socket, req));
     });
   }
 
@@ -88,8 +121,12 @@ export class ServerNetBridgeServer extends EventEmitter<ServerNetBridgeEvents> {
     );
   }
 
-  private onConnection(socket: WebSocket): void {
-    const session = new ServerNetSession(this, socket);
+  private onConnection(socket: WebSocket, req: IncomingMessage): void {
+    const session = new ServerNetSession(this, socket, {
+      headers: req.headers,
+      url: req.url,
+      remoteAddress: req.socket.remoteAddress,
+    });
     this.sessions.add(session);
     socket.on('message', (data, isBinary) => {
       if (isBinary) {

@@ -1,20 +1,18 @@
 import { BaseClient, ClientType, WORLD_NAME_DYNAMIC_PROPERTY_KEY } from './client';
 import { ServerNetBridgeClient } from './transport/server-net';
-import type { ExtractOptional } from '@discord-mcbe/shared';
 import { world } from '@minecraft/server';
 import { handleClientBoundRequest } from './client/handler';
 
 export interface BridgeClientOptions {
-  host?: string;
-  port?: number;
+  url?: string;
+  token?: string;
   worldName?: string | (() => string | undefined);
 }
 
 const DEFAULT_WORLD_NAME = 'Server';
 
-const defaultOptions: ExtractOptional<BridgeClientOptions> = {
-  host: 'localhost',
-  port: 23191,
+const defaultOptions: Pick<Required<BridgeClientOptions>, 'url' | 'worldName'> = {
+  url: 'ws://localhost:23191',
   worldName: () => {
     const worldName = world.getDynamicProperty(WORLD_NAME_DYNAMIC_PROPERTY_KEY);
     if (typeof worldName === 'string') return worldName;
@@ -26,8 +24,7 @@ export class BridgeClient extends BaseClient<ServerNetBridgeClient> {
 
   constructor(options: BridgeClientOptions = {}) {
     const mergedOptions = {
-      host: options.host ?? defaultOptions.host,
-      port: options.port ?? defaultOptions.port,
+      url: options.url ?? defaultOptions.url,
       worldName: options.worldName ?? defaultOptions.worldName,
     };
 
@@ -36,7 +33,8 @@ export class BridgeClient extends BaseClient<ServerNetBridgeClient> {
       typeof worldName === 'string' ? worldName : () => worldName() ?? DEFAULT_WORLD_NAME;
 
     const bridge = new ServerNetBridgeClient({
-      url: `ws://${mergedOptions.host}:${mergedOptions.port}`,
+      url: mergedOptions.url,
+      ...(options.token ? { token: options.token } : {}),
       worldName: resolvedWorldName,
       handleRequest: handleClientBoundRequest,
     });

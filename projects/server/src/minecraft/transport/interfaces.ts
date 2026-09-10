@@ -5,11 +5,13 @@ import type {
   ClientBoundRequestType,
   ClientBoundResponseData,
 } from '@discord-mcbe/shared';
+import type { ConnectionInfo } from 'socket-be';
 
 export interface ISession {
   readonly id: string;
-  worldName: string;
-  averagePing: number;
+  readonly worldName: string;
+  readonly averagePing: number;
+  readonly requestInfo: ConnectionInfo;
 
   disconnect(reason?: DisconnectReason): Promise<void>;
   destroy(): void;

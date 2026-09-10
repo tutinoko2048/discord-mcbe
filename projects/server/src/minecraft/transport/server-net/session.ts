@@ -14,6 +14,7 @@ import {
 } from '@discord-mcbe/shared';
 import type { ISession } from '../interfaces';
 import type { ServerNetBridgeServer } from './server';
+import { ConnectionInfo } from 'socket-be';
 
 export class ServerNetSession implements ISession {
   readonly id = randomUUID();
@@ -36,6 +37,7 @@ export class ServerNetSession implements ISession {
   constructor(
     private readonly server: ServerNetBridgeServer,
     private readonly socket: WebSocket,
+    public readonly requestInfo: ConnectionInfo,
   ) {
     this.handshakeTimeout = setTimeout(() => this.destroy(), 10_000);
   }

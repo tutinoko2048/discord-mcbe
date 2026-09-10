@@ -39,6 +39,36 @@ export default function main(app) {
 </TabItem>
 </Tabs>
 
+## <Icon name="shield-check" />BDS接続を認証する (任意)
+
+BDSのserver-net接続は、初期状態では認証されません。Bearer認証を使う場合は、`.env`へ任意のトークンを追加し、カスタムスクリプトから認証処理を設定します。
+
+```dotenv title=".env"
+BRIDGE_TOKEN=トークン
+```
+
+```ts title="scripts/main.ts"
+import { bearerAuth, type Application } from '@discord-mcbe/server';
+
+export default function main(app: Application) {
+  const token = process.env.BRIDGE_TOKEN;
+  if (!token) throw new Error('BRIDGE_TOKEN is not set');
+
+  app.minecraft.script.setAuthenticator(bearerAuth(token));
+}
+```
+
+BDS側の`variables.json`にも同じトークンを設定します。
+
+```json title="variables.json"
+{
+  "BRIDGE_URL": "ws://localhost:23191",
+  "BRIDGE_TOKEN": "トークン"
+}
+```
+
+独自の認証を使う場合は、`setAuthenticator`へリクエストを受け取る関数を渡してください。関数は`boolean`または`Promise<boolean>`を返します。認証に失敗した接続は、ワールドセッションが作られる前に拒否されます。
+
 ## <Icon name="clock" />イベントを受け取る
 
 <Tabs syncKey="code">

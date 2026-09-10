@@ -1,5 +1,6 @@
 import { system } from '@minecraft/server';
 import {
+  HttpHeader,
   websocket,
   type WebSocketClient,
   type WebSocketClientCloseAfterEvent,
@@ -33,6 +34,7 @@ interface ServerNetBridgeEvents {
 
 export interface ServerNetBridgeClientOptions {
   url: string;
+  token?: string;
   worldName: string | (() => string);
   handleRequest: ClientBoundRequestHandler;
 }
@@ -128,7 +130,10 @@ export class ServerNetBridgeClient extends Emitter<ServerNetBridgeEvents> implem
   }
 
   private async connectOnce(): Promise<void> {
-    const socket = await websocket.connect(this.options.url);
+    const headers = this.options.token
+      ? [new HttpHeader('Authorization', `Bearer ${this.options.token}`)]
+      : undefined;
+    const socket = await websocket.connect(this.options.url, headers);
     this.socket = socket;
     this.closeReason = null;
     socket.afterEvents.message.subscribe((event) => this.onMessage(socket, event));

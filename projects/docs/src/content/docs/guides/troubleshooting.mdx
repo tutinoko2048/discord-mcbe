@@ -82,7 +82,7 @@ WebSocket自体には接続できていますが、アドオンが正しく動�
 - `config/default/permissions.json`の`allowed_modules`リストに`@minecraft/server-net`モジュールが追加されているか確認します。
 - discord-mcbeのbot側が起動していることを確認してからBDSを起動してください。
 - 公式BDSアドオンはBDS本体のフォルダにある<code>{`config/${BDS_SCRIPT_MODULE_UUID}/variables.json`}</code>から接続先を読み取ります。ファイルを作成・編集し、BDSを再起動してください。
-- `BRIDGE_HOST`はBDSから見たdiscord-mcbeのホスト名、`BRIDGE_PORT`は`.env`の`BRIDGE_PORT`と同じ値にします。
+- `BRIDGE_URL`はBDSから見たdiscord-mcbeのWebSocket URLにします。URL内のポートは`.env`の`BRIDGE_PORT`と同じ値にしてください。
 
 ## どうしても解決しないときは
 

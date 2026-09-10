@@ -90,7 +90,7 @@ The WebSocket is connected, but the add-on is not working correctly. Confirm tha
 - The BDS add-on reads its connection settings from
   <code>{`config/${BDS_SCRIPT_MODULE_UUID}/variables.json`}</code> in the BDS installation folder. Create or
   edit this file and restart BDS.
-- Set `BRIDGE_HOST` to the discord-mcbe host as seen from BDS, and set `BRIDGE_PORT` to the same value as the
+- Set `BRIDGE_URL` to the discord-mcbe WebSocket URL seen from BDS. Its port must match `BRIDGE_PORT` in the
   server's `.env`.
 
 ## If you still cannot solve the problem
