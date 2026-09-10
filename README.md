@@ -1,41 +1,53 @@
-[日本語](./README_ja.md) | English
+English | [日本語](./README_ja.md)
 
 # discord-mcbe
 
-[![GitHub release](https://img.shields.io/github/v/release/tutinoko2048/discord-mcbe?display_name=tag&style=for-the-badge)](https://github.com/tutinoko2048/discord-mcbe/releases)
-[![GitHub downloads](https://img.shields.io/github/downloads/tutinoko2048/discord-mcbe/total?style=for-the-badge)](https://github.com/tutinoko2048/discord-mcbe/releases)
+[![App version](https://img.shields.io/github/v/release/tutinoko2048/discord-mcbe?display_name=tag&style=for-the-badge&label=app&filter=!launcher@*)](https://github.com/tutinoko2048/discord-mcbe/releases) [![Launcher version](https://img.shields.io/github/v/release/tutinoko2048/discord-mcbe?display_name=tag&style=for-the-badge&label=launcher&filter=launcher@*)](https://github.com/tutinoko2048/discord-mcbe/releases)
+[![GitHub downloads](https://img.shields.io/github/downloads/tutinoko2048/discord-mcbe/total?style=for-the-badge&label=total%20downloads)](https://github.com/tutinoko2048/discord-mcbe/releases) ![Discord](https://img.shields.io/discord/553107939410444319?style=for-the-badge&color=5865F2)
 
-A two-way bridge between Minecraft Bedrock Edition and Discord.
+A feature-rich, configurable Discord bridge for Minecraft Bedrock.
 
-[Documentation](https://discord-mcbe.tn2048.workers.dev/) · [Releases](https://github.com/tutinoko2048/discord-mcbe/releases) · [Discord](https://discord.gg/XGR8FcCeFc)
+## Features
 
-discord-mcbe connects Minecraft worlds to a Discord text channel. It relays chat and world events and provides commands and status information through a Discord bot.
+- Relay Minecraft chat to Discord and messages from a Discord channel to every connected world.
+- Supports both regular worlds and Bedrock Dedicated Server (BDS), with multiple worlds connected at the same time.
+- View player lists, execute Minecraft commands, and check ping from Discord.
+- Customize message filters and displayed text, or freely extend functionality with custom scripts written in JavaScript or TypeScript.
+- The JavaScript runtime is bundled, so setup is relatively easy without downloading additional software.
 
-## Highlights
+<table>
+  <tr>
+    <td><img src="projects/docs/src/assets/minecraft_en.png" alt="Minecraft chat relay"></td>
+    <td><img src="projects/docs/src/assets/discord_en.png" alt="Discord chat relay"></td>
+  </tr>
+</table>
 
-- Two-way chat between Minecraft and Discord
-- Regular hosted worlds and Bedrock Dedicated Server support
-- Multiple world connections
-- Player lists, command execution, and a live status panel
-- Configurable message filters and custom JavaScript/TypeScript scripts
+## Installation path
 
-## Installation
+1. [Set up the discord-mcbe server](https://discord-mcbe.retomc.dev/en/installation/setup-bot/)
+2. [Install the add-on in a regular world or BDS](https://discord-mcbe.retomc.dev/en/installation/setup-world/)
+3. Start the world and connect it
 
-These instructions cover discord-mcbe v4. On Windows, double-click `updater.exe` and select Stable, or run `updater.exe stable` in PowerShell. On Linux / macOS, run `./updater stable`. Use the add-on from the same release as the server.
+For details, see the [documentation](https://discord-mcbe.retomc.dev/en/).
 
-When upgrading from v3, back up the existing installation and set up v4 in a separate directory. The launcher, add-ons, configuration, and commands have changed; v3 add-ons are not compatible with the v4 server.
+## Downloads
 
-For installation, configuration, commands, troubleshooting, and development information, see the [official documentation](https://discord-mcbe.tn2048.workers.dev/).
+Use the [launcher](https://discord-mcbe.retomc.dev/en/installation/setup-bot/) to install and update the discord-mcbe server.
 
-## Screenshots
+Installing an [add-on](https://discord-mcbe.retomc.dev/en/installation/setup-world/) in the world is required to connect. Install the version compatible with the server (bot).
 
-<img src="docs/minecraft.jpeg" width="100%" alt="Minecraft chat connected through discord-mcbe">
-<img src="docs/discord.jpeg" width="100%" alt="Discord chat connected through discord-mcbe">
+Continue with the [installation guide](https://discord-mcbe.retomc.dev/en/installation/setup-bot/) for Discord bot creation, extraction, and configuration.
 
-## Contributing
+## Guides
 
-Bug reports, feature proposals, translations, and pull requests are welcome. Please use [GitHub Issues](https://github.com/tutinoko2048/discord-mcbe/issues) for reports and proposals.
+- [Features and commands](https://discord-mcbe.retomc.dev/en/guides/commands/)
+- [Configuration](https://discord-mcbe.retomc.dev/en/guides/configuration/)
+- [Translations and displayed text customization](https://discord-mcbe.retomc.dev/en/guides/translation-overrides/)
+- [Custom scripts](https://discord-mcbe.retomc.dev/en/guides/custom-scripts/)
+- [Troubleshooting](https://discord-mcbe.retomc.dev/en/guides/troubleshooting/)
+- [Development guide](https://discord-mcbe.retomc.dev/en/development/)
+- [API reference](https://discord-mcbe.retomc.dev/reference/)
 
 ## License
 
-[MIT](./LICENSE)
+[MIT License](./LICENSE)

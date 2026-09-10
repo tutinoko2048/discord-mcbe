@@ -1,41 +1,53 @@
-日本語 | [English](./README.md)
+[English](./README.md) | 日本語
 
 # discord-mcbe
 
-[![GitHub release](https://img.shields.io/github/v/release/tutinoko2048/discord-mcbe?display_name=tag&style=for-the-badge)](https://github.com/tutinoko2048/discord-mcbe/releases)
-[![GitHub downloads](https://img.shields.io/github/downloads/tutinoko2048/discord-mcbe/total?style=for-the-badge)](https://github.com/tutinoko2048/discord-mcbe/releases)
+[![App version](https://img.shields.io/github/v/release/tutinoko2048/discord-mcbe?display_name=tag&style=for-the-badge&label=app&filter=!launcher@*)](https://github.com/tutinoko2048/discord-mcbe/releases) [![Launcher version](https://img.shields.io/github/v/release/tutinoko2048/discord-mcbe?display_name=tag&style=for-the-badge&label=launcher&filter=launcher@*)](https://github.com/tutinoko2048/discord-mcbe/releases)
+[![GitHub downloads](https://img.shields.io/github/downloads/tutinoko2048/discord-mcbe/total?style=for-the-badge&label=total%20downloads)](https://github.com/tutinoko2048/discord-mcbe/releases) ![Discord](https://img.shields.io/discord/553107939410444319?style=for-the-badge&color=5865F2)
 
-Minecraft Bedrock EditionとDiscordを双方向につなぐチャットブリッジです。
-
-[公式ドキュメント](https://discord-mcbe.tn2048.workers.dev/) · [リリース](https://github.com/tutinoko2048/discord-mcbe/releases) · [Discord](https://discord.gg/XGR8FcCeFc)
-
-discord-mcbeは、MinecraftのワールドとDiscordのテキストチャンネルを接続します。チャットやワールドイベントを中継し、Discord Botからコマンドを実行したり、接続状況を確認したりできます。
+Minecraft統合版のための高機能Discord連携Botです。
 
 ## 主な機能
 
-- MinecraftとDiscordの双方向チャット
-- 通常のワールドとBedrock Dedicated Serverへの対応
-- 複数ワールドの同時接続
-- プレイヤー一覧、コマンド実行、リアルタイムのステータスパネル
-- メッセージフィルターとJavaScript/TypeScriptによるカスタムスクリプト
+- MinecraftのチャットをDiscordへ、Discordチャンネルのメッセージを接続中の全ワールドへ届けます。
+- 通常のワールドとBedrock Dedicated Server（BDS）の**両方**に対応。また、複数のワールドに同時接続することができます。
+- Discordからプレイヤーリスト、Minecraftコマンドの実行、pingを確認することができます。
+- メッセージフィルターや表示テキストのカスタマイズ、JavaScript/TypeScriptを使ったカスタムスクリプトで自由に機能を拡張できます。
+- JavaScriptランタイムを同梱しているため、面倒なソフトのダウンロード等をせずに(比較的)簡単にセットアップできます。
 
-## 導入
+<table>
+  <tr>
+    <td><img src="projects/docs/src/assets/minecraft_ja.png" alt="Minecraftのチャット連携"></td>
+    <td><img src="projects/docs/src/assets/discord_ja.png" alt="Discordのチャット連携"></td>
+  </tr>
+</table>
 
-この案内はdiscord-mcbe v4を対象としています。Windowsでは`updater.exe`をダブルクリックしてStableを選択するか、PowerShellで`updater.exe stable`を実行します。Linux / macOSでは`./updater stable`を実行してください。サーバーと同じリリースのアドオンを使用します。
+## 導入の流れ
 
-v3から移行する場合は、既存環境をバックアップして別のフォルダーにv4をセットアップしてください。ランチャー、アドオン、設定、コマンドが変更されており、v3用アドオンとv4サーバーには互換性がありません。
+1. [discord-mcbeサーバーをセットアップする](https://discord-mcbe.retomc.dev/installation/setup-bot/)
+2. [ローカルワールドまたはBDSにアドオンを導入する](https://discord-mcbe.retomc.dev/installation/setup-world/)
+3. ワールドを起動して接続する
 
-導入、設定、コマンド、トラブルシューティング、開発に関する情報は[公式ドキュメント](https://discord-mcbe.tn2048.workers.dev/)を参照してください。
+詳しい内容は [公式ドキュメント](https://discord-mcbe.retomc.dev/) で解説しています！
 
-## スクリーンショット
+## ダウンロード
 
-<img src="docs/minecraft.jpeg" width="100%" alt="discord-mcbeで接続したMinecraftのチャット">
-<img src="docs/discord.jpeg" width="100%" alt="discord-mcbeで接続したDiscordのチャット">
+[ランチャー](https://discord-mcbe.retomc.dev/installation/setup-bot/)はdiscord-mcbeサーバーのインストールとアップデートに使用します。
 
-## コントリビューション
+接続するにはワールドへの[アドオン](https://discord-mcbe.retomc.dev/installation/setup-world/)の導入が必須です。インストールするサーバー(bot)に対応したバージョンのものを導入してください。
 
-バグ報告、機能提案、翻訳、Pull Requestを歓迎します。報告や提案には[GitHub Issues](https://github.com/tutinoko2048/discord-mcbe/issues)を利用してください。
+Botの作成や展開後の設定を含む手順は、[導入ガイド](https://discord-mcbe.retomc.dev/installation/setup-bot/)を参照してください。
+
+## ガイド
+
+- [機能とコマンド](https://discord-mcbe.retomc.dev/guides/commands/)
+- [設定](https://discord-mcbe.retomc.dev/guides/configuration/)
+- [翻訳と表示テキストのカスタマイズ](https://discord-mcbe.retomc.dev/guides/translation-overrides/)
+- [カスタムスクリプト](https://discord-mcbe.retomc.dev/guides/custom-scripts/)
+- [トラブルシューティング](https://discord-mcbe.retomc.dev/guides/troubleshooting/)
+- [開発ガイド](https://discord-mcbe.retomc.dev/development/)
+- [APIリファレンス](https://discord-mcbe.retomc.dev/reference/)
 
 ## ライセンス
 
-[MIT](./LICENSE)
+[MIT License](./LICENSE)
