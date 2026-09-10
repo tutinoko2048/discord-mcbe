@@ -44,8 +44,8 @@
     "@minecraft/server": "catalog:",
     "colorette": "^2.0.20",
     "discord.js": "^14.26.3",
-    "jsonc": "^2.0.0",
-    "socket-be": "^2.6.0",
+    "jsonc-parser": "catalog:",
+    "socket-be": "^2.8.0",
     "ws": "catalog:",
     "zod": "^4.3.6"
   },

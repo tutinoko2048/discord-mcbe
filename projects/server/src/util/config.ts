@@ -1,6 +1,6 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { jsonc } from 'jsonc';
+import * as JSONC from 'jsonc-parser';
 import { dim } from 'colorette';
 import * as z from 'zod';
 import { ROOT_DIR } from './environment';
@@ -90,7 +90,7 @@ export function loadConfig(defaultConfig: Config): Config {
     fs.writeFileSync(CONFIG_FILE, JSON.stringify(defaultConfig, null, 2), 'utf-8');
   }
 
-  const configData: unknown = jsonc.parse(fs.readFileSync(CONFIG_FILE, 'utf-8'));
+  const configData: unknown = JSONC.parse(fs.readFileSync(CONFIG_FILE, 'utf-8'));
 
   return mergeConfig(defaultConfig, configData);
 }
