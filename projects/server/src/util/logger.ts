@@ -2,7 +2,7 @@ import { inspect } from 'node:util';
 import * as color from 'colorette';
 
 interface LoggerOptions {
-  timezoneOffset?: number;
+  timezone_offset?: number;
   debug?: boolean;
 }
 
@@ -68,8 +68,8 @@ export class Logger {
 
   private getTime(): string {
     const date = new Date();
-    const offset = this.options.timezoneOffset ?? 0;
-    const localDate = new Date(date.getTime() + offset * 60 * 60 * 1000);
+    const offset = this.options.timezone_offset;
+    const localDate = new Date(date.getTime() + (offset ?? -date.getTimezoneOffset() / 60) * 60 * 60 * 1000);
     return localDate.toISOString().replace('T', ' ').replace('Z', '');
   }
 }

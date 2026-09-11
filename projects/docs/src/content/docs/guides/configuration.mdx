@@ -38,20 +38,20 @@ BRIDGE_PORT=23191
 
 <Code code={JSON.stringify(defaultConfig, null, 2)} lang="json" title="config.json" />
 
-| キー                           | 説明                                                          |
-| ------------------------------ | ------------------------------------------------------------- |
-| `config_version`               | 設定形式のバージョン。移行処理用なので変更しない              |
-| `language`                     | Botとコンソールの言語。利用可能なロケールを指定               |
-| `timezone_offset`              | 表示時刻のUTCからのオフセット（整数時間）。日本標準時は`9`    |
-| `bot.show_death_messages`      | プレイヤーの死亡メッセージをDiscordへ送る。                   |
-| `bot.reply_preview_max_length` | Discordの返信元本文をMinecraftに表示する最大文字数            |
-| `bot.strip_color_prefix`       | MinecraftからDiscordへ送る本文の`§`カラーコードを除去する     |
-| `bot.panel_update_interval`    | ステータスパネルの更新間隔（ミリ秒）                          |
-| `bot.discord_message_filter`   | DiscordからMinecraftへ送る本文に適用するフィルター            |
-| `bridge.disable_encryption`    | ローカルワールド接続の暗号化を無効にする。通常は`false`のまま |
-| `script.entry`                 | 起動時に読み込むスクリプトファイル                            |
-| `translationOverrides`         | 組み込み翻訳の一部を上書きするオブジェクト                    |
-| `debug`                        | デバッグログを有効にする                                      |
+| キー                           | 説明                                                                |
+| ------------------------------ | ------------------------------------------------------------------- |
+| `config_version`               | 設定形式のバージョン。移行処理用なので変更しない                    |
+| `language`                     | Botとコンソールの言語。利用可能なロケールを指定                     |
+| `timezone_offset`              | 表示時刻のUTCからのオフセット（整数時間）。省略時はOSのローカル時刻 |
+| `bot.show_death_messages`      | プレイヤーの死亡メッセージをDiscordへ送る。                         |
+| `bot.reply_preview_max_length` | Discordの返信元本文をMinecraftに表示する最大文字数                  |
+| `bot.strip_color_prefix`       | MinecraftからDiscordへ送る本文の`§`カラーコードを除去する           |
+| `bot.panel_update_interval`    | ステータスパネルの更新間隔（ミリ秒）                                |
+| `bot.discord_message_filter`   | DiscordからMinecraftへ送る本文に適用するフィルター                  |
+| `bridge.disable_encryption`    | ローカルワールド接続の暗号化を無効にする。通常は`false`のまま       |
+| `script.entry`                 | 起動時に読み込むスクリプトファイル                                  |
+| `translation_overrides`        | 組み込み翻訳の一部を上書きするオブジェクト                          |
+| `debug`                        | デバッグログを有効にする                                            |
 
 定義されていないキーは警告とともに無視されます。型や値が不正な場合はエラー箇所を表示して起動を中止します。
 
@@ -108,10 +108,10 @@ BRIDGE_PORT=23191
 
 ## <Icon name="pencil" />表示テキストをカスタマイズする
 
-`translationOverrides`では、組み込みの翻訳キーを個別に変更できます。`%0`、`%1`などのプレースホルダーはそのまま残します。
+`translation_overrides`では、組み込みの翻訳キーを個別に変更できます。`%0`、`%1`などのプレースホルダーはそのまま残します。
 
 ```json
-"translationOverrides": {
+"translation_overrides": {
   "minecraft.message": "§9[Discord]§r %0§r: %1§r",
   "discord.join": "🟢 %0 joined",
   "discord.leave": "🔴 %0 left"

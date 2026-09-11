@@ -1,9 +1,10 @@
 import type { Config } from '../types';
 
+// Keep optional keys here so config merging accepts user-provided values
 export const defaultConfig: Config = {
   config_version: 1,
   language: 'ja',
-  timezone_offset: 0,
+  timezone_offset: undefined,
   bot: {
     show_death_messages: true,
     reply_preview_max_length: 9,
@@ -18,6 +19,6 @@ export const defaultConfig: Config = {
   script: {
     entry: 'scripts/main.js',
   },
-  translationOverrides: {},
+  translation_overrides: {},
   debug: false,
 };

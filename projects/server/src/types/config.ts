@@ -72,11 +72,11 @@ export const configSchema = z.object({
     .positive()
     .describe('The version of the config file, used for internal migration.'),
   language: z.enum(getAvailableLanguages()).describe('Language'),
-  timezone_offset: z.number().int().describe('Timezone used to display the time'),
+  timezone_offset: z.number().int().optional().describe('Optional UTC offset used to display the time'),
   bot: botSchema,
   bridge: bridgeSchema,
   script: scriptSchema,
-  translationOverrides: z
+  translation_overrides: z
     .partialRecord(z.enum(getDefaultLocalizationKeys()), z.string())
     .describe('Override specific translations with custom strings.'),
   debug: z.boolean().describe('debug.'),

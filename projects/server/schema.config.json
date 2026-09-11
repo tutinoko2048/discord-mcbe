@@ -14,10 +14,10 @@
       "description": "Language"
     },
     "timezone_offset": {
+      "description": "Optional UTC offset used to display the time",
       "type": "integer",
       "minimum": -9007199254740991,
-      "maximum": 9007199254740991,
-      "description": "Timezone used to display the time"
+      "maximum": 9007199254740991
     },
     "bot": {
       "type": "object",
@@ -178,7 +178,7 @@
       "required": ["entry"],
       "additionalProperties": false
     },
-    "translationOverrides": {
+    "translation_overrides": {
       "type": "object",
       "propertyNames": {
         "type": "string",
@@ -459,15 +459,6 @@
       "description": "debug."
     }
   },
-  "required": [
-    "config_version",
-    "language",
-    "timezone_offset",
-    "bot",
-    "bridge",
-    "script",
-    "translationOverrides",
-    "debug"
-  ],
+  "required": ["config_version", "language", "bot", "bridge", "script", "translation_overrides", "debug"],
   "additionalProperties": false
 }

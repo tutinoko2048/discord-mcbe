@@ -43,20 +43,20 @@ When `config.json` does not exist, the first start with a valid `.env` creates i
 
 <Code code={JSON.stringify(defaultConfig, null, 2)} lang="json" title="config.json" />
 
-| Key                            | Description                                                           |
-| ------------------------------ | --------------------------------------------------------------------- |
-| `config_version`               | Configuration format version used for migration. Do not edit          |
-| `language`                     | Bot and console language: specify an available locale                 |
-| `timezone_offset`              | Integer-hour offset from UTC used for displayed times                 |
-| `bot.show_death_messages`      | Send player death messages to Discord                                 |
-| `bot.reply_preview_max_length` | Maximum Discord reply-preview characters shown in Minecraft           |
-| `bot.strip_color_prefix`       | Remove Minecraft `§` color codes before relaying to Discord           |
-| `bot.panel_update_interval`    | Status panel refresh interval in milliseconds                         |
-| `bot.discord_message_filter`   | Filters applied before Discord content is sent to Minecraft           |
-| `bridge.disable_encryption`    | Disable encryption for local-world connections. Normally keep `false` |
-| `script.entry`                 | Script file imported at startup                                       |
-| `translationOverrides`         | Map of built-in translation keys to replacement strings               |
-| `debug`                        | Enable debug logging                                                  |
+| Key                            | Description                                                              |
+| ------------------------------ | ------------------------------------------------------------------------ |
+| `config_version`               | Configuration format version used for migration. Do not edit             |
+| `language`                     | Bot and console language: specify an available locale                    |
+| `timezone_offset`              | Integer-hour offset from UTC; defaults to the OS local time when omitted |
+| `bot.show_death_messages`      | Send player death messages to Discord                                    |
+| `bot.reply_preview_max_length` | Maximum Discord reply-preview characters shown in Minecraft              |
+| `bot.strip_color_prefix`       | Remove Minecraft `§` color codes before relaying to Discord              |
+| `bot.panel_update_interval`    | Status panel refresh interval in milliseconds                            |
+| `bot.discord_message_filter`   | Filters applied before Discord content is sent to Minecraft              |
+| `bridge.disable_encryption`    | Disable encryption for local-world connections. Normally keep `false`    |
+| `script.entry`                 | Script file imported at startup                                          |
+| `translation_overrides`        | Map of built-in translation keys to replacement strings                  |
+| `debug`                        | Enable debug logging                                                     |
 
 Unknown keys are ignored with a warning. An invalid type or value stops startup and prints the affected path.
 
@@ -113,10 +113,10 @@ The same filters also process quoted reply previews. A reply source rejected by 
 
 ## <Icon name="pencil" />Override displayed text
 
-`translationOverrides` can replace individual built-in strings. Preserve placeholders such as `%0` and `%1`.
+`translation_overrides` can replace individual built-in strings. Preserve placeholders such as `%0` and `%1`.
 
 ```json
-"translationOverrides": {
+"translation_overrides": {
   "minecraft.message": "§9[Discord]§r %0§r: %1§r",
   "discord.join": "🟢 %0 joined",
   "discord.leave": "🔴 %0 left"

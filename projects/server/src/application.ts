@@ -42,7 +42,7 @@ export class Application extends ExtendedEmitter<ApplicationEvents> {
 
     this.config = loadConfig(defaultConfig);
 
-    initializeLang(this.config.language, this.config.translationOverrides as Record<string, string>);
+    initializeLang(this.config.language, this.config.translation_overrides as Record<string, string>);
 
     this.logger = new Logger('App', this.config);
 
