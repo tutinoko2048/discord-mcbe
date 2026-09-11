@@ -3,7 +3,16 @@ import { VERSION, type ExtractOptional } from '@discord-mcbe/shared';
 import { DiscordBot } from './discord';
 import { MinecraftHandler } from './minecraft';
 import { EventHandler, CommandLineHandler, ScriptHandler } from './handlers';
-import { Logger, PropertyManager, loadConfig, initialize as initializeLang, loadEnv } from './util';
+import {
+  Logger,
+  PropertyManager,
+  LAUNCHER_VERSION,
+  _t,
+  loadConfig,
+  initialize as initializeLang,
+  loadEnv,
+} from './util';
+import { checkForUpdates } from './util/version-check';
 import { StartupEvent } from './events';
 import { defaultConfig } from './assets/default-config';
 
@@ -60,6 +69,19 @@ export class Application extends ExtendedEmitter<ApplicationEvents> {
   }
 
   async start() {
+    if (this.config.check_for_updates) {
+      void checkForUpdates(this.version, LAUNCHER_VERSION)
+        .then((updates) => {
+          for (const update of updates) {
+            this.logger.warn(
+              _t('console.update.available', update.name, update.currentVersion, update.latestVersion),
+            );
+            this.logger.warn(update.url);
+          }
+        })
+        .catch((error) => this.logger.debug('Failed to check for updates', error));
+    }
+
     this.events.start();
     await this.bot.start();
     await this.scripts.start();

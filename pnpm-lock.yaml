@@ -18,6 +18,9 @@ catalogs:
     '@minecraft/server-ui':
       specifier: 2.1.0
       version: 2.1.0
+    '@types/semver':
+      specifier: ^7.7.1
+      version: 7.7.1
     '@types/ws':
       specifier: ^8.18.1
       version: 8.18.1
@@ -27,6 +30,9 @@ catalogs:
     jsonc-parser:
       specifier: ^3.3.1
       version: 3.3.1
+    semver:
+      specifier: ^7.7.4
+      version: 7.8.5
     valibot:
       specifier: ^1.4.2
       version: 1.4.2
@@ -206,8 +212,8 @@ importers:
         specifier: ^14.0.3
         version: 14.0.3
       semver:
-        specifier: ^7.7.4
-        version: 7.7.4
+        specifier: 'catalog:'
+        version: 7.8.5
     devDependencies:
       '@discord-mcbe/internal-config':
         specifier: workspace:*
@@ -216,7 +222,7 @@ importers:
         specifier: ^3.11.6
         version: 3.11.6
       '@types/semver':
-        specifier: ^7.7.1
+        specifier: 'catalog:'
         version: 7.7.1
       bun-types:
         specifier: 'catalog:'
@@ -239,6 +245,9 @@ importers:
       jsonc-parser:
         specifier: 'catalog:'
         version: 3.3.1
+      semver:
+        specifier: 'catalog:'
+        version: 7.8.5
       socket-be:
         specifier: ^2.8.0
         version: 2.8.0(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
@@ -252,6 +261,9 @@ importers:
       '@discord-mcbe/internal-config':
         specifier: workspace:*
         version: link:../../packages/internal-config
+      '@types/semver':
+        specifier: 'catalog:'
+        version: 7.7.1
       '@types/ws':
         specifier: 'catalog:'
         version: 8.18.1

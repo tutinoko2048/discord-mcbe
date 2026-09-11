@@ -3,6 +3,7 @@ import type { Config } from '../types';
 // Keep optional keys here so config merging accepts user-provided values
 export const defaultConfig: Config = {
   config_version: 1,
+  check_for_updates: true,
   language: 'ja',
   timezone_offset: undefined,
   bot: {

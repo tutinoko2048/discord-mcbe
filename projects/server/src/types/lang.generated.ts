@@ -43,6 +43,7 @@ export type LangArgs = {
   'console.script.ready': [Arg];
   'console.socket.command': [];
   'console.socket.ready': [Arg];
+  'console.update.available': [Arg, Arg, Arg];
   'death.attack.anvil': [Arg];
   'death.attack.arrow': [Arg, Arg];
   'death.attack.arrow.item': [Arg, Arg, Arg];

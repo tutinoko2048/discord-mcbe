@@ -45,12 +45,14 @@
     "colorette": "^2.0.20",
     "discord.js": "^14.26.3",
     "jsonc-parser": "catalog:",
+    "semver": "catalog:",
     "socket-be": "^2.8.0",
     "ws": "catalog:",
     "zod": "^4.3.6"
   },
   "devDependencies": {
     "@discord-mcbe/internal-config": "workspace:*",
+    "@types/semver": "catalog:",
     "@types/ws": "catalog:",
     "bun-types": "catalog:",
     "oh-my-logo": "^0.4.0"

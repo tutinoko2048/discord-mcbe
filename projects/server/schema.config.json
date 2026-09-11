@@ -8,6 +8,10 @@
       "maximum": 9007199254740991,
       "description": "The version of the config file, used for internal migration."
     },
+    "check_for_updates": {
+      "type": "boolean",
+      "description": "Check for app and launcher updates at startup"
+    },
     "language": {
       "type": "string",
       "enum": ["en-US", "ja", "fr"],
@@ -220,6 +224,7 @@
           "console.socket.ready",
           "console.socket.command",
           "console.script.ready",
+          "console.update.available",
           "console.connect",
           "console.disconnect",
           "console.join",
@@ -459,6 +464,15 @@
       "description": "debug."
     }
   },
-  "required": ["config_version", "language", "bot", "bridge", "script", "translation_overrides", "debug"],
+  "required": [
+    "config_version",
+    "check_for_updates",
+    "language",
+    "bot",
+    "bridge",
+    "script",
+    "translation_overrides",
+    "debug"
+  ],
   "additionalProperties": false
 }

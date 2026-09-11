@@ -23,12 +23,12 @@
     "@inquirer/select": "^5.1.4",
     "cli-progress": "^3.12.0",
     "commander": "^14.0.3",
-    "semver": "^7.7.4"
+    "semver": "catalog:"
   },
   "devDependencies": {
     "@discord-mcbe/internal-config": "workspace:*",
     "@types/cli-progress": "^3.11.6",
-    "@types/semver": "^7.7.1",
+    "@types/semver": "catalog:",
     "bun-types": "catalog:"
   }
 }

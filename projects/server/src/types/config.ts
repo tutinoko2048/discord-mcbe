@@ -71,6 +71,7 @@ export const configSchema = z.object({
     .int()
     .positive()
     .describe('The version of the config file, used for internal migration.'),
+  check_for_updates: z.boolean().describe('Whether to check for new versions at startup'),
   language: z.enum(getAvailableLanguages()).describe('Language'),
   timezone_offset: z.number().int().optional().describe('Optional UTC offset used to display the time'),
   bot: botSchema,

@@ -36,6 +36,7 @@
   "console.socket.ready": "[Local] SocketBridge server is listening on port: %0",
   "console.socket.command": "[Local] Enter one of the following commands in Minecraft to connect:",
   "console.script.ready": "[BDS] Bridge server is listening on port: %0",
+  "console.update.available": "A new version of %0 is available: v%2 (current: v%1)",
   "console.connect": "[%0] Connected to the world",
   "console.disconnect": "[%0] Disconnected from the world",
   "console.join": "[%0] %1 joined the game",
