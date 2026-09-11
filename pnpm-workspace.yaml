@@ -16,12 +16,12 @@ catalog:
   '@minecraft/server-net': 1.0.0-beta.1.26.44-stable
   '@minecraft/server-ui': 2.1.0
   '@types/ws': ^8.18.1
-  bun-types: ^1.3.13
+  bun-types: ^1.4.2
   jsonc-parser: ^3.3.1
   ws: ^8.21.3
   valibot: ^1.4.2
   semver: ^7.7.4
-  '@types/semver': ^7.7.1
+  '@types/semver': ^7.8.0
 
 overrides:
   '@minecraft/server': 'catalog:'

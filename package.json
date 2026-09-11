@@ -17,15 +17,15 @@
     "create-release-assets": "bun run scripts/create-release-assets.ts"
   },
   "devDependencies": {
-    "@types/node": "^24.13.3",
+    "@types/node": "^24.13.4",
     "bun-types": "catalog:",
     "rimraf": "^6.1.3",
-    "turbo": "^2.9.9",
-    "typedoc": "^0.28.19",
+    "turbo": "^2.10.12",
+    "typedoc": "^0.28.20",
     "typedoc-material-theme": "^1.4.1",
     "typedoc-plugin-merge-modules": "^7.0.0",
     "typescript": "^6.0.3",
-    "vite-plus": "^0.3.0"
+    "vite-plus": "^0.3.1"
   },
   "packageManager": "pnpm@11.24.0"
 }
