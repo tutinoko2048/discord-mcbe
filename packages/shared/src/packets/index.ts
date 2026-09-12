@@ -3,6 +3,7 @@ export * from './common';
 export * from './connect';
 export * from './descriptors';
 export * from './disconnect';
+export * from './discord-send';
 export * from './get-entity-dimension';
 export * from './get-entity-location';
 export * from './get-game-mode';

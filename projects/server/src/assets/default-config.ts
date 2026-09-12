@@ -8,6 +8,7 @@ export const defaultConfig: Config = {
   timezone_offset: undefined,
   bot: {
     show_death_messages: true,
+    allow_addon_messages: true,
     reply_preview_max_length: 9,
     strip_color_prefix: true,
     minecraft_chat_avatar_url: undefined,

@@ -25,6 +25,13 @@ describe('protocol v2 packet validation', () => {
 
     expect(
       safeParseServerBoundPacket({
+        type: ActionId.DiscordSend,
+        data: { message: 'Server event started' },
+      }).success,
+    ).toBe(true);
+
+    expect(
+      safeParseServerBoundPacket({
         type: ActionId.PlayerDie,
         data: {
           playerUniqueId: 'player-1',
@@ -87,6 +94,21 @@ describe('protocol v2 packet validation', () => {
             },
           ],
         },
+      }).success,
+    ).toBe(false);
+  });
+
+  test('rejects invalid Discord messages', () => {
+    expect(
+      safeParseServerBoundPacket({
+        type: ActionId.DiscordSend,
+        data: { message: '' },
+      }).success,
+    ).toBe(false);
+    expect(
+      safeParseServerBoundPacket({
+        type: ActionId.DiscordSend,
+        data: { message: 'a'.repeat(2_001) },
       }).success,
     ).toBe(false);
   });

@@ -1,0 +1,68 @@
+---
+title: 他のアドオンとの連携機能
+description: discord-mcbeを利用して、他のアドオンからDiscordへメッセージを送信する方法を解説します。
+---
+
+import { Code, Tabs, TabItem } from '@astrojs/starlight/components';
+
+discord-mcbeには、<a href="https://github.com/OmniacDev/MCBE-IPC" target="_blank" rel="noopener noreferrer">MCBE-IPC</a>を使った他のアドオンとの連携機能があります。
+これにより、他のアドオンからdiscord-mcbeを経由してDiscordへメッセージを送信できます。
+
+他のアドオンへのMCBE-IPCの導入方法は配布元の説明に従ってください。
+
+:::caution
+この機能は、同じワールドで有効になっている他のアドオンを信頼できることを前提としています。
+悪意のあるアドオンが導入されている場合、Discordへ意図しない、または不適切なメッセージが送信される可能性があります。
+なお、この機能は`config.json`の`bot.allow_addon_messages`を`false`にすることで無効化できます。
+:::
+
+この機能を無効にするには、`config.json`の`bot.allow_addon_messages`を`false`にします。無効にしても、導入・接続確認用の`ping`には応答します。
+
+## discord-mcbeが導入されているか確認する
+
+`discord-mcbe:ping`の応答は、`true`なら接続中、`false`なら導入済みですが未接続です。20tick以内に応答がなければ、discord-mcbeは導入されていません。この確認は起動時に一度だけ行ってください。
+
+<Tabs syncKey="code">
+<TabItem value="ts" label="TypeScript">
+
+```ts
+import { system } from '@minecraft/server';
+import { IPC, PROTO } from 'mcbe-ipc';
+
+export function getDiscordMcbeStatus(): Promise<boolean | undefined> {
+  return Promise.race([
+    IPC.invoke('discord-mcbe:ping', PROTO.Void, undefined, PROTO.Boolean),
+    system.waitTicks(20).then(() => undefined),
+  ]);
+}
+```
+
+</TabItem>
+<TabItem value="js" label="JavaScript">
+
+```js
+import { system } from '@minecraft/server';
+import { IPC, PROTO } from 'mcbe-ipc';
+
+export function getDiscordMcbeStatus() {
+  return Promise.race([
+    IPC.invoke('discord-mcbe:ping', PROTO.Void, undefined, PROTO.Boolean),
+    system.waitTicks(20).then(() => undefined),
+  ]);
+}
+```
+
+</TabItem>
+</Tabs>
+
+## Discordへメッセージを送る
+
+`discord-mcbe:send_message`へ文字列を送ると、Discordへメッセージが送信されます。
+
+```ts
+import { IPC, PROTO } from 'mcbe-ipc';
+
+IPC.send('discord-mcbe:send_message', PROTO.String, 'イベントが開始しました');
+```
+
+なお、空のメッセージや2000文字を超えるメッセージは無視されます。

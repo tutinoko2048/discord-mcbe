@@ -9,7 +9,7 @@ export default defineConfig({
     sourcemap: true,
     platform: 'neutral',
     deps: {
-      alwaysBundle: ['@discord-mcbe/client/local'],
+      alwaysBundle: ['@discord-mcbe/client/local', 'mcbe-ipc'],
       onlyBundle: false,
     },
   },

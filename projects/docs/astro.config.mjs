@@ -79,11 +79,6 @@ export default defineConfig({
               slug: 'guides/translation-overrides',
             },
             {
-              label: 'カスタムスクリプト',
-              translations: { en: 'Custom scripts' },
-              slug: 'guides/custom-scripts',
-            },
-            {
               label: 'トラブルシューティング',
               translations: { en: 'Troubleshooting' },
               slug: 'guides/troubleshooting',
@@ -91,13 +86,18 @@ export default defineConfig({
           ],
         },
         {
-          label: '開発',
-          translations: { en: 'Development' },
+          label: '開発者向け',
+          translations: { en: 'For developers' },
           items: [
             {
-              label: '開発ガイド',
-              translations: { en: 'Development guide' },
-              slug: 'development',
+              label: 'カスタムスクリプト',
+              translations: { en: 'Custom scripts' },
+              slug: 'guides/custom-scripts',
+            },
+            {
+              label: '他のアドオンとの連携機能',
+              translations: { en: 'Integration with other addons' },
+              slug: 'guides/addon-integration',
             },
             {
               label: 'APIリファレンス',

@@ -155,6 +155,16 @@ export class MinecraftHandler {
         return null;
       }
 
+      case ActionId.DiscordSend: {
+        if (!this.app.config.bot.allow_addon_messages) return null;
+        const world = this.getWorldBySession(session);
+        if (!world) throw new Error(`World not found: ${session.id}`);
+        void this.app.bot
+          .sendMessage({ content: packet.data.message })
+          .catch((error) => this.logger.error(`Failed to send IPC message from ${world.name}:`, error));
+        return null;
+      }
+
       default:
         return assertNever(packet);
     }
