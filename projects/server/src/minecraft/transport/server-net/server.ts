@@ -281,7 +281,7 @@ function getPacketType(input: unknown): unknown {
   return (input as Record<string, unknown>).type;
 }
 
-interface ServerNetBridgeEvents {
+export interface ServerNetBridgeEvents {
   serverOpen: [];
   serverClose: [];
   clientConnect: [session: ServerNetSession];

@@ -27,7 +27,7 @@ import {
 import { Emitter } from '../utils/emitter';
 import type { ClientBoundRequestHandler, IBridgeClient } from './interfaces';
 
-interface ServerNetBridgeEvents {
+export interface ServerNetBridgeEvents {
   connect: { sessionId: string };
   disconnect: { reason: DisconnectReason };
 }

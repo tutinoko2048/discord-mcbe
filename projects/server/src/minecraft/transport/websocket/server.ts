@@ -168,7 +168,7 @@ export class WebSocketBridgeServer extends EventEmitter<ServerEvents> {
   }
 }
 
-interface ServerEvents {
+export interface ServerEvents {
   open: [];
   clientConnect: [session: ISession];
   clientDisconnect: [session: ISession, reason: DisconnectReason];

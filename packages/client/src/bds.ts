@@ -51,4 +51,6 @@ export class BridgeClient extends BaseClient<ServerNetBridgeClient> {
 }
 
 export { ServerNetBridgeClient };
+export { IBridgeClient } from './transport/interfaces';
+export * from './transport/server-net';
 export * from './client';

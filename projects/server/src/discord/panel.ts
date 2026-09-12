@@ -4,7 +4,7 @@ import { Palette } from './embeds';
 import { _t, Logger } from '../util';
 import { type PlayerList, RequestTimeoutError } from 'socket-be';
 
-interface PanelData {
+export interface PanelData {
   channelId: string;
   messageId: string;
 }

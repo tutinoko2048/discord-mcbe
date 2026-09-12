@@ -1,7 +1,7 @@
 import { inspect } from 'node:util';
 import * as color from 'colorette';
 
-interface LoggerOptions {
+export interface LoggerOptions {
   timezone_offset?: number;
   debug?: boolean;
 }
