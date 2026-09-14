@@ -28,3 +28,6 @@ overrides:
 
 minimumReleaseAgeExclude:
   - socket-be
+
+patchedDependencies:
+  mcbe-ipc: patches/mcbe-ipc.patch

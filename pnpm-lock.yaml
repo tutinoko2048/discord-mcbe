@@ -43,6 +43,9 @@ catalogs:
 overrides:
   '@minecraft/server': 2.10.0-beta.1.26.44-stable
 
+patchedDependencies:
+  mcbe-ipc: 8c285c647fc9ed38fe84c187656b1b75322c8e73335db958510f88e735974913
+
 importers:
 
   .:
@@ -101,7 +104,7 @@ importers:
         version: 2.1.0(@minecraft/common@1.2.0)(@minecraft/server@2.10.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70))
       mcbe-ipc:
         specifier: ^3.4.2
-        version: 3.4.2(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
+        version: 3.4.2(patch_hash=8c285c647fc9ed38fe84c187656b1b75322c8e73335db958510f88e735974913)(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
     devDependencies:
       '@bedrock-apis/env-types':
         specifier: 'catalog:'
@@ -7496,7 +7499,7 @@ snapshots:
 
   markdown-table@3.0.4: {}
 
-  mcbe-ipc@3.4.2(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70):
+  mcbe-ipc@3.4.2(patch_hash=8c285c647fc9ed38fe84c187656b1b75322c8e73335db958510f88e735974913)(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70):
     dependencies:
       '@minecraft/server': 2.10.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
     transitivePeerDependencies:

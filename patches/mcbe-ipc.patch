@@ -1,0 +1,18 @@
+diff --git a/package.json b/package.json
+index 12086d270d2fc6b1b536a460af472bcc28b877e5..5c9f6c5ae989ee55b14ad3964aa163ddd9dd2266 100644
+--- a/package.json
++++ b/package.json
+@@ -15,6 +15,13 @@
+   "type": "module",
+   "main": "dist/ipc.js",
+   "types": "dist/ipc.d.ts",
++  "exports": {
++    ".": {
++      "types": "./dist/ipc.d.ts",
++      "import": "./dist/ipc.js",
++      "default": "./dist/ipc.js"
++    }
++  },
+   "files": [
+     "dist"
+   ],
