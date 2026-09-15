@@ -67,6 +67,9 @@ jobs:
 
           for platform in windows-x64 linux-x64 linux-arm64 darwin-x64 darwin-arm64; do
             (cd "$platform" && zip -r "$ASSET_DIR/discord-mcbe-$platform-v$LAUNCHER_VERSION.zip" .)
+            extension=""
+            [ "$platform" = "windows-x64" ] && extension=".exe"
+            cp "$platform/updater$extension" "$ASSET_DIR/discord-mcbe-updater-$platform-v$LAUNCHER_VERSION$extension"
           done
 
           echo "LAUNCHER_ASSET_DIR=$ASSET_DIR" >> "$GITHUB_ENV"
@@ -84,4 +87,5 @@ jobs:
             "$LAUNCHER_ASSET_DIR/discord-mcbe-darwin-x64-v$LAUNCHER_VERSION.zip" \
             "$LAUNCHER_ASSET_DIR/discord-mcbe-linux-arm64-v$LAUNCHER_VERSION.zip" \
             "$LAUNCHER_ASSET_DIR/discord-mcbe-linux-x64-v$LAUNCHER_VERSION.zip" \
-            "$LAUNCHER_ASSET_DIR/discord-mcbe-windows-x64-v$LAUNCHER_VERSION.zip"
+            "$LAUNCHER_ASSET_DIR/discord-mcbe-windows-x64-v$LAUNCHER_VERSION.zip" \
+            "$LAUNCHER_ASSET_DIR"/discord-mcbe-updater-*

@@ -4,7 +4,7 @@
   "compilerOptions": {
     "noEmit": false,
     "target": "esnext",
-    "types": ["bun-types"],
+    "types": ["bun-types", "./src/global.d.ts"],
     "resolveJsonModule": true
   }
 }

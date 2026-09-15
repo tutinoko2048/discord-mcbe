@@ -18,6 +18,7 @@ catalog:
   '@types/ws': ^8.18.1
   bun-types: ^1.4.2
   jsonc-parser: ^3.3.1
+  picocolors: ^1.1.1
   ws: ^8.21.3
   valibot: ^1.4.2
   semver: ^7.7.4

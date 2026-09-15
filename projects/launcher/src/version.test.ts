@@ -4,7 +4,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fetchWithRetry } from './fetch';
 import { install, shouldUpdate } from './install';
-import { resolveVersion } from './version';
+import { downloadLauncher, replaceLauncher, upgradeLauncher, verifyLauncherChecksum } from './upgrade';
+import { findLauncherUpgrade, resolveVersion } from './version';
 
 const originalFetch = globalThis.fetch;
 
@@ -101,6 +102,160 @@ describe('resolveVersion', () => {
     }
     expect(error).toBeInstanceOf(Error);
     expect((error as Error).message).toContain('minimumLauncherVersion');
+  });
+});
+
+describe('findLauncherUpgrade', () => {
+  test('selects the newest launcher asset for the current target', async () => {
+    const fetchMock = mock().mockResolvedValueOnce(
+      Response.json([
+        {
+          tag_name: 'launcher@v5',
+          prerelease: false,
+          assets: [
+            {
+              name: 'discord-mcbe-updater-windows-x64-v5.exe',
+              browser_download_url: 'https://example.com/v5',
+              digest: 'sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+              size: 5,
+            },
+          ],
+        },
+        {
+          tag_name: 'launcher@v4',
+          prerelease: false,
+          assets: [
+            {
+              name: 'discord-mcbe-updater-windows-x64-v4.exe',
+              browser_download_url: 'https://example.com/v4',
+              digest: 'sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+              size: 4,
+            },
+          ],
+        },
+        {
+          tag_name: 'launcher@v3',
+          prerelease: false,
+          assets: [
+            {
+              name: 'discord-mcbe-updater-windows-x64-v3.exe',
+              browser_download_url: 'https://example.com/v3',
+            },
+          ],
+        },
+      ]),
+    );
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
+
+    expect(await findLauncherUpgrade('windows-x64')).toEqual({
+      version: 5,
+      assetUrl: 'https://example.com/v5',
+      digest: 'sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      size: 5,
+    });
+  });
+
+  test('rejects a requested version without a self-update asset', async () => {
+    globalThis.fetch = mock().mockResolvedValueOnce(
+      Response.json([{ tag_name: 'launcher@v2', prerelease: false, assets: [] }]),
+    ) as unknown as typeof fetch;
+
+    let error: unknown;
+    try {
+      await findLauncherUpgrade('windows-x64', 2);
+    } catch (caught) {
+      error = caught;
+    }
+    expect(error).toBeInstanceOf(Error);
+    expect((error as Error).message).toContain('has no self-update asset');
+  });
+});
+
+describe('upgradeLauncher', () => {
+  test('downloads and verifies an exact version during a dry run', async () => {
+    const platform = process.platform === 'win32' ? 'windows' : process.platform;
+    const extension = process.platform === 'win32' ? '.exe' : '';
+    const data = new Uint8Array([1, 2, 3]);
+    globalThis.fetch = mock()
+      .mockResolvedValueOnce(
+        Response.json([
+          {
+            tag_name: 'launcher@v4',
+            prerelease: false,
+            assets: [
+              {
+                name: `discord-mcbe-updater-${platform}-${process.arch}-v4${extension}`,
+                browser_download_url: 'https://example.com/v4',
+                digest: 'sha256:039058c6f2c0cb492c533b0a4d14ef77cc0f78abccced5287d84a1a2011cfb81',
+                size: data.byteLength,
+              },
+            ],
+          },
+        ]),
+      )
+      .mockResolvedValueOnce(new Response(data)) as unknown as typeof fetch;
+    const log = spyOn(console, 'log').mockImplementation(() => {});
+
+    try {
+      await upgradeLauncher({ version: '4', dryRun: true, interactive: false });
+      expect(
+        log.mock.calls
+          .flat()
+          .map(String)
+          .some((message) => message.includes('downloaded and verified')),
+      ).toBe(true);
+    } finally {
+      log.mockRestore();
+    }
+  });
+});
+
+describe('downloadLauncher', () => {
+  test('downloads the expected number of bytes', async () => {
+    globalThis.fetch = mock().mockResolvedValueOnce(
+      new Response(new Uint8Array([1, 2, 3])),
+    ) as unknown as typeof fetch;
+    expect(await downloadLauncher('https://example.com/updater', 3)).toEqual(new Uint8Array([1, 2, 3]));
+  });
+});
+
+describe('verifyLauncherChecksum', () => {
+  test('accepts a GitHub asset digest', () => {
+    expect(() =>
+      verifyLauncherChecksum(
+        new Uint8Array([1, 2, 3]),
+        'sha256:039058c6f2c0cb492c533b0a4d14ef77cc0f78abccced5287d84a1a2011cfb81',
+      ),
+    ).not.toThrow();
+  });
+
+  test('rejects a mismatched SHA-256 checksum', () => {
+    expect(() => verifyLauncherChecksum(new Uint8Array([1, 2, 3]), `sha256:${'0'.repeat(64)}`)).toThrow(
+      'Launcher checksum does not match.',
+    );
+  });
+});
+
+describe('replaceLauncher', () => {
+  test('restores the current launcher when installing the new one fails', async () => {
+    const cwd = await mkdtemp(join(tmpdir(), 'discord-mcbe-launcher-swap-'));
+    const current = join(cwd, 'updater');
+    const next = join(cwd, 'missing');
+    const previous = join(cwd, 'updater.old');
+    await writeFile(current, 'current');
+
+    try {
+      let error: unknown;
+      try {
+        await replaceLauncher(current, next, previous);
+      } catch (caught) {
+        error = caught;
+      }
+      expect(error).toBeInstanceOf(Error);
+      expect(await Bun.file(current).text()).toBe('current');
+    } finally {
+      await rm(cwd, { recursive: true, force: true });
+    }
   });
 });
 

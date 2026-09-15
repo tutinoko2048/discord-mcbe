@@ -7,6 +7,8 @@ import { valid as isValidSemver } from 'semver';
 import { askVersion, resolveVersion } from './version';
 import { isCompiled } from './env';
 import { fetchWithRetry } from './fetch';
+import { withSpinner } from './spinner';
+import { upgradeLauncher } from './upgrade';
 
 const VERSION_FILE_NAME = '.VERSION';
 const APP_DIR_NAME = 'app';
@@ -40,10 +42,18 @@ export async function install(options: InstallOptions) {
     }
   }
 
+  if (options.interactive && !options.version) {
+    try {
+      if (await upgradeLauncher(options)) return;
+    } catch (error) {
+      console.warn('Could not check for launcher updates:', error);
+    }
+  }
+
   const resolved =
     options.interactive && !options.version
       ? await askVersion()
-      : await resolveVersion(options.version ?? 'stable');
+      : await withSpinner('Loading releases...', () => resolveVersion(options.version ?? 'stable'));
 
   if (!shouldUpdate(currentVersion, resolved.version)) {
     logNonUpgradeReason(currentVersion, resolved.version);

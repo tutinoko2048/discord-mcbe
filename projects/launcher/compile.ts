@@ -52,9 +52,7 @@ for (const platform of platforms) {
         outfile: join(targetDir, `updater${platform.ext}`),
         windows: windowsOption,
       },
-      define: {
-        __COMPILED__: 'true',
-      },
+      define: { LAUNCHER_TARGET: target },
     });
 
     console.log(`[${target}] Build complete in ${Date.now() - startAt}ms.`);

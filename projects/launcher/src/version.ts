@@ -2,6 +2,7 @@ import select from '@inquirer/select';
 import semver from 'semver';
 import packageJson from '../package.json' with { type: 'json' };
 import { fetchWithRetry } from './fetch';
+import { withSpinner } from './spinner';
 
 const REPOSITORY = 'tutinoko2048/discord-mcbe';
 const RELEASES_API_URL = `https://api.github.com/repos/${REPOSITORY}/releases`;
@@ -41,6 +42,8 @@ async function fetchMetadataFile(versionJsonAssetUrl: string): Promise<ReleaseMe
 interface GitHubReleaseAsset {
   name: string;
   browser_download_url: string;
+  digest?: string | null;
+  size?: number;
 }
 
 interface GitHubRelease {
@@ -62,7 +65,9 @@ function isGitHubRelease(value: unknown): value is GitHubRelease {
       'name' in asset &&
       typeof asset.name === 'string' &&
       'browser_download_url' in asset &&
-      typeof asset.browser_download_url === 'string',
+      typeof asset.browser_download_url === 'string' &&
+      (!('digest' in asset) || asset.digest === null || typeof asset.digest === 'string') &&
+      (!('size' in asset) || typeof asset.size === 'number'),
   );
 }
 
@@ -79,17 +84,18 @@ interface ReleaseList {
   beta?: Release;
 }
 
-async function fetchReleaseList(): Promise<ReleaseList> {
+async function fetchGitHubReleases(init: RequestInit = {}): Promise<GitHubRelease[]> {
   const rawReleases: GitHubRelease[] = [];
   for (let page = 1; ; page++) {
     const url = new URL(RELEASES_API_URL);
     url.searchParams.set('per_page', String(RELEASES_PER_PAGE));
     url.searchParams.set('page', String(page));
+    const headers = new Headers(init.headers);
+    headers.set('Accept', 'application/vnd.github+json');
 
     const res = await fetchWithRetry(url.toString(), {
-      headers: {
-        Accept: 'application/vnd.github+json',
-      },
+      ...init,
+      headers,
     });
 
     if (!res.ok) {
@@ -111,6 +117,12 @@ async function fetchReleaseList(): Promise<ReleaseList> {
 
     if (pageData.length < RELEASES_PER_PAGE) break;
   }
+
+  return rawReleases;
+}
+
+async function fetchReleaseList(init: RequestInit = {}): Promise<ReleaseList> {
+  const rawReleases = await fetchGitHubReleases(init);
 
   const releases: Release[] = [];
   for (const release of rawReleases) {
@@ -139,6 +151,55 @@ async function fetchReleaseList(): Promise<ReleaseList> {
     releases,
     stable: releases.find((r) => !r.isBeta),
     beta: releases.find((r) => r.isBeta),
+  };
+}
+
+export interface LauncherRelease {
+  version: number;
+  assetUrl: string;
+  digest: string;
+  size: number;
+}
+
+export async function findLauncherUpgrade(
+  target: string,
+  requestedVersion?: number,
+  signal?: AbortSignal,
+): Promise<LauncherRelease | undefined> {
+  const releases = await fetchGitHubReleases({ signal });
+  const extension = target.startsWith('windows-') ? '.exe' : '';
+  const launcherReleases = releases
+    .map((release) => ({
+      release,
+      version: Number(/^launcher@v(\d+)$/.exec(release.tag_name)?.[1]),
+    }))
+    .filter(({ version }) => Number.isSafeInteger(version));
+  const selected =
+    requestedVersion === undefined
+      ? launcherReleases
+          .filter(({ version }) => version > CURRENT_LAUNCHER_VERSION)
+          .sort((a, b) => b.version - a.version)[0]
+      : launcherReleases.find(({ version }) => version === requestedVersion);
+
+  if (!selected) {
+    if (requestedVersion !== undefined) throw new Error(`Launcher v${requestedVersion} was not found.`);
+    return undefined;
+  }
+
+  const assetName = `discord-mcbe-updater-${target}-v${selected.version}${extension}`;
+  const asset = selected.release.assets.find((item) => item.name === assetName);
+  if (!asset) throw new Error(`Launcher v${selected.version} has no self-update asset for ${target}.`);
+  if (!asset.digest?.match(/^sha256:[a-f\d]{64}$/i)) {
+    throw new Error(`Launcher release v${selected.version} has no valid SHA-256 digest.`);
+  }
+  if (typeof asset.size !== 'number' || !Number.isSafeInteger(asset.size) || asset.size <= 0) {
+    throw new Error(`Launcher release v${selected.version} has no valid asset size.`);
+  }
+  return {
+    version: selected.version,
+    assetUrl: asset.browser_download_url,
+    digest: asset.digest,
+    size: asset.size,
   };
 }
 
@@ -177,7 +238,7 @@ export async function resolveVersion(tag: string): Promise<Release> {
 }
 
 export async function askVersion(): Promise<Release> {
-  const releaseList = await fetchReleaseList();
+  const releaseList = await withSpinner('Loading releases...', () => fetchReleaseList());
   if (releaseList.releases.length === 0) throw new Error('No available releases found');
 
   const { stable, beta } = releaseList;

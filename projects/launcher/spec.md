@@ -23,12 +23,17 @@
   - 安定版が存在しない場合は警告を表示し、最新のベータ版をインストールする
 - `updater beta` 最新のベータ版をインストール
 - `updater 4.0.0` バージョンを指定してインストール
+- `updater upgrade` launcher自体を最新版へ更新
+- `updater upgrade 4` launcher自体を指定したバージョンへ更新
 - `updater rollback` 直前のインストールへ戻す（再実行すると戻す前の版へ切り替わる）
 - `updater --no-interactive` バージョン選択や確認を表示せずに実行
 - `updater --dry-run`
 - `updater --help` `-h` ヘルプ表示
 - `updater --version` `-v` updaterのバージョン表示
 - アップデート方法
+  - TUI起動時はlauncherの更新を確認し、新版があれば確認後にセルフアップデートする
+  - 更新確認中はローディング表示を出し、15秒でタイムアウトする
+  - ダウンロードしたlauncherはGitHub Release AssetのSHA-256 digestを検証してから、`.old`を残して入れ替える
   - バージョン取得
     - GitHub Releases API からリリース一覧を100件ずつ取得する。
     - ランチャー自体のリリースと混同しないよう、タグ名が `launcher@v` 等で始まらない（本体のバージョン `vX.X.X`）ものを対象にフィルタリングし、最新の `tag_name` などからバージョンとアセットURLを特定する。

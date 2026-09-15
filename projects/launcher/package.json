@@ -23,6 +23,7 @@
     "@inquirer/select": "^5.1.4",
     "cli-progress": "^3.12.0",
     "commander": "^14.0.3",
+    "picocolors": "catalog:",
     "semver": "catalog:"
   },
   "devDependencies": {

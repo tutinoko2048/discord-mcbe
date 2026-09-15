@@ -21,13 +21,15 @@ The launcher installs, updates, and switches versions of the discord-mcbe applic
 
 1. Double-click `updater.exe` in the discord-mcbe folder.
 
-2. When the version menu appears, use the up and down arrow keys to select **Stable**, then press Enter. Stable is the recommended release for normal use.
+2. The launcher checks for its own updates when it starts. If a new launcher is available, confirm the update. When the window closes, double-click `updater.exe` again.
+
+3. When the version menu appears, use the up and down arrow keys to select **Stable**, then press Enter. Stable is the recommended release for normal use.
 
    ![Version selection screen](../../../../assets/updater_select_version.png)
 
-3. Wait for the update to finish. After `Successfully installed discord-mcbe ...` appears, the window closes automatically.
+4. Wait for the update to finish. After `Successfully installed discord-mcbe ...` appears, the window closes automatically.
 
-4. Double-click `start.bat` to start discord-mcbe again.
+5. Double-click `start.bat` to start discord-mcbe again.
 
 </Steps>
 
@@ -48,11 +50,13 @@ The launcher installs, updates, and switches versions of the discord-mcbe applic
    ./updater
    ```
 
-3. Use the up and down arrow keys to select **Stable**, then press Enter. The update is complete when `Successfully installed discord-mcbe ...` appears.
+3. The launcher checks for its own updates when it starts. If a new launcher is available, run `./updater` again after the update finishes.
+
+4. Use the up and down arrow keys to select **Stable**, then press Enter. The update is complete when `Successfully installed discord-mcbe ...` appears.
 
    ![Update success](../../../../assets/updater_success.png)
 
-4. Start discord-mcbe again:
+5. Start discord-mcbe again:
 
    ```bash frame="none"
    ./start.sh
@@ -81,6 +85,8 @@ Run these commands in PowerShell or Command Prompt.
 | Update to the latest stable  | `.\updater.exe stable`         |
 | Update to the latest beta    | `.\updater.exe beta`           |
 | Install a specific version   | `.\updater.exe 4.0.0`          |
+| Update the launcher itself   | `.\updater.exe upgrade`        |
+| Install a launcher version   | `.\updater.exe upgrade 4`      |
 | Restore the previous version | `.\updater.exe rollback`       |
 | Reinstall the same version   | `.\updater.exe stable --force` |
 
@@ -98,6 +104,8 @@ Run these commands in a terminal.
 | Update to the latest stable  | `./updater stable`         |
 | Update to the latest beta    | `./updater beta`           |
 | Install a specific version   | `./updater 4.0.0`          |
+| Update the launcher itself   | `./updater upgrade`        |
+| Install a launcher version   | `./updater upgrade 4`      |
 | Restore the previous version | `./updater rollback`       |
 | Reinstall the same version   | `./updater stable --force` |
 
@@ -111,6 +119,7 @@ Use one of these values for `[version]`. Omitting it opens the interactive menu.
 | `stable`   | Select the latest stable release                                      |
 | `beta`     | Select the latest beta release                                        |
 | `4.0.0`    | Select that exact release; replace the number with the version needed |
+| `upgrade`  | Update the launcher itself to the latest release                      |
 | `rollback` | Swap the current application with the previous one in `app.backup/`   |
 
 ### Options
@@ -118,7 +127,7 @@ Use one of these values for `[version]`. Omitting it opens the interactive menu.
 | Option               | Purpose                                                                                  |
 | -------------------- | ---------------------------------------------------------------------------------------- |
 | `-f`, `--force`      | Force a reinstall or a switch such as beta to stable; use it with a version argument     |
-| `--dry-run`          | Download and inspect the selected archive without changing installed files               |
+| `--dry-run`          | Download and verify the selected version without changing installed files                |
 | `-c`, `--cwd <path>` | Update the specified folder instead of the current folder                                |
 | `--no-interactive`   | Hide menus and confirmations; when no version is given, select the latest stable release |
 | `-v`, `--version`    | Show the launcher's own version                                                          |
@@ -128,4 +137,4 @@ Use one of these values for `[version]`. Omitting it opens the interactive menu.
 
 After a successful update, the launcher keeps the previous application in `app.backup/`. Stop discord-mcbe and run `.\updater.exe rollback` or `./updater rollback`, depending on your OS, to restore it.
 
-If the launcher reports that it is too old, download the latest zip for your OS from [Set up the bot and server](/en/installation/setup-bot/#prepare-the-discord-mcbe-server).
+Run `updater upgrade` to update the launcher itself. The interactive screen also checks automatically when it starts.
