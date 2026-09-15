@@ -20,7 +20,7 @@ discord-mcbeには、<a href="https://github.com/OmniacDev/MCBE-IPC" target="_bl
 
 ## discord-mcbeが導入されているか確認する
 
-`discord-mcbe:ping`の応答は、`true`なら接続中、`false`なら導入済みですが未接続です。20tick以内に応答がなければ、discord-mcbeは導入されていません。この確認は起動時に一度だけ行ってください。
+`dmc:ping`の応答は、`true`なら接続中、`false`なら導入済みですが未接続です。20tick以内に応答がなければ、discord-mcbeは導入されていません。この確認は起動時に一度だけ行ってください。
 
 <Tabs syncKey="code">
 <TabItem value="ts" label="TypeScript">
@@ -31,7 +31,7 @@ import { IPC, PROTO } from 'mcbe-ipc';
 
 export function getDiscordMcbeStatus(): Promise<boolean | undefined> {
   return Promise.race([
-    IPC.invoke('discord-mcbe:ping', PROTO.Void, undefined, PROTO.Boolean),
+    IPC.invoke('dmc:ping', PROTO.Void, undefined, PROTO.Boolean),
     system.waitTicks(20).then(() => undefined),
   ]);
 }
@@ -46,7 +46,7 @@ import { IPC, PROTO } from 'mcbe-ipc';
 
 export function getDiscordMcbeStatus() {
   return Promise.race([
-    IPC.invoke('discord-mcbe:ping', PROTO.Void, undefined, PROTO.Boolean),
+    IPC.invoke('dmc:ping', PROTO.Void, undefined, PROTO.Boolean),
     system.waitTicks(20).then(() => undefined),
   ]);
 }
@@ -57,12 +57,28 @@ export function getDiscordMcbeStatus() {
 
 ## Discordへメッセージを送る
 
-`discord-mcbe:send_message`へ文字列を送ると、Discordへメッセージが送信されます。
+`dmc:send_message`へ文字列を送ると、Discordへメッセージが送信されます。
 
 ```ts
 import { IPC, PROTO } from 'mcbe-ipc';
 
-IPC.send('discord-mcbe:send_message', PROTO.String, 'イベントが開始しました');
+IPC.send('dmc:send_message', PROTO.String, 'イベントが開始しました');
 ```
 
 なお、空のメッセージや2000文字を超えるメッセージは無視されます。
+
+## 接続イベントを受け取る
+
+接続開始時に`dmc:connect`、切断時に`dmc:disconnect`が発火します。どちらもデータはありません。
+
+```ts
+import { IPC, PROTO } from 'mcbe-ipc';
+
+IPC.on('dmc:connect', PROTO.Void, () => {
+  // discord-mcbeへの接続が開始された
+});
+
+IPC.on('dmc:disconnect', PROTO.Void, () => {
+  // discord-mcbeから切断された
+});
+```

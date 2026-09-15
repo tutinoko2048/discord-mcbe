@@ -20,7 +20,7 @@ To disable this feature, set `bot.allow_addon_messages` to `false` in `config.js
 
 ## Check whether discord-mcbe is installed
 
-The response from `discord-mcbe:ping` is `true` when connected and `false` when discord-mcbe is installed but disconnected. If there is no response within 20 ticks, discord-mcbe is not installed. Perform this check only once at startup.
+The response from `dmc:ping` is `true` when connected and `false` when discord-mcbe is installed but disconnected. If there is no response within 20 ticks, discord-mcbe is not installed. Perform this check only once at startup.
 
 <Tabs syncKey="code">
 <TabItem value="ts" label="TypeScript">
@@ -31,7 +31,7 @@ import { IPC, PROTO } from 'mcbe-ipc';
 
 export function getDiscordMcbeStatus(): Promise<boolean | undefined> {
   return Promise.race([
-    IPC.invoke('discord-mcbe:ping', PROTO.Void, undefined, PROTO.Boolean),
+    IPC.invoke('dmc:ping', PROTO.Void, undefined, PROTO.Boolean),
     system.waitTicks(20).then(() => undefined),
   ]);
 }
@@ -46,7 +46,7 @@ import { IPC, PROTO } from 'mcbe-ipc';
 
 export function getDiscordMcbeStatus() {
   return Promise.race([
-    IPC.invoke('discord-mcbe:ping', PROTO.Void, undefined, PROTO.Boolean),
+    IPC.invoke('dmc:ping', PROTO.Void, undefined, PROTO.Boolean),
     system.waitTicks(20).then(() => undefined),
   ]);
 }
@@ -57,12 +57,28 @@ export function getDiscordMcbeStatus() {
 
 ## Send a message to Discord
 
-Send a string to `discord-mcbe:send_message` to send it to Discord.
+Send a string to `dmc:send_message` to send it to Discord.
 
 ```ts
 import { IPC, PROTO } from 'mcbe-ipc';
 
-IPC.send('discord-mcbe:send_message', PROTO.String, 'The event has started');
+IPC.send('dmc:send_message', PROTO.String, 'The event has started');
 ```
 
 Empty messages and messages longer than 2,000 characters are ignored.
+
+## Listen for connection events
+
+`dmc:connect` is emitted when a connection starts, and `dmc:disconnect` is emitted when it ends. Neither event carries data.
+
+```ts
+import { IPC, PROTO } from 'mcbe-ipc';
+
+IPC.on('dmc:connect', PROTO.Void, () => {
+  // The connection to discord-mcbe has started
+});
+
+IPC.on('dmc:disconnect', PROTO.Void, () => {
+  // The connection to discord-mcbe has ended
+});
+```

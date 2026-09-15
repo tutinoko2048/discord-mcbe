@@ -1,4 +1,5 @@
 import { system, world } from '@minecraft/server';
+import { IPC, PROTO } from 'mcbe-ipc';
 import { ActionId, DisconnectReason } from '@discord-mcbe/shared';
 import { registerEvents } from './event';
 import { registerCommands } from './command';
@@ -66,6 +67,7 @@ export abstract class BaseClient<T extends IBridgeClient = IBridgeClient> {
   }
 
   private onBridgeConnect({ sessionId }: { sessionId: string }): void {
+    IPC.send('dmc:connect', PROTO.Void, undefined);
     if (this.hasConnected) {
       this.logger.info(`Bridge reconnected (session: ${sessionId})`);
     }
@@ -74,6 +76,7 @@ export abstract class BaseClient<T extends IBridgeClient = IBridgeClient> {
   }
 
   private onBridgeDisconnect({ reason }: { reason: DisconnectReason }): void {
+    IPC.send('dmc:disconnect', PROTO.Void, undefined);
     this.logger.info(`Bridge disconnected (${DisconnectReason[reason]})`);
   }
 
