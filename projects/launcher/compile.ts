@@ -45,6 +45,7 @@ for (const platform of platforms) {
     const startAt = Date.now();
     await Bun.build({
       entrypoints: ['src/main.ts'],
+      format: 'esm',
       minify: true,
       bytecode: true,
       compile: {

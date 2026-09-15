@@ -1,6 +1,7 @@
 import select from '@inquirer/select';
 import semver from 'semver';
 import packageJson from '../package.json' with { type: 'json' };
+import { LauncherError } from './errors';
 import { fetchWithRetry } from './fetch';
 import { withSpinner } from './spinner';
 
@@ -9,8 +10,11 @@ const RELEASES_API_URL = `https://api.github.com/repos/${REPOSITORY}/releases`;
 const CURRENT_LAUNCHER_VERSION = Number(packageJson.version);
 const RELEASES_PER_PAGE = 100;
 
-if (!Number.isSafeInteger(CURRENT_LAUNCHER_VERSION) || CURRENT_LAUNCHER_VERSION < 0) {
-  throw new Error(`Invalid launcher version: ${packageJson.version}`);
+function getCurrentLauncherVersion(): number {
+  if (!Number.isSafeInteger(CURRENT_LAUNCHER_VERSION) || CURRENT_LAUNCHER_VERSION < 0) {
+    throw new LauncherError(`Invalid launcher version: ${packageJson.version}`);
+  }
+  return CURRENT_LAUNCHER_VERSION;
 }
 
 export interface ReleaseMetadata {
@@ -20,7 +24,7 @@ export interface ReleaseMetadata {
 async function fetchMetadataFile(versionJsonAssetUrl: string): Promise<ReleaseMetadata> {
   const res = await fetchWithRetry(versionJsonAssetUrl);
   if (!res.ok) {
-    throw new Error(`Failed to fetch version metadata: ${res.status} ${res.statusText}`);
+    throw new LauncherError(`Failed to fetch version metadata: ${res.status} ${res.statusText}`);
   }
 
   const metadata = (await res.json()) as unknown;
@@ -33,7 +37,9 @@ async function fetchMetadataFile(versionJsonAssetUrl: string): Promise<ReleaseMe
     !Number.isSafeInteger(minimumLauncherVersion) ||
     minimumLauncherVersion < 0
   ) {
-    throw new Error('Invalid version metadata: minimumLauncherVersion must be a non-negative integer');
+    throw new LauncherError(
+      'Invalid version metadata: minimumLauncherVersion must be a non-negative integer',
+    );
   }
 
   return { minimumLauncherVersion };
@@ -99,12 +105,12 @@ async function fetchGitHubReleases(init: RequestInit = {}): Promise<GitHubReleas
     });
 
     if (!res.ok) {
-      throw new Error(`Failed to fetch releases: ${res.status} ${res.statusText}`);
+      throw new LauncherError(`Failed to fetch releases: ${res.status} ${res.statusText}`);
     }
 
     const pageData = (await res.json()) as unknown;
     if (!Array.isArray(pageData)) {
-      throw new Error('Invalid releases response: expected an array');
+      throw new LauncherError('Invalid releases response: expected an array');
     }
 
     for (const release of pageData) {
@@ -166,6 +172,7 @@ export async function findLauncherUpgrade(
   requestedVersion?: number,
   signal?: AbortSignal,
 ): Promise<LauncherRelease | undefined> {
+  const currentLauncherVersion = getCurrentLauncherVersion();
   const releases = await fetchGitHubReleases({ signal });
   const extension = target.startsWith('windows-') ? '.exe' : '';
   const launcherReleases = releases
@@ -177,23 +184,25 @@ export async function findLauncherUpgrade(
   const selected =
     requestedVersion === undefined
       ? launcherReleases
-          .filter(({ version }) => version > CURRENT_LAUNCHER_VERSION)
+          .filter(({ version }) => version > currentLauncherVersion)
           .sort((a, b) => b.version - a.version)[0]
       : launcherReleases.find(({ version }) => version === requestedVersion);
 
   if (!selected) {
-    if (requestedVersion !== undefined) throw new Error(`Launcher v${requestedVersion} was not found.`);
+    if (requestedVersion !== undefined)
+      throw new LauncherError(`Launcher v${requestedVersion} was not found.`);
     return undefined;
   }
 
   const assetName = `discord-mcbe-updater-${target}-v${selected.version}${extension}`;
   const asset = selected.release.assets.find((item) => item.name === assetName);
-  if (!asset) throw new Error(`Launcher v${selected.version} has no self-update asset for ${target}.`);
+  if (!asset)
+    throw new LauncherError(`Launcher v${selected.version} has no self-update asset for ${target}.`);
   if (!asset.digest?.match(/^sha256:[a-f\d]{64}$/i)) {
-    throw new Error(`Launcher release v${selected.version} has no valid SHA-256 digest.`);
+    throw new LauncherError(`Launcher release v${selected.version} has no valid SHA-256 digest.`);
   }
   if (typeof asset.size !== 'number' || !Number.isSafeInteger(asset.size) || asset.size <= 0) {
-    throw new Error(`Launcher release v${selected.version} has no valid asset size.`);
+    throw new LauncherError(`Launcher release v${selected.version} has no valid asset size.`);
   }
   return {
     version: selected.version,
@@ -204,6 +213,7 @@ export async function findLauncherUpgrade(
 }
 
 export async function resolveVersion(tag: string): Promise<Release> {
+  const currentLauncherVersion = getCurrentLauncherVersion();
   const releaseList = await fetchReleaseList();
   let resolvedRelease: Release | undefined;
 
@@ -216,21 +226,21 @@ export async function resolveVersion(tag: string): Promise<Release> {
         `No stable release is available. Installing beta version ${resolvedRelease.version} instead.`,
       );
     } else {
-      throw new Error('No stable or beta release found');
+      throw new LauncherError('No stable or beta release found');
     }
   } else if (tag === 'beta') {
     resolvedRelease = releaseList.beta;
-    if (!resolvedRelease) throw new Error('No beta release found');
+    if (!resolvedRelease) throw new LauncherError('No beta release found');
   } else {
     resolvedRelease = releaseList.releases.find((r) => r.version === tag);
-    if (!resolvedRelease) throw new Error(`Version ${tag} not found`);
+    if (!resolvedRelease) throw new LauncherError(`Version ${tag} not found`);
   }
 
   const { minimumLauncherVersion } = await fetchMetadataFile(resolvedRelease.metadataFileUrl);
 
-  if (CURRENT_LAUNCHER_VERSION < minimumLauncherVersion) {
-    throw new Error(
-      `discord-mcbe@${resolvedRelease.version} requires discord-mcbe launcher v${minimumLauncherVersion} or higher. Please update the launcher to install this version. (current: v${CURRENT_LAUNCHER_VERSION})`,
+  if (currentLauncherVersion < minimumLauncherVersion) {
+    throw new LauncherError(
+      `discord-mcbe@${resolvedRelease.version} requires discord-mcbe launcher v${minimumLauncherVersion} or higher. Please update the launcher to install this version. (current: v${currentLauncherVersion})`,
     );
   }
 
@@ -238,8 +248,9 @@ export async function resolveVersion(tag: string): Promise<Release> {
 }
 
 export async function askVersion(): Promise<Release> {
+  getCurrentLauncherVersion();
   const releaseList = await withSpinner('Loading releases...', () => fetchReleaseList());
-  if (releaseList.releases.length === 0) throw new Error('No available releases found');
+  if (releaseList.releases.length === 0) throw new LauncherError('No available releases found');
 
   const { stable, beta } = releaseList;
 

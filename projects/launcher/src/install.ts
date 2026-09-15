@@ -5,6 +5,7 @@ import confirm from '@inquirer/confirm';
 import { valid as isValidSemver } from 'semver';
 // import { SingleBar } from 'cli-progress';
 import { askVersion, resolveVersion } from './version';
+import { LauncherError } from './errors';
 import { isCompiled } from './env';
 import { fetchWithRetry } from './fetch';
 import { withSpinner } from './spinner';
@@ -46,7 +47,10 @@ export async function install(options: InstallOptions) {
     try {
       if (await upgradeLauncher(options)) return;
     } catch (error) {
-      console.warn('Could not check for launcher updates:', error);
+      console.warn(
+        'Could not check for launcher updates:',
+        error instanceof Error ? error.message : String(error),
+      );
     }
   }
 
@@ -110,13 +114,13 @@ export async function install(options: InstallOptions) {
 async function downloadAssetFile(url: string) {
   const res = await fetchWithRetry(url);
   if (!res.ok) {
-    throw new Error(`Failed to download installer: ${res.status} ${res.statusText}`);
+    throw new LauncherError(`Failed to download installer: ${res.status} ${res.statusText}`);
   }
 
   return await res.bytes();
 
   // if (!res.body) {
-  //   throw new Error('No response body available for download stream');
+  //   throw new LauncherError('No response body available for download stream');
   // }
 
   // const totalBytes = Number(res.headers.get('content-length')) || 0;
@@ -165,30 +169,25 @@ async function downloadAssetFile(url: string) {
 
 async function extractArchive(data: Uint8Array, destination: string) {
   const archive = new Bun.Archive(data);
-  try {
-    process.stdout.write('Extracting archive...');
-    await archive.extract(destination);
-    console.log(' done');
-  } catch (error) {
-    console.error('Failed to extract archive:', error);
-    throw error;
-  }
+  process.stdout.write('Extracting archive...');
+  await archive.extract(destination);
+  console.log(' done');
 }
 
 async function validateStagedApp(stagingDir: string, expectedVersion: string): Promise<void> {
   const requiredFiles = ['discord-mcbe.js', 'package.json', VERSION_FILE_NAME];
   for (const file of requiredFiles) {
     if (!(await pathExists(join(stagingDir, file)))) {
-      throw new Error(`Invalid release archive: missing ${file}`);
+      throw new LauncherError(`Invalid release archive: missing ${file}`);
     }
   }
 
   const stagedVersion = (await readFile(join(stagingDir, VERSION_FILE_NAME), 'utf8')).trim();
   if (!isValidSemver(stagedVersion)) {
-    throw new Error(`Invalid release archive version: ${stagedVersion}`);
+    throw new LauncherError(`Invalid release archive version: ${stagedVersion}`);
   }
   if (stagedVersion !== expectedVersion) {
-    throw new Error(
+    throw new LauncherError(
       `Release archive version mismatch: expected ${expectedVersion}, received ${stagedVersion}`,
     );
   }
@@ -219,7 +218,7 @@ export async function rollback(options: Pick<InstallOptions, 'cwd'> = {}): Promi
   const swapDir = join(cwd, 'app.rollback');
 
   if (!(await pathExists(backupDir))) {
-    throw new Error(`No rollback installation found at ${backupDir}`);
+    throw new LauncherError(`No rollback installation found at ${backupDir}`);
   }
 
   if (!(await pathExists(appDir))) {
@@ -229,7 +228,7 @@ export async function rollback(options: Pick<InstallOptions, 'cwd'> = {}): Promi
   }
 
   if (await pathExists(swapDir)) {
-    throw new Error(`Cannot rollback while ${swapDir} exists`);
+    throw new LauncherError(`Cannot rollback while ${swapDir} exists`);
   }
 
   await rename(appDir, swapDir);

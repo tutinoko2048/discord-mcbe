@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fetchWithRetry } from './fetch';
 import { install, shouldUpdate } from './install';
+import { LauncherError } from './errors';
 import { downloadLauncher, replaceLauncher, upgradeLauncher, verifyLauncherChecksum } from './upgrade';
 import { findLauncherUpgrade, resolveVersion } from './version';
 
@@ -100,7 +101,7 @@ describe('resolveVersion', () => {
     } catch (caught) {
       error = caught;
     }
-    expect(error).toBeInstanceOf(Error);
+    expect(error).toBeInstanceOf(LauncherError);
     expect((error as Error).message).toContain('minimumLauncherVersion');
   });
 });
@@ -251,7 +252,11 @@ describe('replaceLauncher', () => {
       } catch (caught) {
         error = caught;
       }
-      expect(error).toBeInstanceOf(Error);
+      expect(error).toBeInstanceOf(LauncherError);
+      expect((error as Error).message).toContain(
+        `Failed to replace the launcher "${current}" with "${next}"`,
+      );
+      expect((error as Error).message).toContain(`The previous launcher was restored from "${previous}"`);
       expect(await Bun.file(current).text()).toBe('current');
     } finally {
       await rm(cwd, { recursive: true, force: true });

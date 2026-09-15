@@ -1,5 +1,6 @@
 import { Command } from 'commander';
 import packageJson from '../package.json' with { type: 'json' };
+import { LauncherError } from './errors';
 import { install, InstallOptions, rollback } from './install';
 import { cleanupOldLauncher, upgradeLauncher } from './upgrade';
 
@@ -25,19 +26,22 @@ async function main() {
   const options = program.opts<InstallOptions>();
   options.version = program.args[0];
 
-  try {
-    console.log(`discord-mcbe updater v${packageJson.version}`);
-    if (options.version === 'rollback') {
-      await rollback(options);
-    } else if (options.version === 'upgrade') {
-      await upgradeLauncher({ ...options, version: program.args[1] });
-    } else {
-      await install(options);
-    }
-  } catch (error) {
-    console.error('An error occurred during installation:', error);
-    process.exit(1);
+  console.log(`discord-mcbe updater v${packageJson.version}`);
+  if (options.version === 'rollback') {
+    await rollback(options);
+  } else if (options.version === 'upgrade') {
+    await upgradeLauncher({ ...options, version: program.args[1] });
+  } else {
+    await install(options);
   }
 }
 
-void main();
+try {
+  await main();
+} catch (error) {
+  if (error instanceof LauncherError) {
+    console.error(`[ERROR] ${error.message}`);
+    process.exit(1);
+  }
+  throw error;
+}

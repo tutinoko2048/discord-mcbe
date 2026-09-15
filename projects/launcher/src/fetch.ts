@@ -1,3 +1,5 @@
+import { LauncherError } from './errors';
+
 const DEFAULT_TIMEOUT_MS = 30_000;
 const DEFAULT_ATTEMPTS = 3;
 
@@ -33,5 +35,5 @@ export async function fetchWithRetry(
     await Bun.sleep(250 * 2 ** (attempt - 1));
   }
 
-  throw lastError ?? new Error(`Failed to fetch ${url}`);
+  throw lastError ?? new LauncherError(`Failed to fetch ${url}`);
 }
