@@ -83,6 +83,11 @@ export default defineConfig({
               translations: { en: 'Troubleshooting' },
               slug: 'guides/troubleshooting',
             },
+            {
+              label: 'ランチャー',
+              translations: { en: 'Launcher' },
+              slug: 'guides/launcher',
+            },
           ],
         },
         {

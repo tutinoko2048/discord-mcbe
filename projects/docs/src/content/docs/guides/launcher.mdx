@@ -1,0 +1,128 @@
+---
+title: ランチャーの使い方
+description: 画面操作でdiscord-mcbeを更新する方法と、ランチャーのコマンド・引数について説明します。
+---
+
+import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Aside type="caution" title="先にdiscord-mcbeを停止してください">
+  起動中のdiscord-mcbe(ターミナル(黒い画面))を閉じてからアップデートしてください。
+</Aside>
+
+## 最新の安定版へ更新する
+
+<Tabs syncKey="launcher-os">
+<TabItem value="windows" label="Windows">
+
+<Steps>
+
+1. discord-mcbeのフォルダーにある`updater.exe`をダブルクリックします。
+
+2. 黒い画面にバージョンの選択肢が表示されたら、上下キーで **Stable** を選び、Enterキーを押します。Stableは通常利用向けの安定版です。
+
+   ![バージョン選択画面](../../../assets/updater_select_version.png)
+
+3. 更新が終わるまで待ちます。`Successfully installed discord-mcbe ...` と表示されると、黒い画面は自動で閉じます。
+
+4. `start.bat`をダブルクリックし、discord-mcbeを起動します。
+
+</Steps>
+
+</TabItem>
+<TabItem value="unix" label="Linux / macOS">
+
+<Steps>
+
+1. discord-mcbeのフォルダーをターミナルで開きます。初回だけ、次のコマンドで実行権限を付けます。
+
+   ```bash frame="none"
+   chmod +x updater start.sh
+   ```
+
+2. ランチャーを起動します。
+
+   ```bash frame="none"
+   ./updater
+   ```
+
+3. 上下キーで **Stable** を選び、Enterキーを押します。`Successfully installed discord-mcbe ...` と表示されたら更新完了です。
+
+   ![update success](../../../assets/updater_success.png)
+
+4. discord-mcbeを起動します。
+
+   ```bash frame="none"
+   ./start.sh
+   ```
+
+</Steps>
+
+</TabItem>
+</Tabs>
+
+## コマンドでバージョンを直接指定する
+
+通常は画面から **Stable** を選べば十分です。ベータ版、過去のバージョン、復元機能を使う場合は、コマンドで操作を指定できます。
+
+<Tabs syncKey="launcher-os">
+<TabItem value="windows" label="Windows">
+
+PowerShellまたはコマンドプロンプトで実行します。
+
+```powershell frame="none"
+.\updater.exe [version] [options]
+```
+
+| したいこと                   | コマンド                       |
+| ---------------------------- | ------------------------------ |
+| 最新の安定版へ更新           | `.\updater.exe stable`         |
+| 最新のベータ版へ更新         | `.\updater.exe beta`           |
+| 指定バージョンをインストール | `.\updater.exe 4.0.0`          |
+| 直前のバージョンへ戻す       | `.\updater.exe rollback`       |
+| 同じバージョンを再度入れる   | `.\updater.exe stable --force` |
+
+</TabItem>
+<TabItem value="unix" label="Linux / macOS">
+
+ターミナルで実行します。
+
+```bash frame="none"
+./updater [version] [options]
+```
+
+| したいこと                   | コマンド                   |
+| ---------------------------- | -------------------------- |
+| 最新の安定版へ更新           | `./updater stable`         |
+| 最新のベータ版へ更新         | `./updater beta`           |
+| 指定バージョンをインストール | `./updater 4.0.0`          |
+| 直前のバージョンへ戻す       | `./updater rollback`       |
+| 同じバージョンを再度入れる   | `./updater stable --force` |
+
+</TabItem>
+</Tabs>
+
+`[version]`には次のどれかを指定します。省略すると、キーボードで選べる画面が開きます。
+
+| 引数       | 動作                                                                 |
+| ---------- | -------------------------------------------------------------------- |
+| `stable`   | 最新の安定版を選ぶ                                                   |
+| `beta`     | 最新のベータ版（動作確認用）を選ぶ                                   |
+| `4.0.0`    | そのバージョンを選ぶ。数値はインストールしたいバージョンに置き換える |
+| `rollback` | `app.backup/`に残っている直前のバージョンと入れ替える                |
+
+### オプション
+
+| オプション           | 用途                                                                                                   |
+| -------------------- | ------------------------------------------------------------------------------------------------------ |
+| `-f`, `--force`      | 同じバージョンの再インストールや、ベータ版から安定版への切り替えを強制する。バージョン引数と一緒に使う |
+| `--dry-run`          | ファイルを更新せず、対象バージョンをダウンロードして展開内容を確認する                                 |
+| `-c`, `--cwd <path>` | 現在開いているフォルダーではなく、指定したフォルダーを更新する                                         |
+| `--no-interactive`   | 選択画面と確認を表示しない。バージョンを省略した場合は最新の安定版を選ぶ                               |
+| `-v`, `--version`    | ランチャー自体のバージョンを表示する                                                                   |
+| `-h`, `--help`       | 利用できるコマンドとオプションを表示する                                                               |
+
+## 更新後に問題が起きた場合
+
+更新が成功すると、更新前の本体は`app.backup/`に残ります。discord-mcbeを停止し、`./updater rollback`を実行すると、直前のバージョンへ戻せます。
+
+ランチャー自体が古いと表示された場合は、[Botとサーバーのセットアップ](/installation/setup-bot/#discord-mcbe-サーバーの準備)から現在のOSに合う新しいzipを取得してください。

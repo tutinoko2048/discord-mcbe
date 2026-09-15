@@ -1,0 +1,131 @@
+---
+title: Use the launcher
+description: Update discord-mcbe through the interactive screen or use launcher commands and options directly.
+---
+
+import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+
+The launcher installs, updates, and switches versions of the discord-mcbe application. It opens a keyboard-controlled terminal interface (TUI). For a normal update, open the launcher and select **Stable**.
+
+<Aside type="caution" title="Stop discord-mcbe first">
+  Close the terminal window running discord-mcbe before updating. The launcher retains `config.json`, `.env`,
+  and `scripts/`, but you can copy the whole folder first if you want an additional backup.
+</Aside>
+
+## Update to the latest stable release interactively
+
+<Tabs syncKey="launcher-os">
+<TabItem value="windows" label="Windows">
+
+<Steps>
+
+1. Double-click `updater.exe` in the discord-mcbe folder.
+
+2. When the version menu appears, use the up and down arrow keys to select **Stable**, then press Enter. Stable is the recommended release for normal use.
+
+   ![Version selection screen](../../../../assets/updater_select_version.png)
+
+3. Wait for the update to finish. After `Successfully installed discord-mcbe ...` appears, the window closes automatically.
+
+4. Double-click `start.bat` to start discord-mcbe again.
+
+</Steps>
+
+</TabItem>
+<TabItem value="unix" label="Linux / macOS">
+
+<Steps>
+
+1. Open the discord-mcbe folder in a terminal. The first time only, make the files executable:
+
+   ```bash frame="none"
+   chmod +x updater start.sh
+   ```
+
+2. Start the launcher:
+
+   ```bash frame="none"
+   ./updater
+   ```
+
+3. Use the up and down arrow keys to select **Stable**, then press Enter. The update is complete when `Successfully installed discord-mcbe ...` appears.
+
+   ![Update success](../../../../assets/updater_success.png)
+
+4. Start discord-mcbe again:
+
+   ```bash frame="none"
+   ./start.sh
+   ```
+
+</Steps>
+
+</TabItem>
+</Tabs>
+
+## Select a version from the command line
+
+The interactive **Stable** option is enough for normal updates. Use a command when you need a beta, a specific older release, or rollback.
+
+<Tabs syncKey="launcher-os">
+<TabItem value="windows" label="Windows">
+
+Run these commands in PowerShell or Command Prompt.
+
+```powershell frame="none"
+.\updater.exe [version] [options]
+```
+
+| Task                         | Command                        |
+| ---------------------------- | ------------------------------ |
+| Update to the latest stable  | `.\updater.exe stable`         |
+| Update to the latest beta    | `.\updater.exe beta`           |
+| Install a specific version   | `.\updater.exe 4.0.0`          |
+| Restore the previous version | `.\updater.exe rollback`       |
+| Reinstall the same version   | `.\updater.exe stable --force` |
+
+</TabItem>
+<TabItem value="unix" label="Linux / macOS">
+
+Run these commands in a terminal.
+
+```bash frame="none"
+./updater [version] [options]
+```
+
+| Task                         | Command                    |
+| ---------------------------- | -------------------------- |
+| Update to the latest stable  | `./updater stable`         |
+| Update to the latest beta    | `./updater beta`           |
+| Install a specific version   | `./updater 4.0.0`          |
+| Restore the previous version | `./updater rollback`       |
+| Reinstall the same version   | `./updater stable --force` |
+
+</TabItem>
+</Tabs>
+
+Use one of these values for `[version]`. Omitting it opens the interactive menu.
+
+| Argument   | Behavior                                                              |
+| ---------- | --------------------------------------------------------------------- |
+| `stable`   | Select the latest stable release                                      |
+| `beta`     | Select the latest beta release                                        |
+| `4.0.0`    | Select that exact release; replace the number with the version needed |
+| `rollback` | Swap the current application with the previous one in `app.backup/`   |
+
+### Options
+
+| Option               | Purpose                                                                                  |
+| -------------------- | ---------------------------------------------------------------------------------------- |
+| `-f`, `--force`      | Force a reinstall or a switch such as beta to stable; use it with a version argument     |
+| `--dry-run`          | Download and inspect the selected archive without changing installed files               |
+| `-c`, `--cwd <path>` | Update the specified folder instead of the current folder                                |
+| `--no-interactive`   | Hide menus and confirmations; when no version is given, select the latest stable release |
+| `-v`, `--version`    | Show the launcher's own version                                                          |
+| `-h`, `--help`       | Show the available arguments and options                                                 |
+
+## Restore the previous version after a problem
+
+After a successful update, the launcher keeps the previous application in `app.backup/`. Stop discord-mcbe and run `.\updater.exe rollback` or `./updater rollback`, depending on your OS, to restore it.
+
+If the launcher reports that it is too old, download the latest zip for your OS from [Set up the bot and server](/en/installation/setup-bot/#prepare-the-discord-mcbe-server).

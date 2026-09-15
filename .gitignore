@@ -13,3 +13,4 @@ tsconfig.tsbuildinfo
 .env.development
 .env.production
 .release-temp
+.pnpm-store

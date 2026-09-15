@@ -90,14 +90,14 @@ Check the channel permission overrides as well. They must not deny the bot's acc
 
    You can instead run the following commands in PowerShell or Command Prompt.
 
-   ```powershell
+   ```powershell frame="none"
    .\updater.exe stable
    .\start.bat
    ```
 
    **Linux / macOS**
 
-   ```bash
+   ```bash frame="none"
    chmod +x updater start.sh
    ./updater stable
    ./start.sh
@@ -109,22 +109,4 @@ Check the channel permission overrides as well. They must not deny the bot's acc
 
 Next, [install the add-on in your Minecraft world](/en/installation/setup-world/).
 
-## <Icon name="cloud-download" />Update or switch versions
-
-Stop the server before running the launcher. `config.json`, `.env`, and `scripts/` live outside `app/` and are retained across updates, but keeping a backup is still recommended.
-
-On Windows, double-click `updater.exe` to choose a version interactively. Use PowerShell or Command Prompt for `--force`, rollback, or an exact version by running the commands below.
-
-| Action                   | Windows                    | Linux / macOS        |
-| ------------------------ | -------------------------- | -------------------- |
-| Latest stable            | `updater.exe stable`       | `./updater stable`   |
-| Latest beta (optional)   | `updater.exe beta`         | `./updater beta`     |
-| Choose interactively     | Double-click `updater.exe` | `./updater`          |
-| Install one version      | `updater.exe 4.0.0`        | `./updater 4.0.0`    |
-| Restore previous version | `updater.exe rollback`     | `./updater rollback` |
-
-After a successful update, the previous application remains in `app.backup/`. If the update causes a problem, stop the server and run `updater rollback` to restore the previous version.
-
-To move from a beta release to the stable release, run `updater.exe stable --force` (Windows) or `./updater stable --force` (Linux / macOS). Add `--force` when switching from stable to beta or reinstalling the same version as well.
-
-If the launcher itself needs an update, download a new zip from the launcher release.
+For future updates, see [Use the launcher](/en/guides/launcher/).

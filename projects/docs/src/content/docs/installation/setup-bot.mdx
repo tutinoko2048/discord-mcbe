@@ -91,14 +91,14 @@ Discordの **ユーザー設定 → 詳細設定 → 開発者モード** を有
 
    PowerShellまたはコマンドプロンプトを使う場合は、次のコマンドでも実行できます。
 
-   ```powershell
+   ```powershell frame="none"
    .\updater.exe stable
    .\start.bat
    ```
 
    **Linux / macOS**
 
-   ```bash
+   ```bash frame="none"
    chmod +x updater start.sh
    ./updater stable
    ./start.sh
@@ -110,22 +110,4 @@ Discordの **ユーザー設定 → 詳細設定 → 開発者モード** を有
 
 続いて、[Minecraftワールドへアドオンを導入します](/installation/setup-world/)。
 
-## <Icon name="cloud-download" />アップデートとバージョン切り替え
-
-サーバーを停止してからランチャーを実行します。`config.json`、`.env`、`scripts/`は`app/`とは別に保存されるため更新後も引き継がれますが、更新前のバックアップを推奨します。
-
-Windowsでは`updater.exe`をダブルクリックすると、インストールするバージョンを選択できます。`--force`、rollback、特定バージョンの指定が必要な場合は、PowerShellまたはコマンドプロンプトで以下のコマンドを実行します。
-
-| 操作                         | Windows                       | Linux / macOS        |
-| ---------------------------- | ----------------------------- | -------------------- |
-| 最新安定版へ更新             | `updater.exe stable`          | `./updater stable`   |
-| 最新ベータへ更新（任意）     | `updater.exe beta`            | `./updater beta`     |
-| バージョンを選択             | `updater.exe`をダブルクリック | `./updater`          |
-| 指定バージョンをインストール | `updater.exe 4.0.0`           | `./updater 4.0.0`    |
-| 直前のバージョンへ戻す       | `updater.exe rollback`        | `./updater rollback` |
-
-更新が成功すると直前の本体が`app.backup/`に残ります。問題がある場合はサーバーを停止して`updater rollback`を実行してください。戻す前のバージョンへ切り替わります。
-
-ベータ版から正式版へ移行する場合は、`updater.exe stable --force`（Windows）または`./updater stable --force`（Linux / macOS）を実行します。安定版からベータ版へ切り替える場合や、同じバージョンを再インストールする場合も、バージョン指定に`--force`を追加します。
-
-ランチャー自体の更新が必要と表示された場合は、ランチャーのリリースから新しいzipをダウンロードしてください。
+今後のアップデート方法は、[ランチャーの使い方](/guides/launcher/)を参照してください。
