@@ -2,6 +2,7 @@ import { afterEach, describe, expect, mock, spyOn, test } from 'bun:test';
 import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import packageJson from '../package.json' with { type: 'json' };
 import { fetchWithRetry } from './fetch';
 import { install, shouldUpdate } from './install';
 import { LauncherError } from './errors';
@@ -108,39 +109,44 @@ describe('resolveVersion', () => {
 
 describe('findLauncherUpgrade', () => {
   test('selects the newest launcher asset for the current target', async () => {
+    const currentVersion = Number(packageJson.version);
+    const nextVersion = currentVersion + 1;
+    const newestVersion = currentVersion + 2;
     const fetchMock = mock().mockResolvedValueOnce(
       Response.json([
         {
-          tag_name: 'launcher@v5',
+          tag_name: `launcher@v${nextVersion}`,
           prerelease: false,
           assets: [
             {
-              name: 'discord-mcbe-updater-windows-x64-v5.exe.gz',
-              browser_download_url: 'https://example.com/v5',
+              name: `discord-mcbe-updater-windows-x64-v${nextVersion}.exe.gz`,
+              browser_download_url: `https://example.com/v${nextVersion}`,
               digest: 'sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
               size: 5,
             },
           ],
         },
         {
-          tag_name: 'launcher@v4',
+          tag_name: `launcher@v${newestVersion}`,
           prerelease: false,
           assets: [
             {
-              name: 'discord-mcbe-updater-windows-x64-v4.exe.gz',
-              browser_download_url: 'https://example.com/v4',
+              name: `discord-mcbe-updater-windows-x64-v${newestVersion}.exe.gz`,
+              browser_download_url: `https://example.com/v${newestVersion}`,
               digest: 'sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
               size: 4,
             },
           ],
         },
         {
-          tag_name: 'launcher@v3',
+          tag_name: `launcher@v${currentVersion}`,
           prerelease: false,
           assets: [
             {
-              name: 'discord-mcbe-updater-windows-x64-v3.exe',
-              browser_download_url: 'https://example.com/v3',
+              name: `discord-mcbe-updater-windows-x64-v${currentVersion}.exe.gz`,
+              browser_download_url: `https://example.com/v${currentVersion}`,
+              digest: 'sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc',
+              size: 3,
             },
           ],
         },
@@ -149,10 +155,10 @@ describe('findLauncherUpgrade', () => {
     globalThis.fetch = fetchMock as unknown as typeof fetch;
 
     expect(await findLauncherUpgrade('windows-x64')).toEqual({
-      version: 5,
-      assetUrl: 'https://example.com/v5',
-      digest: 'sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-      size: 5,
+      version: newestVersion,
+      assetUrl: `https://example.com/v${newestVersion}`,
+      digest: 'sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+      size: 4,
     });
   });
 
