@@ -5,7 +5,7 @@ import * as v from 'valibot';
 
 const VariablesSchema = v.object({
   BRIDGE_URL: v.optional(
-    v.pipe(v.string(), v.nonEmpty(), v.regex(/^wss?:\/\//i, 'Expected a WebSocket URL'), v.url()),
+    v.pipe(v.string(), v.nonEmpty(), v.regex(/^wss?:\/\//i, 'Expected a WebSocket URL')),
   ),
   BRIDGE_TOKEN: v.optional(v.pipe(v.string(), v.nonEmpty())),
   DEFAULT_WORLD_NAME: v.optional(v.pipe(v.string(), v.nonEmpty())),
