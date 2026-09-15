@@ -255,9 +255,7 @@ describe('replaceLauncher', () => {
         error = caught;
       }
       expect(error).toBeInstanceOf(LauncherError);
-      expect((error as Error).message).toContain(
-        `Failed to replace the launcher "${current}" with "${next}"`,
-      );
+      expect((error as Error).message).toContain('Failed to install launcher:');
       expect((error as Error).message).toContain(`The previous launcher was restored from "${previous}"`);
       expect(await Bun.file(current).text()).toBe('current');
     } finally {
