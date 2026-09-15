@@ -1,7 +1,7 @@
 import { world } from '@minecraft/server';
+import { variables } from '@minecraft/server-admin';
 import { BridgeClient, WORLD_NAME_DYNAMIC_PROPERTY_KEY } from '@discord-mcbe/client/bds';
 import * as v from 'valibot';
-import { getVariables } from './variable';
 
 const VariablesSchema = v.object({
   BRIDGE_URL: v.optional(
@@ -11,8 +11,12 @@ const VariablesSchema = v.object({
   DEFAULT_WORLD_NAME: v.optional(v.pipe(v.string(), v.nonEmpty())),
 });
 
-world.afterEvents.worldLoad.subscribe(() => {
-  const parsedVariables = v.safeParse(VariablesSchema, getVariables());
+function initialize(): BridgeClient | undefined {
+  const parsedVariables = v.safeParse(VariablesSchema, {
+    BRIDGE_URL: variables.get('BRIDGE_URL'),
+    BRIDGE_TOKEN: variables.get('BRIDGE_TOKEN'),
+    DEFAULT_WORLD_NAME: variables.get('DEFAULT_WORLD_NAME'),
+  } satisfies Record<keyof typeof VariablesSchema.entries, unknown>);
   if (!parsedVariables.success) {
     console.error(
       '[discord-mcbe] Failed to launch discord-mcbe. Invalid variables provided:\n',
@@ -23,7 +27,7 @@ world.afterEvents.worldLoad.subscribe(() => {
 
   const vars = parsedVariables.output;
 
-  const client = new BridgeClient({
+  return new BridgeClient({
     ...(vars.BRIDGE_URL ? { url: vars.BRIDGE_URL } : {}),
     ...(vars.BRIDGE_TOKEN ? { token: vars.BRIDGE_TOKEN } : {}),
     worldName: vars.DEFAULT_WORLD_NAME
@@ -34,7 +38,12 @@ world.afterEvents.worldLoad.subscribe(() => {
         }
       : undefined,
   });
+}
 
+const client = initialize();
+
+world.afterEvents.worldLoad.subscribe(() => {
+  if (!client) return;
   client.start().catch((error) => {
     console.error(error);
   });
