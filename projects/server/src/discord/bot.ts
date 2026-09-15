@@ -9,12 +9,15 @@ import {
   type Message,
   type MessageCreateOptions,
   WebhookClient,
+  RESTPostAPIChannelMessageJSONBody,
+  MessagePayload,
+  Routes,
 } from 'discord.js';
 import { InteractionManager } from './interaction';
 import { StatusPanel } from './panel';
 import { _t, Logger } from '../util';
 import { DiscordMessageEvent, DiscordReadyEvent, DiscordSendEvent } from '../events';
-import { createMinecraftChatWebhookMessage } from './minecraft-chat-webhook';
+import { createMinecraftChatWebhookMessage, MinecraftChatWebhookInput } from './minecraft-chat-webhook';
 
 import type { Application } from '../application';
 
@@ -92,19 +95,35 @@ export class DiscordBot<READY extends boolean = false> {
   async sendMessage(options: string | MessageCreateOptions) {
     const channel = this.getMainChannel();
 
+    const payload = MessagePayload.create(channel, options);
+    payload.resolveBody(); // Generate payload.body from options
+
     const signal = new DiscordSendEvent(
       this.app,
       this.client as Client<true>,
       channel,
-      typeof options === 'string' ? { content: options } : options,
+      payload.body as RESTPostAPIChannelMessageJSONBody,
     );
 
     if (!signal.emit()) return;
 
-    await signal.channel.send(signal.message);
+    payload.body = signal.message; // Update the payload with the possibly modified message from the event
+
+    await signal.channel.send(payload);
   }
 
-  async sendMinecraftChat(options: Parameters<typeof createMinecraftChatWebhookMessage>[0]) {
+  async sendApiMessage(options: RESTPostAPIChannelMessageJSONBody) {
+    const channel = this.getMainChannel();
+
+    const signal = new DiscordSendEvent(this.app, this.client as Client<true>, channel, options);
+    if (!signal.emit()) return;
+
+    await this.client.rest.post(Routes.channelMessages(signal.channel.id), {
+      body: signal.message,
+    });
+  }
+
+  async sendMinecraftChat(options: MinecraftChatWebhookInput) {
     const webhookUrl = this.app.env.DISCORD_WEBHOOK_URL;
     if (!webhookUrl) throw new Error('DISCORD_WEBHOOK_URL is not configured');
 
