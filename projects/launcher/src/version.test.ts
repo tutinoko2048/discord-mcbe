@@ -115,7 +115,7 @@ describe('findLauncherUpgrade', () => {
           prerelease: false,
           assets: [
             {
-              name: 'discord-mcbe-updater-windows-x64-v5.exe',
+              name: 'discord-mcbe-updater-windows-x64-v5.exe.gz',
               browser_download_url: 'https://example.com/v5',
               digest: 'sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
               size: 5,
@@ -127,7 +127,7 @@ describe('findLauncherUpgrade', () => {
           prerelease: false,
           assets: [
             {
-              name: 'discord-mcbe-updater-windows-x64-v4.exe',
+              name: 'discord-mcbe-updater-windows-x64-v4.exe.gz',
               browser_download_url: 'https://example.com/v4',
               digest: 'sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
               size: 4,
@@ -176,7 +176,9 @@ describe('upgradeLauncher', () => {
   test('downloads and verifies an exact version during a dry run', async () => {
     const platform = process.platform === 'win32' ? 'windows' : process.platform;
     const extension = process.platform === 'win32' ? '.exe' : '';
-    const data = new Uint8Array([1, 2, 3]);
+    const data = Bun.gzipSync(new Uint8Array([1, 2, 3]));
+    const hasher = new Bun.CryptoHasher('sha256');
+    hasher.update(data);
     globalThis.fetch = mock()
       .mockResolvedValueOnce(
         Response.json([
@@ -185,9 +187,9 @@ describe('upgradeLauncher', () => {
             prerelease: false,
             assets: [
               {
-                name: `discord-mcbe-updater-${platform}-${process.arch}-v4${extension}`,
+                name: `discord-mcbe-updater-${platform}-${process.arch}-v4${extension}.gz`,
                 browser_download_url: 'https://example.com/v4',
-                digest: 'sha256:039058c6f2c0cb492c533b0a4d14ef77cc0f78abccced5287d84a1a2011cfb81',
+                digest: `sha256:${hasher.digest('hex')}`,
                 size: data.byteLength,
               },
             ],

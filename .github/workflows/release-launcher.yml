@@ -69,7 +69,7 @@ jobs:
             (cd "$platform" && zip -r "$ASSET_DIR/discord-mcbe-$platform-v$LAUNCHER_VERSION.zip" .)
             extension=""
             [ "$platform" = "windows-x64" ] && extension=".exe"
-            cp "$platform/updater$extension" "$ASSET_DIR/discord-mcbe-updater-$platform-v$LAUNCHER_VERSION$extension"
+            gzip -9 -c "$platform/updater$extension" > "$ASSET_DIR/discord-mcbe-updater-$platform-v$LAUNCHER_VERSION$extension.gz"
           done
 
           echo "LAUNCHER_ASSET_DIR=$ASSET_DIR" >> "$GITHUB_ENV"

@@ -30,8 +30,9 @@ export async function upgradeLauncher(options: UpgradeOptions = {}): Promise<boo
 
   if (options.interactive && !options.dryRun && !(await confirmUpgrade(release.version))) return false;
 
-  const updaterData = await downloadLauncher(release.assetUrl, release.size);
-  verifyLauncherChecksum(updaterData, release.digest);
+  const compressedData = await downloadLauncher(release.assetUrl, release.size);
+  verifyLauncherChecksum(compressedData, release.digest);
+  const updaterData = Bun.gunzipSync(compressedData);
   if (options.dryRun) {
     console.log(
       `[upgrade] Dry run complete. discord-mcbe launcher v${release.version} was downloaded and verified.`,
@@ -60,7 +61,7 @@ export async function upgradeLauncher(options: UpgradeOptions = {}): Promise<boo
   return true;
 }
 
-export async function downloadLauncher(url: string, size: number): Promise<Uint8Array> {
+export async function downloadLauncher(url: string, size: number): Promise<Uint8Array<ArrayBuffer>> {
   const response = await fetchWithRetry(url);
   if (!response.ok) {
     throw new LauncherError(`Failed to download launcher: ${response.status} ${response.statusText}`);

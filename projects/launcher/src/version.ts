@@ -194,7 +194,7 @@ export async function findLauncherUpgrade(
     return undefined;
   }
 
-  const assetName = `discord-mcbe-updater-${target}-v${selected.version}${extension}`;
+  const assetName = `discord-mcbe-updater-${target}-v${selected.version}${extension}.gz`;
   const asset = selected.release.assets.find((item) => item.name === assetName);
   if (!asset)
     throw new LauncherError(`Launcher v${selected.version} has no self-update asset for ${target}.`);
