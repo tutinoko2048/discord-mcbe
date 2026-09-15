@@ -36,6 +36,6 @@ export class BridgeClient extends BaseClient<WebSocketBridgeClient> {
 }
 
 export { WebSocketBridgeClient };
-export { IBridgeClient } from './transport/interfaces';
+export type { IBridgeClient } from './transport/interfaces';
 export * from './transport/websocket';
 export * from './client';

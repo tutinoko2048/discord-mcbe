@@ -3,6 +3,7 @@ import { ChatSendPacket } from './chat-send';
 import { requestSchemas } from './common';
 import { ConnectPacket } from './connect';
 import { DisconnectPacket } from './disconnect';
+import { DiscordSendPacket } from './discord-send';
 import { GetEntityDimensionPacket } from './get-entity-dimension';
 import { GetEntityLocationPacket } from './get-entity-location';
 import { GetGameModePacket } from './get-game-mode';
@@ -37,6 +38,7 @@ export const ServerBoundNotificationPacket = v.variant('type', [
   PlayerLeavePacket,
   PlayerDiePacket,
   ChatSendPacket,
+  DiscordSendPacket,
 ]);
 
 export const ServerBoundInternalPackets = [ConnectPacket, DisconnectPacket] as const;

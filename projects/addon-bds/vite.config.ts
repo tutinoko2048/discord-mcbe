@@ -9,7 +9,7 @@ export default defineConfig({
     dts: false,
     sourcemap: true,
     deps: {
-      alwaysBundle: ['@discord-mcbe/client/bds', 'valibot'],
+      alwaysBundle: ['@discord-mcbe/client/bds', 'valibot', 'mcbe-ipc'],
       onlyBundle: false,
     },
   },

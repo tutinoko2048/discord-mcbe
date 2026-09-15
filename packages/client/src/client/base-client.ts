@@ -9,6 +9,7 @@ import type { ServerNetBridgeClient } from '../transport/server-net';
 import type { WebSocketBridgeClient } from '../transport/websocket';
 import type { IBridgeClient } from '../transport/interfaces';
 import { WORLD_NAME_DYNAMIC_PROPERTY_KEY } from './constants';
+import { registerIpc } from './features/ipc';
 
 export enum ClientType {
   Local = 'Local',
@@ -31,6 +32,7 @@ export abstract class BaseClient<T extends IBridgeClient = IBridgeClient> {
 
     // register events to send to server
     registerEvents(this.bridge);
+    registerIpc(this.bridge);
 
     system.beforeEvents.startup.subscribe((ev) => registerCommands(ev.customCommandRegistry, this));
 

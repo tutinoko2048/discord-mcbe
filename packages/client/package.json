@@ -28,7 +28,8 @@
     "@discord-mcbe/shared": "workspace:*",
     "@minecraft/server": "catalog:",
     "@minecraft/server-net": "catalog:",
-    "@minecraft/server-ui": "catalog:"
+    "@minecraft/server-ui": "catalog:",
+    "mcbe-ipc": "^3.4.2"
   },
   "devDependencies": {
     "@bedrock-apis/env-types": "catalog:",

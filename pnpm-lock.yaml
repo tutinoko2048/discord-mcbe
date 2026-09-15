@@ -43,6 +43,9 @@ catalogs:
 overrides:
   '@minecraft/server': 2.10.0-beta.1.26.44-stable
 
+patchedDependencies:
+  mcbe-ipc: 8c285c647fc9ed38fe84c187656b1b75322c8e73335db958510f88e735974913
+
 importers:
 
   .:
@@ -99,6 +102,9 @@ importers:
       '@minecraft/server-ui':
         specifier: 'catalog:'
         version: 2.1.0(@minecraft/common@1.2.0)(@minecraft/server@2.10.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70))
+      mcbe-ipc:
+        specifier: ^3.4.2
+        version: 3.4.2(patch_hash=8c285c647fc9ed38fe84c187656b1b75322c8e73335db958510f88e735974913)(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
     devDependencies:
       '@bedrock-apis/env-types':
         specifier: 'catalog:'
@@ -3378,6 +3384,9 @@ packages:
 
   markdown-table@3.0.4:
     resolution: {integrity: sha512-wiYz4+JrLyb/DqW2hkFJxP7Vd7JuTDm77fvbM8VfEQdmSMqcImWeeRbHwZjBjIFki/VaMK2BhFi7oUUZeM5bqw==}
+
+  mcbe-ipc@3.4.2:
+    resolution: {integrity: sha512-iF8J1wlL1EDbjaQyY7MynkGS+wHPJr4xzg5bNH3Y5uSHb3Ojc5FEPNy7WXUOewUvWlemrB69fJuSk69W9jF04Q==}
 
   mdast-util-definitions@6.0.0:
     resolution: {integrity: sha512-scTllyX6pnYNZH/AIp/0ePz6s4cZtARxImwoPJ7kS42n+MnVsI4XbnG6d4ibehRIldYMWM2LD7ImQblVhUejVQ==}
@@ -7489,6 +7498,13 @@ snapshots:
       uc.micro: 2.1.0
 
   markdown-table@3.0.4: {}
+
+  mcbe-ipc@3.4.2(patch_hash=8c285c647fc9ed38fe84c187656b1b75322c8e73335db958510f88e735974913)(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70):
+    dependencies:
+      '@minecraft/server': 2.10.0-beta.1.26.44-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
+    transitivePeerDependencies:
+      - '@minecraft/common'
+      - '@minecraft/vanilla-data'
 
   mdast-util-definitions@6.0.0:
     dependencies:
