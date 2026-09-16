@@ -3,6 +3,7 @@
 import { describe, expect, test } from 'bun:test';
 import {
   ActionId,
+  errorResponse,
   GetTpsPacket,
   InternalAction,
   PendingRequests,
@@ -153,6 +154,39 @@ describe('protocol v2 packet validation', () => {
     ).toBe(false);
   });
 
+  test('includes validation issues in InvalidPayload responses', () => {
+    const issues = [{ message: 'Expected a string' }];
+    const response = errorResponse(
+      'request-1',
+      ResponseErrorReason.InvalidPayload,
+      'Invalid request packet',
+      issues,
+    );
+
+    expect(response).toEqual({
+      type: RESPONSE_PACKET_TYPE,
+      requestId: 'request-1',
+      ok: false,
+      error: {
+        code: ResponseErrorReason.InvalidPayload,
+        message: 'Invalid request packet',
+        issues,
+      },
+    });
+    expect(safeParseClientBoundPacket(response).success).toBe(true);
+    expect(
+      safeParseClientBoundPacket({
+        type: RESPONSE_PACKET_TYPE,
+        requestId: 'request-1',
+        ok: false,
+        error: {
+          code: ResponseErrorReason.InvalidPayload,
+          message: 'missing issues',
+        },
+      }).success,
+    ).toBe(false);
+  });
+
   test('keeps transport-internal packets directional', () => {
     expect(
       safeParseServerBoundPacket({
@@ -204,6 +238,23 @@ describe('PendingRequests', () => {
       error: true,
       errorReason: ResponseErrorReason.InvalidPayload,
       message: `Invalid response data for ${ActionId.GetTPS}`,
+      issues: expect.any(Array),
+    });
+  });
+
+  test('passes InvalidPayload issues through the request result', async () => {
+    const pending = new PendingRequests<number>({ set: () => 1, clear: () => {} });
+    const issues = [{ message: 'Invalid response' }];
+    const result = pending.request(ActionId.GetTPS, 'request-3', 100, () => {});
+    pending.handle(
+      errorResponse('request-3', ResponseErrorReason.InvalidPayload, 'Invalid response data', issues),
+    );
+
+    expect(await result).toEqual({
+      error: true,
+      errorReason: ResponseErrorReason.InvalidPayload,
+      message: 'Invalid response data',
+      issues,
     });
   });
 

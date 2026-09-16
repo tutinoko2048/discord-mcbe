@@ -113,6 +113,7 @@ describe('ServerNetBridgeServer protocol v2', () => {
         error: {
           code: ResponseErrorReason.InvalidPayload,
           message: DisconnectReason[DisconnectReason.OutdatedClient],
+          issues: [],
         },
       });
       expect([...server.sessions][0]).toMatchObject({ isConnected: false });

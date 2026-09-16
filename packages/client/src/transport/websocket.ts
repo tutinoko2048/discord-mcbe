@@ -154,6 +154,7 @@ export class WebSocketBridgeClient extends Emitter<WebSocketBridgeEvents> implem
               request.requestId,
               ResponseErrorReason.InvalidPayload,
               `Invalid response data for ${request.type}`,
+              parsed.issues,
             ),
       );
     } catch (error) {
@@ -214,7 +215,12 @@ export class WebSocketBridgeClient extends Emitter<WebSocketBridgeEvents> implem
         const requestId = record.requestId;
         if (typeof requestId === 'string') {
           this.sendQueue.push(
-            errorResponse(requestId, ResponseErrorReason.InvalidPayload, 'Invalid request packet'),
+            errorResponse(
+              requestId,
+              ResponseErrorReason.InvalidPayload,
+              'Invalid request packet',
+              result.issues,
+            ),
           );
         }
       }

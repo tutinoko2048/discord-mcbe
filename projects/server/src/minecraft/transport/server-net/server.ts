@@ -161,7 +161,12 @@ export class ServerNetBridgeServer extends EventEmitter<ServerNetBridgeEvents> {
       if (getPacketType(parsed) === RESPONSE_PACKET_TYPE) return;
       const requestId = getRequestId(parsed);
       session.sendPayload(
-        errorResponse(requestId ?? '', ResponseErrorReason.InvalidPayload, 'Invalid WebSocket packet'),
+        errorResponse(
+          requestId ?? '',
+          ResponseErrorReason.InvalidPayload,
+          'Invalid WebSocket packet',
+          result.issues,
+        ),
       );
       return;
     }
@@ -219,6 +224,7 @@ export class ServerNetBridgeServer extends EventEmitter<ServerNetBridgeEvents> {
               request.requestId,
               ResponseErrorReason.InvalidPayload,
               `Invalid response data for ${request.type}`,
+              parsed.issues,
             ),
       );
 

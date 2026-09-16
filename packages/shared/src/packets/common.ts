@@ -13,13 +13,14 @@ export const DisconnectReasonSchema = v.picklist([
   DisconnectReason.ConnectionLost,
 ]);
 
-export const ResponseErrorReasonSchema = v.picklist([
+export const GenericResponseErrorReasonSchema = v.picklist([
   ResponseErrorReason.Abort,
   ResponseErrorReason.Timeout,
   ResponseErrorReason.InvalidSession,
   ResponseErrorReason.InternalError,
-  ResponseErrorReason.InvalidPayload,
 ]);
+
+export const InvalidPayloadResponseErrorReasonSchema = v.picklist([ResponseErrorReason.InvalidPayload]);
 
 export function requestPacket<
   const TType extends string,

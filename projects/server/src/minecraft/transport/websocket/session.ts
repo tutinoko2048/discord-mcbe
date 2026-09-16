@@ -147,6 +147,7 @@ export class SocketSession implements ISession {
               request.requestId,
               ResponseErrorReason.InvalidPayload,
               `Invalid response data for ${request.type}`,
+              parsed.issues,
             ),
       );
 
@@ -210,7 +211,12 @@ export class SocketSession implements ISession {
         const requestId = getRequestId(input);
         if (requestId) {
           await this.sendPayload(
-            errorResponse(requestId, ResponseErrorReason.InvalidPayload, 'Invalid client packet'),
+            errorResponse(
+              requestId,
+              ResponseErrorReason.InvalidPayload,
+              'Invalid client packet',
+              parsed.issues,
+            ),
           );
         }
       }

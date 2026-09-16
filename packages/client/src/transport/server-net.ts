@@ -175,7 +175,7 @@ export class ServerNetBridgeClient extends Emitter<ServerNetBridgeEvents> implem
     const result = safeParseClientBoundPacket(parsed);
     if (!result.success) {
       console.error('[ServerNet] Invalid WebSocket packet:', result.issues);
-      this.respondToInvalidRequest(socket, parsed);
+      this.respondToInvalidRequest(socket, parsed, result.issues);
       return;
     }
 
@@ -208,6 +208,7 @@ export class ServerNetBridgeClient extends Emitter<ServerNetBridgeEvents> implem
             request.requestId,
             ResponseErrorReason.InvalidPayload,
             `Invalid response data for ${request.type}`,
+            parsed.issues,
           );
       if (socket.isOpen) socket.send(JSON.stringify(response));
     } catch (error) {
@@ -229,14 +230,16 @@ export class ServerNetBridgeClient extends Emitter<ServerNetBridgeEvents> implem
     }
   }
 
-  private respondToInvalidRequest(socket: WebSocketClient, input: unknown): void {
+  private respondToInvalidRequest(socket: WebSocketClient, input: unknown, issues: readonly unknown[]): void {
     if (typeof input !== 'object' || input === null) return;
     const record = input as Record<string, unknown>;
     if (record.type === RESPONSE_PACKET_TYPE) return;
     const requestId = record.requestId;
     if (typeof requestId !== 'string' || !socket.isOpen) return;
     socket.send(
-      JSON.stringify(errorResponse(requestId, ResponseErrorReason.InvalidPayload, 'Invalid request packet')),
+      JSON.stringify(
+        errorResponse(requestId, ResponseErrorReason.InvalidPayload, 'Invalid request packet', issues),
+      ),
     );
   }
 

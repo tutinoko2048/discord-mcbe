@@ -9,8 +9,14 @@ export type RequestResult<T> =
     }
   | {
       error: true;
-      errorReason: ResponseErrorReason;
+      errorReason: Exclude<ResponseErrorReason, ResponseErrorReason.InvalidPayload>;
       message: string;
+    }
+  | {
+      error: true;
+      errorReason: ResponseErrorReason.InvalidPayload;
+      message: string;
+      issues: readonly unknown[];
     };
 
 export interface TimeoutScheduler<Timer> {
@@ -74,11 +80,20 @@ export class PendingRequests<Timer> {
     this.delete(response.requestId);
 
     if (!response.ok) {
-      pending.resolve({
-        error: true,
-        errorReason: response.error.code,
-        message: response.error.message,
-      });
+      pending.resolve(
+        response.error.code === ResponseErrorReason.InvalidPayload
+          ? {
+              error: true,
+              errorReason: response.error.code,
+              message: response.error.message,
+              issues: response.error.issues,
+            }
+          : {
+              error: true,
+              errorReason: response.error.code,
+              message: response.error.message,
+            },
+      );
       return true;
     }
 
@@ -88,6 +103,7 @@ export class PendingRequests<Timer> {
         error: true,
         errorReason: ResponseErrorReason.InvalidPayload,
         message: `Invalid response data for ${pending.requestType}`,
+        issues: parsed.issues,
       });
       return true;
     }
@@ -125,11 +141,19 @@ export function successResponse(requestId: string, data: unknown): ResponsePacke
   };
 }
 
-export function errorResponse(requestId: string, code: ResponseErrorReason, message: string): ResponsePacket {
+export function errorResponse(
+  requestId: string,
+  code: ResponseErrorReason,
+  message: string,
+  issues: readonly unknown[] = [],
+): ResponsePacket {
   return {
     type: RESPONSE_PACKET_TYPE,
     requestId,
     ok: false,
-    error: { code, message },
+    error:
+      code === ResponseErrorReason.InvalidPayload
+        ? { code, message, issues: [...issues] }
+        : { code, message },
   };
 }
