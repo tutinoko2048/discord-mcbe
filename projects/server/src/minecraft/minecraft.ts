@@ -160,7 +160,7 @@ export class MinecraftHandler {
         const world = this.getWorldBySession(session);
         if (!world) throw new Error(`World not found: ${session.id}`);
         void this.app.bot
-          .sendMessage({ content: packet.data.message })
+          .sendApiMessage(packet.data.message, packet.data.source)
           .catch((error) => this.logger.error(`Failed to send IPC message from ${world.name}:`, error));
         return null;
       }

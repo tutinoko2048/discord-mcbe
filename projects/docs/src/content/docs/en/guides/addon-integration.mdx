@@ -57,15 +57,42 @@ export function getDiscordMcbeStatus() {
 
 ## Send a message to Discord
 
-Send a string to `dmc:send_message` to send it to Discord.
+Send a JSON string containing the source and a message in the [Discord Create Message API](https://docs.discord.com/developers/resources/message#create-message) format to `dmc:send_message` to send it to Discord.
+
+<Tabs syncKey="code">
+<TabItem value="ts" label="TypeScript">
 
 ```ts
 import { IPC, PROTO } from 'mcbe-ipc';
 
-IPC.send('dmc:send_message', PROTO.String, 'The event has started');
+function sendDiscordMessage(source: string, message: Record<string, unknown>) {
+  IPC.send('dmc:send_message', PROTO.String, JSON.stringify({ source, message }));
+}
+
+sendDiscordMessage('example-addon', {
+  content: 'This message was sent from another add-on',
+});
 ```
 
-Empty messages and messages longer than 2,000 characters are ignored.
+</TabItem>
+<TabItem value="js" label="JavaScript">
+
+```js
+import { IPC, PROTO } from 'mcbe-ipc';
+
+function sendDiscordMessage(source, message) {
+  IPC.send('dmc:send_message', PROTO.String, JSON.stringify({ source, message }));
+}
+
+sendDiscordMessage('example-addon', {
+  content: 'This message was sent from another add-on',
+});
+```
+
+</TabItem>
+</Tabs>
+
+Set `source` to the name of the sending addon. In `message`, you can use Create Message API fields that can be represented as JSON, such as `embeds`. Transferring attachment data is not supported.
 
 ## Listen for connection events
 

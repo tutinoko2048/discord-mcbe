@@ -57,15 +57,42 @@ export function getDiscordMcbeStatus() {
 
 ## Discordへメッセージを送る
 
-`dmc:send_message`へ文字列を送ると、Discordへメッセージが送信されます。
+`dmc:send_message`へ送信元と[Discord Create Message API](https://docs.discord.com/developers/resources/message#create-message)形式のmessageを含むobjectをJSON文字列として送ると、Discordへメッセージが送信されます。
+
+<Tabs syncKey="code">
+<TabItem value="ts" label="TypeScript">
 
 ```ts
 import { IPC, PROTO } from 'mcbe-ipc';
 
-IPC.send('dmc:send_message', PROTO.String, 'イベントが開始しました');
+function sendDiscordMessage(source: string, message: Record<string, unknown>) {
+  IPC.send('dmc:send_message', PROTO.String, JSON.stringify({ source, message }));
+}
+
+sendDiscordMessage('example-addon', {
+  content: 'このメッセージは別のアドオンから送信しています',
+});
 ```
 
-なお、空のメッセージや2000文字を超えるメッセージは無視されます。
+</TabItem>
+<TabItem value="js" label="JavaScript">
+
+```js
+import { IPC, PROTO } from 'mcbe-ipc';
+
+function sendDiscordMessage(source, message) {
+  IPC.send('dmc:send_message', PROTO.String, JSON.stringify({ source, message }));
+}
+
+sendDiscordMessage('example-addon', {
+  content: 'このメッセージは別のアドオンから送信しています',
+});
+```
+
+</TabItem>
+</Tabs>
+
+`source`には送信元のアドオン名を指定します。`message`では`embeds`など、JSONで表現できるCreate Message APIのフィールドも利用できます。添付ファイル本体の転送には対応していません。
 
 ## 接続イベントを受け取る
 

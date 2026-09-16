@@ -103,6 +103,7 @@ export class DiscordBot<READY extends boolean = false> {
       this.client as Client<true>,
       channel,
       payload.body as RESTPostAPIChannelMessageJSONBody,
+      'discord-mcbe',
     );
 
     if (!signal.emit()) return;
@@ -112,10 +113,10 @@ export class DiscordBot<READY extends boolean = false> {
     await signal.channel.send(payload);
   }
 
-  async sendApiMessage(options: RESTPostAPIChannelMessageJSONBody) {
+  async sendApiMessage(options: RESTPostAPIChannelMessageJSONBody, source: string) {
     const channel = this.getMainChannel();
 
-    const signal = new DiscordSendEvent(this.app, this.client as Client<true>, channel, options);
+    const signal = new DiscordSendEvent(this.app, this.client as Client<true>, channel, options, source);
     if (!signal.emit()) return;
 
     await this.client.rest.post(Routes.channelMessages(signal.channel.id), {

@@ -9,6 +9,7 @@ export class DiscordSendEvent extends DiscordEvent {
   public static readonly identifier = 'discordSend';
 
   public channel: TextChannel;
+  public readonly source: string;
   public message: RESTPostAPIChannelMessageJSONBody;
 
   constructor(
@@ -16,9 +17,11 @@ export class DiscordSendEvent extends DiscordEvent {
     client: Client<true>,
     channel: TextChannel,
     message: RESTPostAPIChannelMessageJSONBody,
+    source: string,
   ) {
     super(app, client);
     this.channel = channel;
     this.message = message;
+    this.source = source;
   }
 }

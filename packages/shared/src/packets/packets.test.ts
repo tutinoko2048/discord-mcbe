@@ -26,7 +26,17 @@ describe('protocol v2 packet validation', () => {
     expect(
       safeParseServerBoundPacket({
         type: ActionId.DiscordSend,
-        data: { message: 'Server event started' },
+        data: { source: 'example-addon', message: { content: 'Server event started' } },
+      }).success,
+    ).toBe(true);
+
+    expect(
+      safeParseServerBoundPacket({
+        type: ActionId.DiscordSend,
+        data: {
+          source: 'example-addon',
+          message: { embeds: [{ title: 'Server event' }], unknown_field: true },
+        },
       }).success,
     ).toBe(true);
 
@@ -99,16 +109,19 @@ describe('protocol v2 packet validation', () => {
   });
 
   test('rejects invalid Discord messages', () => {
+    for (const message of ['Server event started', null, []]) {
+      expect(
+        safeParseServerBoundPacket({
+          type: ActionId.DiscordSend,
+          data: { source: 'example-addon', message },
+        }).success,
+      ).toBe(false);
+    }
+
     expect(
       safeParseServerBoundPacket({
         type: ActionId.DiscordSend,
-        data: { message: '' },
-      }).success,
-    ).toBe(false);
-    expect(
-      safeParseServerBoundPacket({
-        type: ActionId.DiscordSend,
-        data: { message: 'a'.repeat(2_001) },
+        data: { source: '', message: { content: 'Server event started' } },
       }).success,
     ).toBe(false);
   });
