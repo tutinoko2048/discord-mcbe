@@ -206,7 +206,7 @@ export class SocketSession implements ISession {
       if (parsed.success) {
         packets.push(parsed.output);
       } else {
-        this.logger.error('Invalid packet in query response');
+        this.logger.error('Invalid packet in query response', parsed.issues);
         if (getPacketType(input) === RESPONSE_PACKET_TYPE) continue;
         const requestId = getRequestId(input);
         if (requestId) {
