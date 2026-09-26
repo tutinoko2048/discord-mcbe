@@ -35,6 +35,7 @@ To change one specific message, add its replacement to `translation_overrides` a
 - Edit only the `translation_overrides` section of your existing `config.json`; do not delete the rest of the configuration.
 - Use keys shown in the table below. A misspelled or unknown key is rejected by configuration validation.
 - Preserve placeholders such as `%0`; they are where values such as player names and message text are inserted.
+- Set the entire value to `"$key"` to reuse another translation in the same locale (for example, `"command.help.silent.description": "$common.silent.description"`). If the target is absent in that locale, `en-US` is used. Missing targets and cycles cause an error.
 - Minecraft messages can use color codes such as `§a`. Discord messages are interpreted as Discord Markdown, so format characters matter.
 - Restart discord-mcbe after changing the configuration.
 
@@ -64,6 +65,7 @@ At startup, discord-mcbe merges the regular and `.generated.json` files for the 
 `config.translation_overrides` can override keys that exist in the baseline locale (`en-US`). Extra keys found only in a locale file are not valid override targets. `Inherited from` is shown only when the selected language has no value and the value is supplied by the baseline locale.
 
 Values can contain `%0`, `%1`, and other placeholders. They are replaced by arguments passed from the code in order.
+References written as `$key` retain the target's placeholders.
 
 ```text
 Key: minecraft.message

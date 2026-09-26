@@ -1,5 +1,6 @@
 ---
 import { getLangFromUrl, useTranslations } from '../i18n/utils';
+import { resolveTranslation } from '../../../server/src/util/translation-reference';
 
 interface Props {
   defaultLocale: string;
@@ -56,11 +57,11 @@ function getInheritedFrom(locale: string, key: string): string {
           </thead>
           <tbody>
             {keys.map((key) => {
-              const value = localeMaps[locale.id][key];
+              const value = resolveTranslation(key, localeMaps[locale.id], localeMaps[FALLBACK_LOCALE]);
               return (
                 <tr>
                   <td><code>{key}</code></td>
-                  <td>{value ?? localeMaps[FALLBACK_LOCALE][key] ?? t('translation.missing')}</td>
+                  <td>{value ?? t('translation.missing')}</td>
                   <td>{getInheritedFrom(locale.id, key)}</td>
                 </tr>
               );

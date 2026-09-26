@@ -242,6 +242,7 @@
           "console.reply.withAttachments",
           "console.command",
           "console.chat",
+          "common.silent.description",
           "common.duration",
           "common.noOnlineWorlds",
           "common.worldNotFound",

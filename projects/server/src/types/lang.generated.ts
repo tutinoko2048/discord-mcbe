@@ -30,6 +30,7 @@ export type LangArgs = {
   'command.ping.description': [];
   'common.duration': [Arg, Arg, Arg];
   'common.noOnlineWorlds': [];
+  'common.silent.description': [];
   'common.worldNotFound': [Arg];
   'console.chat': [Arg, Arg, Arg];
   'console.command': [Arg, Arg, Arg];

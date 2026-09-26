@@ -13,7 +13,9 @@
   "command.error.nopermission": "Vous n'avez pas la permission d'utiliser cette commande",
   "command.help.description": "Afficher les commandes disponibles",
   "command.help.commands": "Liste des commandes :",
-  "command.help.silent.description": "Afficher le résultat uniquement pour vous",
+  "command.help.silent.description": "$common.silent.description",
+  "command.list.silent.description": "$common.silent.description",
+  "command.command.silent.description": "$common.silent.description",
   "command.command.sending": "Envoi de la commande…",
   "command.panel.create.success": "Le salon d'affichage du panneau est désormais le suivant : %0",
   "command.panel.show.description": "Voir le panneau",
@@ -28,6 +30,7 @@
   "console.message.withAttachments": "[Discord | %0] %1: %2",
   "console.command": "[Discord | %0] %1: %2",
   "console.chat": "[%0] <%1> %2",
+  "common.silent.description": "Afficher le résultat uniquement pour vous",
   "common.duration": "%0h %1m %2s",
   "common.noOnlineWorlds": "Le monde est hors ligne"
 }

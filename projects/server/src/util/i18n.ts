@@ -1,5 +1,6 @@
 import { Locale, type LocalizationMap } from 'discord.js';
 import { yellow } from 'colorette';
+import { resolveTranslation } from './translation-reference';
 
 import type { Arg, LangArgs, LangKey } from '../types/lang.generated';
 
@@ -7,7 +8,7 @@ import enUS from '../assets/locales/en-US.json' with { type: 'json' };
 import enUSGenerated from '../assets/locales/en-US.generated.json' with { type: 'json' };
 import ja from '../assets/locales/ja.json' with { type: 'json' };
 import jaGenerated from '../assets/locales/ja.generated.json' with { type: 'json' };
-import fr from '../assets/locales/fr.generated.json' with { type: 'json' };
+import fr from '../assets/locales/fr.json' with { type: 'json' };
 import frGenerated from '../assets/locales/fr.generated.json' with { type: 'json' };
 
 const templateMap = new Map<Locale, Record<string, string>>([
@@ -33,9 +34,7 @@ export function initialize(lang: string, overrides: Record<string, string>) {
 
   // Apply translation overrides
   for (const [key, value] of Object.entries(overrides)) {
-    if (templates) {
-      templates[key] = value;
-    }
+    templates[key] = value;
   }
 }
 
@@ -47,7 +46,7 @@ function translate<K extends LangKey>(key: K, ...values: LangArgs[K]): string {
     throw new Error('Language templates are not initialized. Call initialize() first.');
   }
 
-  const value = templates[key] ?? fallbackTemplates[key];
+  const value = resolveTranslation(key, templates, fallbackTemplates);
   if (!value) return key;
 
   return replaceTemplates(value, values);
@@ -64,9 +63,8 @@ function getTranslationMap(key: LangKey): LocalizationMap {
   const result: LocalizationMap = {};
 
   for (const [locale, langMap] of templateMap) {
-    const value = langMap[key];
-    if (value) {
-      result[locale] = value;
+    if (langMap[key] !== undefined) {
+      result[locale] = resolveTranslation(key, langMap, fallbackTemplates)!;
     }
   }
 
@@ -80,7 +78,7 @@ export function translateMinecraftKey(key: string, fallback: string): string {
     throw new Error('Language templates are not initialized. Call initialize() first.');
   }
 
-  return templates[key] ?? fallbackTemplates[key] ?? fallback;
+  return resolveTranslation(key, templates, fallbackTemplates) ?? fallback;
 }
 
 function replaceTemplates(text: string, values: Arg[]): string {

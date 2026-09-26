@@ -1,5 +1,6 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { resolveTranslation } from '../src/util/translation-reference';
 
 const langDir = path.resolve(__dirname, '../src/assets/locales');
 const targetPath = path.resolve(__dirname, '../src/types/lang.generated.ts');
@@ -33,7 +34,7 @@ const locales = fs
 const argCountByKey = new Map<string, number>();
 
 for (const [key, value] of langMap) {
-  const count = countArgs(value as string);
+  const count = countArgs(resolveTranslation(key, langJson, langJson) ?? value);
   const prev = argCountByKey.get(key) ?? 0;
   argCountByKey.set(key, Math.max(prev, count));
 }
