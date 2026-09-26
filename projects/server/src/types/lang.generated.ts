@@ -16,6 +16,8 @@ export type LangArgs = {
   'command.error.nopermission': [];
   'command.error.noworlds': [];
   'command.help.commands': [];
+  'command.help.description': [];
+  'command.help.silent.description': [];
   'command.list.description': [];
   'command.list.players': [];
   'command.list.silent.description': [];
