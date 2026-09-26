@@ -1,134 +1,53 @@
-> [README_en.md](README_en.md) (English)is here
+English | [日本語](./README_ja.md)
 
 # discord-mcbe
-  
-<img src="https://img.shields.io/github/downloads/tutinoko2048/discord-mcbe/total?style=for-the-badge"> <img src="https://img.shields.io/github/downloads/tutinoko2048/discord-mcbe/latest/total?style=for-the-badge">  
-<a href="https://github.com/tutinoko2048/discord-mcbe/releases">
-  <img src="https://img.shields.io/github/v/release/tutinoko2048/discord-mcbe?display_name=tag&style=for-the-badge">
-</a>
-  
-MinecraftBEでdiscordとチャットを繋ぐことができるDiscord Botです。バニラ環境で動きます。  
-https://youtu.be/BEv4oozeQKU  
-  
-<img src="docs/minecraft.jpeg" width="100%" alt="minecraft"></br>
-<img src="docs/discord.jpeg" width="100%" alt="discord"></br>
-  
-[Discord サポートサーバー](https://discord.gg/XGR8FcCeFc)
 
-## 動作環境
-- 基本的にはWindowsのPCでの動作を想定しています
-- MinecraftBEのシングル/マルチワールド用です。BDSなどのサーバーでは使用できません
-- 双方向のチャットするにはワールドのホスト(鯖主)が繋げる必要があります
+[![App version](https://img.shields.io/github/v/release/tutinoko2048/discord-mcbe?display_name=tag&style=for-the-badge&label=app&filter=!launcher@*)](https://github.com/tutinoko2048/discord-mcbe/releases) [![Launcher version](https://img.shields.io/github/v/release/tutinoko2048/discord-mcbe?display_name=tag&style=for-the-badge&label=launcher&filter=launcher@*)](https://github.com/tutinoko2048/discord-mcbe/releases)
+[![GitHub downloads](https://img.shields.io/github/downloads/tutinoko2048/discord-mcbe/total?style=for-the-badge&label=total%20downloads)](https://github.com/tutinoko2048/discord-mcbe/releases) ![Discord](https://img.shields.io/discord/553107939410444319?style=for-the-badge&color=5865F2)
 
-## 使い方
-### Nodejsをインストール
-Nodejs v18以上をインストールしてください  
-https://nodejs.org/ja/  
+A feature-rich, configurable Discord bridge for Minecraft Bedrock.
 
-### botを作る
-discordのbotが必要なので用意してください。  
-(botアカウントの作り方はここでは省略します)  
+## Features
 
-### Configを編集
-[ここから最新のものをダウンロード](https://github.com/tutinoko2048/discord-mcbe/releases)して展開してください。gitからcloneしても構いません。  
-その中の`config.jsonc`ファイルを編集して必要な値を入力してください  
-[Configの内容はこちらから](#config)
+- Relay Minecraft chat to Discord and messages from a Discord channel to every connected world.
+- Supports both regular worlds and Bedrock Dedicated Server (BDS), with multiple worlds connected at the same time.
+- View player lists, execute Minecraft commands, and check ping from Discord.
+- Customize message filters and displayed text, or freely extend functionality with custom scripts written in JavaScript or TypeScript.
+- The JavaScript runtime is bundled, so setup is relatively easy without downloading additional software.
 
-### 動かす
-> [!IMPORTANT]
-> マイクラの設定で `暗号化されたWebsocketの要求` がオフになっていることを確認してください  
-  
-> [!IMPORTANT]
-> PCで動かす場合はループバック接続を許可してください [詳しくはこちら](#ループバック接続の許可)  
+<table>
+  <tr>
+    <td><img src="projects/docs/src/assets/minecraft_en.png" alt="Minecraft chat relay"></td>
+    <td><img src="projects/docs/src/assets/discord_en.png" alt="Discord chat relay"></td>
+  </tr>
+</table>
 
-`start.cmd`を実行してサーバーを起動させましょう。  
-次にマイクラ側で  
-```/connect [ローカルIP]:[ポート]```  
-```/connect localhost:[ポート]``` (同じ端末の場合)  
-のコマンドを実行します  
-これで接続することができます
+## Installation path
 
-## コマンド一覧
-- /help  
-ボットのヘルプを表示します
+1. [Set up the discord-mcbe server](https://discord-mcbe.retomc.dev/en/installation/setup-bot/)
+2. [Install the add-on in a regular world or BDS](https://discord-mcbe.retomc.dev/en/installation/setup-world/)
+3. Start the world and connect it
 
-- /ping  
-ボットとワールドの応答速度を表示します
+For details, see the [documentation](https://discord-mcbe.retomc.dev/en/).
 
-- /list  
-プレイヤーリストを表示します
+## Downloads
 
-- /command <コマンド> [ワールド]  
-ワールドにコマンドを送信します。従来通りメッセージから送信することも可能です。  
-[詳しくはこちら](#コマンドの実行)
+Use the [launcher](https://discord-mcbe.retomc.dev/en/installation/setup-bot/) to install and update the discord-mcbe server.
 
-- /tell <送り先> <メッセージ>  
-tellでメッセージをプレイヤーに送信します。周りからは見られません
+Installing an [add-on](https://discord-mcbe.retomc.dev/en/installation/setup-world/) in the world is required to connect. Install the version compatible with the server (bot).
 
-- /panel get  
-ステータスパネルのあるチャンネルを表示します  
-[詳しくはこちら](#ステータスパネル)
+Continue with the [installation guide](https://discord-mcbe.retomc.dev/en/installation/setup-bot/) for Discord bot creation, extraction, and configuration.
 
-- /panel set  
-ステータスパネルを表示するチャンネルを設定します
+## Guides
 
-- /panel delete  
-ステータスパネルを削除します
+- [Features and commands](https://discord-mcbe.retomc.dev/en/guides/commands/)
+- [Configuration](https://discord-mcbe.retomc.dev/en/guides/configuration/)
+- [Translations and displayed text customization](https://discord-mcbe.retomc.dev/en/guides/translation-overrides/)
+- [Custom scripts](https://discord-mcbe.retomc.dev/en/guides/custom-scripts/)
+- [Troubleshooting](https://discord-mcbe.retomc.dev/en/guides/troubleshooting/)
+- [Development guide](https://discord-mcbe.retomc.dev/en/development/)
+- [API reference](https://discord-mcbe.retomc.dev/reference/)
 
-## ループバック接続の許可
-同じPC内で通信をするには設定が必要になる場合があります。  
-こちらのコマンドをコマンドプロンプトで**管理者権限**で実行してください  
-`CheckNetIsolation LoopbackExempt -a -n="Microsoft.MinecraftUWP_8wekyb3d8bbwe"`  
-または `loopback.cmd` を実行してください(同じコマンドが入っています)
+## License
 
-## Config
-(必須)  
-- `discord_token`: botのトークン  
-- `guild_id`: このbotを使うサーバー(Guild)のID  
-- `channel_id`: メッセージを送信するチャンネルのID  
-
-(任意)  
-- `port`: websocket接続に使用するポート
-- `language`: 使用する言語 langフォルダのファイル名
-- `timezone`: 時刻表示に使うタイムゾーン
-- `command_role_id`: マイクラへのコマンドの送信を許可するロールのID  
-文字の配列で指定します (EX: `[ "ロールID1", "ロールID2",... ]`)
-- `ready_message`: サーバー起動時に通知メッセージを送信
-- `delete_color_prefix`: discord送信時に§とその後の文字を削除するか
-- `panel_update_interval`: ステータスパネルの更新間隔(ミリ秒単位)
-- `scripts_entry`: 実行するスクリプトのエントリポイント
-- `command_version`: マイクラに送るコマンドのバージョン
-- `debug`: デバッグログを有効化
-- `styles_tnac`: TN-AntiCheatからのメッセージを強調する
-- `discord_message_filters`: Discordメッセージに適用するフィルター ([詳しくはこちらを参照してください](https://github.com/tutinoko2048/discord-mcbe/wiki/Discord%E3%83%A1%E3%83%83%E3%82%BB%E3%83%BC%E3%82%B8%E3%81%AE%E3%83%95%E3%82%A3%E3%83%AB%E3%82%BF%E3%83%AA%E3%83%B3%E3%82%B0%E6%A9%9F%E8%83%BD%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6))
-
-## その他の機能
-### コマンドの実行
-`/command <送信するコマンド>` または `/送信するコマンド` でワールドにコマンドを送ることができます。  
-専用ロールを作成し、configの`command_role_id`にロールIDを入力して権限を取得してください  
-<img src="docs/command.jpeg" width="90%" alt="command">
-
-### ステータスパネル
-pingや人数の情報をリアルタイムで更新するパネルです  
-`/panel set` で実行したチャンネルにパネルを設置します  
-<img src="docs/panel.jpeg" width="90%" alt="panel">
-
-### コンソール
-コンソールからコマンドを送信することができます。文字の先頭に.を付けるとコードをevalで実行します
-
-### カスタムスクリプト
-websocketサーバーやdiscordのbotの機能をカスタマイズできます  
-サーバーは`server` botは`client`にインスタンスが入っています。ws鯖については[SocketBEのページ](https://github.com/tutinoko2048/SocketBE)をご覧ください  
-configのscripts_entryで指定したファイルが自動で読み込まれます
-
-### TNACとの連携
-[TN-AntiCheat](https://github.com/tutinoko2048/TNAntiCheat)からのメッセージを強調表示できます(configで設定)  
-TNAC側のconfig `others/sendws` もオンにしてください
-
-## Contributing & Translation
-改善点、問題点などのPull RequestやIssueは大歓迎です！  
-このBotは複数言語に対応しています。翻訳ファイル(`lang/*.lang`, `src/interactions/_localizations.json`)を編集することで他の言語に対応させることができます。  
-※後者のlocalizationの言語のキーは[DiscordAPIのもの](https://discord.com/developers/docs/reference#locales)に従ってください
-
-## ライセンス
-MIT Licenseだよ。
+[MIT License](./LICENSE)

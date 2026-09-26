@@ -1,0 +1,13 @@
+{
+  "name": "@discord-mcbe/internal-config",
+  "version": "0.1.0",
+  "private": true,
+  "exports": {
+    "./typescript": {
+      "default": "./typescript/tsconfig.base.json"
+    },
+    "./vite": {
+      "default": "./vite/vite.config.base.mts"
+    }
+  }
+}

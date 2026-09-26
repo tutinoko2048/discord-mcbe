@@ -1,0 +1,77 @@
+---
+title: Minecraftワールドのセットアップ
+description: ローカルワールドまたはBedrock Dedicated Serverへdiscord-mcbeを導入する手順を説明します。
+---
+
+import { Aside, Icon, Steps } from '@astrojs/starlight/components';
+import AddonDownloads from '../../../components/AddonDownloads.astro';
+import { BDS_SCRIPT_MODULE_UUID } from '../../../lib/bds-config';
+
+discord-mcbeには利用する環境に応じた2種類のアドオンが用意されています。どちらもワールドにビヘイビアーパックとして導入する必要があります。
+
+<AddonDownloads locale="ja" />
+
+## <Icon name="laptop" />通常の(ローカル)ワールド
+
+<Steps>
+
+1. 上の「通常のワールド」からmcpackをダウンロードします。
+
+2. mcpackをMinecraftで開いてインポートし、対象ワールドの **ビヘイビアーパック** で`discord-mcbe local client`を有効にします。
+
+3. ベータ版のScriptAPIを使うため、`ワールド設定 > 実験的機能`から **ベータ API** を有効にします。
+
+4. discord-mcbeサーバーを起動します。ターミナルに次のような案内が表示されます。
+
+   ```ansi
+   [Local] SocketBridgeサーバーはポート 3063 で待機しています
+   [Local] Minecraftで次のコマンドを入力して接続してください:
+     Local:   /connect localhost:3063
+     Network: /connect 192.168.11.7:3063   Wi-Fi
+   ```
+
+   ワールドをホストしているプレイヤーは表示されたコマンドをMinecraftで実行します。
+   同じ端末から接続する場合は`Local`、別の端末から接続する場合は`Network`を選びます。
+
+5. MinecraftとDiscordの両方に接続メッセージが表示されれば完了です。
+
+</Steps>
+
+## <Icon name="server" />Bedrock Dedicated Server
+
+<Steps>
+
+1. 上の「Bedrock Dedicated Server」からzipをダウンロードします。
+
+2. zip内のビヘイビアーパックをBDSの`development_behavior_packs`またはワールドフォルダ内の`behavior_packs`へ配置し、`world_behavior_packs.json`を編集してワールドのビヘイビアーパックとして有効化します。  
+   別のMinecraftクライアントでmcpackをワールドへ適用してからワールドをBDSへ移す方法でも構いません。
+
+3. ベータ版のScriptAPIを使うため、Beta APIを有効にしておいてください。直接`level.dat`を編集するか、ワールドを一度Minecraftで開いてからBDSへ移す方法でも構いません。どちらも面倒な方には、[こちらのツール](https://github.com/tutinoko2048/bds-utils)をおすすめしておきます。
+
+4. BDSの`config/default/permissions.json`の`allowed_modules`リストに`@minecraft/server-net`モジュールが追加されていることを確認します。ない場合は追加してください。
+
+5. discord-mcbeサーバーを先に起動し、次にBDSを起動します。両方が同じ端末にあり、デフォルトポートを使用していれば、アドオンがWebSocketで`localhost:23191`へ自動接続します。`/connect`は不要です。
+
+6. discord-mcbeのログに`[BDS] Bridgeサーバーはポート 23191 で待機しています`とワールドの接続ログが表示されることを確認します。
+
+</Steps>
+
+<Aside type="note" title="別の端末で動かす場合">
+  BDSのconfigで、`BRIDGE_URL`をdiscord-mcbeのWebSocket
+  URLへ変更します。ポートはbot側`.env`の`BRIDGE_PORT`と同じ値にしてください。 設定方法について詳しくは
+  [接続先を変更する](/guides/configuration/#接続先を変更する) のBDSタブを参照してください。
+</Aside>
+
+## <Icon name="pencil" />ワールド名を変更する
+
+Discordコマンドなどでワールドを指定する場合や、複数のワールドに接続している場合は、各ワールドを識別するためにワールド名が使用されます。
+
+特に、複数ワールドを同時に接続する場合は、`lobby`や`survival`のような重複しない名前を設定してください。
+
+デフォルトのワールド名は `World` / `Server` です。ワールド内から以下のコマンドを実行することで変更できます。
+
+```text
+/dmc:setname
+```
+
+ワールド名を変更したらbotを再起動するか、`/dmc:disconnect`で切断してから再接続してください。

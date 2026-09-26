@@ -1,0 +1,76 @@
+---
+title: Set up a Minecraft world
+description: Learn how to install discord-mcbe in a regular world or Bedrock Dedicated Server.
+---
+
+import { Aside, Icon, Steps } from '@astrojs/starlight/components';
+import AddonDownloads from '../../../../components/AddonDownloads.astro';
+import { BDS_SCRIPT_MODULE_UUID } from '../../../../lib/bds-config';
+
+discord-mcbe provides two add-ons for different environments. Both must be installed as behavior packs in the world.
+
+<AddonDownloads locale="en" />
+
+## <Icon name="laptop" />Regular (local) world
+
+<Steps>
+
+1. Download the mcpack under **Regular hosted world** above.
+
+2. Open the mcpack with Minecraft, then activate `discord-mcbe local client` under the world's **Behavior Packs**.
+
+3. The pack uses beta Script APIs. Enable **Beta APIs** under `World Settings > Experiments`.
+
+4. Start the discord-mcbe server. The terminal prints instructions similar to:
+
+   ```ansi
+   [Local] SocketBridge server is listening on port: 3063
+   [Local] Enter one of the following commands in Minecraft to connect:
+     Local:   /connect localhost:3063
+     Network: /connect 192.168.11.7:3063   Wi-Fi
+   ```
+
+   As the player hosting the world, run the displayed command in Minecraft.
+   Choose `Local` when connecting from the same device, or `Network` when connecting from another device.
+
+5. The setup is complete when both Minecraft and Discord display the world connection message.
+
+</Steps>
+
+## <Icon name="server" />Bedrock Dedicated Server
+
+<Steps>
+
+1. Download the zip under **Bedrock Dedicated Server** above.
+
+2. Extract the behavior pack into the BDS `development_behavior_packs` directory or the world's `behavior_packs` directory. Edit `world_behavior_packs.json` to enable it for the world. You can instead apply the mcpack to a world in a Minecraft client, then move that world to BDS.
+
+3. Enable Beta APIs because the pack uses beta Script APIs. You can edit `level.dat` directly or open the world once in Minecraft before moving it to BDS. If you prefer a tool, see [bds-utils](https://github.com/tutinoko2048/bds-utils).
+
+4. Confirm that `@minecraft/server-net` is included in the `allowed_modules` list in BDS's `config/default/permissions.json`. If it is not listed, add it.
+
+5. Start discord-mcbe first, then start BDS. When both run on the same machine with the defaults, the add-on connects to `localhost:23191` over WebSocket automatically. Do not run `/connect`.
+
+6. Confirm that the discord-mcbe log contains `[BDS] Bridge server is listening on port: 23191` followed by the world connection message.
+
+</Steps>
+
+<Aside type="note" title="Running on separate machines">
+  In the BDS configuration, set `BRIDGE_URL` to discord-mcbe's WebSocket URL. Use the same port as
+  `BRIDGE_PORT` in the bot's `.env`. See the BDS tab in [Change connection
+  settings](/en/guides/configuration/#change-connection-settings) for details.
+</Aside>
+
+## <Icon name="pencil" />Change the world name
+
+When selecting a world with Discord commands or connecting multiple worlds, discord-mcbe uses the world name to identify each world.
+
+When connecting multiple worlds at once, use unique names such as `lobby` or `survival`.
+
+The default world names are `World` / `Server`. Run the following command in the world to change its name.
+
+```text
+/dmc:setname
+```
+
+After changing the world name, restart the bot or disconnect with `/dmc:disconnect` and reconnect.

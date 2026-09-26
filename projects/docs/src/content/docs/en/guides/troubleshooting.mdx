@@ -1,0 +1,105 @@
+---
+title: Troubleshooting
+description: Diagnose bot, Discord command, regular-world, and BDS connection problems.
+---
+
+import { Aside, Icon } from '@astrojs/starlight/components';
+import { BDS_SCRIPT_MODULE_UUID } from '../../../../lib/bds-config';
+import { DISCORD_URL } from '../../../../variables';
+
+First confirm that the server and add-on came from the same release. If you changed `.env` or `config.json`, confirm that you restarted discord-mcbe afterward.
+
+## The bot does not start
+
+### When `Invalid environment variables` is shown
+
+- Confirm that `.env` is next to `start.bat` or `start.sh`.
+- Check that `DISCORD_TOKEN`, `GUILD_ID`, and `CHANNEL_ID` are not empty.
+- Use a numeric ID of roughly 18–20 digits, not a channel name or URL.
+- Ports must be positive integers.
+
+### When `error: An invalid token was provided` is shown
+
+- Check that the bot token configured in `DISCORD_TOKEN` is correct.
+- If this error appears despite setting a token, set a new token from the [Discord Developer Portal](https://discord.com/developers/applications).
+
+### When `error: Used disallowed intents` is shown
+
+Enable `Bot > Privileged Gateway Intents > Message Content Intent` in the [Discord Developer Portal](https://discord.com/developers/applications), then restart.
+
+### When `Error: Failed to find the guild` is shown
+
+- Check that the server ID configured in `GUILD_ID` is correct.
+- Check that the bot has joined that server.
+
+### When `Error: Failed to find the channel` is shown
+
+- Check that the channel ID configured in `CHANNEL_ID` is correct.
+- Check that the bot has permission to view that channel.
+
+### When `Error: The channel (ID: 0000000000) is not a text channel` is shown
+
+Confirm that the channel configured in `CHANNEL_ID` is a text channel. Voice channels and threads are not supported.
+
+### When `Invalid config.json` is shown
+
+Follow the key path in the error. Common causes are a trailing JSON comma, a missing quote, or `0` where a positive integer is required. If necessary, move the current file aside, let discord-mcbe generate defaults, then reapply only the settings you need.
+
+## Slash commands are missing
+
+- Restart discord-mcbe and check for errors after `Logged in as ...`.
+- Reload the Discord client. (Changes may take some time to appear.)
+
+`/command` and `/panel` are visible only to administrators. If `/ping` and `/list` are available, registration worked.
+
+## Chat relay does not work
+
+- Post in the exact channel selected by `CHANNEL_ID`.
+- Grant View Channels, Send Messages, Embed Links, Attach Files, and Read Message History.
+- Check whether a `cancel` rule in `bot.discord_message_filter` matches the message.
+- Use `/ping` to confirm that a world is connected.
+
+Messages authored by bots are intentionally ignored to prevent loops.
+
+## Minecraft does not connect
+
+### <Icon name="laptop" />For a regular world
+
+- Use the `local` pack, not the `bds` pack.
+- Activate `discord-mcbe-local-*.mcpack` as a behavior pack.
+- Start the world and discord-mcbe, then run `/connect localhost:3063` as the host.
+- From another device, replace `localhost` with the IP address of the machine running discord-mcbe.
+
+<Aside type="note" title="Encryption setting">
+  v4 enables local connection encryption by default. The old instruction to disable Minecraft's “Require
+  Encrypted Websockets” setting is normally not needed. Use `bridge.disable_encryption` only when
+  investigating compatibility.
+</Aside>
+
+#### When `Required addon not installed` is shown
+
+The WebSocket is connected, but the add-on is not working correctly. Confirm that the pack and Beta APIs are enabled.
+
+### <Icon name="server" />For Bedrock Dedicated Server
+
+- Use the `bds` pack, not the `local` pack.
+- Confirm that the add-on is listed in a file such as `world_behavior_packs.json` and is enabled.
+- Enable Beta APIs too.
+- Confirm that `@minecraft/server-net` is listed in `config/default/permissions.json`.
+- Confirm that the discord-mcbe bot is running before starting BDS.
+- The BDS add-on reads its connection settings from
+  <code>{`config/${BDS_SCRIPT_MODULE_UUID}/variables.json`}</code> in the BDS installation folder. Create or
+  edit this file and restart BDS.
+- Set `BRIDGE_URL` to the discord-mcbe WebSocket URL seen from BDS. Its port must match `BRIDGE_PORT` in the
+  server's `.env`.
+
+## If you still cannot solve the problem
+
+Ask in the <a href={DISCORD_URL} target="_blank" rel="noopener noreferrer">Discord community</a>. Including the following information will help:
+
+- Minecraft version
+- discord-mcbe version for both the bot and add-on
+- Environment:
+  - Regular world or BDS
+  - OS and version of the PC running the bot
+- For bugs: brief reproduction steps

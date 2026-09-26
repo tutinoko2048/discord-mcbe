@@ -1,0 +1,72 @@
+---
+title: discord-mcbe
+description: Minecraft統合版のための高機能Discord連携Bot
+head:
+  - tag: meta
+    attrs:
+      property: og:type
+      content: website
+template: splash
+hero:
+  tagline: Minecraft統合版のための高機能Discord連携Bot
+  image:
+    alt: ロゴ
+    file: ../../../../addon-bds/pack_icon.png
+  actions:
+    - text: 導入を始める
+      link: /installation/setup-bot/
+      icon: right-arrow
+    - text: GitHub
+      link: https://github.com/tutinoko2048/discord-mcbe
+      icon: external
+      variant: minimal
+---
+
+import { Aside, Card, CardGrid, Icon } from '@astrojs/starlight/components';
+import AddonDownloads from '../../components/AddonDownloads.astro';
+import LauncherDownloads from '../../components/LauncherDownloads.astro';
+
+<CardGrid stagger>
+  <Card title="双方向チャット" icon="comment-alt">
+    MinecraftのチャットをDiscordへ、Discordチャンネルのメッセージを接続中の全ワールドへ届けます。
+  </Card>
+  <Card title="複数ワールド対応" icon="server">
+    通常のワールドとBedrock Dedicated
+    Server（BDS）の両方に対応。複数のワールドを同時に接続することができます。
+  </Card>
+  <Card title="便利なコマンドやツール" icon="seti:powershell">
+    Discordからプレイヤー一覧、Minecraftコマンドの実行、応答速度を確認することができます。
+  </Card>
+  <Card title="拡張可能" icon="puzzle">
+    メッセージフィルターや表示テキストをカスタマイズできるほか、JavaScript/TypeScriptでカスタムスクリプトを書いて、自由に機能を拡張できます。
+  </Card>
+</CardGrid>
+
+<Aside type="note" title="v4正式版のドキュメント">
+  このドキュメントはdiscord-mcbe
+  **v4**以降を対象としています。v3以前のバージョンから移行する場合は、既存環境をバックアップし、[導入ガイド](/installation/setup-bot/)に従って別のフォルダーへセットアップしてください。
+</Aside>
+
+## <Icon name="list-format" />導入の流れ
+
+1. [discord-mcbeサーバーをセットアップする](/installation/setup-bot/)
+2. [ローカルワールドまたはBDSにアドオンを導入する](/installation/setup-world/)
+3. ワールドを起動して接続する
+
+セットアップで詰まった場合は、[トラブルシューティング](/guides/troubleshooting/)にログ別の確認項目をまとめています。
+
+## <Icon name="download" />ダウンロード
+
+### <Icon name="rocket" />ランチャー
+
+discord-mcbeサーバーのインストールとアップデートに使用します。
+
+<LauncherDownloads locale="ja" />
+
+### <Icon name="puzzle" />Minecraftアドオン
+
+接続するにはワールドへのアドオンの導入が必須です。インストールするサーバー(bot)と同じバージョンのものを導入してください。
+
+<AddonDownloads locale="ja" />
+
+Botの作成や展開後の設定を含む手順は、[導入ガイド](/installation/setup-bot/)を参照してください。

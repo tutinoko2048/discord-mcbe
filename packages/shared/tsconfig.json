@@ -1,0 +1,9 @@
+{
+  "extends": "@discord-mcbe/internal-config/typescript",
+  "include": ["src"],
+  "exclude": ["src/**/*.test.ts"],
+  "compilerOptions": {
+    "composite": true,
+    "noEmit": false
+  }
+}

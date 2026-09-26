@@ -1,0 +1,112 @@
+---
+title: Set up the bot and server
+description: Learn how to create a Discord bot and run the discord-mcbe server.
+---
+
+import { Aside, Icon, Steps } from '@astrojs/starlight/components';
+import LauncherDownloads from '../../../../components/LauncherDownloads.astro';
+
+<Aside type="note" title="This page targets discord-mcbe v4 and later">
+  When upgrading from v3 or earlier, back up the existing installation and set up discord-mcbe in a separate
+  directory using the steps below. The old `config.json` cannot be used with v4.
+</Aside>
+
+## <Icon name="list-format" />Requirements
+
+| Item      | Requirement                                      |
+| --------- | ------------------------------------------------ |
+| Discord   | Permission to add a bot                          |
+| Bot host  | Windows x64, Linux x64/arm64, or macOS x64/arm64 |
+| Minecraft | Bedrock Edition 1.26.40 or later                 |
+| Network   | Access to services such as Discord and GitHub    |
+
+The launcher includes its runtime. A normal installation does not require a separate Node.js or Bun installation.
+
+## <Icon name="comment-alt" />Create a Discord bot
+
+<Steps>
+
+1. Open the [Discord Developer Portal](https://discord.com/developers/applications), select **New Application**, and create an application.
+
+2. Open **Bot** in the sidebar, use **Reset Token** to issue a bot token, and keep it somewhere secure.
+
+   <Aside type="danger" title="Treat the token as a password">
+     Never paste the token into chat, screenshots, or a Git repository. If it is exposed, reset it in the
+     Developer Portal immediately.
+   </Aside>
+
+3. Under **Bot → Privileged Gateway Intents**, enable **Message Content Intent**. Without it, message content cannot be relayed from Discord to Minecraft.
+
+4. In the Guild Install settings under **Installation** (or **OAuth2 → URL Generator**), select the `bot` and `applications.commands` scopes and grant these bot permissions:
+   - View Channels
+   - Send Messages
+   - Embed Links
+   - Attach Files
+   - Read Message History
+
+   Bypass Slowmode is optional for a busy relay channel.
+
+5. Open the generated URL and add the bot to the Discord server you will use.
+
+</Steps>
+
+## <Icon name="approve-check-circle" />Copy the Discord IDs
+
+Enable **User Settings → Advanced → Developer Mode** in Discord. Right-click the target server and the text channel used for chat relay, then copy each ID.
+
+| Value        | Copy from                                |
+| ------------ | ---------------------------------------- |
+| `GUILD_ID`   | The Discord server that contains the bot |
+| `CHANNEL_ID` | The text channel used for Minecraft chat |
+
+Check the channel permission overrides as well. They must not deny the bot's access. If the bot cannot view the channel, it cannot send messages from Minecraft to Discord.
+
+## <Icon name="rocket" />Prepare the discord-mcbe server
+
+<LauncherDownloads locale="en" />
+
+<Steps>
+
+1. Extract the downloaded zip.
+
+2. Open the `.env` file included in the archive and insert the values you copied:
+
+   ```dotenv
+   DISCORD_TOKEN=your_bot_token
+   GUILD_ID=your_discord_server_id
+   CHANNEL_ID=your_relay_channel_id
+   # SOCKET_PORT=3063
+   # BRIDGE_PORT=23191
+   # DISCORD_WEBHOOK_URL=url
+   ```
+
+   Values do not need quotes (`""`). See [configuration](/en/guides/configuration/#environment-variables) for details about each value.
+
+3. Use the updater to install the discord-mcbe server.
+
+   **Windows (double-click)**
+
+   Double-click `updater.exe` and select **Stable**. Windows Defender SmartScreen may warn you when starting the exe, but it is safe to continue. After installation finishes, double-click `start.bat` to start the server.
+
+   You can instead run the following commands in PowerShell or Command Prompt.
+
+   ```powershell frame="none"
+   .\updater.exe stable
+   .\start.bat
+   ```
+
+   **Linux / macOS**
+
+   ```bash frame="none"
+   chmod +x updater start.sh
+   ./updater stable
+   ./start.sh
+   ```
+
+4. The first successful start creates `config.json`. This part is complete when the bot is online and the configured channel receives its startup message.
+
+</Steps>
+
+Next, [install the add-on in your Minecraft world](/en/installation/setup-world/).
+
+For future updates, see [Use the launcher](/en/guides/launcher/).

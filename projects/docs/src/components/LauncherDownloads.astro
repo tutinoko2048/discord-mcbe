@@ -1,0 +1,275 @@
+---
+import launcherPackage from '../../../launcher/package.json';
+import { formatFileSize, getReleaseAssets } from '../lib/github-releases';
+
+interface Props {
+  locale: 'en' | 'ja';
+}
+
+const { locale } = Astro.props;
+const version = String(launcherPackage.version);
+const repositoryUrl = 'https://github.com/tutinoko2048/discord-mcbe';
+const tag = `launcher@v${version}`;
+const releaseUrl = `${repositoryUrl}/releases/tag/${encodeURIComponent(tag)}`;
+const assetBaseUrl = `${repositoryUrl}/releases/download/${encodeURIComponent(tag)}`;
+const releaseAssets = await getReleaseAssets(tag);
+
+const assets = [
+  { target: 'windows-x64', ja: 'Windows 64-bit', en: 'Windows 64-bit' },
+  { target: 'linux-x64', ja: 'Linux 64-bit', en: 'Linux 64-bit' },
+  { target: 'linux-arm64', ja: 'Linux ARM64', en: 'Linux ARM64' },
+  { target: 'darwin-x64', ja: 'Intel Mac', en: 'Intel Mac' },
+  { target: 'darwin-arm64', ja: 'Apple Silicon Mac', en: 'Apple silicon Mac' },
+].map((asset) => {
+  const name = `discord-mcbe-${asset.target}-v${version}.zip`;
+  const releaseAsset = releaseAssets.get(name);
+  return {
+    ...asset,
+    size: releaseAsset ? formatFileSize(releaseAsset.size, locale) : undefined,
+    url: releaseAsset?.downloadUrl ?? `${assetBaseUrl}/${name}`,
+  };
+});
+
+const copy =
+  locale === 'ja'
+    ? {
+        allPlatforms: '別のOS・CPU向けを表示',
+        releasePage: 'リリース詳細を見る',
+      }
+    : {
+        allPlatforms: 'Show downloads for another OS or CPU',
+        releasePage: 'View release details',
+      };
+---
+
+<div class="download-picker" data-launcher-download data-locale={locale}>
+  <p class="version">discord-mcbe launcher v{version}</p>
+  <p class="status" data-download-status aria-live="polite"></p>
+  <div class="recommended-download" data-recommended-download-row hidden>
+    <a class="download-button" data-recommended-download href={releaseUrl}></a>
+    <span class="file-size" data-recommended-download-size></span>
+  </div>
+
+  <details>
+    <summary>{copy.allPlatforms}</summary>
+    <ul class="asset-list">
+      {
+        assets.map((asset) => (
+          <li>
+            <a href={asset.url} data-download-target={asset.target} data-download-size={asset.size}>
+              {asset[locale]}
+            </a>
+            {asset.size && <span class="file-size">{asset.size}</span>}
+            <code>{asset.target}</code>
+          </li>
+        ))
+      }
+    </ul>
+  </details>
+
+  <a class="release-link" href={releaseUrl}>{copy.releasePage}</a>
+</div>
+
+<script>
+  import { parseUA } from 'ua-parser-modern';
+
+  type DownloadTarget =
+    | 'darwin-arm64'
+    | 'darwin-x64'
+    | 'linux-arm64'
+    | 'linux-x64'
+    | 'windows-x64';
+  type Locale = 'en' | 'ja';
+  type DetectionResult =
+    | { kind: 'mac-unknown' }
+    | { kind: 'target'; target: DownloadTarget }
+    | { kind: 'unknown' }
+    | { kind: 'unsupported-mobile'; os?: string };
+
+  interface UserAgentData {
+    getHighEntropyValues?: (hints: string[]) => Promise<{
+      architecture?: string;
+      bitness?: string;
+    }>;
+  }
+
+  const labels: Record<DownloadTarget, Record<Locale, string>> = {
+    'windows-x64': { ja: 'Windows 64-bit', en: 'Windows 64-bit' },
+    'linux-x64': { ja: 'Linux 64-bit', en: 'Linux 64-bit' },
+    'linux-arm64': { ja: 'Linux ARM64', en: 'Linux ARM64' },
+    'darwin-x64': { ja: 'Intel Mac', en: 'Intel Mac' },
+    'darwin-arm64': { ja: 'Apple Silicon Mac', en: 'Apple silicon Mac' },
+  };
+
+  const messages = {
+    ja: {
+      download: (label: string) => `${label}版をダウンロード`,
+      macUnknown: 'macOSを検出しました。Apple SiliconまたはIntelを一覧から選んでください。',
+      unsupportedMobile: (os?: string) =>
+        `${os ?? 'モバイル端末'}を検出しました。ランチャーはWindows、Linux、またはmacOSの端末でダウンロードしてください。`,
+      unknown: '環境を自動判定できませんでした。OSとCPUに合うものを一覧から選んでください。',
+    },
+    en: {
+      download: (label: string) => `Download for ${label}`,
+      macUnknown: 'macOS detected. Choose Apple silicon or Intel from the list.',
+      unsupportedMobile: (os?: string) =>
+        `${os ?? 'A mobile device'} was detected. Download the launcher on a Windows, Linux, or macOS device.`,
+      unknown: 'Could not detect this environment. Choose the download matching your OS and CPU.',
+    },
+  } satisfies Record<Locale, Record<string, string | ((label: string) => string)>>;
+
+  function normalizeArchitecture(architecture?: string, bitness?: string) {
+    const value = architecture?.toLowerCase();
+    if (value === 'amd64' || value === 'x86_64' || (value === 'x86' && bitness === '64')) return 'x64';
+    if (value === 'arm64' || value === 'aarch64' || (value === 'arm' && bitness === '64')) return 'arm64';
+    return undefined;
+  }
+
+  async function detectDownloadTarget(): Promise<DetectionResult> {
+    const parsed = parseUA();
+    const osName = parsed.os.name;
+    const deviceType = parsed.device.type;
+    if (deviceType === 'mobile' || deviceType === 'tablet' || osName === 'Android' || osName === 'iOS') {
+      const os = [osName, parsed.os.version].filter(Boolean).join(' ') || undefined;
+      return { kind: 'unsupported-mobile', os };
+    }
+
+    let architecture = normalizeArchitecture(parsed.cpu.architecture);
+    const userAgentData = (navigator as Navigator & { userAgentData?: UserAgentData }).userAgentData;
+    if (userAgentData?.getHighEntropyValues) {
+      try {
+        const hints = await userAgentData.getHighEntropyValues(['architecture', 'bitness']);
+        architecture = normalizeArchitecture(hints.architecture, hints.bitness) ?? architecture;
+      } catch {
+        // User-Agent Client Hints are optional; the parsed User-Agent remains the fallback.
+      }
+    }
+
+    let platform: 'darwin' | 'linux' | 'windows' | undefined;
+    if (osName === 'Windows') platform = 'windows';
+    if (osName === 'Mac OS') platform = 'darwin';
+    if (osName !== 'Android' && /(?:X11; )?Linux\b/i.test(parsed.ua)) platform = 'linux';
+
+    if (platform === 'windows' && architecture === 'x64') return { kind: 'target', target: 'windows-x64' };
+    if (platform === 'linux' && architecture === 'x64') return { kind: 'target', target: 'linux-x64' };
+    if (platform === 'linux' && architecture === 'arm64') return { kind: 'target', target: 'linux-arm64' };
+    if (platform === 'darwin' && architecture === 'x64') return { kind: 'target', target: 'darwin-x64' };
+    if (platform === 'darwin' && architecture === 'arm64') return { kind: 'target', target: 'darwin-arm64' };
+    return platform === 'darwin' ? { kind: 'mac-unknown' } : { kind: 'unknown' };
+  }
+
+  async function enhanceDownloadPicker(picker: HTMLElement) {
+    const locale = picker.dataset.locale === 'en' ? 'en' : 'ja';
+    const status = picker.querySelector<HTMLElement>('[data-download-status]');
+    const recommendedRow = picker.querySelector<HTMLElement>('[data-recommended-download-row]');
+    const recommended = picker.querySelector<HTMLAnchorElement>('[data-recommended-download]');
+    const recommendedSize = picker.querySelector<HTMLElement>('[data-recommended-download-size]');
+    if (!status || !recommendedRow || !recommended || !recommendedSize) return;
+
+    const detected = await detectDownloadTarget();
+    if (detected.kind === 'unsupported-mobile') {
+      status.textContent = messages[locale].unsupportedMobile(detected.os);
+      return;
+    }
+    if (detected.kind === 'mac-unknown') {
+      status.textContent = messages[locale].macUnknown;
+      return;
+    }
+    if (detected.kind === 'unknown') {
+      status.textContent = messages[locale].unknown;
+      return;
+    }
+
+    const source = picker.querySelector<HTMLAnchorElement>(`[data-download-target="${detected.target}"]`);
+    if (!source) return;
+
+    const label = labels[detected.target][locale];
+    status.textContent = '';
+    recommended.href = source.href;
+    recommended.textContent = messages[locale].download(label);
+    recommendedSize.textContent = source.dataset.downloadSize ?? '';
+    recommendedSize.hidden = !source.dataset.downloadSize;
+    recommendedRow.hidden = false;
+  }
+
+  for (const picker of document.querySelectorAll<HTMLElement>('[data-launcher-download]')) {
+    void enhanceDownloadPicker(picker);
+  }
+</script>
+
+<style>
+  .download-picker {
+    margin-block: 1.25rem;
+    padding: 1rem;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.75rem;
+    background: var(--sl-color-gray-6);
+  }
+
+  .version {
+    margin: 0;
+    color: var(--sl-color-gray-2);
+    font-size: var(--sl-text-sm);
+    font-weight: 600;
+  }
+
+  .status {
+    margin-block: 0.35rem 0.75rem;
+  }
+
+  .recommended-download {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: baseline;
+  }
+
+  .recommended-download[hidden] {
+    display: none;
+  }
+
+  details {
+    margin-top: 0.85rem;
+  }
+
+  summary {
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .asset-list {
+    display: grid;
+    gap: 0.35rem;
+    margin-block: 0.75rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .asset-list li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.75rem;
+    align-items: baseline;
+  }
+
+  .file-size {
+    color: var(--sl-color-gray-3);
+    font-size: var(--sl-text-xs);
+    white-space: nowrap;
+  }
+
+  .asset-list code {
+    color: var(--sl-color-gray-3);
+    font-size: var(--sl-text-xs);
+  }
+
+  .release-link {
+    display: inline-block;
+    margin-top: 0.65rem;
+    font-size: var(--sl-text-sm);
+  }
+
+  :global(:root[data-theme='light']) .download-picker {
+    background: var(--sl-color-gray-7);
+  }
+</style>

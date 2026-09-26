@@ -1,17 +1,27 @@
 {
-  "include": [ "src/", "scripts/" ],
-  "exclude": [ "node_modules/" ],
-  "files": [ "src/types/index.d.ts"],
   "compilerOptions": {
+    // Environment setup & latest features
+    "lib": ["ESNext"],
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleDetection": "force",
     "allowJs": true,
-    "checkJs": true,
-    "declaration": true,
+
+    // Bundler mode
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
     "noEmit": true,
-    "target": "ES2022",
-    "allowSyntheticDefaultImports": true,
-    "moduleResolution": "Node",
-    "resolveJsonModule": true,
+
+    // Best practices
+    "strict": true,
     "skipLibCheck": true,
-    "module": "CommonJS"
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+
+    // Some stricter flags (disabled by default)
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noPropertyAccessFromIndexSignature": false
   }
 }

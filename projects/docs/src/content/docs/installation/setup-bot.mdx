@@ -1,0 +1,113 @@
+---
+title: Botとサーバーのセットアップ
+description: Discord Botを作成し、discord-mcbeサーバーを起動する手順を説明します。
+---
+
+import { Aside, Icon, Steps } from '@astrojs/starlight/components';
+import LauncherDownloads from '../../../components/LauncherDownloads.astro';
+
+<Aside type="note" title="このページはdiscord-mcbe v4以降向けです">
+  v3以前から移行する場合は、既存環境をバックアップして別のフォルダーへセットアップし、以下の手順で設定を作成してください。v4ではこれまでのconfig.jsonは使えません。
+</Aside>
+
+## <Icon name="list-format" />必要なもの
+
+| 項目          | 要件                                                |
+| ------------- | --------------------------------------------------- |
+| Discord       | Botを追加する権限                                   |
+| Botを動かすOS | Windows x64、Linux x64/arm64、またはmacOS x64/arm64 |
+| Minecraft     | Bedrock Edition 1.26.40以降                         |
+| ネットワーク  | Discord、GitHub等のサービスに接続できること         |
+
+ランチャーには必要なランタイムが含まれるため、Node.jsやBun等のJavaScriptランタイムを別途インストールする必要はありません。
+
+## <Icon name="comment-alt" />Discord Botを作る
+
+<Steps>
+
+1. [Discord Developer Portal](https://discord.com/developers/applications)で **New Application** を選び、アプリケーションを作成します。
+
+2. 左側の **Bot** を開き、**Reset Token** でBotトークンを発行して、安全な場所に保存します。
+
+   <Aside type="danger" title="トークンはパスワードです">
+     トークンをチャット、スクリーンショット、Gitリポジトリへ載せないでください。漏えいした場合はDeveloper
+     Portalですぐに再発行しましょう。
+   </Aside>
+
+3. **Bot → Privileged Gateway Intents** で **Message Content Intent** を有効にします。これが無効だとDiscordからMinecraftへメッセージ本文を転送できません。
+
+4. **Installation** のGuild Install設定（または **OAuth2 → URL Generator**）で`bot`と`applications.commands`のスコープを選び、次の権限を付けます。
+   - チャンネルを見る（View Channels）
+   - メッセージを送信（Send Messages）
+   - 埋め込みリンク（Embed Links）
+   - ファイルを添付（Attach Files）
+   - メッセージ履歴を読む（Read Message History）
+
+   頻繁にメッセージが流れるチャンネルでは「低速モードを回避」も任意で追加できます。
+
+5. 生成されたURLを開き、使いたいDiscordサーバーへBotを追加します。
+
+</Steps>
+
+## <Icon name="approve-check-circle" />Discord IDをコピーする
+
+Discordの **ユーザー設定 → 詳細設定 → 開発者モード** を有効にします。次に、対象のサーバーとチャット連携に使うテキストチャンネルを右クリックして、それぞれのIDをコピーします。
+
+| 値           | コピー元                                              |
+| ------------ | ----------------------------------------------------- |
+| `GUILD_ID`   | Botを追加したDiscordサーバー                          |
+| `CHANNEL_ID` | Minecraftとメッセージをやり取りするテキストチャンネル |
+
+チャンネルの権限設定で、入れたBotのアクセスが拒否されていないことも確認してください。Botがチャンネルを見られない場合、MinecraftからDiscordへメッセージを送れません。
+
+## <Icon name="rocket" />discord-mcbe サーバーの準備
+
+<LauncherDownloads locale="ja" />
+
+<Steps>
+
+1. ダウンロードしたzipを展開します。
+
+2. 中に入っている`.env`ファイルを開き、先ほど保存・コピーした値を設定します。
+
+   ```dotenv
+   DISCORD_TOKEN=Botのトークン
+   GUILD_ID=DiscordサーバーのID
+   CHANNEL_ID=連携するテキストチャンネルのID
+
+   # SOCKET_PORT=3063
+   # BRIDGE_PORT=23191
+   # DISCORD_WEBHOOK_URL=url
+   ```
+
+   値を引用符(`""`)で囲む必要はありません。各値の説明は [設定](/guides/configuration/#環境変数) を参照してください。
+
+3. アップデートツールを用いてdiscord-mcbe本体をインストールします。
+
+   **Windows（ダブルクリック）**
+
+   `updater.exe`をダブルクリックし、**Stable**を選択します。exeの起動時にWindows Defender SmartScreenが警告を出す場合がありますが安全です。無視して続行してください。
+   インストールが完了したら、`start.bat`をダブルクリックして起動します。
+
+   PowerShellまたはコマンドプロンプトを使う場合は、次のコマンドでも実行できます。
+
+   ```powershell frame="none"
+   .\updater.exe stable
+   .\start.bat
+   ```
+
+   **Linux / macOS**
+
+   ```bash frame="none"
+   chmod +x updater start.sh
+   ./updater stable
+   ./start.sh
+   ```
+
+4. 初回起動時に`config.json`が作成されます。Botがオンラインになり、指定チャンネルに起動メッセージが届けば、サーバー側の準備は完了です。
+
+</Steps>
+
+続いて、[Minecraftワールドへアドオンを導入します](/installation/setup-world/)。
+
+今後のアップデート方法は、[ランチャーの使い方](/guides/launcher/)を参照してください。

@@ -1,0 +1,7 @@
+{
+  "extends": "@discord-mcbe/internal-config/typescript",
+  "include": ["main.ts"],
+  "compilerOptions": {
+    "customConditions": ["dev"]
+  }
+}

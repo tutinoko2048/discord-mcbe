@@ -1,0 +1,187 @@
+---
+title: カスタムスクリプト
+description: JavaScript/TypeScriptでdiscord-mcbeの機能を拡張する方法を説明します。
+---
+
+import { Aside, Icon, Tabs, TabItem } from '@astrojs/starlight/components';
+
+カスタムスクリプト機能は、discord-mcbeの機能をJavaScript/TypeScriptで拡張するための仕組みです。Botの起動時にスクリプトを読み込み、イベントを受け取ったり、ワールドやプレイヤーを操作できます。
+
+起動時に`config.json`の`script.entry`で指定したファイルが読み込まれ、`default export`した関数が呼び出されます。関数の引数には、discord-mcbe本体の`Application`インスタンスが渡されます。
+
+## <Icon name="document" />最小構成
+
+JavaScript/TypeScriptの両方に対応しています。
+
+<Tabs syncKey="code">
+<TabItem label="TypeScript" icon="seti:typescript">
+
+```ts title="scripts/main.ts"
+import type { Application } from '@discord-mcbe/server';
+
+export default function main(app: Application) {
+  app.logger.info('Custom script loaded');
+}
+```
+
+</TabItem>
+<TabItem label="JavaScript" icon='seti:javascript'>
+
+```js title="scripts/main.js"
+/**
+ * @param {import('@discord-mcbe/server').Application} app
+ */
+export default function main(app) {
+  app.logger.info('Custom script loaded');
+}
+```
+
+</TabItem>
+</Tabs>
+
+## <Icon name="shield-check" />BDS接続を認証する (任意)
+
+BDSのserver-net接続は、初期状態では認証されません。Bearer認証を使う場合は、`.env`へ任意のトークンを追加し、カスタムスクリプトから認証処理を設定します。
+
+```dotenv title=".env"
+BRIDGE_TOKEN=トークン
+```
+
+```ts title="scripts/main.ts"
+import { bearerAuth, type Application } from '@discord-mcbe/server';
+
+export default function main(app: Application) {
+  const token = process.env.BRIDGE_TOKEN;
+  if (!token) throw new Error('BRIDGE_TOKEN is not set');
+
+  app.minecraft.script.setAuthenticator(bearerAuth(token));
+}
+```
+
+BDS側の`variables.json`にも同じトークンを設定します。
+
+```json title="variables.json"
+{
+  "BRIDGE_URL": "ws://localhost:23191",
+  "BRIDGE_TOKEN": "トークン"
+}
+```
+
+独自の認証を使う場合は、`setAuthenticator`へリクエストを受け取る関数を渡してください。関数は`boolean`または`Promise<boolean>`を返します。認証に失敗した接続は、ワールドセッションが作られる前に拒否されます。
+
+## <Icon name="clock" />イベントを受け取る
+
+<Tabs syncKey="code">
+<TabItem label="TypeScript" icon="seti:typescript">
+
+```ts title="scripts/main.ts"
+import type { Application } from '@discord-mcbe/server';
+
+export default function main(app: Application) {
+  app.on('worldConnect', async (event) => {
+    app.logger.info('Connected:', event.world.name);
+    await event.world.sendMessage('§aDiscord bridge connected');
+  });
+
+  app.on('playerJoin', async (event) => {
+    const location = await event.player.getLocation();
+    app.logger.info(
+      `${event.player.name}がログインしました。座標: [${location.x}, ${location.y}, ${location.z}]`,
+    );
+  });
+
+  app.on('minecraftMessage', (event) => {
+    app.logger.info('Chat:', event.world.name, event.sender.name, event.message);
+  });
+}
+```
+
+</TabItem>
+<TabItem label="JavaScript" icon="seti:javascript">
+
+```js title="scripts/main.js"
+/**
+ * @param {import('@discord-mcbe/server').Application} app
+ */
+export default function main(app) {
+  app.on('worldConnect', async (event) => {
+    app.logger.info('Connected:', event.world.name);
+    await event.world.sendMessage('§aDiscord bridge connected');
+  });
+
+  app.on('playerJoin', async (event) => {
+    const location = await event.player.getLocation();
+    app.logger.info(
+      `${event.player.name}がログインしました。座標: [${location.x}, ${location.y}, ${location.z}]`,
+    );
+  });
+
+  app.on('minecraftMessage', (event) => {
+    app.logger.info('Chat:', event.world.name, event.sender.name, event.message);
+  });
+}
+```
+
+</TabItem>
+</Tabs>
+
+主なイベントは次のとおりです。詳しくは[APIリファレンス](/reference/interfaces/_discord-mcbe_server.ApplicationEvents)を参照してください。
+
+| イベント                     | 主な値                       | タイミング                                         |
+| ---------------------------- | ---------------------------- | -------------------------------------------------- |
+| `startup`                    | `app`                        | Bot、接続サーバー、スクリプトが起動したあと        |
+| `discordReady`               | `client`                     | Discordへのログインが完了したとき                  |
+| `discordMessage`             | `message`                    | 対象チャンネルでユーザーのメッセージを受信したとき |
+| `discordSend`                | `channel`, `message`         | discord-mcbeがDiscordへ送信する直前                |
+| `worldConnect`               | `world`                      | ワールドの初期化が完了したとき                     |
+| `worldDisconnect`            | `world`                      | ワールドのセッションが終了したとき                 |
+| `minecraftMessage`           | `world`, `sender`, `message` | Minecraftのチャットを受信したとき                  |
+| `playerJoin` / `playerLeave` | `world`, `player`            | プレイヤーが参加・退出したとき                     |
+
+## <Icon name="puzzle" />ワールドを操作する
+
+<Tabs syncKey="code">
+<TabItem label="TypeScript" icon="seti:typescript">
+
+```ts title="scripts/main.ts"
+import type { Application } from '@discord-mcbe/server';
+
+export default function main(app: Application) {
+  app.on('worldConnect', async ({ world }) => {
+    const result = await world.runCommand('weather clear');
+    const tps = await world.getTPS();
+
+    app.logger.info(world.name, result, 'TPS:', tps);
+  });
+}
+```
+
+</TabItem>
+<TabItem label="JavaScript" icon="seti:javascript">
+
+```js title="scripts/main.js"
+/**
+ * @param {import('@discord-mcbe/server').Application} app
+ */
+export default function main(app) {
+  app.on('worldConnect', async ({ world }) => {
+    const result = await world.runCommand('weather clear');
+    const tps = await world.getTPS();
+
+    app.logger.info(world.name, result, 'TPS:', tps);
+  });
+}
+```
+
+</TabItem>
+</Tabs>
+
+`ScriptWorld`からメッセージ送信、コマンド、TPS、Script Event、プレイヤー、スコアボードを操作できます。`ScriptPlayer`では個別メッセージ、座標・ディメンション・ゲームモード取得、ゲームモード変更、キック、画面表示を扱えます。
+
+全メソッドと型は[APIリファレンス](/reference/)を参照してください。
+
+## <Icon name="add-document" />依存パッケージを追加する
+
+カスタムスクリプトでは、npmで公開されているパッケージを自由に利用できます。ランチャーと同じディレクトリにある`package.json`へ、使いたいパッケージを追加してください。パッケージマネージャーはnpm、pnpm、Bunなどから自由に選べます。
+
+追加したパッケージは、`scripts/`内のファイルから通常どおり`import`できます。`@discord-mcbe/server`と`@discord-mcbe/shared`はdiscord-mcbe本体が提供するため、別途インストールする必要はありません。
