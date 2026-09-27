@@ -7,6 +7,7 @@ import { DISCORD_URL } from './src/variables';
 
 // Pagefind's Linux ARM64 binary does not support hosts with a 16 KiB page size.
 const supportsPagefind = process.platform !== 'linux' || process.arch !== 'arm64';
+const gaMeasurementId = process.env.GA_MEASUREMENT_ID;
 
 // https://astro.build/config
 export default defineConfig({
@@ -21,12 +22,34 @@ export default defineConfig({
         alt: 'discord-mcbe',
       },
       head: [
+        ...(gaMeasurementId
+          ? [
+              {
+                tag: /** @type {const} */ ('script'),
+                attrs: {
+                  async: true,
+                  src: `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(gaMeasurementId)}`,
+                },
+              },
+              {
+                tag: /** @type {const} */ ('script'),
+                content: `window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', ${JSON.stringify(gaMeasurementId)});`,
+              },
+            ]
+          : []),
         {
           tag: 'meta',
           attrs: {
             property: 'og:image',
             content: 'https://discord-mcbe.retomc.dev/thumbnail.webp',
           },
+        },
+        {
+          tag: 'meta',
+          attrs: { name: 'theme-color', content: '#4a53df' },
         },
         {
           tag: 'script',
