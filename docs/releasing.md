@@ -38,6 +38,7 @@ version変更をコミットし、同じコミットへtagを作成します。�
 
 ```bash
 # ベータ版の例
+# git tag -a v? -m "discord-mcbe v?"
 git tag -a v4.0.0-beta.5 -m "discord-mcbe v4.0.0-beta.5"
 git push origin <branch> --tags
 
