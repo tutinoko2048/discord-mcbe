@@ -94,9 +94,9 @@ export async function install(options: InstallOptions) {
     console.log(`Application is staged in ${stagingDir}`);
 
     if (isCompiled) {
-      await $`${process.execPath} install`.env({ BUN_BE_BUN: '1' }).cwd(stagingDir);
+      await $`${process.execPath} install --no-cache`.env({ BUN_BE_BUN: '1' }).cwd(stagingDir);
     } else {
-      await $`bun install`.cwd(stagingDir);
+      await $`bun install --no-cache`.cwd(stagingDir);
     }
 
     await activateStagedApp(appDir, backupDir, stagingDir);
