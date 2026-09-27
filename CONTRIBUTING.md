@@ -1,74 +1,53 @@
 # Contributing to discord-mcbe
 
-First off, thank you for considering contributing to discord-mcbe! 🎉
-We are a welcoming open-source community, and we appreciate every contribution—whether it's fixing bugs, adding new features, improving documentation, or translating the project.
+Bug fixes, features, documentation, and translation improvements are welcome. Check existing issues and pull requests before starting.
 
-## 🌍 Help Us Translate! (Priority)
+## Translations
 
-We are actively looking for help with translations to make discord-mcbe accessible to more users worldwide.
+Bot messages, command descriptions, and Minecraft chat text live in `projects/server/src/assets/locales/<locale>.json`. Use `en-US.json` as the reference for keys and placeholders (`%0`, `%1`, and so on). A value consisting entirely of `$key` reuses another translation key. Keep placeholder numbering consistent across languages.
 
-Translation files are located in the `lang/` directory.
-We follow the **[Discord Locale Standards](https://discord.com/developers/docs/reference#locales)** for file naming (e.g., `ja.lang`, `en-US.lang`).
+Files named `<locale>.generated.json` contain Minecraft death messages and entity names extracted from Mojang language files. Do not edit them by hand. See the [translation guide](https://discord-mcbe.retomc.dev/en/guides/translation-overrides/) for the difference between source translations, generated text, and user overrides.
 
-### How to Add a New Language
+To add a language, create its JSON file, then register it in `projects/server/src/util/i18n.ts` so the server loads it. Use a Discord locale code for the filename and map entry. If you also need Minecraft-derived text, add the corresponding Bedrock language file to `projects/server/scripts/extract-minecraft-lang.ts` and run the extraction script. When keys or locales change, regenerate the language types and configuration schema:
 
-1.  Check the [Discord Locales](https://discord.com/developers/docs/reference#locales) list to find the correct code for your language.
-2.  Create a new file in `lang/` named `<locale>.lang`.
-3.  Copy the contents of `en-US.lang` (fallback language) into your new file.
-4.  Translate the values (text after the `=`) into your language.
-5.  Submit a Pull Request!
+```bash
+pnpm --filter @discord-mcbe/server generate-lang-types
+pnpm --filter @discord-mcbe/server generate-schema
+```
 
-## 🛠️ Development Guide
+## Development
 
-### Prerequisites
+Use Node.js 24 or later, Bun 1.4.0 or later, Git, and the pnpm version declared in `package.json`.
 
-- [Node.js](https://nodejs.org/)
-- [Bun](https://bun.sh/)
-- [pnpm](https://pnpm.io/)
+```bash
+git clone https://github.com/tutinoko2048/discord-mcbe.git
+cd discord-mcbe
+pnpm install
+pnpm build
+pnpm check
+pnpm --filter @discord-mcbe/launcher test
+```
 
-### Setup
+This is a pnpm workspace built with Turbo. The main directories are:
 
-1.  **Clone the repository**
-    ```bash
-    git clone https://github.com/tutinoko2048/discord-mcbe.git
-    cd discord-mcbe
-    ```
-2.  **Install dependencies**
-    ```bash
-    pnpm install
-    ```
-3.  **Build the project**
-    ```bash
-    pnpm build
-    ```
+| Path                       | Purpose                                     |
+| -------------------------- | ------------------------------------------- |
+| `projects/server`          | Discord bot and Minecraft connection server |
+| `projects/addon-local`     | Behavior pack for regular worlds            |
+| `projects/addon-bds`       | Behavior pack for Bedrock Dedicated Server  |
+| `projects/launcher`        | Installer and updater                       |
+| `projects/docs`            | Documentation website                       |
+| `packages/client`          | Script API client used by the add-ons       |
+| `packages/shared`          | Shared protocol code and types              |
+| `packages/internal-config` | Shared build and check configuration        |
+| `devapp`                   | Local development environment               |
 
-### Project Structure
+Run `pnpm lint` to lint the workspace or `pnpm format` to format it. For documentation work, use `pnpm --filter @discord-mcbe/docs dev` to preview the site. Update both Japanese and English documentation when behavior changes.
 
-This is a monorepo managed with pnpm workspaces:
+## Pull requests
 
-- `projects/server`: Main application server
-- `projects/addon-bds`: Minecraft addon for Bedrock Dedicated Server (BDS)
-- `projects/addon-local`: Minecraft addon for local worlds
-- `projects/launcher`: discord-mcbe launcher/installer application
-- `packages/client`: Client library used by addons
-- `packages/shared`: Shared utilities and types
+Explain the change and its reason, link a related issue when there is one, and report the builds, checks, and tests you ran. Include screenshots for visible UI or Discord output changes.
 
-### Maintainer Releases
+Maintainers: App and Launcher releases use separate tag-triggered workflows. Follow the [release procedure](./docs/releasing.md) for versions, annotated tags, draft verification, and recovery.
 
-App and Launcher releases are created through separate tag-triggered GitHub Actions workflows. Maintainers should follow the [App and Launcher release procedure](./docs/releasing.md), including version updates, annotated tags, draft verification, release ordering, and partial-failure recovery.
-
-## 🤝 How to Contribute Code
-
-### Reporting Bugs
-
-- Ensure the bug was not already reported.
-- Open a new issue with a clear title and description.
-- Include steps to reproduce, and details about your environment.
-
-## 📜 License
-
-By contributing, you agree that your contributions will be licensed under the project's [LICENSE](./LICENSE).
-
-## 💬 Questions?
-
-Feel free to join our [Discord Support Server](https://discord.gg/XGR8FcCeFc) if you have any questions.
+Contributions are licensed under the project's [MIT License](./LICENSE). For questions, join the [Discord support server](https://discord.gg/XGR8FcCeFc).
