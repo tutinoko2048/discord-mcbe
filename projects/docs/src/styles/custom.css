@@ -1,0 +1,142 @@
+@layer starlight, rapide, override;
+
+@layer override {
+  /* #region Generated Colors */
+  /* Generated with https://starlight.astro.build/guides/css-and-tailwind/#color-theme-editor */
+
+  /* Dark mode colors. */
+  :root {
+    --sl-color-accent-low: #1a2045;
+    --sl-color-accent: #4a53df;
+    --sl-color-accent-high: #bac6f7;
+    --sl-color-white: #ffffff;
+    --sl-color-gray-1: #eceef2;
+    --sl-color-gray-2: #c0c2c7;
+    --sl-color-gray-3: #888b96;
+    --sl-color-gray-4: #545861;
+    --sl-color-gray-5: #353841;
+    --sl-color-gray-6: #24272f;
+    --sl-color-black: #17181c;
+  }
+  /* Light mode colors. */
+  :root[data-theme='light'] {
+    --sl-color-accent-low: #ccd5fa;
+    --sl-color-accent: #4c55e1;
+    --sl-color-accent-high: #232a66;
+    --sl-color-white: #17181c;
+    --sl-color-gray-1: #24272f;
+    --sl-color-gray-2: #353841;
+    --sl-color-gray-3: #545861;
+    --sl-color-gray-4: #888b96;
+    --sl-color-gray-5: #c0c2c7;
+    --sl-color-gray-6: #eceef2;
+    --sl-color-gray-7: #f5f6f8;
+    --sl-color-black: #ffffff;
+  }
+  /* #endregion */
+
+  :root {
+    --sl-color-text-accent: var(--sl-color-accent-high);
+  }
+
+  :root[data-theme='light'] {
+    --sl-color-text-accent: var(--sl-color-accent);
+  }
+
+  .sl-link-button {
+    &.primary {
+      background-color: var(--sl-color-accent-low);
+      border: 1px solid var(--sl-color-accent);
+      color: var(--sl-color-accent-high);
+
+      &:is(:hover, :focus-visible) {
+        border-color: color-mix(in srgb, var(--sl-color-accent) 85%, black);
+        color: color-mix(in srgb, var(--sl-color-accent-high) 85%, black);
+      }
+    }
+  }
+
+  .download-button {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    align-items: baseline;
+    padding: 0.55rem 0.85rem;
+    border: 1px solid var(--sl-color-accent);
+    border-radius: 0.5rem;
+    background: var(--sl-color-accent-low);
+    color: var(--sl-color-accent-high);
+    font-weight: 650;
+    text-decoration: none;
+
+    &:is(:hover, :focus-visible) {
+      border-color: color-mix(in srgb, var(--sl-color-accent) 85%, black);
+      background: color-mix(in srgb, var(--sl-color-accent-low) 85%, black);
+      color: color-mix(in srgb, var(--sl-color-accent-high) 85%, black);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--sl-color-accent);
+      outline-offset: 2px;
+    }
+  }
+
+  .sl-markdown-content a:not(:where(.not-content *)):not(.download-button) {
+    color: var(--sl-color-text-accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+
+    &:is(:hover, :focus-visible) {
+      color: var(--sl-color-white);
+    }
+  }
+
+  .pagination-links {
+    --pagination-link-gap: 1rem;
+    gap: var(--pagination-link-gap);
+
+    a {
+      padding: 1rem;
+      border: 1px solid var(--sl-color-gray-4);
+      border-radius: 10px;
+      flex: 0 0 calc(50% - var(--pagination-link-gap) / 2);
+    }
+
+    &:has(a[rel='next']:only-child) {
+      justify-content: flex-end;
+    }
+  }
+
+  .hero {
+    padding-block: clamp(3rem, 10vw, 7rem);
+  }
+
+  .hero .tagline {
+    max-width: 42rem;
+  }
+
+  .sl-markdown-content table {
+    display: table;
+    width: 100%;
+  }
+
+  .sl-markdown-content :is(th, td) {
+    vertical-align: top;
+  }
+
+  .sl-markdown-content code {
+    overflow-wrap: anywhere;
+  }
+
+  .sl-markdown-content :is(h2, h3) > svg {
+    display: inline-block;
+    margin-inline-end: 0.3em;
+    color: var(--sl-color-text-accent);
+    vertical-align: -0.125em;
+  }
+
+  .sl-markdown-content img {
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 12px;
+  }
+}

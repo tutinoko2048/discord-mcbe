@@ -1,0 +1,87 @@
+---
+title: 開発ガイド
+description: discord-mcbeのモノレポをセットアップし、ビルド、チェック、ドキュメント開発を行います。
+---
+
+import { Icon, Steps } from '@astrojs/starlight/components';
+
+## <Icon name="setting" />必要なツール
+
+- Node.js 24以降
+- Bun 1.4.0以降
+- pnpm
+- Git
+
+## <Icon name="rocket" />セットアップ
+
+<Steps>
+
+1. リポジトリをクローンします。
+
+   ```bash
+   git clone https://github.com/tutinoko2048/discord-mcbe.git
+   cd discord-mcbe
+   ```
+
+2. 依存関係をインストールします。
+
+   ```bash
+   pnpm install
+   ```
+
+3. 全パッケージをビルド・チェックします。
+
+   ```bash
+   pnpm build
+   pnpm check
+   ```
+
+</Steps>
+
+おすすめ: `.vscode/discord-mcbe.code-workspace`を開くと、VSCodeでワークスペース全体を扱いやすくなります。
+
+## <Icon name="code-branch" />モノレポ構成
+
+| パス                       | 役割                                           |
+| -------------------------- | ---------------------------------------------- |
+| `projects/server`          | Discord Bot / Minecraft接続サーバー本体        |
+| `projects/launcher`        | Launcher / Updater                             |
+| `projects/addon-local`     | 通常ワールド用ビヘイビアーパック               |
+| `projects/addon-bds`       | BDS用ビヘイビアーパック                        |
+| `projects/docs`            | ドキュメントWebサイト                          |
+| `packages/client`          | 両アドオンで使うScriptAPI用クライアント        |
+| `packages/shared`          | パケット定義、型、enum等プロトコル共有のコード |
+| `packages/internal-config` | ワークスペース共通のビルド・チェック設定       |
+| `devapp`                   | ローカル開発用環境                             |
+
+ローカルワールドは[SocketBE](https://github.com/tutinoko2048/SocketBE)、BDSは`@minecraft/server-net`のWebSocket経由で同じ固定パケット層へ接続します。
+
+## <Icon name="add-document" />よく使うコマンド
+
+| コマンド                                 | 内容                                                  |
+| ---------------------------------------- | ----------------------------------------------------- |
+| `pnpm build`                             | Turboで全パッケージをビルド                           |
+| `pnpm check`                             | 型チェック、Lint、各パッケージのチェック              |
+| `pnpm lint`                              | ワークスペース全体をLint                              |
+| `pnpm format`                            | フォーマッターを実行                                  |
+| `pnpm --filter @discord-mcbe/docs dev`   | ドキュメントの開発サーバー                            |
+| `pnpm --filter @discord-mcbe/docs build` | 日英サイトとTypeDoc APIを生成                         |
+| `pnpm build:reference`                   | `projects/docs/dist/reference`へAPIリファレンスを生成 |
+
+## <Icon name="translate" />翻訳とドキュメント
+
+[翻訳とテキストのカスタマイズ](/guides/translation-overrides) を参照してください。
+
+## <Icon name="heart" />コントリビュート
+
+変更前に[Issue](https://github.com/tutinoko2048/discord-mcbe/issues)と既存のPull Requestを確認し、目的ごとに小さな変更へ分けてください。PRには次を含めます。
+
+- 変更理由と動作の説明
+- 関連Issue
+- 実行した`build`・`check`・テスト
+- UIやDiscord表示が変わる場合のスクリーンショット
+- 仕様変更に対応する日本語・英語ドキュメント
+
+提出前に`pnpm build`と`pnpm check`が通ることを確認してください。コントリビューションはリポジトリのMIT Licenseで提供されます。
+
+公開APIの詳細は[APIリファレンス](/reference/)を参照してください。

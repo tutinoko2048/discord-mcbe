@@ -1,0 +1,69 @@
+# 構造
+
+## win
+
+- `start.bat`
+- `updater.exe`
+
+## linux/macos
+
+- `start.sh`
+- `updater`
+
+## 共通
+
+- `scripts/` (カスタムスクリプト)
+- `app/` (本体)
+
+# updater
+
+- bun executable
+- `updater` インタラクティブモードでバージョンを選択してインストール
+- `updater stable` 最新の安定版をインストール
+  - 安定版が存在しない場合は警告を表示し、最新のベータ版をインストールする
+- `updater beta` 最新のベータ版をインストール
+- `updater 4.0.0` バージョンを指定してインストール
+- `updater upgrade` launcher自体を最新版へ更新
+- `updater upgrade 4` launcher自体を指定したバージョンへ更新
+- `updater rollback` 直前のインストールへ戻す（再実行すると戻す前の版へ切り替わる）
+- `updater --no-interactive` バージョン選択や確認を表示せずに実行
+- `updater --dry-run`
+- `updater --help` `-h` ヘルプ表示
+- `updater --version` `-v` updaterのバージョン表示
+- アップデート方法
+  - TUI起動時はlauncherの更新を確認し、新版があれば確認後にセルフアップデートする
+  - 更新確認中はローディング表示を出し、15秒でタイムアウトする
+  - ダウンロードしたlauncherはGitHub Release AssetのSHA-256 digestを検証してから、`.old`を残して入れ替える
+  - バージョン取得
+    - GitHub Releases API からリリース一覧を100件ずつ取得する。
+    - ランチャー自体のリリースと混同しないよう、タグ名が `launcher@v` 等で始まらない（本体のバージョン `vX.X.X`）ものを対象にフィルタリングし、最新の `tag_name` などからバージョンとアセットURLを特定する。
+    - リリースアセットから `_metadata.json` を取得して `minimumLauncherVersion` (連番) をチェックし、updater自体が古くないか確認する。
+  - アップデート処理
+    - GitHub Releases から対象バージョンのアーカイブ (`_assets.tar.gz`) をダウンロードし、`Bun.Archive` を用いて一時フォルダへ展開する
+      - アーカイブ内には `discord-mcbe.js`, depsを更新した `package.json`, `.VERSION`
+    - 一時フォルダ内で依存関係のインストールと検証が成功した後、既存の`app/`を`app.backup/`として残して入れ替える
+    - ランタイム内包のBun (`updater` を兼ねる) を使い、一時フォルダ内で `bun install` を実行。これにより本体機能がインストールされる (ユーザーのローカル環境のNode.jsやPMには依存しない)
+    - ユーザーが `scripts/` ディレクトリ等から `@discord-mcbe/*` の型補完を効かせられるよう、ルートディレクトリの `tsconfig.json` に `paths` (`"@discord-mcbe/*": ["./app/node_modules/@discord-mcbe/*"]`) を事前に差し込んでおく
+
+# run
+
+- appフォルダがなければupdaterを走らせる
+- updater `app/discord-mcbe.js` を起動する
+  - ランタイムは`BUN_BE_BUN=1`にしてupdaterを実行する
+  - sh: `BUN_BE_BUN=1 ./updater run discord-mcbe.js`
+  - bat: `set BUN_BE_BUN=1 && updater run discord-mcbe.js`
+
+# 実装
+
+- commanderを使う
+- repo: `tutinoko2048/discord-mcbe`
+- launcherのバージョンは単一の非負整数とし、`pnpm run bump-version launcher increment`で1増やす
+
+# TODO
+
+- [x] `version.ts`: GitHub Releases API を使用した実際のリリース取得処理の実装（`launcher@v*` タグの除外、アセットURLのパース）
+- [x] `version.ts`: アセットから `_metadata.json` をフェッチし、`minimumLauncherVersion` を検証するロジックの実装
+- [x] `install.ts`: 対象のアセットURL (`_assets.tar.gz`) からファイルをダウンロードし、`Bun.Archive` を使い `app/` へ展開する処理の連携
+- [x] `install.ts`: 展開後、`app/` ディレクトリ内で `bun install` を実行する処理の整備
+- [x] `run.bat` / `run.sh`: `app` フォルダが存在しない場合に `updater` を自動起動し、その後 `BUN_BE_BUN=1` で本体を起動するスクリプトの整備
+- [x] (仕組み化) GitHub Actionsで `_assets.tar.gz` (本体・環境一式) と `_metadata.json` を生成してリリースに上げるCI/CDの整備

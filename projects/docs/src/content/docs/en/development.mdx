@@ -1,0 +1,87 @@
+---
+title: Development guide
+description: Set up, build, check, and document the discord-mcbe monorepo.
+---
+
+import { Icon, Steps } from '@astrojs/starlight/components';
+
+## <Icon name="setting" />Prerequisites
+
+- Node.js 24 or later
+- Bun 1.4.0 or later
+- pnpm
+- Git
+
+## <Icon name="rocket" />Setup
+
+<Steps>
+
+1. Clone the repository.
+
+   ```bash
+   git clone https://github.com/tutinoko2048/discord-mcbe.git
+   cd discord-mcbe
+   ```
+
+2. Install dependencies.
+
+   ```bash
+   pnpm install
+   ```
+
+3. Build and check the workspace.
+
+   ```bash
+   pnpm build
+   pnpm check
+   ```
+
+</Steps>
+
+Recommendation: Open `.vscode/discord-mcbe.code-workspace` to work with the entire workspace more easily in VS Code.
+
+## <Icon name="code-branch" />Monorepo layout
+
+| Path                       | Responsibility                                                    |
+| -------------------------- | ----------------------------------------------------------------- |
+| `projects/server`          | Discord bot and Minecraft connection server                       |
+| `projects/launcher`        | Launcher and updater                                              |
+| `projects/addon-local`     | Behavior pack for regular worlds                                  |
+| `projects/addon-bds`       | Behavior pack for BDS                                             |
+| `projects/docs`            | Documentation website                                             |
+| `packages/client`          | Script API client shared by both add-ons                          |
+| `packages/shared`          | Shared protocol code such as packet definitions, types, and enums |
+| `packages/internal-config` | Workspace build and validation configuration                      |
+| `devapp`                   | Local development environment                                     |
+
+Regular worlds use [SocketBE](https://github.com/tutinoko2048/SocketBE), while BDS uses the `@minecraft/server-net` WebSocket API. Both connect to the same fixed-packet layer.
+
+## <Icon name="add-document" />Common commands
+
+| Command                                  | Purpose                                              |
+| ---------------------------------------- | ---------------------------------------------------- |
+| `pnpm build`                             | Build all packages with Turbo                        |
+| `pnpm check`                             | Run types, lint, and package checks                  |
+| `pnpm lint`                              | Lint the workspace                                   |
+| `pnpm format`                            | Format the workspace                                 |
+| `pnpm --filter @discord-mcbe/docs dev`   | Start the documentation dev server                   |
+| `pnpm --filter @discord-mcbe/docs build` | Build both locales and the TypeDoc API               |
+| `pnpm build:reference`                   | Generate the API into `projects/docs/dist/reference` |
+
+## <Icon name="translate" />Translation and documentation
+
+See [Translation and text customization](/en/guides/translation-overrides/).
+
+## <Icon name="heart" />Contributing
+
+Check [Issues](https://github.com/tutinoko2048/discord-mcbe/issues) and existing pull requests first. Keep changes focused and include:
+
+- Why the change is needed and how it works
+- A related issue
+- Builds, checks, and tests you ran
+- Screenshots for visible UI or Discord output changes
+- Japanese and English docs for behavior changes
+
+Run `pnpm build` and `pnpm check` before submitting. Contributions are provided under the repository's MIT License.
+
+See the [API reference](/reference/) for the public API.

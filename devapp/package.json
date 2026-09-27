@@ -1,0 +1,19 @@
+{
+  "name": "@discord-mcbe/devapp",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun --conditions=\"dev\" ./main.ts",
+    "lint": "vp lint",
+    "lint:fix": "vp lint --fix",
+    "format": "vp fmt",
+    "check": "vp check",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@discord-mcbe/server": "workspace:*"
+  },
+  "devDependencies": {
+    "@discord-mcbe/internal-config": "workspace:*"
+  }
+}

@@ -1,0 +1,34 @@
+packages:
+  - projects/*
+  - packages/*
+  - devapp
+
+allowBuilds:
+  esbuild: true
+  sharp: true
+  workerd: true
+  rolldown: true
+
+catalog:
+  '@bedrock-apis/env-types': 1.1.0-rc
+  '@minecraft/server': 2.10.0-beta.1.26.44-stable
+  '@minecraft/server-admin': 1.0.0-beta.1.26.44-stable
+  '@minecraft/server-net': 1.0.0-beta.1.26.44-stable
+  '@minecraft/server-ui': 2.1.0
+  '@types/ws': ^8.18.1
+  bun-types: ^1.4.2
+  jsonc-parser: ^3.3.1
+  picocolors: ^1.1.1
+  ws: ^8.21.3
+  valibot: ^1.4.2
+  semver: ^7.7.4
+  '@types/semver': ^7.8.0
+
+overrides:
+  '@minecraft/server': 'catalog:'
+
+minimumReleaseAgeExclude:
+  - socket-be
+
+patchedDependencies:
+  mcbe-ipc: patches/mcbe-ipc.patch

@@ -1,7 +1,45 @@
 {
   "folders": [
     {
+      "name": "🧪 Dev App",
+      "path": "../devapp"
+    },
+    {
+      "name": "🖥️ Server",
+      "path": "../projects/server"
+    },
+    {
+      "name": "📱 Client",
+      "path": "../packages/client"
+    },
+    {
+      "name": "📦 Shared",
+      "path": "../packages/shared"
+    },
+    {
+      "name": "🧩 Addon (BDS)",
+      "path": "../projects/addon-bds"
+    },
+    {
+      "name": "🧩 Addon (Local)",
+      "path": "../projects/addon-local"
+    },
+    {
+      "name": "🚀 Launcher",
+      "path": "../projects/launcher"
+    },
+    {
+      "name": "📚 Docs",
+      "path": "../projects/docs"
+    },
+    {
+      "name": "📁 Repository",
       "path": ".."
-    }
-  ]
+    },
+  ],
+  "settings": {
+    "exportall.config.relExclusion": [
+      "/src/global.d.ts"
+    ]
+  }
 }

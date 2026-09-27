@@ -1,0 +1,11 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "name": "discord-mcbe",
+  "entryPoints": ["projects/server", "packages/client", "packages/shared"],
+  "entryPointStrategy": "packages",
+  "plugin": ["typedoc-material-theme", "typedoc-plugin-merge-modules"],
+  "out": "./projects/docs/dist/reference",
+  "themeColor": "#4a53df",
+  "mergeModulesRenameDefaults": true,
+  "mergeModulesMergeMode": "module",
+}

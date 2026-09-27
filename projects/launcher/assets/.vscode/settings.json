@@ -1,0 +1,8 @@
+{
+  "json.schemas": [
+    {
+      "fileMatch": ["/config.json"],
+      "url": "./app/node_modules/@discord-mcbe/server/schema.config.json"
+    }
+  ]
+}

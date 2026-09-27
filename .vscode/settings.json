@@ -1,8 +1,17 @@
 {
   "json.schemas": [
     {
-      "fileMatch": ["/config.jsonc"],
-      "url": "/src/schema.json"
+      "fileMatch": ["devapp/config.json"],
+      "url": "./projects/server/schema.config.json"
     }
-  ]
+  ],
+  "files.eol": "\n",
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "**/*.code-search": true,
+    "**/dist": true,
+    "**/build": true,
+  },
+  "oxc.fmt.configPath": "./packages/internal-config/vite/vite.config.base.mts",
 }

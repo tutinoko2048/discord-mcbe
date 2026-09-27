@@ -1,0 +1,35 @@
+{
+  "name": "@discord-mcbe/launcher",
+  "version": "8",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tutinoko2048/discord-mcbe.git",
+    "directory": "projects/launcher"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "bun run src/main.ts -c test",
+    "compile": "pnpm run clean && bun run compile.ts",
+    "test": "bun test",
+    "lint": "vp lint",
+    "lint:fix": "vp lint --fix",
+    "format": "vp fmt",
+    "check": "vp check",
+    "clean": "rimraf build .turbo"
+  },
+  "dependencies": {
+    "@inquirer/confirm": "^6.0.12",
+    "@inquirer/select": "^5.1.4",
+    "cli-progress": "^3.12.0",
+    "commander": "^14.0.3",
+    "picocolors": "catalog:",
+    "semver": "catalog:"
+  },
+  "devDependencies": {
+    "@discord-mcbe/internal-config": "workspace:*",
+    "@types/cli-progress": "^3.11.6",
+    "@types/semver": "catalog:",
+    "bun-types": "catalog:"
+  }
+}

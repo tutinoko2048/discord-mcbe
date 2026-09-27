@@ -1,0 +1,31 @@
+{
+  "name": "@discord-mcbe/addon-bds",
+  "version": "0.1.0",
+  "private": true,
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tutinoko2048/discord-mcbe.git",
+    "directory": "projects/addon-bds"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "vp pack",
+    "watch": "vp pack --watch",
+    "lint": "vp lint",
+    "lint:fix": "vp lint --fix",
+    "format": "vp fmt",
+    "check": "vp check",
+    "clean": "rimraf scripts .turbo"
+  },
+  "dependencies": {
+    "@discord-mcbe/client": "workspace:*",
+    "valibot": "catalog:"
+  },
+  "devDependencies": {
+    "@bedrock-apis/env-types": "catalog:",
+    "@discord-mcbe/internal-config": "workspace:*",
+    "@minecraft/server": "catalog:",
+    "@minecraft/server-admin": "catalog:"
+  }
+}

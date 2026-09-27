@@ -2,4 +2,15 @@ node_modules/
 package-lock.json
 yarn.lock
 yarn-error.log
-data/
+.discord-mcbe/
+dist
+.turbo
+todo.md
+build/
+tsconfig.tsbuildinfo
+.env
+.env.local
+.env.development
+.env.production
+.release-temp
+.pnpm-store

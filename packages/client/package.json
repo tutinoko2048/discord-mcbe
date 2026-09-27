@@ -1,0 +1,38 @@
+{
+  "name": "@discord-mcbe/client",
+  "version": "4.0.0-beta.10",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tutinoko2048/discord-mcbe.git",
+    "directory": "packages/client"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "exports": {
+    "./bds": "./dist/bds.mjs",
+    "./local": "./dist/local.mjs",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "vp pack",
+    "watch": "vp pack --watch",
+    "lint": "vp lint",
+    "lint:fix": "vp lint --fix",
+    "format": "vp fmt",
+    "check": "vp check",
+    "clean": "rimraf dist .turbo tsconfig.tsbuildinfo"
+  },
+  "dependencies": {
+    "@discord-mcbe/shared": "workspace:*",
+    "@minecraft/server": "catalog:",
+    "@minecraft/server-net": "catalog:",
+    "@minecraft/server-ui": "catalog:",
+    "mcbe-ipc": "^3.4.2"
+  },
+  "devDependencies": {
+    "@bedrock-apis/env-types": "catalog:",
+    "@discord-mcbe/internal-config": "workspace:*"
+  }
+}
