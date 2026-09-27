@@ -48,7 +48,7 @@
     "semver": "catalog:",
     "socket-be": "^2.8.0",
     "ws": "catalog:",
-    "zod": "^4.6.1"
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@discord-mcbe/internal-config": "workspace:*",

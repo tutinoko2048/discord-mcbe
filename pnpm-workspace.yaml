@@ -11,10 +11,10 @@ allowBuilds:
 
 catalog:
   '@bedrock-apis/env-types': 1.1.0-rc
-  '@minecraft/server': 2.10.0-beta.1.26.44-stable
-  '@minecraft/server-admin': 1.0.0-beta.1.26.44-stable
-  '@minecraft/server-net': 1.0.0-beta.1.26.44-stable
-  '@minecraft/server-ui': 2.1.0
+  '@minecraft/server': 2.11.0-beta.1.26.52-stable
+  '@minecraft/server-admin': 1.0.0-beta.1.26.52-stable
+  '@minecraft/server-net': 1.0.0-beta.1.26.52-stable
+  '@minecraft/server-ui': 2.2.0
   '@types/ws': ^8.18.1
   bun-types: ^1.4.2
   jsonc-parser: ^3.3.1
