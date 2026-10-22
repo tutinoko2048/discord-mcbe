@@ -27,5 +27,19 @@
     "typescript": "^6.0.3",
     "vite-plus": "^1.1.0"
   },
-  "packageManager": "pnpm@12.6.0"
+  "devEngines": {
+    "runtime": [
+      {
+        "name": "node",
+        "version": "^24",
+        "onFail": "download"
+      },
+      {
+        "name": "bun",
+        "version": "1.4.4",
+        "onFail": "download"
+      }
+    ]
+  },
+  "packageManager": "pnpm@12.14.0"
 }

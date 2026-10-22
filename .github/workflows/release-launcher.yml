@@ -15,17 +15,11 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 24
-          cache: 'pnpm'
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: '1.4.2'
 
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
+      - uses: pnpm/setup@v3
+        with:
+          cache: true
+          require-lockfile: true
 
       - name: Check
         working-directory: ./projects/launcher

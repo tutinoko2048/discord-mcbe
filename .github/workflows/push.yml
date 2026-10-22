@@ -6,17 +6,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 24
-          cache: 'pnpm'
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: '1.4.0'
 
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
+      - uses: pnpm/setup@v3
+        with:
+          cache: true
+          require-lockfile: true
 
       - name: Build
         run: pnpm run build
