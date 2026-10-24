@@ -59,7 +59,7 @@ jobs:
 
           cd projects/launcher/build
 
-          for platform in windows-x64 linux-x64 linux-arm64 darwin-x64 darwin-arm64; do
+          for platform in windows-x64 linux-x64 linux-arm64 linux-arm64-android darwin-x64 darwin-arm64; do
             (cd "$platform" && zip -r "$ASSET_DIR/discord-mcbe-$platform-v$LAUNCHER_VERSION.zip" .)
             extension=""
             [ "$platform" = "windows-x64" ] && extension=".exe"
@@ -80,6 +80,7 @@ jobs:
             "$LAUNCHER_ASSET_DIR/discord-mcbe-darwin-arm64-v$LAUNCHER_VERSION.zip" \
             "$LAUNCHER_ASSET_DIR/discord-mcbe-darwin-x64-v$LAUNCHER_VERSION.zip" \
             "$LAUNCHER_ASSET_DIR/discord-mcbe-linux-arm64-v$LAUNCHER_VERSION.zip" \
+            "$LAUNCHER_ASSET_DIR/discord-mcbe-linux-arm64-android-v$LAUNCHER_VERSION.zip" \
             "$LAUNCHER_ASSET_DIR/discord-mcbe-linux-x64-v$LAUNCHER_VERSION.zip" \
             "$LAUNCHER_ASSET_DIR/discord-mcbe-windows-x64-v$LAUNCHER_VERSION.zip" \
             "$LAUNCHER_ASSET_DIR"/discord-mcbe-updater-*
