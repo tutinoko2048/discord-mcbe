@@ -15,7 +15,7 @@ const platforms = [
     name: 'linux',
     run: 'assets/start.sh',
     ext: '',
-    targets: ['linux-x64', 'linux-arm64', 'darwin-x64', 'darwin-arm64'],
+    targets: ['linux-x64', 'linux-arm64', 'linux-arm64-android', 'darwin-x64', 'darwin-arm64'],
   },
 ] as const;
 
@@ -49,7 +49,8 @@ for (const platform of platforms) {
       minify: true,
       bytecode: true,
       compile: {
-        target: `bun-${target}`,
+        // bun-types doesn't include the android target yet
+        target: `bun-${target}` as Bun.Build.CompileTarget,
         outfile: join(targetDir, `updater${platform.ext}`),
         windows: windowsOption,
       },
