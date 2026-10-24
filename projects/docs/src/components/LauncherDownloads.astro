@@ -20,6 +20,7 @@ const assets = [
   { target: 'linux-arm64', ja: 'Linux ARM64', en: 'Linux ARM64' },
   { target: 'darwin-x64', ja: 'Intel Mac', en: 'Intel Mac' },
   { target: 'darwin-arm64', ja: 'Apple Silicon Mac', en: 'Apple silicon Mac' },
+  { target: 'linux-arm64-android', ja: 'Android (Termux)', en: 'Android (Termux)' },
 ].map((asset) => {
   const name = `discord-mcbe-${asset.target}-v${version}.zip`;
   const releaseAsset = releaseAssets.get(name);
@@ -129,7 +130,7 @@ const copy =
     const parsed = parseUA();
     const osName = parsed.os.name;
     const deviceType = parsed.device.type;
-    if (deviceType === 'mobile' || deviceType === 'tablet' || osName === 'Android' || osName === 'iOS') {
+    if (osName === 'iOS' || (osName !== 'Android' && (deviceType === 'mobile' || deviceType === 'tablet'))) {
       const os = [osName, parsed.os.version].filter(Boolean).join(' ') || undefined;
       return { kind: 'unsupported-mobile', os };
     }
