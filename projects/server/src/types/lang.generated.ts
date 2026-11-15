@@ -32,7 +32,7 @@ export type LangArgs = {
   'common.noOnlineWorlds': [];
   'common.silent.description': [];
   'common.worldNotFound': [Arg];
-  'console.chat': [Arg, Arg, Arg];
+  'console.chat': [Arg, Arg, Arg, Arg, Arg, Arg];
   'console.command': [Arg, Arg, Arg];
   'console.connect': [Arg];
   'console.disconnect': [Arg];
@@ -109,8 +109,8 @@ export type LangArgs = {
   'death.fell.finish': [Arg, Arg];
   'death.fell.finish.item': [Arg, Arg, Arg];
   'death.fell.killer': [Arg];
-  'discord.chat': [Arg, Arg];
-  'discord.chat.multipleWorlds': [Arg, Arg, Arg];
+  'discord.chat': [Arg, Arg, Arg, Arg, Arg];
+  'discord.chat.multipleWorlds': [Arg, Arg, Arg, Arg, Arg, Arg];
   'discord.connect': [];
   'discord.disconnect': [];
   'discord.join': [Arg];

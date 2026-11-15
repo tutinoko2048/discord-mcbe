@@ -97,14 +97,20 @@ export class EventHandler {
 
   private async onMinecraftMessage(event: MinecraftMessageEvent) {
     const { world, sender } = event;
-    const { senderName: displayName, message } = formatChatDisplay({
+    const {
+      senderName: displayName,
+      message,
+      name,
+      namePrefix,
+      nameSuffix,
+    } = formatChatDisplay({
       senderName: sender.name,
       message: event.message,
       formatting: event.formatting,
       stripColor: this.app.config.bot.strip_color_prefix,
     });
 
-    this.logger.info(_t('console.chat', world.name, displayName, message));
+    this.logger.info(_t('console.chat', world.name, displayName, message, name, namePrefix, nameSuffix));
 
     try {
       const worldCount = this.app.minecraft.getWorlds().length;
@@ -119,9 +125,13 @@ export class EventHandler {
           avatarUrlTemplate: this.app.config.bot.minecraft_chat_avatar_url,
         });
       } else if (worldCount >= 2) {
-        await this.app.bot.sendMessage(_t('discord.chat.multipleWorlds', world.name, displayName, message));
+        await this.app.bot.sendMessage(
+          _t('discord.chat.multipleWorlds', world.name, displayName, message, name, namePrefix, nameSuffix),
+        );
       } else {
-        await this.app.bot.sendMessage(_t('discord.chat', displayName, message));
+        await this.app.bot.sendMessage(
+          _t('discord.chat', displayName, message, name, namePrefix, nameSuffix),
+        );
       }
     } catch (error) {
       this.logger.error(error);

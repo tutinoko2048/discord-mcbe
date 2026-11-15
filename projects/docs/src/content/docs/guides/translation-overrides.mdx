@@ -39,6 +39,31 @@ discord-mcbeには、さまざまな場面で表示されるメッセージが�
 - Minecraft向けの文章では`§a`などのカラーコードを使えます。Discord向けの文章ではDiscordのMarkdownとして解釈される記号に注意してください。
 - 変更後はdiscord-mcbeを再起動してください。
 
+### Minecraftチャットの送信者名の装飾
+
+`Player.chatNamePrefix`や[他のアドオンとの連携機能](/guides/addon-integration/)で送信者名に装飾が付いている場合、`discord.chat`、`discord.chat.multipleWorlds`、`console.chat`では、名前と装飾を別々のプレースホルダーとして使えます。
+
+| 内容                   | `discord.chat` | `discord.chat.multipleWorlds` / `console.chat` |
+| ---------------------- | -------------- | ---------------------------------------------- |
+| ワールド名             | -              | `%0`                                           |
+| 送信者名（装飾付き）   | `%0`           | `%1`                                           |
+| メッセージ             | `%1`           | `%2`                                           |
+| 送信者名（装飾なし）   | `%2`           | `%3`                                           |
+| 送信者名の前に付く装飾 | `%3`           | `%4`                                           |
+| 送信者名の後に付く装飾 | `%4`           | `%5`                                           |
+
+標準では、装飾をゲーム内と同じように`<>`の中に表示します（例: `<[Team A] Steve ★> hello`）。装飾がない場合は`<Steve> hello`です。
+
+前に付く装飾を`<>`の外に表示したい場合は、次のように変更します。結果は`[Team A] <Steve ★> hello`になります。
+
+```json
+"translation_overrides": {
+  "discord.chat": "%3<%2%4> %1",
+  "discord.chat.multipleWorlds": "[%0] %4<%3%5> %2",
+  "console.chat": "[%0] %4<%3%5> %2"
+}
+```
+
 ## <Icon name="list-format" />翻訳キー一覧
 
 <TranslationTable defaultLocale="ja" />
