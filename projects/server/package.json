@@ -43,12 +43,12 @@
     "@discord-mcbe/shared": "workspace:*",
     "@minecraft/server": "catalog:",
     "colorette": "^2.0.20",
-    "discord.js": "^14.27.0",
+    "discord.js": "^14.28.1",
     "jsonc-parser": "catalog:",
     "semver": "catalog:",
     "socket-be": "^2.8.0",
     "ws": "catalog:",
-    "zod": "^4.6.5"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@discord-mcbe/internal-config": "workspace:*",

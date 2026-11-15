@@ -15,20 +15,31 @@ catalog:
   '@minecraft/server-admin': 1.0.0-beta.1.26.52-stable
   '@minecraft/server-net': 1.0.0-beta.1.26.52-stable
   '@minecraft/server-ui': 2.2.0
-  '@types/ws': ^8.18.1
+  '@types/ws': ^8.18.2
   bun-types: ^1.4.4
   jsonc-parser: ^3.3.1
   picocolors: ^1.1.1
-  ws: ^8.21.3
-  valibot: ^1.4.2
-  semver: ^7.7.4
+  ws: ^8.23.0
+  valibot: ^1.5.0
+  semver: ^7.8.6
   '@types/semver': ^7.8.0
+  vite: npm:@voidzero-dev/vite-plus-core@1.6.0
+  vite-plus: 1.6.0
 
 overrides:
   '@minecraft/server': 'catalog:'
+  vite@*: 'catalog:'
+
+peerDependencyRules:
+  allowAny:
+    - vite
+  allowedVersions:
+    vite: '*'
 
 minimumReleaseAgeExclude:
   - socket-be
 
 patchedDependencies:
   mcbe-ipc: patches/mcbe-ipc.patch
+
+pmOnFail: 'download'
