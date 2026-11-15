@@ -92,7 +92,17 @@ discord-mcbe クライアント側の処理:
 - `messagePrefix` / `messageSuffix` は、今のところ `dmc:on_chat_send` でアドオンが渡した場合にだけ使われる。
 - `dmc:on_chat_send` で `formatting` やその項目が省略された場合は、装飾なしとして扱う。プレイヤーのプロパティは自動では読まない。チャットを自前で表示するアドオンは標準のチャット表示を置き換えているので、ゲーム内でこれらの値が表示されているとは限らないため。標準の値を使いたいアドオンは `player.chatNamePrefix` などを自分で渡す。`beforeEvents.chatSend` の `message` にも `chatMessagePrefix` が含まれるので、それをそのまま `message` として送る場合は `messagePrefix` を付けない。
 - 値はプレーンな文字列だけを受け付ける。RawMessage（`translate` など）は discord-mcbe 側で解決できないので、アドオン側で文字列にしてから送る。
-- 表示名を使う場所: コンソールログ、Webhook の username、Webhook を使わないときの `<名前> メッセージ` 形式。
+- 表示名を使う場所: コンソールログ、Webhook の username、Webhook を使わないときの Discord のメッセージ。
+- コンソールログと Discord のメッセージでは、名前と装飾を別々のプレースホルダーとして翻訳テンプレートに渡す。`translation_overrides` で装飾の位置を変えられる。
+  - `discord.chat`: `%0` 装飾付きの名前、`%1` 本文、`%2` 装飾なしの名前、`%3` 名前の prefix、`%4` 名前の suffix。
+  - `discord.chat.multipleWorlds` と `console.chat`: 先頭の `%0` がワールド名で、以降は1つずつ後ろにずれる。
+  - `%0` と `%1`（ずれる側では `%1` と `%2`）の意味は変えない。すでにテンプレートを上書きしている設定が、装飾付きのまま動き続ける。
+  - 既定のテンプレートは `<%3%2%4> %1`。装飾は `<>` の中に出す（例: `<[日本] Steve ★> hello`）。今までの表示と同じで、`chatNamePrefix` を使ったときのゲーム内の並びとも一致する。装飾がなければ `<Steve> hello` になる。
+  - prefix を `<>` の外に出したい場合は `"discord.chat": "%3<%2%4> %1"` と上書きする（例: `[日本] <Steve ★> hello`）。MakeCountry の国名タグはこの並びのほうが読みやすいので、MakeCountry への PR の説明でこの上書きを案内する。
+  - 外に出す並びを既定にしなかった理由: 標準の装飾を使うサーバーでゲーム内と並びが変わること、MakeCountry のサポーターの印（prefix の末尾の `★`）が `★<Steve>` と名前から離れること、prefix の末尾に空白がないと `[VIP]<Steve>` と詰まって見えること。
+  - 本文の prefix / suffix は分けて渡さない。位置を変える用途が見当たらないため。
+  - Webhook の username には `<>` がないので、装飾付きの名前をそのまま使う。
+- テンプレートの置き換えは1回の走査で行う。値を順番に置き換える方式だと、チャット本文に含まれる `%2` などが別の値に置き換わり、`- 表示名を使う場所: コンソールログ、Webhook の username、Webhook を使わないときの `<名前> メッセージ` 形式。` などが `String.prototype.replace` に解釈されて表示が崩れるため。
 - アバター URL の `{name}` には装飾なしの名前を使う。
 - 装飾の `§` は `strip_color_prefix` に従って消す。Webhook の username は 80 文字で切る（既存の処理）。
 - `MinecraftMessageEvent` に `formatting` と `source` を追加し、サーバー側スクリプトから参照できるようにする。`message` は生の本文のままにする。
@@ -193,6 +203,9 @@ MakeCountry は装飾をメッセージごとに国データから組み立て�
 - [x] `projects/server/src/handlers/event.ts`、`projects/server/src/discord/minecraft-chat-webhook.ts`: `formatting` から表示名と表示する本文を組み立てる。テストを更新
 - [x] `projects/docs/src/content/docs/guides/addon-integration.mdx`（日本語・英語）: 登録とチャット通知の説明を追加
 - [x] `allow_addon_messages` の説明文を「チャット連携も対象」と分かるように更新
+- [x] `projects/server/src/util/i18n.ts`: テンプレートの置き換えを1回の走査にする
+- [x] `projects/server/src/assets/locales/*.json`、`projects/server/src/handlers/event.ts`: 名前と装飾を別々のプレースホルダーで渡し、既定の表示を `[装飾] <名前> 本文` にする
+- [x] `projects/docs/src/content/docs/guides/translation-overrides.mdx`（日本語・英語）: チャットのプレースホルダーの説明を追加
 
 ### MakeCountry
 
@@ -205,12 +218,17 @@ MakeCountry は装飾をメッセージごとに国データから組み立て�
 - 全体チャットの表示が `[§{色}国名§r/§9連邦名§r|ペンネーム§r] §7{サポーターの印}名前§f: {発言色}本文` になった。サポーターの印（`★`）と発言色が増えている。
 - チャットの配信が `sendChatBatch` 経由になった。配布版では原文をそのまま配信する。
 
-作業項目:
+作業項目（フォーク `tutinoko2048/MakeCountry` の `feat/discord-mcbe-integration` ブランチで実装済み。未コミット、ゲーム内では未確認）:
 
-- [ ] `package.json` に `mcbe-ipc`（`^3.4.2`）を追加する。`mcbe-ipc` の package.json には `exports` がないので、tsdown で解決できない場合は `mcbe-ipc/dist/ipc.js` を import する。
-- [ ] `src/integrations/discord-mcbe.ts`（場所は MakeCountry 側の方針に合わせる）を追加し、`src/app/bootstrap.ts` から import する。ワールド読み込み時に `dmc:register` を呼び、チャットを通知する関数 `notifyDiscordChat` を export する。
-- [ ] `src/domain/chat/chat-router.ts` の `general` の分岐で `notifyDiscordChat` を呼ぶ。
-- [ ] ビルドして `scripts/index.js` に `mcbe-ipc` が含まれていることを確かめる。
+- [x] `package.json` に `mcbe-ipc`（`^3.4.2`）を追加する。
+- [x] `tsdown.config.js` に `noExternal: ['mcbe-ipc']` と `inlineOnly: ['mcbe-ipc']` を追加する。tsdown は `dependencies` のパッケージをバンドルに含めないので、指定しないと `import ... from "mcbe-ipc"` がそのまま残り、ゲーム内で読み込めない。
+- [x] `src/features/discord-mcbe/index.ts` を追加する。ワールド読み込み時に `dmc:register` を呼び、チャットを通知する関数 `notifyDiscordChat` を export する。`chat-router.ts` が import するので、`bootstrap.ts` への追加は要らない。
+- [x] `src/domain/chat/chat-router.ts` の `general` の分岐で `notifyDiscordChat` を呼ぶ。
+- [x] `src/config/server.ts` に `discordMcbeIntegration`（連携の有効・無効、既定は有効）と `discordNoCountryName`（国に未所属のときの国名、既定は `無所属`）を追加する。
+- [x] `docs/admin.md` に連携の説明を1行追加する。
+- [x] `npm run typecheck` と `npm run build` が通り、`scripts/index.js` に `mcbe-ipc` が含まれていること（外部 import が `@minecraft/*` だけであること）を確かめる。
+- [ ] ゲーム内で discord-mcbe と一緒に動かして確認する。
+- [ ] upstream（`karonyt/MakeCountry`）へ PR を出す。
 
 通知を `playerHandler.afterEvents.chat` の購読ではなく `chat-router.ts` の中から行う理由:
 
@@ -225,12 +243,12 @@ MakeCountry は装飾をメッセージごとに国データから組み立て�
 | `messagePrefix`                | 送信者の発言色（`§f` 以外のとき）。任意 |
 | `nameSuffix` / `messageSuffix` | 使わない                                |
 
-- 国に所属していないときの国名は、ゲーム内では翻訳キー（`chat.player.no.join.any.country`）で表示している。翻訳はクライアント側で行われ、スクリプトからは文字列にできない。Discord 向けには固定の文字列（`無所属` など）を使うか、国名の部分を省く。
+- 国に所属していないときの国名は、ゲーム内では翻訳キー（`chat.player.no.join.any.country`）で表示している。翻訳はクライアント側で行われ、スクリプトからは文字列にできない。Discord 向けには設定 `discordNoCountryName` の文字列を使う。
 - 発言色は読む側の設定（`hideChatColors`）で消せるが、Discord 向けには送信者の色をそのまま渡す。discord-mcbe の `strip_color_prefix` が有効なら消える。
 - `message` には `this.message`（`beforeEvents.chatSend` の `message`）をそのまま渡す。
 
 ```ts
-// src/integrations/discord-mcbe.ts
+// src/features/discord-mcbe/index.ts（概略）
 import { system, world, type Player } from '@minecraft/server';
 import { IPC, PROTO } from 'mcbe-ipc';
 
@@ -286,8 +304,8 @@ case `general`: {
 実装時に確かめること:
 
 - `IPC.send` は `beforeEvents.chatSend` の中から直接呼べる（「検証結果」）。`chat-router.ts` の処理はこのイベントの中で動くので、`system.run` で遅らせる必要はない。
-- MakeCountry のビルドには、日本語の文字列リテラルを翻訳キーに置き換えるプラグイン（`tools/game-ui-localization.mjs`）が入っている。対象はフォームのメソッドと `sendMessage` の引数で、`IPC.send` の引数は対象外に見える。Discord 向けの文字列が置き換えられていないことを、ビルド後に確かめる。
-- `@discord-mcbe/shared` の型と定数（`AddonChannel` など）は、次のリリース以降に使える。それまでは上のように文字列で書く。
+- MakeCountry のビルドには、日本語の文字列リテラルを翻訳キーに置き換えるプラグイン（`tools/game-ui-localization.mjs`）が入っている。ビルド結果を見て、設定の `無所属` と `namePrefix` の組み立てが置き換えられていないことを確認した。
+- `@discord-mcbe/shared` は MakeCountry の依存に足さない。連携コードは20行程度で、型や定数のために依存を増やすほどではないため。チャンネル名と機能名は上のように文字列で書く。
 
 ## 検証結果
 
