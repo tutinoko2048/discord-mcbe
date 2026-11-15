@@ -54,6 +54,17 @@ it('resolves override chains and placeholders without changing other locales', (
   expect(_t('command.help.silent.description')).toBe('Whether to send the result only to yourself');
 });
 
+it('inserts values literally, without interpreting their contents', () => {
+  initialize(Locale.EnglishUS, { 'discord.chat': '<%0> %1' });
+
+  // A value that looks like a placeholder is not replaced again
+  expect(_t('discord.chat', 'costs %1', 'and %0')).toBe('<costs %1> and %0');
+  // "$&" and "$1" are special in String.prototype.replace replacement strings
+  expect(_t('discord.chat', 'Steve', 'price: $& $1 $$')).toBe('<Steve> price: $& $1 $$');
+
+  initialize(Locale.EnglishUS, enUS);
+});
+
 it('falls back to en-US for a referenced key missing in the selected locale', () => {
   initialize(Locale.French, { 'command.help.silent.description': '$command.list.description' });
   expect(_t('command.help.silent.description')).toBe('Displays the number of players connected to the world');

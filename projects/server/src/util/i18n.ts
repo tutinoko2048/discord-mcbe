@@ -82,11 +82,12 @@ export function translateMinecraftKey(key: string, fallback: string): string {
 }
 
 function replaceTemplates(text: string, values: Arg[]): string {
-  let result = text;
-  for (const [index, value] of values.entries()) {
-    result = result.replace(new RegExp(`%${index}`, 'g'), value.toString());
-  }
-  return result;
+  // Replace every placeholder in one pass, so a placeholder-like text inside an inserted value
+  // (for example a chat message containing "%2") is left as it is.
+  return text.replace(/%(\d+)/g, (placeholder, index: string) => {
+    const value = values[Number(index)];
+    return value === undefined ? placeholder : value.toString();
+  });
 }
 
 export function getDefaultLocalizationKeys(): string[] {
