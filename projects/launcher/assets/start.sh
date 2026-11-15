@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 LAUNCHER_VERSION=$(./updater --version 2>/dev/null || true)
 
