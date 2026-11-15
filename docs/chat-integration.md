@@ -97,7 +97,7 @@ discord-mcbe クライアント側の処理:
 - 装飾の `§` は `strip_color_prefix` に従って消す。Webhook の username は 80 文字で切る（既存の処理）。
 - `MinecraftMessageEvent` に `formatting` と `source` を追加し、サーバー側スクリプトから参照できるようにする。`message` は生の本文のままにする。
 
-MakeCountry の現在の表示は `[§a国名§r/§9連邦名§r|ペンネーム§r] §7名前§f: メッセージ` なので、`namePrefix` に `[国名/連邦名|ペンネーム] ` を入れる想定。国に所属していない場合の表示は翻訳キー（`chat.player.no.join.any.country`）なので、MakeCountry 側で文字列にするか、省略する。
+MakeCountry での `formatting` の割り当ては「作業項目」の MakeCountry の節に書く。
 
 MakeCountry は装飾をメッセージごとに国データから組み立てていて、`player.chatNamePrefix` は設定していない。チャットを cancel しているので、設定してもゲーム内には表示されない。このため、ペイロードで明示的に渡す形が合う。
 
@@ -160,7 +160,7 @@ MakeCountry は装飾をメッセージごとに国データから組み立て�
 
 フェーズ1を先にする理由:
 
-- MakeCountry との連携には MCBE-IPC が必要。`@bedrock-core/sync` は TypeScript のソースで配布され、`@bedrock-core/observable` に依存するので、バンドラーのない MakeCountry には組み込みにくい。
+- MakeCountry との連携を MCBE-IPC で先に実装して、実機で確認できている。計画を立てた時点の MakeCountry（2.4.1）にはバンドラーがなく、TypeScript のソースで配布される `@bedrock-core/sync` は組み込みにくかった。2.5.1 で tsdown が入ったので、この制約はなくなっている。
 - `@bedrock-core/sync` は 2026年8月の公開から3か月で 0.1 → 2.0 と破壊的変更が続いている。対応を後にしたほうが、追従の手間が少ない。
 - フェーズ1でペイロード（登録、チャット通知、`formatting`）が JSON のオブジェクトとして固まる。`@bedrock-core/sync` 側は同じ処理を別の入口から呼ぶだけになる。
 
@@ -196,44 +196,98 @@ MakeCountry は装飾をメッセージごとに国データから組み立て�
 
 ### MakeCountry
 
-- [ ] MCBE-IPC の `dist/ipc.js` をソースとして同梱（バンドラーがないため）
-- [ ] 起動時に `dmc:register` を呼ぶ
-- [ ] `playerHandler.afterEvents.chat` で `type === 'general'` のときだけ `dmc:on_chat_send` を送る
+2.5.1（`1c1add7d`、2026-11-16）のソースを前提にする。Fork して PR を出す。
 
-```js
-import { system } from '@minecraft/server';
-import { IPC, PROTO } from './ipc.js';
-import { playerHandler } from '../shared/events/make-country-events.js';
+2.4.1 から変わった点で、この計画に関係するもの:
 
-let enabled = false;
+- tsdown でバンドルするようになった（`npm run build` → `scripts/index.js`）。`mcbe-ipc` は npm の依存として追加でき、ソースを同梱する必要がなくなった。配布パックの `scripts/plugins/register.js` を書き換える導入方法は使えなくなった。
+- チャット種別に `direct` が増えた（`event.targets` があるとき。DM）。
+- 全体チャットの表示が `[§{色}国名§r/§9連邦名§r|ペンネーム§r] §7{サポーターの印}名前§f: {発言色}本文` になった。サポーターの印（`★`）と発言色が増えている。
+- チャットの配信が `sendChatBatch` 経由になった。配布版では原文をそのまま配信する。
 
-system.run(async () => {
+作業項目:
+
+- [ ] `package.json` に `mcbe-ipc`（`^3.4.2`）を追加する。`mcbe-ipc` の package.json には `exports` がないので、tsdown で解決できない場合は `mcbe-ipc/dist/ipc.js` を import する。
+- [ ] `src/integrations/discord-mcbe.ts`（場所は MakeCountry 側の方針に合わせる）を追加し、`src/app/bootstrap.ts` から import する。ワールド読み込み時に `dmc:register` を呼び、チャットを通知する関数 `notifyDiscordChat` を export する。
+- [ ] `src/domain/chat/chat-router.ts` の `general` の分岐で `notifyDiscordChat` を呼ぶ。
+- [ ] ビルドして `scripts/index.js` に `mcbe-ipc` が含まれていることを確かめる。
+
+通知を `playerHandler.afterEvents.chat` の購読ではなく `chat-router.ts` の中から行う理由:
+
+- `afterEvents.chat` のペイロードは `{ player, message, type }` だけで、国名・連邦名・ペンネーム・サポーターの印を持っていない。これらは `ChatHandler.handleChat` のローカル変数なので、購読側で装飾を組み立てるには同じ計算をもう一度書くことになる。
+- `general` の分岐の中なら、表示に使っている値をそのまま `formatting` に渡せる。連投制限や `beforeEvents.chat` の cancel を通過したあとなので、通知してよいチャットだけが来る。
+
+`formatting` の割り当て:
+
+| フィールド                     | 入れる値                                |
+| ------------------------------ | --------------------------------------- |
+| `namePrefix`                   | `[§{色}国名§r/§9連邦名§r                | ペンネーム§r] §7{サポーターの印}` |
+| `messagePrefix`                | 送信者の発言色（`§f` 以外のとき）。任意 |
+| `nameSuffix` / `messageSuffix` | 使わない                                |
+
+- 国に所属していないときの国名は、ゲーム内では翻訳キー（`chat.player.no.join.any.country`）で表示している。翻訳はクライアント側で行われ、スクリプトからは文字列にできない。Discord 向けには固定の文字列（`無所属` など）を使うか、国名の部分を省く。
+- 発言色は読む側の設定（`hideChatColors`）で消せるが、Discord 向けには送信者の色をそのまま渡す。discord-mcbe の `strip_color_prefix` が有効なら消える。
+- `message` には `this.message`（`beforeEvents.chatSend` の `message`）をそのまま渡す。
+
+```ts
+// src/integrations/discord-mcbe.ts
+import { system, world, type Player } from '@minecraft/server';
+import { IPC, PROTO } from 'mcbe-ipc';
+
+const SOURCE = 'makecountry';
+
+let registered = false;
+
+world.afterEvents.worldLoad.subscribe(async () => {
   const response = await Promise.race([
     IPC.invoke(
       'dmc:register',
       PROTO.String,
-      JSON.stringify({ source: 'makecountry', protocol: 1, features: ['minecraft_chat'] }),
+      JSON.stringify({ source: SOURCE, protocol: 1, features: ['minecraft_chat'] }),
       PROTO.String,
     ),
     system.waitTicks(20).then(() => undefined),
   ]);
-  enabled = response !== undefined;
+  if (response === undefined) return;
+
+  const { features } = JSON.parse(response) as { features?: string[] };
+  registered = features?.includes('minecraft_chat') ?? false;
 });
 
-playerHandler.afterEvents.chat.subscribe(({ player, message, type }) => {
-  if (!enabled || type !== 'general') return;
+export function notifyDiscordChat(
+  sender: Player,
+  message: string,
+  formatting: { namePrefix?: string; messagePrefix?: string },
+): void {
+  if (!registered) return;
+
   IPC.send(
     'dmc:on_chat_send',
     PROTO.String,
-    JSON.stringify({
-      source: 'makecountry',
-      playerId: player.id,
-      message,
-      formatting: { namePrefix: '[国名] ' },
-    }),
+    JSON.stringify({ source: SOURCE, playerId: sender.id, message, formatting }),
   );
-});
+}
 ```
+
+```ts
+// src/domain/chat/chat-router.ts の general の分岐
+case `general`: {
+  // 既存の配信処理
+  notifyDiscordChat(this.sender, this.message, {
+    namePrefix: `[§${this.playerCountryData?.color ?? `a`}${landName}${federationNameInChat}${penname}§r] §7${badge}`,
+    messagePrefix: chatColor !== `§f` ? chatColor : undefined,
+  });
+  break;
+}
+```
+
+`landName` は、所属国があれば国名、なければ Discord 向けの固定文字列。
+
+実装時に確かめること:
+
+- `IPC.send` は `beforeEvents.chatSend` の中から直接呼べる（「検証結果」）。`chat-router.ts` の処理はこのイベントの中で動くので、`system.run` で遅らせる必要はない。
+- MakeCountry のビルドには、日本語の文字列リテラルを翻訳キーに置き換えるプラグイン（`tools/game-ui-localization.mjs`）が入っている。対象はフォームのメソッドと `sendMessage` の引数で、`IPC.send` の引数は対象外に見える。Discord 向けの文字列が置き換えられていないことを、ビルド後に確かめる。
+- `@discord-mcbe/shared` の型と定数（`AddonChannel` など）は、次のリリース以降に使える。それまでは上のように文字列で書く。
 
 ## 検証結果
 
