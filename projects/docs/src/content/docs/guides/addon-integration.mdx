@@ -1,12 +1,12 @@
 ---
 title: 他のアドオンとの連携機能
-description: discord-mcbeを利用して、他のアドオンからDiscordへメッセージを送信する方法を解説します。
+description: discord-mcbeを利用して、他のアドオンからDiscordへメッセージを送信したり、チャットを連携したりする方法を解説します。
 ---
 
 import { Code, Tabs, TabItem } from '@astrojs/starlight/components';
 
 discord-mcbeには、<a href="https://github.com/OmniacDev/MCBE-IPC" target="_blank" rel="noopener noreferrer">MCBE-IPC</a>を使った他のアドオンとの連携機能があります。
-これにより、他のアドオンからdiscord-mcbeを経由してDiscordへメッセージを送信できます。
+これにより、他のアドオンからdiscord-mcbeを経由してDiscordへメッセージを送信したり、アドオンが処理したチャットをDiscordへ表示したりできます。
 
 他のアドオンへのMCBE-IPCの導入方法は配布元の説明に従ってください。
 
@@ -94,6 +94,119 @@ sendDiscordMessage('example-addon', {
 
 `source`には送信元のアドオン名を指定します。`message`では`embeds`など、JSONで表現できるCreate Message APIのフィールドも利用できます。添付ファイル本体の転送には対応していません。
 
+## チャットを処理するアドオンと連携する
+
+`world.beforeEvents.chatSend`でチャットをキャンセルし、独自の形式で送り直すアドオンを導入していると、discord-mcbeはチャットを受け取れません。そのようなアドオンは、次の手順でチャットをdiscord-mcbeへ通知できます。通知されたチャットは通常のチャットと同じように扱われ、コンソールとDiscordに表示されます。
+
+### 1. 起動時に登録する
+
+`dmc:register`を起動時に一度だけ呼び出します。20tick以内に応答がなければ、discord-mcbeは導入されていません。
+
+<Tabs syncKey="code">
+<TabItem value="ts" label="TypeScript">
+
+```ts
+import { system } from '@minecraft/server';
+import { IPC, PROTO } from 'mcbe-ipc';
+
+interface RegisterResponse {
+  protocol: number;
+  connected: boolean;
+  features: string[];
+}
+
+export async function registerToDiscordMcbe(source: string): Promise<RegisterResponse | undefined> {
+  const response = await Promise.race([
+    IPC.invoke(
+      'dmc:register',
+      PROTO.String,
+      JSON.stringify({ source, protocol: 1, features: ['minecraft_chat'] }),
+      PROTO.String,
+    ),
+    system.waitTicks(20).then(() => undefined),
+  ]);
+  return response === undefined ? undefined : (JSON.parse(response) as RegisterResponse);
+}
+```
+
+</TabItem>
+<TabItem value="js" label="JavaScript">
+
+```js
+import { system } from '@minecraft/server';
+import { IPC, PROTO } from 'mcbe-ipc';
+
+export async function registerToDiscordMcbe(source) {
+  const response = await Promise.race([
+    IPC.invoke(
+      'dmc:register',
+      PROTO.String,
+      JSON.stringify({ source, protocol: 1, features: ['minecraft_chat'] }),
+      PROTO.String,
+    ),
+    system.waitTicks(20).then(() => undefined),
+  ]);
+  return response === undefined ? undefined : JSON.parse(response);
+}
+```
+
+</TabItem>
+</Tabs>
+
+| フィールド | 説明                                                               |
+| ---------- | ------------------------------------------------------------------ |
+| `source`   | アドオン名。以降の通知でも同じ値を使います                         |
+| `protocol` | このページで説明している形式のバージョン。現在は`1`                |
+| `features` | 利用する機能。チャットを通知する場合は`minecraft_chat`を指定します |
+
+応答の`features`には、要求した機能のうちdiscord-mcbeが受け付けたものが入ります。`connected`は応答時点の接続状態です。
+
+`minecraft_chat`を登録すると、discord-mcbeは自身によるチャットの中継を止め、アドオンからの通知だけをDiscordへ送ります。
+
+### 2. チャットを通知する
+
+Discordへ表示したいチャットごとに`dmc:on_chat_send`を送信します。全体チャットだけを通知するなど、どのチャットを通知するかはアドオン側で決めてください。
+
+```ts
+import type { Player } from '@minecraft/server';
+import { IPC, PROTO } from 'mcbe-ipc';
+
+function notifyChat(source: string, player: Player, message: string) {
+  IPC.send(
+    'dmc:on_chat_send',
+    PROTO.String,
+    JSON.stringify({
+      source,
+      playerId: player.id,
+      message,
+      formatting: { namePrefix: '[Team A] ' },
+    }),
+  );
+}
+```
+
+| フィールド   | 説明                                             |
+| ------------ | ------------------------------------------------ |
+| `source`     | 登録時と同じアドオン名                           |
+| `playerId`   | 発言したプレイヤーの`Player.id`                  |
+| `message`    | 装飾を含まない本文                               |
+| `formatting` | 送信者名と本文の前後に付ける文字列。省略できます |
+
+`formatting`には次の4つを指定できます。いずれも省略でき、文字列のみ指定できます。
+
+| フィールド      | 表示位置     |
+| --------------- | ------------ |
+| `namePrefix`    | 送信者名の前 |
+| `nameSuffix`    | 送信者名の後 |
+| `messagePrefix` | 本文の前     |
+| `messageSuffix` | 本文の後     |
+
+- 登録していないアドオンからの通知と、オンラインでないプレイヤーの通知は無視されます。
+- discord-mcbeが未接続のときの通知は無視されます。接続状態を確認してから送る必要はありません。
+- `formatting`を省略した場合、`Player.chatNamePrefix`などの値は自動では使われません。使いたい場合は、アドオン側で読み取って指定してください。
+- `beforeEvents.chatSend`の`message`には`Player.chatMessagePrefix`がすでに含まれています。その`message`をそのまま送る場合は、`messagePrefix`を指定しないでください。
+- `bot.allow_addon_messages`が`false`のとき、通知されたチャットはDiscordへ送信されません。
+
 ## 接続イベントを受け取る
 
 接続開始時に`dmc:connect`、切断時に`dmc:disconnect`が発火します。どちらもデータはありません。
@@ -109,3 +222,27 @@ IPC.on('dmc:disconnect', PROTO.Void, () => {
   // discord-mcbeから切断された
 });
 ```
+
+## 型と定数を利用する
+
+バンドラーを使っているアドオンは、npmパッケージ`@discord-mcbe/shared`からチャンネル名、機能名、ペイロードの型と検証関数を利用できます。
+
+```ts
+import { IPC, PROTO } from 'mcbe-ipc';
+import { AddonChannel, type AddonChatSend } from '@discord-mcbe/shared';
+
+const payload: AddonChatSend = {
+  source: 'example-addon',
+  playerId: player.id,
+  message: 'hello',
+};
+IPC.send(AddonChannel.ChatSend, PROTO.String, JSON.stringify(payload));
+```
+
+| エクスポート                                     | 内容                                        |
+| ------------------------------------------------ | ------------------------------------------- |
+| `AddonChannel`                                   | チャンネル名（`dmc:register`など）          |
+| `AddonFeature`                                   | 機能名（`minecraft_chat`）                  |
+| `AddonRegisterRequest` / `AddonRegisterResponse` | `dmc:register`の要求と応答の型              |
+| `AddonChatSend` / `AddonSendMessage`             | `dmc:on_chat_send` / `dmc:send_message`の型 |
+| `safeParseAddonRegisterResponse`                 | `dmc:register`の応答を検証する関数          |

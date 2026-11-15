@@ -1,6 +1,5 @@
 import { system, world } from '@minecraft/server';
-import { IPC, PROTO } from 'mcbe-ipc';
-import { ActionId, DisconnectReason } from '@discord-mcbe/shared';
+import { ActionId, DisconnectReason, type ResponseData } from '@discord-mcbe/shared';
 import { registerEvents } from './event';
 import { registerCommands } from './command';
 import { createPlayerDescriptor } from './descriptors';
@@ -10,7 +9,7 @@ import type { ServerNetBridgeClient } from '../transport/server-net';
 import type { WebSocketBridgeClient } from '../transport/websocket';
 import type { IBridgeClient } from '../transport/interfaces';
 import { WORLD_NAME_DYNAMIC_PROPERTY_KEY } from './constants';
-import { registerIpc } from './features/ipc';
+import { AddonIntegration } from './features/addon-integration';
 
 export enum ClientType {
   Local = 'Local',
@@ -22,6 +21,8 @@ export abstract class BaseClient<T extends IBridgeClient = IBridgeClient> {
 
   public readonly logger = new Logger('discord-mcbe');
 
+  private readonly integration: AddonIntegration;
+
   private hasConnected = false;
   private readonly defaultWorldName?: string | (() => string | undefined);
 
@@ -32,8 +33,8 @@ export abstract class BaseClient<T extends IBridgeClient = IBridgeClient> {
     this.defaultWorldName = defaultWorldName;
 
     // register events to send to server
-    registerEvents(this.bridge);
-    registerIpc(this.bridge);
+    this.integration = new AddonIntegration(this.bridge, this.logger);
+    registerEvents(this.bridge, this.integration);
 
     system.beforeEvents.startup.subscribe((ev) => registerCommands(ev.customCommandRegistry, this));
 
@@ -61,13 +62,16 @@ export abstract class BaseClient<T extends IBridgeClient = IBridgeClient> {
         data: { players: players.map(createPlayerDescriptor) },
       });
       if (result.error) throw new Error(result.message);
+
+      const { settings } = result.data as ResponseData<ActionId.WorldInitialize>;
+      this.integration.setServerSettings(settings);
     } catch (error) {
       this.logger.error('Failed to send WorldInitialize packet:', error);
     }
   }
 
   private onBridgeConnect({ sessionId }: { sessionId: string }): void {
-    IPC.send('dmc:connect', PROTO.Void, undefined);
+    this.integration.notifyConnect();
     if (this.hasConnected) {
       this.logger.info(`Bridge reconnected (session: ${sessionId})`);
     }
@@ -76,7 +80,7 @@ export abstract class BaseClient<T extends IBridgeClient = IBridgeClient> {
   }
 
   private onBridgeDisconnect({ reason }: { reason: DisconnectReason }): void {
-    IPC.send('dmc:disconnect', PROTO.Void, undefined);
+    this.integration.notifyDisconnect();
     this.logger.info(`Bridge disconnected (${DisconnectReason[reason]})`);
   }
 

@@ -15,6 +15,24 @@ describe('createMinecraftChatWebhookMessage', () => {
     ).toEqual({ username: 'Player One', content: 'hello' });
   });
 
+  it('shows the display name as the username but keeps the plain name in the avatar URL', () => {
+    expect(
+      createMinecraftChatWebhookMessage({
+        worldName: 'main',
+        worldCount: 2,
+        senderName: 'Player One',
+        displayName: '[JP] Player One',
+        pfid: 'xbl:123/456' as Pfid,
+        content: 'hello',
+        avatarUrlTemplate: 'https://example.com/faces/{name}',
+      }),
+    ).toEqual({
+      username: 'main | [JP] Player One',
+      content: 'hello',
+      avatarURL: 'https://example.com/faces/Player%20One',
+    });
+  });
+
   it('prefixes the username with the world name and expands an avatar URL template', () => {
     expect(
       createMinecraftChatWebhookMessage({

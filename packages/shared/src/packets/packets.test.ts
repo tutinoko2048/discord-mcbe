@@ -16,7 +16,7 @@ import {
   successResponse,
 } from '..';
 
-describe('protocol v2 packet validation', () => {
+describe('protocol v3 packet validation', () => {
   test('accepts notifications without request state', () => {
     const result = safeParseServerBoundPacket({
       type: ActionId.PlayerLeave,
@@ -72,6 +72,41 @@ describe('protocol v2 packet validation', () => {
         },
       }).success,
     ).toBe(true);
+  });
+
+  test('accepts chat with optional formatting and source', () => {
+    const chat = { senderName: 'Player', senderUniqueId: 'player-1', message: 'hello' };
+
+    expect(safeParseServerBoundPacket({ type: ActionId.ChatSend, data: chat }).success).toBe(true);
+    expect(
+      safeParseServerBoundPacket({
+        type: ActionId.ChatSend,
+        data: {
+          ...chat,
+          formatting: { namePrefix: '[JP] ', nameSuffix: '', messagePrefix: '> ', messageSuffix: ' <' },
+          source: 'example-addon',
+        },
+      }).success,
+    ).toBe(true);
+    expect(
+      safeParseServerBoundPacket({ type: ActionId.ChatSend, data: { ...chat, formatting: {} } }).success,
+    ).toBe(true);
+
+    expect(
+      safeParseServerBoundPacket({
+        type: ActionId.ChatSend,
+        data: { ...chat, formatting: { namePrefix: 1 } },
+      }).success,
+    ).toBe(false);
+    expect(
+      safeParseServerBoundPacket({
+        type: ActionId.ChatSend,
+        data: { ...chat, formatting: { unknownField: 'x' } },
+      }).success,
+    ).toBe(false);
+    expect(
+      safeParseServerBoundPacket({ type: ActionId.ChatSend, data: { ...chat, source: '' } }).success,
+    ).toBe(false);
   });
 
   test('rejects extra notification fields and invalid nested descriptors', () => {
@@ -133,6 +168,11 @@ describe('protocol v2 packet validation', () => {
     expect(safeParseResponseData(ActionId.GetTPS, { tps: '20' }).success).toBe(false);
     expect(safeParseResponseData(ActionId.SendMessage, null).success).toBe(true);
     expect(safeParseResponseData(ActionId.SendMessage, undefined).success).toBe(false);
+    expect(
+      safeParseResponseData(ActionId.WorldInitialize, { settings: { allowAddonMessages: false } }).success,
+    ).toBe(true);
+    expect(safeParseResponseData(ActionId.WorldInitialize, null).success).toBe(false);
+    expect(safeParseResponseData(ActionId.WorldInitialize, { settings: {} }).success).toBe(false);
   });
 
   test('accepts only the common response envelope from the server', () => {

@@ -1,3 +1,4 @@
+export * from './chat-format';
 export * from './config';
 export * from './constants';
 export * from './death-message';

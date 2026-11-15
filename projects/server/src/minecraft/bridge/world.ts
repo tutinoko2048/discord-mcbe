@@ -5,6 +5,7 @@ import {
   type UniqueId,
   type DisconnectReason,
   type PlayerDieDamagingEntity,
+  type ChatFormatting,
 } from '@discord-mcbe/shared';
 import { ScriptPlayer } from './player';
 import { ScriptScoreboard } from './scoreboard';
@@ -138,11 +139,11 @@ export class ScriptWorld<SESSION extends ISession = ISession> {
   }
 
   /** @ignore */
-  onChatSend(senderUniqueId: UniqueId, message: string) {
+  onChatSend(senderUniqueId: UniqueId, message: string, formatting?: ChatFormatting, source?: string) {
     const sender = this.players.get(senderUniqueId);
     if (!sender) throw new Error(`Player not found: ${senderUniqueId}`);
 
-    new MinecraftMessageEvent(this.app, this, sender, message).emit();
+    new MinecraftMessageEvent(this.app, this, sender, message, formatting, source).emit();
   }
 
   /**

@@ -1,12 +1,12 @@
 ---
 title: Add-on integration
-description: Learn how to send messages to Discord from other add-ons through discord-mcbe.
+description: Learn how other add-ons can send messages and report chat to Discord through discord-mcbe.
 ---
 
 import { Code, Tabs, TabItem } from '@astrojs/starlight/components';
 
 discord-mcbe supports integration with other add-ons through <a href="https://github.com/OmniacDev/MCBE-IPC" target="_blank" rel="noopener noreferrer">MCBE-IPC</a>.
-This allows other add-ons to send messages to Discord through discord-mcbe.
+This allows other add-ons to send messages to Discord through discord-mcbe, and to show chat they handle themselves on Discord.
 
 Follow the instructions from MCBE-IPC to add it to the other add-on.
 
@@ -94,6 +94,119 @@ sendDiscordMessage('example-addon', {
 
 Set `source` to the name of the sending addon. In `message`, you can use Create Message API fields that can be represented as JSON, such as `embeds`. Transferring attachment data is not supported.
 
+## Integrate an add-on that handles chat
+
+discord-mcbe cannot receive chat when another add-on cancels it in `world.beforeEvents.chatSend` and sends it again in its own format. Such an add-on can report chat to discord-mcbe with the steps below. Reported chat is handled like regular chat and appears in the console and on Discord.
+
+### 1. Register at startup
+
+Call `dmc:register` once at startup. If there is no response within 20 ticks, discord-mcbe is not installed.
+
+<Tabs syncKey="code">
+<TabItem value="ts" label="TypeScript">
+
+```ts
+import { system } from '@minecraft/server';
+import { IPC, PROTO } from 'mcbe-ipc';
+
+interface RegisterResponse {
+  protocol: number;
+  connected: boolean;
+  features: string[];
+}
+
+export async function registerToDiscordMcbe(source: string): Promise<RegisterResponse | undefined> {
+  const response = await Promise.race([
+    IPC.invoke(
+      'dmc:register',
+      PROTO.String,
+      JSON.stringify({ source, protocol: 1, features: ['minecraft_chat'] }),
+      PROTO.String,
+    ),
+    system.waitTicks(20).then(() => undefined),
+  ]);
+  return response === undefined ? undefined : (JSON.parse(response) as RegisterResponse);
+}
+```
+
+</TabItem>
+<TabItem value="js" label="JavaScript">
+
+```js
+import { system } from '@minecraft/server';
+import { IPC, PROTO } from 'mcbe-ipc';
+
+export async function registerToDiscordMcbe(source) {
+  const response = await Promise.race([
+    IPC.invoke(
+      'dmc:register',
+      PROTO.String,
+      JSON.stringify({ source, protocol: 1, features: ['minecraft_chat'] }),
+      PROTO.String,
+    ),
+    system.waitTicks(20).then(() => undefined),
+  ]);
+  return response === undefined ? undefined : JSON.parse(response);
+}
+```
+
+</TabItem>
+</Tabs>
+
+| Field      | Description                                                   |
+| ---------- | ------------------------------------------------------------- |
+| `source`   | Name of the add-on. Use the same value in later notifications |
+| `protocol` | Version of the format described on this page. Currently `1`   |
+| `features` | Features to use. Specify `minecraft_chat` to report chat      |
+
+`features` in the response lists the requested features that discord-mcbe accepted. `connected` is the connection state at the time of the response.
+
+Once `minecraft_chat` is registered, discord-mcbe stops relaying chat by itself and sends only the chat reported by the add-on to Discord.
+
+### 2. Report chat
+
+Send `dmc:on_chat_send` for each chat message that should appear on Discord. The add-on decides which chat to report, for example only global chat.
+
+```ts
+import type { Player } from '@minecraft/server';
+import { IPC, PROTO } from 'mcbe-ipc';
+
+function notifyChat(source: string, player: Player, message: string) {
+  IPC.send(
+    'dmc:on_chat_send',
+    PROTO.String,
+    JSON.stringify({
+      source,
+      playerId: player.id,
+      message,
+      formatting: { namePrefix: '[Team A] ' },
+    }),
+  );
+}
+```
+
+| Field        | Description                                                        |
+| ------------ | ------------------------------------------------------------------ |
+| `source`     | The add-on name used at registration                               |
+| `playerId`   | `Player.id` of the player who sent the chat                        |
+| `message`    | Message body without decoration                                    |
+| `formatting` | Text placed around the sender name and the message. Can be omitted |
+
+`formatting` accepts the four fields below. Each one is optional and must be a string.
+
+| Field           | Position               |
+| --------------- | ---------------------- |
+| `namePrefix`    | Before the sender name |
+| `nameSuffix`    | After the sender name  |
+| `messagePrefix` | Before the message     |
+| `messageSuffix` | After the message      |
+
+- Notifications from an add-on that has not registered, or for a player who is not online, are ignored.
+- Notifications are ignored while discord-mcbe is disconnected. There is no need to check the connection state before sending.
+- When `formatting` is omitted, values such as `Player.chatNamePrefix` are not applied automatically. Read them in the add-on and pass them if needed.
+- `message` in `beforeEvents.chatSend` already contains `Player.chatMessagePrefix`. Do not set `messagePrefix` when sending that `message` as is.
+- When `bot.allow_addon_messages` is `false`, reported chat is not sent to Discord.
+
 ## Listen for connection events
 
 `dmc:connect` is emitted when a connection starts, and `dmc:disconnect` is emitted when it ends. Neither event carries data.
@@ -109,3 +222,27 @@ IPC.on('dmc:disconnect', PROTO.Void, () => {
   // The connection to discord-mcbe has ended
 });
 ```
+
+## Use the types and constants
+
+Add-ons built with a bundler can use the channel names, feature names, payload types, and validation functions from the `@discord-mcbe/shared` npm package.
+
+```ts
+import { IPC, PROTO } from 'mcbe-ipc';
+import { AddonChannel, type AddonChatSend } from '@discord-mcbe/shared';
+
+const payload: AddonChatSend = {
+  source: 'example-addon',
+  playerId: player.id,
+  message: 'hello',
+};
+IPC.send(AddonChannel.ChatSend, PROTO.String, JSON.stringify(payload));
+```
+
+| Export                                           | Description                                      |
+| ------------------------------------------------ | ------------------------------------------------ |
+| `AddonChannel`                                   | Channel names such as `dmc:register`             |
+| `AddonFeature`                                   | Feature names (`minecraft_chat`)                 |
+| `AddonRegisterRequest` / `AddonRegisterResponse` | Request and response types of `dmc:register`     |
+| `AddonChatSend` / `AddonSendMessage`             | Types of `dmc:on_chat_send` / `dmc:send_message` |
+| `safeParseAddonRegisterResponse`                 | Validates the response of `dmc:register`         |
