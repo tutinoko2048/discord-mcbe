@@ -1,4 +1,5 @@
 export * from './action-id';
+export * from './addon';
 export * from './display-slot-id';
 export * from './game-mode';
 export * from './objective-sort-order';

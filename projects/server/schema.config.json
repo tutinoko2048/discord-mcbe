@@ -32,7 +32,7 @@
         },
         "allow_addon_messages": {
           "type": "boolean",
-          "description": "Whether to allow other add-ons to send messages to Discord"
+          "description": "Whether to allow other add-ons to send messages and report Minecraft chat to Discord"
         },
         "reply_preview_max_length": {
           "type": "integer",

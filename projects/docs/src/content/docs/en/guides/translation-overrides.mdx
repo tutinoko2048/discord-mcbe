@@ -39,6 +39,31 @@ To change one specific message, add its replacement to `translation_overrides` a
 - Minecraft messages can use color codes such as `§a`. Discord messages are interpreted as Discord Markdown, so format characters matter.
 - Restart discord-mcbe after changing the configuration.
 
+### Sender name decoration in Minecraft chat
+
+When a sender name is decorated through `Player.chatNamePrefix` or the [add-on integration](/en/guides/addon-integration/), `discord.chat`, `discord.chat.multipleWorlds`, and `console.chat` can use the name and its decoration as separate placeholders.
+
+| Value                      | `discord.chat` | `discord.chat.multipleWorlds` / `console.chat` |
+| -------------------------- | -------------- | ---------------------------------------------- |
+| World name                 | -              | `%0`                                           |
+| Sender name (decorated)    | `%0`           | `%1`                                           |
+| Message                    | `%1`           | `%2`                                           |
+| Sender name (plain)        | `%2`           | `%3`                                           |
+| Decoration before the name | `%3`           | `%4`                                           |
+| Decoration after the name  | `%4`           | `%5`                                           |
+
+By default, the decoration is shown inside `<>`, the same way the game shows it (for example, `<[Team A] Steve ★> hello`). Without decoration, the result is `<Steve> hello`.
+
+To show the decoration before the name outside `<>`, change it as follows. The result is `[Team A] <Steve ★> hello`.
+
+```json
+"translation_overrides": {
+  "discord.chat": "%3<%2%4> %1",
+  "discord.chat.multipleWorlds": "[%0] %4<%3%5> %2",
+  "console.chat": "[%0] %4<%3%5> %2"
+}
+```
+
 ## <Icon name="list-format" />Translation key list
 
 Find the key you want to change in the table. Its language selector is independent from the docs site's display language.

@@ -5,7 +5,7 @@
   "discord.ready": "La connexion au serveur a été établie",
   "discord.connect": "La connexion a été établie",
   "discord.disconnect": "La connextion a été interrompue",
-  "discord.chat": "<%0> %1",
+  "discord.chat": "<%3%2%4> %1",
   "discord.join": "**Rejoint : %0**",
   "discord.leave": "**Quitté : %0**",
   "command.error.catch": "❌ Une erreur est survenue en traitant l'interaction",
@@ -29,7 +29,7 @@
   "console.message": "[Discord | %0] %1: %2",
   "console.message.withAttachments": "[Discord | %0] %1: %2",
   "console.command": "[Discord | %0] %1: %2",
-  "console.chat": "[%0] <%1> %2",
+  "console.chat": "[%0] <%4%3%5> %2",
   "common.silent.description": "Afficher le résultat uniquement pour vous",
   "common.duration": "%0h %1m %2s",
   "common.noOnlineWorlds": "Le monde est hors ligne"

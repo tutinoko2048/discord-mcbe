@@ -18,6 +18,7 @@ import {
   type ClientBoundRequestType,
   type ClientBoundResponseData,
   successResponse,
+  toWebSocketCommands,
 } from '@discord-mcbe/shared';
 import { AddonNotInstalledError } from '../errors';
 import { Logger } from '../../../util';
@@ -42,6 +43,7 @@ export class SocketSession implements ISession {
   private readonly sentAt = new Map<string, number>();
 
   private previousRequestId = 0;
+  private previousMessageId = 0;
   private queryInterval: NodeJS.Timeout | null = null;
   private isReconnecting = false;
   private failCount = 0;
@@ -117,8 +119,12 @@ export class SocketSession implements ISession {
   }
 
   private async sendPayload(payload: ClientBoundPacket): Promise<void> {
-    const response = await this.world.runCommand(`scriptevent bridge:message ${JSON.stringify(payload)}`);
-    if (response.statusCode < CommandStatusCode.Success) throw new Error(response.statusMessage);
+    // A command that is too long disconnects the player, so a large packet goes out in several commands.
+    const commands = toWebSocketCommands(JSON.stringify(payload), `${++this.previousMessageId}`);
+    for (const command of commands) {
+      const response = await this.world.runCommand(command);
+      if (response.statusCode < CommandStatusCode.Success) throw new Error(response.statusMessage);
+    }
   }
 
   private handleResponse(response: Extract<ServerBoundPacket, { type: typeof RESPONSE_PACKET_TYPE }>): void {

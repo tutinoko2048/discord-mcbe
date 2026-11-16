@@ -40,7 +40,9 @@ const avatarUrlTemplateSchema = z
 
 const botSchema = z.object({
   show_death_messages: z.boolean().describe('Whether to send Minecraft player death messages to Discord'),
-  allow_addon_messages: z.boolean().describe('Whether to allow other add-ons to send messages to Discord'),
+  allow_addon_messages: z
+    .boolean()
+    .describe('Whether to allow other add-ons to send messages and report Minecraft chat to Discord'),
   reply_preview_max_length: z
     .number()
     .int()

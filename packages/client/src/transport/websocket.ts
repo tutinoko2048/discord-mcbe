@@ -24,6 +24,9 @@ import {
   safeParseClientBoundPacket,
   type ClientBoundRequestPacket,
   WEBSOCKET_BRIDGE_PROTOCOL_VERSION,
+  WEBSOCKET_CHUNK_EVENT,
+  WEBSOCKET_MESSAGE_EVENT,
+  WebSocketChunkAssembler,
   successResponse,
 } from '@discord-mcbe/shared';
 import { Emitter } from '../utils/emitter';
@@ -54,6 +57,7 @@ export class WebSocketBridgeClient extends Emitter<WebSocketBridgeEvents> implem
     clear: (timer) => system.clearRun(timer),
   });
   private readonly deltaTimes: number[] = [];
+  private readonly chunks = new WebSocketChunkAssembler();
   private readonly logger = new Logger('discord-mcbe');
 
   private previousRequestId = 0;
@@ -66,7 +70,12 @@ export class WebSocketBridgeClient extends Emitter<WebSocketBridgeEvents> implem
     system.beforeEvents.startup.subscribe(this.onStartup.bind(this));
     system.afterEvents.scriptEventReceive.subscribe(
       (event) => {
-        if (event.id === 'bridge:message') this.onMessage(event.message.trim());
+        if (event.id === WEBSOCKET_MESSAGE_EVENT) {
+          this.onMessage(event.message.trim());
+        } else if (event.id === WEBSOCKET_CHUNK_EVENT) {
+          const message = this.chunks.push(event.message.trim());
+          if (message !== undefined) this.onMessage(message);
+        }
       },
       { namespaces: ['bridge'] },
     );
@@ -109,6 +118,7 @@ export class WebSocketBridgeClient extends Emitter<WebSocketBridgeEvents> implem
   destroy(): void {
     this.pending.abortAll('Session disconnected before response was received');
     this.sendQueue.length = 0;
+    this.chunks.clear();
     this.deltaTimes.length = 0;
     this.lastQueryReceivedAt = null;
     this.currentSessionId = null;

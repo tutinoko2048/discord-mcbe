@@ -17,6 +17,7 @@ export enum ActionId {
   PlayerDie = 'dm:player_die',
   ChatSend = 'dm:chat_send',
   DiscordSend = 'dm:discord_send',
+  DiscordChat = 'dm:discord_chat',
   GetScore = 'dm:get_score',
   UpdateScore = 'dm:update_score',
   GetAllScores = 'dm:get_all_scores',

@@ -5,6 +5,8 @@ import {
   type UniqueId,
   type DisconnectReason,
   type PlayerDieDamagingEntity,
+  type ChatFormatting,
+  type DiscordChat,
 } from '@discord-mcbe/shared';
 import { ScriptPlayer } from './player';
 import { ScriptScoreboard } from './scoreboard';
@@ -77,6 +79,15 @@ export class ScriptWorld<SESSION extends ISession = ISession> {
     if (res.error) throw new BridgeActionError(res);
   }
 
+  /**
+   * Sends a chat message relayed from Discord.
+   * An add-on in the world may display it in place of discord-mcbe, for example to honor its own mute settings.
+   */
+  async sendDiscordChat(chat: DiscordChat): Promise<void> {
+    const res = await this.session.send(ActionId.DiscordChat, chat);
+    if (res.error) throw new BridgeActionError(res);
+  }
+
   async sendScriptEvent(id: string, message: string): Promise<void> {
     const res = await this.session.send(ActionId.SendScriptEvent, {
       id,
@@ -138,11 +149,11 @@ export class ScriptWorld<SESSION extends ISession = ISession> {
   }
 
   /** @ignore */
-  onChatSend(senderUniqueId: UniqueId, message: string) {
+  onChatSend(senderUniqueId: UniqueId, message: string, formatting?: ChatFormatting, source?: string) {
     const sender = this.players.get(senderUniqueId);
     if (!sender) throw new Error(`Player not found: ${senderUniqueId}`);
 
-    new MinecraftMessageEvent(this.app, this, sender, message).emit();
+    new MinecraftMessageEvent(this.app, this, sender, message, formatting, source).emit();
   }
 
   /**

@@ -1,5 +1,13 @@
 import { EmbedBuilder } from 'discord.js';
-import { _t, Logger, applyMessageFilters, FILTER_MASK, SHORTEN_SUFFIX, formatDeathMessage } from '../util';
+import {
+  _t,
+  Logger,
+  applyMessageFilters,
+  FILTER_MASK,
+  SHORTEN_SUFFIX,
+  formatChatDisplay,
+  formatDeathMessage,
+} from '../util';
 import { Palette } from '../discord';
 import type {
   DiscordMessageEvent,
@@ -12,6 +20,21 @@ import type {
   WorldDisconnectEvent,
 } from '../events';
 import type { Application } from '../application';
+import type { GuildMember, User } from 'discord.js';
+import type { DiscordChatMember, DiscordChatMessage, DiscordChatUser } from '@discord-mcbe/shared';
+
+function toChatUser(user: User): DiscordChatUser {
+  return { id: user.id, username: user.username, displayName: user.displayName, bot: user.bot };
+}
+
+function toChatMember(member: GuildMember | null): DiscordChatMember | null {
+  if (!member) return null;
+  const roles = [...member.roles.cache.values()]
+    .filter((role) => role.id !== member.guild.id) // `@everyone` shares its ID with the server
+    .sort((a, b) => b.position - a.position)
+    .map((role) => ({ id: role.id, name: role.name }));
+  return { displayName: member.displayName, roles };
+}
 
 export class EventHandler {
   private readonly app: Application;
@@ -88,14 +111,21 @@ export class EventHandler {
   }
 
   private async onMinecraftMessage(event: MinecraftMessageEvent) {
-    const { world, sender, message: rawMessage } = event;
+    const { world, sender } = event;
+    const {
+      senderName: displayName,
+      message,
+      name,
+      namePrefix,
+      nameSuffix,
+    } = formatChatDisplay({
+      senderName: sender.name,
+      message: event.message,
+      formatting: event.formatting,
+      stripColor: this.app.config.bot.strip_color_prefix,
+    });
 
-    let message = rawMessage;
-    if (this.app.config.bot.strip_color_prefix) {
-      message = message.replace(/§./g, '');
-    }
-
-    this.logger.info(_t('console.chat', world.name, sender.name, message));
+    this.logger.info(_t('console.chat', world.name, displayName, message, name, namePrefix, nameSuffix));
 
     try {
       const worldCount = this.app.minecraft.getWorlds().length;
@@ -104,14 +134,19 @@ export class EventHandler {
           worldName: world.name,
           worldCount,
           senderName: sender.name,
+          displayName,
           pfid: sender.pfid,
           content: message,
           avatarUrlTemplate: this.app.config.bot.minecraft_chat_avatar_url,
         });
       } else if (worldCount >= 2) {
-        await this.app.bot.sendMessage(_t('discord.chat.multipleWorlds', world.name, sender.name, message));
+        await this.app.bot.sendMessage(
+          _t('discord.chat.multipleWorlds', world.name, displayName, message, name, namePrefix, nameSuffix),
+        );
       } else {
-        await this.app.bot.sendMessage(_t('discord.chat', sender.name, message));
+        await this.app.bot.sendMessage(
+          _t('discord.chat', displayName, message, name, namePrefix, nameSuffix),
+        );
       }
     } catch (error) {
       this.logger.error(error);
@@ -135,6 +170,7 @@ export class EventHandler {
       ? (message.guild.members.cache.get(repliedUser.id)?.displayName ?? repliedUser.username)
       : undefined;
     let repliedContent: string = '-';
+    let referencedMessage: DiscordChatMessage['referencedMessage'] = null;
     if (message.reference?.messageId) {
       const repliedMessage = await message.channel.messages.fetch(message.reference.messageId);
 
@@ -150,7 +186,21 @@ export class EventHandler {
       if (repliedContent.length > maxLength) {
         repliedContent = repliedContent.slice(0, maxLength) + SHORTEN_SUFFIX;
       }
+
+      if (repliedUser) {
+        referencedMessage = {
+          id: repliedMessage.id,
+          content: repliedContent,
+          author: toChatUser(repliedMessage.author),
+          member: toChatMember(
+            repliedMessage.member ?? message.guild.members.cache.get(repliedMessage.author.id) ?? null,
+          ),
+        };
+      }
     }
+
+    // One Discord message is relayed once, so an add-on never sees the same `message` twice.
+    const lines: string[] = [];
 
     if (content.length > 0) {
       if (repliedName) {
@@ -158,12 +208,10 @@ export class EventHandler {
           _t('console.reply', message.guild.name, senderName, repliedName, repliedContent, content),
         );
 
-        await this.app.minecraft.broadcastMessage(
-          _t('minecraft.reply', senderName, repliedName, repliedContent, content),
-        );
+        lines.push(_t('minecraft.reply', senderName, repliedName, repliedContent, content));
       } else {
         this.logger.info(_t('console.message', message.guild.name, senderName, content));
-        await this.app.minecraft.broadcastMessage(_t('minecraft.message', senderName, content));
+        lines.push(_t('minecraft.message', senderName, content));
       }
     }
 
@@ -180,7 +228,7 @@ export class EventHandler {
           ),
         );
 
-        await this.app.minecraft.broadcastMessage(
+        lines.push(
           _t(
             'minecraft.reply.withAttachments',
             senderName,
@@ -193,11 +241,32 @@ export class EventHandler {
         this.logger.info(
           _t('console.message.withAttachments', message.guild.name, senderName, message.attachments.size),
         );
-        await this.app.minecraft.broadcastMessage(
-          _t('minecraft.message.withAttachments', senderName, message.attachments.size),
-        );
+        lines.push(_t('minecraft.message.withAttachments', senderName, message.attachments.size));
       }
     }
+
+    if (lines.length === 0) return;
+
+    await this.app.minecraft.broadcastDiscordChat({
+      text: lines.join('\n'),
+      message: {
+        id: message.id,
+        channelId: message.channelId,
+        content,
+        author: toChatUser(message.author),
+        member: toChatMember(message.member),
+        attachments: message.attachments.map((attachment) => ({
+          name: attachment.name,
+          contentType: attachment.contentType,
+        })),
+        mentions: {
+          users: message.mentions.users.map(toChatUser),
+          roles: message.mentions.roles.map((role) => ({ id: role.id, name: role.name })),
+          everyone: message.mentions.everyone,
+        },
+        referencedMessage,
+      },
+    });
   }
 
   private async onPlayerJoin(event: PlayerJoinEvent) {

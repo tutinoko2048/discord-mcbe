@@ -9,10 +9,10 @@ import {
   WEBSOCKET_BRIDGE_PROTOCOL_VERSION,
 } from '@discord-mcbe/shared';
 
-describe('shared bridge protocol v2', () => {
+describe('shared bridge protocol v3', () => {
   test('uses the same protocol version for both transports', () => {
-    expect(WEBSOCKET_BRIDGE_PROTOCOL_VERSION).toBe(2);
-    expect(SERVER_NET_BRIDGE_PROTOCOL_VERSION).toBe(2);
+    expect(WEBSOCKET_BRIDGE_PROTOCOL_VERSION).toBe(3);
+    expect(SERVER_NET_BRIDGE_PROTOCOL_VERSION).toBe(3);
   });
 
   test('keeps fixed packet names explicit', () => {

@@ -3,6 +3,8 @@ import { gray, green } from 'colorette';
 import {
   DisconnectReason,
   ActionId,
+  type DiscordChat,
+  type ResponseData,
   type ServerBoundApplicationRequestPacket,
   type ServerBoundNotificationPacket,
 } from '@discord-mcbe/shared';
@@ -21,6 +23,9 @@ export class MinecraftHandler {
   public readonly script: ServerNetBridgeServer;
 
   public readonly worlds = new Map<ISession, ScriptWorld>();
+
+  /** Add-ons already warned about because their chat was dropped by `allow_addon_messages`. */
+  private readonly rejectedChatSources = new Set<string>();
 
   constructor(private readonly app: Application) {
     this.logger = new Logger('Minecraft', this.app.config);
@@ -80,6 +85,11 @@ export class MinecraftHandler {
     await Promise.allSettled(this.getWorlds().map((world) => world.sendMessage(message)));
   }
 
+  /** Sends a chat message relayed from Discord to every world. */
+  async broadcastDiscordChat(chat: DiscordChat): Promise<void> {
+    await Promise.allSettled(this.getWorlds().map((world) => world.sendDiscordChat(chat)));
+  }
+
   private onClientConnect(session: ISession) {
     this.logger.debug('onClientConnect', session.id);
   }
@@ -117,14 +127,14 @@ export class MinecraftHandler {
   private handlePacket(
     session: ISession,
     packet: ServerBoundApplicationRequestPacket | ServerBoundNotificationPacket,
-  ): null {
+  ): ResponseData<ActionId.WorldInitialize> | null {
     switch (packet.type) {
       case ActionId.WorldInitialize: {
         const world = new ScriptWorld(this.app, session, session instanceof SocketSession);
         this.worlds.set(session, world);
         world.onInitialize(packet.data);
         new WorldConnectEvent(this.app, world).emit();
-        return null;
+        return { settings: { allowAddonMessages: this.app.config.bot.allow_addon_messages } };
       }
 
       case ActionId.PlayerJoin: {
@@ -151,7 +161,17 @@ export class MinecraftHandler {
       case ActionId.ChatSend: {
         const world = this.getWorldBySession(session);
         if (!world) throw new Error(`World not found: ${session.id}`);
-        world.onChatSend(packet.data.senderUniqueId, packet.data.message);
+        const { senderUniqueId, message, formatting, source } = packet.data;
+        if (source !== undefined && !this.app.config.bot.allow_addon_messages) {
+          if (!this.rejectedChatSources.has(source)) {
+            this.rejectedChatSources.add(source);
+            this.logger.warn(
+              `Dropped chat from add-on "${source}" in ${world.name} because bot.allow_addon_messages is false.`,
+            );
+          }
+          return null;
+        }
+        world.onChatSend(senderUniqueId, message, formatting, source);
         return null;
       }
 

@@ -13,7 +13,7 @@ import {
 } from '@discord-mcbe/shared';
 import { bearerAuth, ServerNetBridgeServer } from './server';
 
-describe('ServerNetBridgeServer protocol v2', () => {
+describe('ServerNetBridgeServer protocol v3', () => {
   test('authenticates before creating a session', async () => {
     const port = await getAvailablePort();
     const server = createBridge(port);
@@ -54,7 +54,7 @@ describe('ServerNetBridgeServer protocol v2', () => {
     }
   });
 
-  test('uses the v2 handshake and cleans up a closed connection', async () => {
+  test('uses the v3 handshake and cleans up a closed connection', async () => {
     const port = await getAvailablePort();
     const server = createBridge(port);
     await server.start();
@@ -66,7 +66,7 @@ describe('ServerNetBridgeServer protocol v2', () => {
         JSON.stringify({
           type: InternalAction.Connect,
           requestId: 'connect-wire',
-          data: { worldName: 'wire-client', protocolVersion: 2 },
+          data: { worldName: 'wire-client', protocolVersion: 3 },
         }),
       );
       expect(await handshake).toMatchObject({
@@ -131,7 +131,7 @@ describe('ServerNetBridgeServer protocol v2', () => {
       port,
       handlePacket: (_session, packet) => {
         received.push(packet);
-        return null;
+        return { settings: { allowAddonMessages: true } };
       },
     });
     await server.start();
@@ -152,7 +152,7 @@ describe('ServerNetBridgeServer protocol v2', () => {
         type: RESPONSE_PACKET_TYPE,
         requestId: 'initialize-1',
         ok: true,
-        data: null,
+        data: { settings: { allowAddonMessages: true } },
       });
       expect(received).toHaveLength(1);
     } finally {

@@ -3,8 +3,9 @@ import { createPlayerDescriptor } from './descriptors';
 import { ActionId, type UniqueId } from '@discord-mcbe/shared';
 
 import type { IBridgeClient } from '../transport/interfaces';
+import { getPlayerChatFormatting, type AddonIntegration } from './features/addon-integration';
 
-export function registerEvents(bridge: IBridgeClient) {
+export function registerEvents(bridge: IBridgeClient, integration: AddonIntegration) {
   world.afterEvents.playerSpawn.subscribe((ev) => {
     if (!bridge.isConnected || !ev.initialSpawn) return;
 
@@ -55,6 +56,8 @@ export function registerEvents(bridge: IBridgeClient) {
 
   world.afterEvents.chatSend.subscribe((ev) => {
     if (!bridge.isConnected) return;
+    // A registered add-on reports chat through the integration instead, so relaying here would duplicate it.
+    if (integration.isMinecraftChatDelegated) return;
 
     bridge.notify({
       type: ActionId.ChatSend,
@@ -62,6 +65,7 @@ export function registerEvents(bridge: IBridgeClient) {
         senderName: ev.sender.name,
         senderUniqueId: ev.sender.id as UniqueId,
         message: ev.message,
+        formatting: getPlayerChatFormatting(ev.sender),
       },
     });
   });
