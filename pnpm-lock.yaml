@@ -261,6 +261,9 @@ importers:
 
   packages/client:
     dependencies:
+      '@bedrock-core/sync':
+        specifier: 2.0.0
+        version: 2.0.0(@minecraft/server-ui@2.2.0(@minecraft/common@1.2.0)(@minecraft/server@2.11.0-beta.1.26.52-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)))(@minecraft/server@2.11.0-beta.1.26.52-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70))
       '@discord-mcbe/shared':
         specifier: workspace:*
         version: link:../shared
@@ -637,6 +640,22 @@ packages:
 
   '@bedrock-apis/env-types@1.1.0-rc':
     resolution: {integrity: sha512-SkzvAwsr2aI93FDZg7PndcVS6A4S/v5QjgjfQEM+oeyf174D6nUAQtfnFsOnWpQilcCBO6GkStc8vdvIQRUrMQ==}
+
+  '@bedrock-core/observable@1.1.0':
+    resolution: {integrity: sha512-9yWbq04N7UFWeqZq5xRkH7Zg7WA9ry31ncU97Ox5u7w1DfPuiR3eysbiBWUIzMv0Kqe/DLghUd40fOfw7woXnw==}
+    peerDependencies:
+      '@minecraft/server': 2.11.0-beta.1.26.52-stable
+      '@minecraft/server-ui': '>=2.1.0'
+    peerDependenciesMeta:
+      '@minecraft/server':
+        optional: true
+      '@minecraft/server-ui':
+        optional: true
+
+  '@bedrock-core/sync@2.0.0':
+    resolution: {integrity: sha512-KKXgBFmGZKt2SuVKVGhaa5jo4kliyWYV6NbKmZYTyNkZ1b7zBYX+9hzu4Rx1nPDBVmzBvwztFcnZZHKMIBvsUA==}
+    peerDependencies:
+      '@minecraft/server': 2.11.0-beta.1.26.52-stable
 
   '@blazediff/core@1.10.0':
     resolution: {integrity: sha512-AOQff0zgR7cGsZL+4E7hVkmujoPUpm0J9xzWGWZj5wCjd3gmxESXAPfKyuzs93VdpQNFhHlBhfOjrcZ+XTERtQ==}
@@ -4722,6 +4741,18 @@ snapshots:
       '@babel/helper-validator-identifier': 7.29.7
 
   '@bedrock-apis/env-types@1.1.0-rc': {}
+
+  '@bedrock-core/observable@1.1.0(@minecraft/server-ui@2.2.0(@minecraft/common@1.2.0)(@minecraft/server@2.11.0-beta.1.26.52-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)))(@minecraft/server@2.11.0-beta.1.26.52-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70))':
+    optionalDependencies:
+      '@minecraft/server': 2.11.0-beta.1.26.52-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
+      '@minecraft/server-ui': 2.2.0(@minecraft/common@1.2.0)(@minecraft/server@2.11.0-beta.1.26.52-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70))
+
+  '@bedrock-core/sync@2.0.0(@minecraft/server-ui@2.2.0(@minecraft/common@1.2.0)(@minecraft/server@2.11.0-beta.1.26.52-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)))(@minecraft/server@2.11.0-beta.1.26.52-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70))':
+    dependencies:
+      '@bedrock-core/observable': 1.1.0(@minecraft/server-ui@2.2.0(@minecraft/common@1.2.0)(@minecraft/server@2.11.0-beta.1.26.52-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)))(@minecraft/server@2.11.0-beta.1.26.52-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70))
+      '@minecraft/server': 2.11.0-beta.1.26.52-stable(@minecraft/common@1.2.0)(@minecraft/vanilla-data@1.21.70)
+    transitivePeerDependencies:
+      - '@minecraft/server-ui'
 
   '@blazediff/core@1.10.0': {}
 
