@@ -299,8 +299,9 @@ null
 - [x] `projects/server/src/handlers/event.ts`: `onDiscordMessage` の `broadcastMessage` を `broadcastDiscordChat` に置き換える
 - [x] `projects/docs/src/content/docs/guides/addon-integration.mdx`（日本語・英語）: `discord_chat` と `dmc:discord_chat` の説明を追加
 - [x] `DiscordChat` と `dmc:discord_chat` に `message`（discord.js の `Message` の簡略版）を足し、Discord のメッセージ1件につき1回の送信にまとめる
-- [ ] ゲーム内で確認する: 登録なしで今までと同じ表示になること、登録ありで discord-mcbe が表示しないこと、`allow_addon_messages` が `false` のとき discord-mcbe が表示すること
-- [x] MakeCountry: `src/features/discord-mcbe/index.ts` に `discord_chat` の登録と `dmc:discord_chat` の購読を追加する。`npm run typecheck`、`npm run build`、`npm run build:packs` が通り、`scripts/index.js` と `dist/lite/scripts/index.js` に `dmc:discord_chat` が含まれることを確認した（未コミット、ゲーム内では未確認）
+- [x] `packages/shared/src/packets/websocket-command.ts`、`projects/server/src/minecraft/transport/websocket/session.ts`、`packages/client/src/transport/websocket.ts`: WebSocket 接続で、長いパケットを複数のコマンドに分けて送る（「検証結果」の「WebSocket 接続のコマンドの長さ」）
+- [x] ゲーム内で確認する: 登録なしで今までと同じ表示になること、登録ありで discord-mcbe が表示しないこと、`allow_addon_messages` が `false` のとき discord-mcbe が表示すること（「検証結果」の「フェーズ2」）
+- [x] MakeCountry: `src/features/discord-mcbe/index.ts` に `discord_chat` の登録と `dmc:discord_chat` の購読を追加する。`npm run typecheck`、`npm run build`、`npm run build:packs` が通り、`scripts/index.js` と `dist/lite/scripts/index.js` に `dmc:discord_chat` が含まれることを確認した（フル版はゲーム内で確認済み。Lite は未確認）
 
 ### MakeCountry
 
@@ -329,7 +330,7 @@ null
 - [x] `docs/admin.md` に連携の説明を1行追加する。
 - [x] `tools/build-packs.mjs` にも `noExternal` と `inlineOnly` を追加する。分割版のビルドは `platform: 'neutral'` で `package.json` の `main` を見ないので、`inputOptions.resolve.mainFields` も指定する。指定しないと `mcbe-ipc` を解決できず、外部 import として残る。
 - [x] `npm run typecheck`、`npm run build`、`npm run build:packs` が通り、`scripts/index.js` と `dist/lite/scripts/index.js` に `mcbe-ipc` が含まれていること（外部 import が `@minecraft/*` と設定ファイルだけであること）を確かめる。
-- [x] ゲーム内で discord-mcbe と一緒に動かして確認する（2.5.1 の時点。2.5.3 をマージしたあとのフル版と Lite は未確認）。
+- [x] ゲーム内で discord-mcbe と一緒に動かして確認する（2.5.1 と、2.5.3 をマージしたあとのフル版。Lite は未確認）。
 - [ ] upstream（`karonyt/MakeCountry`）へ PR を出す。
 
 通知を `playerHandler.afterEvents.chat` の購読ではなく `chat-router.ts` の中から行う理由:
@@ -437,7 +438,43 @@ MakeCountry のチャット処理を真似た試作アドオン（全チャッ�
 - 通知をやめると、`afterEvents.chatSend` が発火していても Discord には何も出なかった。`minecraft_chat` を登録したアドオンは、Discord に出すチャットをすべて自分で通知する責任を持つ。discord-mcbe からは、通知がないのが意図的（非公開のチャット、ミュート、連投制限）なのか漏れなのかを区別できないので、代わりに中継することはしない。
 - `allow_addon_messages` を `false` にすると、サーバーのコンソールに警告が出て、通知されたチャットは捨てられた。discord-mcbe 自身の中継は続き、Discord には装飾なしの `<tutinoko2048> hi` が出た。
 
+### WebSocket 接続のコマンドの長さ
+
+1.26.63 のローカルワールドで確認した。フェーズ2で `message` を足したあと、Discord から1文字の発言をしただけでプレイヤーがワールドから切断された（`ClientDisconnection-41`）。
+
+WebSocket 接続では、サーバーからアドオンへのパケットを、プレイヤーに `scriptevent bridge:message <JSON>` を実行させる形で送っている。長さを変えたコマンドを順に送って調べた。
+
+| 埋めた文字  | 通った最大             | 切断された最小         |
+| ----------- | ---------------------- | ---------------------- |
+| 半角の `a`  | 445 バイト（445 文字） | 450 バイト             |
+| `"`         | 425 バイト             | 450 バイト             |
+| 全角の `あ` | 442 バイト（162 文字） | 448 バイト（164 文字） |
+
+- 切断の条件はコマンドの長さだけで、中身は関係ない。アドオンが処理しないイベント ID でも同じ長さで切断された。
+- 数えているのは UTF-8 のバイト数。文字数でも、WebSocket の JSON に埋め込んだあとの長さでもない。上限は 445 バイトと 448 バイトの間にある。
+- それまでのパケットは 130 バイト前後で、問題が出ていなかった。`DiscordChat` は `message` が付いて、1文字の発言でも 470 バイトほどになった。`message` を足す前も、日本語で100文字ほどの Discord の発言は同じ理由で切断されていたはず。
+
+対処として、コマンド全体が 400 バイトを超えるパケットは、JSON を文字の境目で切り分けて `scriptevent bridge:chunk <ID>:<番号>:<総数>:<断片>|` で順に送り、アドオン側でつなぎ直す。末尾の `|` は、断片の最後の空白がゲームに削られないようにする目印。400 バイトは実測に対する余裕で、ゲームのバージョンで上限が変わる可能性を見ている。BDS（HTTP 接続）と、アドオンからサーバーへの向き（コマンドの戻り値）は対象外。
+
+分割送信を入れたあと、次を確認した。
+
+- 1文字の発言と、日本語で600文字以上の発言が、欠けずに表示される。絵文字や記号を混ぜても同じ。
+- 続けて送った発言が、順番どおりに混ざらず表示される。
+
+### フェーズ2
+
+1.26.63 のローカルワールドで、このブランチの discord-mcbe と MakeCountry 2.5.3（フォークの `feat/discord-mcbe-integration`、フル版）を動かして確認した。
+
+- 全体チャットをミュートしたプレイヤーには Discord の発言が出ず、ミュートを外すと出る。
+- 本文と添付の両方があるメッセージは、2行の1件として出る。
+- 返信は返信の形式で出る。
+- `allow_addon_messages` を `false` にすると、ミュートしていても全員に出る（discord-mcbe が自分で表示する）。
+- MakeCountry を外したワールドでは、今までどおり全員に出る。
+
 実機では確認していないこと:
+
+- MakeCountry の Lite 版（`dist/lite`）。フル版と同じ連携コードがバンドルに入っていることは確認している。
+- `message` の各項目（ユーザー ID、ロール、メンション、`contentType`）の実際の値。MakeCountry は `text` しか使わないので、表示からは分からない。スキーマは単体テストで確認している。
 
 - Webhook を使う場合の表示名とアバター。username に表示名を使い、アバター URL には装飾なしの名前を使うことは、単体テスト（`minecraft-chat-webhook.test.ts`）で確認している。
 
