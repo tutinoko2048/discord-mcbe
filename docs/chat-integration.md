@@ -209,7 +209,7 @@ MakeCountry は装飾をメッセージごとに国データから組み立て�
 
 ### MakeCountry
 
-2.5.1（`1c1add7d`、2026-11-16）のソースを前提にする。Fork して PR を出す。
+2.5.3（`b31f549c`、2026-11-16）のソースを前提にする。Fork して PR を出す。
 
 2.4.1 から変わった点で、この計画に関係するもの:
 
@@ -218,7 +218,13 @@ MakeCountry は装飾をメッセージごとに国データから組み立て�
 - 全体チャットの表示が `[§{色}国名§r/§9連邦名§r|ペンネーム§r] §7{サポーターの印}名前§f: {発言色}本文` になった。サポーターの印（`★`）と発言色が増えている。
 - チャットの配信が `sendChatBatch` 経由になった。配布版では原文をそのまま配信する。
 
-作業項目（フォーク `tutinoko2048/MakeCountry` の `feat/discord-mcbe-integration` ブランチで実装済み。未コミット、ゲーム内では未確認）:
+2.5.1 から変わった点で、この計画に関係するもの:
+
+- フル版に加えて、MakeCountryLite（本体）と機能パックに分けた配布が増えた（`npm run build:packs` → `dist/<パックID>/`、`tools/build-packs.mjs`）。チャットの処理は本体に入るので、分割版で連携コードが入るのは Lite だけになる。
+- 設定ファイルがバンドルに含まれず、`scripts/config/*.js` として残るようになった。`discordMcbeIntegration` と `discordNoCountryName` は、配布パックの `scripts/config/server.js` を書き換えて変更できる。
+- `src/app/bootstrap.ts` が `src/core/bootstrap.ts` に移った。`chat-router.ts` の `general` の分岐は変わっていない。
+
+作業項目（フォーク `tutinoko2048/MakeCountry` の `feat/discord-mcbe-integration` ブランチで実装済み。2.5.3 をマージ済み）:
 
 - [x] `package.json` に `mcbe-ipc`（`^3.4.2`）を追加する。
 - [x] `tsdown.config.js` に `noExternal: ['mcbe-ipc']` と `inlineOnly: ['mcbe-ipc']` を追加する。tsdown は `dependencies` のパッケージをバンドルに含めないので、指定しないと `import ... from "mcbe-ipc"` がそのまま残り、ゲーム内で読み込めない。
@@ -226,8 +232,9 @@ MakeCountry は装飾をメッセージごとに国データから組み立て�
 - [x] `src/domain/chat/chat-router.ts` の `general` の分岐で `notifyDiscordChat` を呼ぶ。
 - [x] `src/config/server.ts` に `discordMcbeIntegration`（連携の有効・無効、既定は有効）と `discordNoCountryName`（国に未所属のときの国名、既定は `無所属`）を追加する。
 - [x] `docs/admin.md` に連携の説明を1行追加する。
-- [x] `npm run typecheck` と `npm run build` が通り、`scripts/index.js` に `mcbe-ipc` が含まれていること（外部 import が `@minecraft/*` だけであること）を確かめる。
-- [ ] ゲーム内で discord-mcbe と一緒に動かして確認する。
+- [x] `tools/build-packs.mjs` にも `noExternal` と `inlineOnly` を追加する。分割版のビルドは `platform: 'neutral'` で `package.json` の `main` を見ないので、`inputOptions.resolve.mainFields` も指定する。指定しないと `mcbe-ipc` を解決できず、外部 import として残る。
+- [x] `npm run typecheck`、`npm run build`、`npm run build:packs` が通り、`scripts/index.js` と `dist/lite/scripts/index.js` に `mcbe-ipc` が含まれていること（外部 import が `@minecraft/*` と設定ファイルだけであること）を確かめる。
+- [x] ゲーム内で discord-mcbe と一緒に動かして確認する（2.5.1 の時点。2.5.3 をマージしたあとのフル版と Lite は未確認）。
 - [ ] upstream（`karonyt/MakeCountry`）へ PR を出す。
 
 通知を `playerHandler.afterEvents.chat` の購読ではなく `chat-router.ts` の中から行う理由:
