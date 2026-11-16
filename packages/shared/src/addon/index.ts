@@ -1,5 +1,14 @@
 import * as v from 'valibot';
 import { ChatFormattingSchema } from '../packets/chat-send';
+import {
+  DiscordChatAttachmentSchema,
+  DiscordChatMemberSchema,
+  DiscordChatMentionsSchema,
+  DiscordChatMessageSchema,
+  DiscordChatReferencedMessageSchema,
+  DiscordChatRoleSchema,
+  DiscordChatUserSchema,
+} from '../packets/discord-chat';
 import { DiscordMessageSchema } from '../packets/discord-send';
 
 /** Version of the add-on facing payloads defined here. */
@@ -48,10 +57,40 @@ export const AddonSendMessageSchema = v.object({
 });
 export type AddonSendMessage = v.InferOutput<typeof AddonSendMessageSchema>;
 
+const AddonDiscordUserSchema = v.object(DiscordChatUserSchema.entries);
+const AddonDiscordRoleSchema = v.object(DiscordChatRoleSchema.entries);
+const AddonDiscordMemberSchema = v.object({
+  ...DiscordChatMemberSchema.entries,
+  roles: v.array(AddonDiscordRoleSchema),
+});
+
+/** `message` of `dmc:discord_chat`: a reduced form of the discord.js `Message`. */
+export const AddonDiscordMessageSchema = v.object({
+  ...DiscordChatMessageSchema.entries,
+  author: AddonDiscordUserSchema,
+  member: v.nullable(AddonDiscordMemberSchema),
+  attachments: v.array(v.object(DiscordChatAttachmentSchema.entries)),
+  mentions: v.object({
+    ...DiscordChatMentionsSchema.entries,
+    users: v.array(AddonDiscordUserSchema),
+    roles: v.array(AddonDiscordRoleSchema),
+  }),
+  referencedMessage: v.nullable(
+    v.object({
+      ...DiscordChatReferencedMessageSchema.entries,
+      author: AddonDiscordUserSchema,
+      member: v.nullable(AddonDiscordMemberSchema),
+    }),
+  ),
+});
+export type AddonDiscordMessage = v.InferOutput<typeof AddonDiscordMessageSchema>;
+
 /** Payload of `dmc:discord_chat`. */
 export const AddonDiscordChatSchema = v.object({
   /** Ready-to-display text, already formatted by discord-mcbe. */
   text: v.string(),
+  /** The Discord message `text` was built from. */
+  message: AddonDiscordMessageSchema,
 });
 export type AddonDiscordChat = v.InferOutput<typeof AddonDiscordChatSchema>;
 

@@ -184,15 +184,31 @@ Discord → サーバー（フィルター、テンプレートの適用）
 // request
 {
   text: string, // サーバーがテンプレートで組み立てた、そのまま表示できる文字列
+  message: {
+    id: string,
+    channelId: string,
+    content: string, // フィルター後の本文。添付だけなら空文字列
+    author: { id: string, username: string, displayName: string, bot: boolean },
+    member: { displayName: string, roles: { id: string, name: string }[] } | null,
+    attachments: { name: string, contentType: string | null }[],
+    mentions: { users: author[], roles: { id: string, name: string }[], everyone: boolean },
+    referencedMessage: { id, content, author, member } | null, // 返信先
+  },
 }
 
 // response
 null
 ```
 
-- 今の `broadcastMessage` の呼び出しを、そのまま `DiscordChat` に置き換える。本文と添付の両方があるメッセージは、今と同じく2回に分けて送る。未登録のワールドの表示は今と完全に同じになる。
 - `text` は今までと同じテンプレート（`minecraft.message` / `minecraft.reply` と、それぞれの `.withAttachments`）で組み立てる。`translation_overrides` はそのまま効く。
-- 送信者名や本文を分けた項目は渡さない。用途が「見せる相手を絞る」だけなので `text` で足りる。独自の形式で表示したいアドオンが出てきたら、そのときに足す。
+- `message` は discord.js の `Message` の簡略版にする。アドオンが独自に Discord のアカウント連携をしている場合に、送信者をプレイヤーと結びつけたり、独自の形式で表示したりできるようにするため。アドオンは Discord に問い合わせられないので、ゲーム内のスクリプトで使える項目だけを入れる。
+  - `author` は `User`、`member` は `GuildMember` に対応する。`member.roles` は上位から順に並べ、`@everyone` は除く。ロール ID だけではアドオンが名前を引けないので、名前も渡す。
+  - `referencedMessage` の `content` は、`text` と同じくフィルターと `reply_preview_max_length` を通したもの。
+  - `mentions` は `users`、`roles`、`everyone` を持つ。連携済みのプレイヤーがメンションされたときに通知する、といった用途のため。通知付きの返信では、discord.js と同じく返信先が `users` に入る。`content` はメンションを名前に置き換えた本文（`cleanContent`）で、生の本文は渡さない。フィルターをかける対象が `cleanContent` なので、生の本文を渡すと伏せた内容が届くため。
+  - `mentions` に `members`（ニックネームとロール）は入れない。ID で結びつける用途は `users` で足りる。
+  - 入れないもの: アバターや添付ファイルの URL（ゲーム内では開けない）、ギルド ID、タイムスタンプ、埋め込み、スタンプ。
+- Discord のメッセージ1件につき、パケットは1回だけ送る。本文と添付の両方があるメッセージは、2行を改行でつないだ `text` にする。2回に分けると、同じ `message` を持つ通知が2回届き、独自に表示するアドオンで二重になるため。未登録のワールドでは、2件だったメッセージが2行の1件になる。
+- ブリッジのパケットは知らないフィールドを拒否するので、あとから項目を足すとプロトコルバージョンを上げることになる。バージョン 3 がリリース前のうちに入れておく。
 - クライアントは、アドオンに任せない場合 `world.sendMessage(text)` を呼ぶ。
 
 ### 3. アドオンへの通知 `dmc:discord_chat`（send、discord-mcbe → アドオン）
@@ -214,6 +230,7 @@ null
 
 - `discord_chat` を登録するアドオンは、1つのワールドに1つを想定する。`IPC.send` は全アドオンに届くので、2つが登録すると両方が表示して二重になる。2つ目の登録を受けたときに警告ログを出す。登録そのものは拒否しない。
 - `allow_addon_messages` が `false` のときは、クライアントは `discord_chat` の登録を無視して自分で表示する。設定を受け取る前も同じ。フェーズ1の `isMinecraftChatDelegated` と同じ判定を `discord_chat` にも用意する。
+- `dmc:discord_chat` は同じワールドの全アドオンに届くので、ユーザー ID とロールも全アドオンに渡る。アドオン連携はもともと他のアドオンを信頼できることを前提にしていて、止めたい場合は `allow_addon_messages` を `false` にする。ガイドにも書く。
 - アドオン向けの `protocol` は 1 のままにする。機能とチャンネルが増えるだけで、既存のペイロードは変わらない。フェーズ2に対応していない discord-mcbe は、応答の `features` に `discord_chat` を入れないので、アドオンは未対応と判断できる。その場合は discord-mcbe が今までどおり全員に表示する。
 
 ### 4. プロトコルバージョン
@@ -281,6 +298,7 @@ null
 - [x] `projects/server/src/minecraft/bridge/world.ts`、`projects/server/src/minecraft/minecraft.ts`: `sendDiscordChat` と `broadcastDiscordChat`
 - [x] `projects/server/src/handlers/event.ts`: `onDiscordMessage` の `broadcastMessage` を `broadcastDiscordChat` に置き換える
 - [x] `projects/docs/src/content/docs/guides/addon-integration.mdx`（日本語・英語）: `discord_chat` と `dmc:discord_chat` の説明を追加
+- [x] `DiscordChat` と `dmc:discord_chat` に `message`（discord.js の `Message` の簡略版）を足し、Discord のメッセージ1件につき1回の送信にまとめる
 - [ ] ゲーム内で確認する: 登録なしで今までと同じ表示になること、登録ありで discord-mcbe が表示しないこと、`allow_addon_messages` が `false` のとき discord-mcbe が表示すること
 - [x] MakeCountry: `src/features/discord-mcbe/index.ts` に `discord_chat` の登録と `dmc:discord_chat` の購読を追加する。`npm run typecheck`、`npm run build`、`npm run build:packs` が通り、`scripts/index.js` と `dist/lite/scripts/index.js` に `dmc:discord_chat` が含まれることを確認した（未コミット、ゲーム内では未確認）
 

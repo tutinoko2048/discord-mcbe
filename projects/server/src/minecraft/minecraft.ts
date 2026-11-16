@@ -3,6 +3,7 @@ import { gray, green } from 'colorette';
 import {
   DisconnectReason,
   ActionId,
+  type DiscordChat,
   type ResponseData,
   type ServerBoundApplicationRequestPacket,
   type ServerBoundNotificationPacket,
@@ -85,8 +86,8 @@ export class MinecraftHandler {
   }
 
   /** Sends a chat message relayed from Discord to every world. */
-  async broadcastDiscordChat(text: string): Promise<void> {
-    await Promise.allSettled(this.getWorlds().map((world) => world.sendDiscordChat(text)));
+  async broadcastDiscordChat(chat: DiscordChat): Promise<void> {
+    await Promise.allSettled(this.getWorlds().map((world) => world.sendDiscordChat(chat)));
   }
 
   private onClientConnect(session: ISession) {

@@ -227,12 +227,40 @@ IPC.on('dmc:discord_chat', PROTO.String, (json) => {
 });
 ```
 
-| Field  | Description                                                |
-| ------ | ---------------------------------------------------------- |
-| `text` | Ready-to-display text. It reflects `translation_overrides` |
+| Field     | Description                                                |
+| --------- | ---------------------------------------------------------- |
+| `text`    | Ready-to-display text. It reflects `translation_overrides` |
+| `message` | The Discord message `text` was built from                  |
+
+`message` is the discord.js `Message` reduced to the fields a script in the game can use. Use it to match the sender with account linking done by the add-on, or to display the chat in your own format.
+
+```ts
+{
+  id: string,
+  channelId: string,
+  content: string,
+  author: { id: string, username: string, displayName: string, bot: boolean },
+  member: { displayName: string, roles: { id: string, name: string }[] } | null,
+  attachments: { name: string, contentType: string | null }[],
+  mentions: { users: author[], roles: { id: string, name: string }[], everyone: boolean },
+  referencedMessage: { id, content, author, member } | null,
+}
+```
+
+| Field               | Description                                                                                                                                                                                          |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `content`           | Text after the message filters, with mentions replaced by names. Empty when only files were sent                                                                                                     |
+| `author.id`         | Discord user ID                                                                                                                                                                                      |
+| `author.bot`        | Always `false` for the sender, since chat from bots is not relayed. Can be `true` in `referencedMessage`                                                                                             |
+| `member`            | Display name and roles in the server. `null` when the replied-to author is a webhook or has left the server                                                                                          |
+| `member.roles`      | Ordered from the highest role. `@everyone` is not included                                                                                                                                           |
+| `attachments`       | File name and media type of each attachment. `contentType` is a value such as `image/png`, or `null` when unknown                                                                                    |
+| `mentions`          | Mentioned users and roles. Entries of `users` have the same shape as `author`. A reply that pings also puts the replied-to user in `users`. `everyone` tells whether `@everyone` or `@here` was used |
+| `referencedMessage` | The message being replied to, or `null`. Its `content` is filtered and shortened                                                                                                                     |
 
 - Only chat from Discord is passed. Other messages, such as the connection notice, are still displayed by discord-mcbe.
-- A message with attachments may arrive as two notifications, one for the text and one for the attachment notice.
+- Each Discord message produces one notification. When a message has both text and attachments, `text` has two lines.
+- `dmc:discord_chat` reaches every add-on in the world. If an add-on should not receive user IDs or roles, set `bot.allow_addon_messages` to `false`.
 - Register `discord_chat` from only one add-on per world. If several add-ons register it, each one displays the chat.
 - When `bot.allow_addon_messages` is `false`, the registration is ignored and discord-mcbe shows the chat to everyone.
 - If `features` in the response does not include `discord_chat`, the installed discord-mcbe does not support this feature. It then shows the chat to everyone as before.
@@ -275,6 +303,6 @@ IPC.send(AddonChannel.ChatSend, PROTO.String, JSON.stringify(payload));
 | `AddonFeature`                                   | Feature names such as `minecraft_chat`           |
 | `AddonRegisterRequest` / `AddonRegisterResponse` | Request and response types of `dmc:register`     |
 | `AddonChatSend` / `AddonSendMessage`             | Types of `dmc:on_chat_send` / `dmc:send_message` |
-| `AddonDiscordChat`                               | Type of `dmc:discord_chat`                       |
+| `AddonDiscordChat` / `AddonDiscordMessage`       | Types of `dmc:discord_chat` and its `message`    |
 | `safeParseAddonRegisterResponse`                 | Validates the response of `dmc:register`         |
 | `safeParseAddonDiscordChat`                      | Validates the payload of `dmc:discord_chat`      |

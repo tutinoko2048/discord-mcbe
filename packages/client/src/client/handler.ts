@@ -51,8 +51,8 @@ export async function handleClientBoundRequest(
     }
 
     case ActionId.DiscordChat: {
-      const { text } = request.data;
-      if (!addonIntegration?.deliverDiscordChat(text)) world.sendMessage(text);
+      const { data } = request;
+      if (!addonIntegration?.deliverDiscordChat(data)) world.sendMessage(data.text);
       return res(request, null);
     }
 

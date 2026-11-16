@@ -96,9 +96,8 @@ export class AddonIntegration {
    * Hands a chat message relayed from Discord to the add-on that registered to display it.
    * Returns false when no add-on takes it, so the caller displays it itself.
    */
-  deliverDiscordChat(text: string): boolean {
+  deliverDiscordChat(payload: AddonDiscordChat): boolean {
     if (!this.isDelegated(AddonFeature.DiscordChat)) return false;
-    const payload: AddonDiscordChat = { text };
     IPC.send(AddonChannel.DiscordChat, PROTO.String, JSON.stringify(payload));
     return true;
   }

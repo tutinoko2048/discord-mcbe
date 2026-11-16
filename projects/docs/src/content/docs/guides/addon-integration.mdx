@@ -230,9 +230,37 @@ IPC.on('dmc:discord_chat', PROTO.String, (json) => {
 | フィールド | 説明                                                                  |
 | ---------- | --------------------------------------------------------------------- |
 | `text`     | そのまま表示できる文字列。`translation_overrides`の内容が反映されます |
+| `message`  | 元になったDiscordのメッセージ                                         |
+
+`message`は、discord.jsの`Message`からゲーム内で使える項目だけを残した形です。送信者をアドオン側のアカウント連携と結びつけたり、独自の形式で表示したりするときに使います。
+
+```ts
+{
+  id: string,
+  channelId: string,
+  content: string,
+  author: { id: string, username: string, displayName: string, bot: boolean },
+  member: { displayName: string, roles: { id: string, name: string }[] } | null,
+  attachments: { name: string, contentType: string | null }[],
+  mentions: { users: author[], roles: { id: string, name: string }[], everyone: boolean },
+  referencedMessage: { id, content, author, member } | null,
+}
+```
+
+| フィールド          | 説明                                                                                                                                                                               |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `content`           | フィルターを通した本文。メンションは名前に置き換わっています。添付ファイルだけなら空文字列です                                                                                     |
+| `author.id`         | DiscordのユーザーID                                                                                                                                                                |
+| `author.bot`        | 送信者では常に`false`です（Botの発言は中継されません）。返信先では`true`になることがあります                                                                                       |
+| `member`            | サーバー内での表示名とロール。返信先がWebhookや退出済みのユーザーのときは`null`です                                                                                                |
+| `member.roles`      | 上位のロールから順に並びます。`@everyone`は含みません                                                                                                                              |
+| `attachments`       | 添付ファイルのファイル名と種類。`contentType`は`image/png`などで、不明なときは`null`です                                                                                           |
+| `mentions`          | メンションされたユーザーとロール。`users`の要素は`author`と同じ形です。通知付きの返信では、返信先のユーザーも`users`に入ります。`everyone`は`@everyone`か`@here`が使われたかどうか |
+| `referencedMessage` | 返信先のメッセージ。返信でなければ`null`です。`content`はフィルターを通し、長さを切り詰めた本文                                                                                    |
 
 - 対象はDiscordから届いたチャットだけです。接続時の通知などは、これまでどおりdiscord-mcbeが表示します。
-- 添付ファイルのあるメッセージは、本文と添付の案内が別々に届くことがあります。
+- Discordのメッセージ1件につき、通知は1回です。本文と添付ファイルの両方があるメッセージでは、`text`が2行になります。
+- `dmc:discord_chat`は同じワールドの全アドオンに届きます。ユーザーIDやロールを渡したくないアドオンがある場合は、`bot.allow_addon_messages`を`false`にしてください。
 - `discord_chat`を登録するアドオンは、1つのワールドに1つだけにしてください。複数のアドオンが登録すると、それぞれが表示して重複します。
 - `bot.allow_addon_messages`が`false`のときは登録が無視され、discord-mcbeが全員に表示します。
 - 応答の`features`に`discord_chat`が含まれない場合、導入されているdiscord-mcbeはこの機能に対応していません。その場合もdiscord-mcbeが全員に表示します。
@@ -275,6 +303,6 @@ IPC.send(AddonChannel.ChatSend, PROTO.String, JSON.stringify(payload));
 | `AddonFeature`                                   | 機能名（`minecraft_chat`など）               |
 | `AddonRegisterRequest` / `AddonRegisterResponse` | `dmc:register`の要求と応答の型               |
 | `AddonChatSend` / `AddonSendMessage`             | `dmc:on_chat_send` / `dmc:send_message`の型  |
-| `AddonDiscordChat`                               | `dmc:discord_chat`の型                       |
+| `AddonDiscordChat` / `AddonDiscordMessage`       | `dmc:discord_chat`と、その`message`の型      |
 | `safeParseAddonRegisterResponse`                 | `dmc:register`の応答を検証する関数           |
 | `safeParseAddonDiscordChat`                      | `dmc:discord_chat`のペイロードを検証する関数 |

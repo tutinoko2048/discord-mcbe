@@ -6,6 +6,7 @@ import {
   type DisconnectReason,
   type PlayerDieDamagingEntity,
   type ChatFormatting,
+  type DiscordChat,
 } from '@discord-mcbe/shared';
 import { ScriptPlayer } from './player';
 import { ScriptScoreboard } from './scoreboard';
@@ -82,8 +83,8 @@ export class ScriptWorld<SESSION extends ISession = ISession> {
    * Sends a chat message relayed from Discord.
    * An add-on in the world may display it in place of discord-mcbe, for example to honor its own mute settings.
    */
-  async sendDiscordChat(text: string): Promise<void> {
-    const res = await this.session.send(ActionId.DiscordChat, { text });
+  async sendDiscordChat(chat: DiscordChat): Promise<void> {
+    const res = await this.session.send(ActionId.DiscordChat, chat);
     if (res.error) throw new BridgeActionError(res);
   }
 

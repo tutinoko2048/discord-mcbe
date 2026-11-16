@@ -29,19 +29,44 @@ describe('add-on payload validation', () => {
   });
 
   test('validates relayed Discord chat', () => {
-    expect(safeParseAddonDiscordChat({ text: '[Discord] <Steve> hi', future: 1 }).success).toBe(true);
-    expect(safeParseAddonDiscordChat({}).success).toBe(false);
-    expect(
-      safeParseClientBoundPacket({ type: ActionId.DiscordChat, requestId: 'request-1', data: { text: 'hi' } })
-        .success,
-    ).toBe(true);
+    const author = { id: '1', username: 'steve', displayName: 'Steve', bot: false };
+    const member = { displayName: 'Steve the Miner', roles: [{ id: '10', name: 'Admin' }] };
+    const message = {
+      id: '100',
+      channelId: '200',
+      content: 'hi',
+      author,
+      member,
+      attachments: [
+        { name: 'image.png', contentType: 'image/png' },
+        { name: 'data.bin', contentType: null },
+      ],
+      mentions: { users: [author], roles: [{ id: '10', name: 'Admin' }], everyone: false },
+      referencedMessage: { id: '99', content: 'hello', author, member: null },
+    };
+    const data = { text: '[Discord] <Steve the Miner> hi', message };
+    const packet = { type: ActionId.DiscordChat, requestId: 'request-1' };
+
+    expect(safeParseClientBoundPacket({ ...packet, data }).success).toBe(true);
     expect(
       safeParseClientBoundPacket({
-        type: ActionId.DiscordChat,
-        requestId: 'request-1',
-        data: { message: 'hi' },
+        ...packet,
+        data: { ...data, message: { ...message, member: null, referencedMessage: null } },
       }).success,
-    ).toBe(false);
+    ).toBe(true);
+    expect(safeParseClientBoundPacket({ ...packet, data: { text: 'hi' } }).success).toBe(false);
+
+    expect(safeParseAddonDiscordChat(data).success).toBe(true);
+    expect(safeParseAddonDiscordChat({ text: 'hi' }).success).toBe(false);
+
+    // Add-ons keep working when a later discord-mcbe adds fields at any depth.
+    const future = safeParseAddonDiscordChat({
+      ...data,
+      future: 1,
+      message: { ...message, future: 1, author: { ...author, future: 1 } },
+    });
+    expect(future.success).toBe(true);
+    expect(future.output).toEqual(data);
   });
 
   test('accepts a registration and ignores fields it does not know', () => {
