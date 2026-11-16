@@ -46,6 +46,7 @@ export class SocketSession implements ISession {
   private previousMessageId = 0;
   private queryInterval: NodeJS.Timeout | null = null;
   private isReconnecting = false;
+  private isDestroyed = false;
   private failCount = 0;
 
   constructor(
@@ -73,6 +74,7 @@ export class SocketSession implements ISession {
   }
 
   destroy(): void {
+    this.isDestroyed = true;
     this.pending.abortAll('Session disconnected before response was received');
     this.sentAt.clear();
     this.server.sessions.delete(this);
@@ -248,6 +250,8 @@ export class SocketSession implements ISession {
         else await this.handleNotification(packet);
       }
     } catch (error) {
+      // A query that was still in flight when the session ended is aborted; that is not a failure.
+      if (this.isDestroyed) return;
       if (error instanceof AddonNotInstalledError) {
         this.logger.error(error.message);
         return;
