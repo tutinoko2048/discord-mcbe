@@ -158,11 +158,76 @@ MakeCountry は装飾をメッセージごとに国データから組み立て�
 - チャットを cancel して `sendMessage` で送り直す方式のアドオンが、標準のチャット + `chatNamePrefix` に移行した場合、`afterEvents.chatSend` が発火するようになる。そのときは通常のチャットの経路だけで装飾付きのチャットが Discord に流れ、`dmc:on_chat_send` は不要になる。両方の経路が同じ `formatting` を使うので、移行してもサーバー側の処理は変わらない。
 - 国チャットのように宛先を絞るチャットは、cancel + 送り直しの方式が残ると考えられる。`dmc:on_chat_send` はそのために引き続き必要。
 
-## フェーズ2: Discord → Minecraft（任意）
+## フェーズ2: Discord → Minecraft
 
-現在は Discord のメッセージを `world.sendMessage` で全員に送っている。このため、MakeCountry の全体チャットミュート（`isMuteGeneralChat`）やミュートリストが効かない。
+現在は Discord のメッセージを `world.sendMessage` で全員に送っている。このため、MakeCountry の全体チャットミュート（`isMuteGeneralChat`）が効かない。MakeCountry の作者に確認し、あったほうがよいとの返事をもらっている。
 
-`discord_chat` を登録したアドオンには、discord-mcbe が送信者名と本文を IPC で渡し、表示をアドオンに任せる。サーバー側で「Discord チャットの中継」と「それ以外の SendMessage」を区別する必要がある。チャンネル名とペイロードはフェーズ1の完了後に決める。
+`discord_chat` を登録したアドオンには、discord-mcbe が Discord のメッセージを IPC で渡し、表示をアドオンに任せる。
+
+### 1. 全体の流れ
+
+```
+Discord → サーバー（フィルター、テンプレートの適用）
+        → DiscordChat パケット → クライアント
+            ├ discord_chat が登録済み → dmc:discord_chat でアドオンへ渡す（自分では表示しない）
+            └ 未登録                  → world.sendMessage(text)（今までと同じ表示）
+```
+
+- 表示を任せるかどうかは、ワールドごとにクライアントが決める。サーバーは登録の状態を知らなくてよい。複数ワールドで、連携アドオンが入っているワールドと入っていないワールドが混ざっていても動く。
+- 対象は Discord のチャットの中継（`EventHandler.onDiscordMessage`）だけにする。接続時の通知（`minecraft.connect`）や、サーバー側スクリプトが呼ぶ `world.sendMessage` / `player.sendMessage` / `broadcastMessage` は、今までどおり `SendMessage` パケットで直接表示する。
+
+### 2. ブリッジのパケット `DiscordChat`（サーバー → クライアント）
+
+`SendMessage` に目印のフィールドを足すのではなく、新しいパケット（`ActionId.DiscordChat = 'dm:discord_chat'`）にする。`SendMessage` はスクリプト API からも使う汎用のパケットなので、チャットの中継だけに意味がある項目を混ぜないため。
+
+```ts
+// request
+{
+  text: string, // サーバーがテンプレートで組み立てた、そのまま表示できる文字列
+}
+
+// response
+null
+```
+
+- 今の `broadcastMessage` の呼び出しを、そのまま `DiscordChat` に置き換える。本文と添付の両方があるメッセージは、今と同じく2回に分けて送る。未登録のワールドの表示は今と完全に同じになる。
+- `text` は今までと同じテンプレート（`minecraft.message` / `minecraft.reply` と、それぞれの `.withAttachments`）で組み立てる。`translation_overrides` はそのまま効く。
+- 送信者名や本文を分けた項目は渡さない。用途が「見せる相手を絞る」だけなので `text` で足りる。独自の形式で表示したいアドオンが出てきたら、そのときに足す。
+- クライアントは、アドオンに任せない場合 `world.sendMessage(text)` を呼ぶ。
+
+### 3. アドオンへの通知 `dmc:discord_chat`（send、discord-mcbe → アドオン）
+
+ペイロードは `DiscordChat` パケットの内容と同じ JSON 文字列にする。`source` は付けない（宛先を指定しない通知のため）。チャンネル名は、同じ向きの `dmc:connect` / `dmc:disconnect` にそろえて `on_` を付けない。
+
+クライアント側の処理:
+
+1. `DiscordChat` を受け取る。
+2. `discord_chat` を登録したアドオンがあり、かつ `allowAddonMessages` が `true` なら、`dmc:discord_chat` を送る。自分では表示しない。
+3. それ以外は `world.sendMessage(text)` を呼ぶ。
+
+登録したアドオンの責任:
+
+- `discord_chat` を登録したら、Discord のチャットを自分で表示する。discord-mcbe は代わりに表示しない。フェーズ1の `minecraft_chat` と同じ考え方。
+- 誰に見せるか（ミュートなど）と、どう見せるかはアドオンが決める。`text` をそのまま `player.sendMessage` に渡すのが最も簡単な実装になる。
+
+決めたこと:
+
+- `discord_chat` を登録するアドオンは、1つのワールドに1つを想定する。`IPC.send` は全アドオンに届くので、2つが登録すると両方が表示して二重になる。2つ目の登録を受けたときに警告ログを出す。登録そのものは拒否しない。
+- `allow_addon_messages` が `false` のときは、クライアントは `discord_chat` の登録を無視して自分で表示する。設定を受け取る前も同じ。フェーズ1の `isMinecraftChatDelegated` と同じ判定を `discord_chat` にも用意する。
+- アドオン向けの `protocol` は 1 のままにする。機能とチャンネルが増えるだけで、既存のペイロードは変わらない。フェーズ2に対応していない discord-mcbe は、応答の `features` に `discord_chat` を入れないので、アドオンは未対応と判断できる。その場合は discord-mcbe が今までどおり全員に表示する。
+
+### 4. プロトコルバージョン
+
+新しいパケットが増えるので、フェーズ2に対応していないクライアントは `DiscordChat` を処理できない。ブリッジのプロトコルバージョンを上げる必要がある。
+
+バージョン 3（フェーズ1）はまだリリースしていない（`main` は 2）。フェーズ2をフェーズ1と同じリリースに入れれば 3 のままでよく、「アドオンとサーバーを同時に更新する」のも1回で済む。フェーズ1を先にリリースした場合は 4 に上げる。
+
+### 5. MakeCountry 側
+
+- 登録の `features` に `discord_chat` を足す。
+- `dmc:discord_chat` を購読し、`isMuteGeneralChat` が `true` でないプレイヤーに `text` を `sendMessage` する。表示の形式は discord-mcbe のテンプレートのままにし、MakeCountry 独自の形式にはしない。サーバーの管理者が `translation_overrides` で変えられる状態を保つため。
+- ミュートリスト（`isPlayerMuted`）は使わない。プレイヤー名の一致で判定する仕組みで、Discord の送信者を特定できないため。Discord の表示名は本人がいつでも変えられ、プレイヤー名と重なることもある。このため、フェーズ2で MakeCountry が得るのは全体チャットのミュートだけになる。
+- フェーズ1と同じ PR（`feat/discord-mcbe-integration` ブランチ）に入れる。フェーズ2に対応していない discord-mcbe は `discord_chat` の登録を無視するので、MakeCountry 側を先に入れても問題ない。
 
 ## 後続: `@bedrock-core/sync` への対応
 
@@ -206,6 +271,18 @@ MakeCountry は装飾をメッセージごとに国データから組み立て�
 - [x] `projects/server/src/util/i18n.ts`: テンプレートの置き換えを1回の走査にする
 - [x] `projects/server/src/assets/locales/*.json`、`projects/server/src/handlers/event.ts`: 名前と装飾を別々のプレースホルダーで渡し、既定の表示を `[装飾] <名前> 本文` にする
 - [x] `projects/docs/src/content/docs/guides/translation-overrides.mdx`（日本語・英語）: チャットのプレースホルダーの説明を追加
+
+フェーズ2:
+
+- [x] `packages/shared/src/enums/action-id.ts`、`packages/shared/src/packets/discord-chat.ts`: `DiscordChat` パケットを追加し、`schemas.ts` のクライアント向けリクエストに加える
+- [x] `packages/shared/src/enums/addon.ts`、`packages/shared/src/addon/index.ts`: `AddonFeature.DiscordChat`、`AddonChannel.DiscordChat`、ペイロードのスキーマと検証関数
+- [x] `packages/client/src/client/features/addon-integration.ts`: `dmc:discord_chat` を送る `deliverDiscordChat`。2つ目の `discord_chat` の登録で警告ログを出す
+- [x] `packages/client/src/client/handler.ts`: `DiscordChat` を処理する。任せる場合は IPC で渡し、それ以外は `world.sendMessage(text)`。ブリッジはクライアントより先に作られるので、`AddonIntegration` は `bindAddonIntegration` であとから渡す
+- [x] `projects/server/src/minecraft/bridge/world.ts`、`projects/server/src/minecraft/minecraft.ts`: `sendDiscordChat` と `broadcastDiscordChat`
+- [x] `projects/server/src/handlers/event.ts`: `onDiscordMessage` の `broadcastMessage` を `broadcastDiscordChat` に置き換える
+- [x] `projects/docs/src/content/docs/guides/addon-integration.mdx`（日本語・英語）: `discord_chat` と `dmc:discord_chat` の説明を追加
+- [ ] ゲーム内で確認する: 登録なしで今までと同じ表示になること、登録ありで discord-mcbe が表示しないこと、`allow_addon_messages` が `false` のとき discord-mcbe が表示すること
+- [x] MakeCountry: `src/features/discord-mcbe/index.ts` に `discord_chat` の登録と `dmc:discord_chat` の購読を追加する。`npm run typecheck`、`npm run build`、`npm run build:packs` が通り、`scripts/index.js` と `dist/lite/scripts/index.js` に `dmc:discord_chat` が含まれることを確認した（未コミット、ゲーム内では未確認）
 
 ### MakeCountry
 
