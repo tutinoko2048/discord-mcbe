@@ -48,6 +48,18 @@ export class WebSocketBridgeServer extends EventEmitter<ServerEvents> {
 
     this.logger = new Logger('SocketBridgeServer', this.app.config);
 
+    // socket-be does not listen for 'error', so a malformed frame (Minecraft sends an invalid close code
+    // when its server restarts) would otherwise be thrown as an uncaught exception and kill the process.
+    // Terminating the socket closes it right away, which removes the world as usual.
+    const { wss } = this.server.network;
+    wss.on('error', (error) => this.logger.error('WebSocket server error:', error));
+    wss.on('connection', (ws) => {
+      ws.on('error', (error) => {
+        this.logger.debug('WebSocket connection error:', error.message);
+        ws.terminate();
+      });
+    });
+
     this.server.on(ServerEvent.Open, () => this.emit('open'));
     this.server.on(ServerEvent.WorldInitialize, this.onWorldInitialize.bind(this));
     this.server.on(ServerEvent.WorldRemove, this.onWorldRemove.bind(this));
