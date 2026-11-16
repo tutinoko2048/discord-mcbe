@@ -246,28 +246,24 @@ null
 - ミュートリスト（`isPlayerMuted`）は使わない。プレイヤー名の一致で判定する仕組みで、Discord の送信者を特定できないため。Discord の表示名は本人がいつでも変えられ、プレイヤー名と重なることもある。このため、フェーズ2で MakeCountry が得るのは全体チャットのミュートだけになる。
 - フェーズ1と同じ PR（`feat/discord-mcbe-integration` ブランチ）に入れる。フェーズ2に対応していない discord-mcbe は `discord_chat` の登録を無視するので、MakeCountry 側を先に入れても問題ない。
 
-## 後続: `@bedrock-core/sync` への対応
+## `@bedrock-core/sync` への対応
 
-[`@bedrock-core/sync`](https://github.com/bedrock-core/server/tree/main/packages/sync) は、scriptevent の上にメッセージバス、ピアの発見、RPC、イベント、共有状態を載せたアドオン間通信のパッケージ。フェーズ1のあとに、MCBE-IPC と並ぶもう1つの入口として対応する。
+[`@bedrock-core/sync`](https://github.com/bedrock-core/server/tree/main/packages/sync)（2.0.0）を、MCBE-IPC と対等なもう1つの入口として扱う。できることとペイロードは同じ。名前の対応はガイド（`addon-integration.mdx`）にある。
 
-フェーズ1を先にする理由:
+決めたこと:
 
-- MakeCountry との連携を MCBE-IPC で先に実装して、実機で確認できている。計画を立てた時点の MakeCountry（2.4.1）にはバンドラーがなく、TypeScript のソースで配布される `@bedrock-core/sync` は組み込みにくかった。2.5.1 で tsdown が入ったので、この制約はなくなっている。
-- `@bedrock-core/sync` は 2026年8月の公開から3か月で 0.1 → 2.0 と破壊的変更が続いている。対応を後にしたほうが、追従の手間が少ない。
-- フェーズ1でペイロード（登録、チャット通知、`formatting`）が JSON のオブジェクトとして固まる。`@bedrock-core/sync` 側は同じ処理を別の入口から呼ぶだけになる。
+- チャットの通知はイベントではなく RPC にする。宛先を指定でき、サーバーへ渡せたかどうかを `boolean` で返せる。応答のメッセージが1件増えるのは許容する。未接続や未登録は `false` を返し、要求を失敗させるのはペイロードの形が間違っているときだけにする。未接続のたびに失敗させると、アドオン側に例外の処理を強いるため。
+- Discord のチャットは、`discord_chat` を登録したアドオンがいる経路にだけ流す。どちらの経路も全アドオンに届くため。
+- ノードは常時起動し、有効・無効の設定は作らない。100tick ごとの生存通知は問題ないものとする。
+- バージョンは `2.0.0` に固定する。3か月で 0.1 → 2.0 と破壊的変更が続いているため。通信プロトコルは相手と交渉されるので、アドオン側が別のバージョンでも通信できる。
+- アドオン向けの `protocol` とブリッジのプロトコルバージョンは変えない。サーバーの更新は要らない。
+- `@discord-mcbe/shared` では、経路ごとのものを `AddonIpc` / `AddonSync` に分けて公開する。接頭辞（`AddonIpcChannel` など）で分けるより、対等な扱いが構造に出る。TypeScript の `namespace` キーワードは、使わないものをバンドルから落とせないので使わず、`export * as` にする。
 
-対応の想定（詳細はフェーズ1のあとに決める）:
+取り込みで分かったこと:
 
-| MCBE-IPC                                                 | `@bedrock-core/sync`                                     |
-| -------------------------------------------------------- | -------------------------------------------------------- |
-| `dmc:ping`                                               | ピアの発見（`discovery.peers` に discord-mcbe が現れる） |
-| `dmc:register` / `dmc:on_chat_send` / `dmc:send_message` | discord-mcbe 宛ての RPC                                  |
-| `dmc:connect` / `dmc:disconnect`                         | 共有状態かイベント                                       |
-
-決まっていること:
-
-- ノードは常時起動する。他に対応アドオンがなくても 100tick ごとの生存通知などが動くが、問題ないものとする。有効・無効の設定は作らない。
-- バンドルサイズの増加は許容する。
+- ノードはワールドの読み込み後でないと作れない。
+- sync は TypeScript のソースのまま配布されていて、discord-mcbe の型設定（`noUncheckedIndexedAccess`）では sync 自身のソースに型エラーが出る。`vp check` は通るが typedoc が止まるので、`typedoc.json` の `packageOptions.skipErrorChecking` で避けた。
+- アドオンの `main.js` は 95KB → 178KB になった。
 
 ## 作業項目
 
@@ -275,7 +271,7 @@ null
 
 - [x] `packages/shared/src/constants/common.ts`: ブリッジのプロトコルバージョンを 3 に上げる
 - [x] `packages/shared/src/packets/chat-send.ts`: `formatting`（4項目）と `source` を任意フィールドとして追加
-- [x] `packages/shared/src/addon/`、`packages/shared/src/enums/addon.ts`: アドオン向けペイロードのスキーマと検証関数、`AddonChannel` / `AddonFeature`
+- [x] `packages/shared/src/addon/`、`packages/shared/src/enums/addon.ts`: アドオン向けペイロードのスキーマと検証関数、`AddonChannel`（のちに `AddonIpc.Channel`）/ `AddonFeature`
 - [x] `packages/shared/src/packets/world-initialize.ts`: 応答を `{ settings: { allowAddonMessages } }` に変更
 - [x] `packages/client/src/client/base-client.ts`: `WorldInitialize` の応答から設定を保持し、切断時に破棄する
 - [x] `packages/client/src/client/features/addon-integration.ts`: 登録・チャット通知・メッセージ送信の処理と、MCBE-IPC のチャンネル（`dmc:register` / `dmc:on_chat_send` を追加）。`features/ipc.ts` はここに統合して削除
@@ -302,6 +298,11 @@ null
 - [x] `packages/shared/src/packets/websocket-command.ts`、`projects/server/src/minecraft/transport/websocket/session.ts`、`packages/client/src/transport/websocket.ts`: WebSocket 接続で、長いパケットを複数のコマンドに分けて送る（「検証結果」の「WebSocket 接続のコマンドの長さ」）
 - [x] ゲーム内で確認する: 登録なしで今までと同じ表示になること、登録ありで discord-mcbe が表示しないこと、`allow_addon_messages` が `false` のとき discord-mcbe が表示すること（「検証結果」の「フェーズ2」）
 - [x] MakeCountry: `src/features/discord-mcbe/index.ts` に `discord_chat` の登録と `dmc:discord_chat` の購読を追加する。`npm run typecheck`、`npm run build`、`npm run build:packs` が通り、`scripts/index.js` と `dist/lite/scripts/index.js` に `dmc:discord_chat` が含まれることを確認した（フル版はゲーム内で確認済み。Lite は未確認）
+
+`@bedrock-core/sync`:
+
+- [x] 実装、テスト、ガイド（`feat/bedrock-core-sync` ブランチ）
+- [x] ゲーム内で確認する（「検証結果」の「`@bedrock-core/sync`」）
 
 ### MakeCountry
 
@@ -474,7 +475,18 @@ WebSocket 接続では、サーバーからアドオンへのパケットを、�
 実機では確認していないこと:
 
 - MakeCountry の Lite 版（`dist/lite`）。フル版と同じ連携コードがバンドルに入っていることは確認している。
-- `message` の各項目（ユーザー ID、ロール、メンション、`contentType`）の実際の値。MakeCountry は `text` しか使わないので、表示からは分からない。スキーマは単体テストで確認している。
+- BDS（`@minecraft/server-net` 接続）でのフェーズ2と `@bedrock-core/sync`。
+
+### `@bedrock-core/sync`
+
+1.26.63 のローカルワールドで、試作アドオン（`check-instance-on-rejoin` の `src/check-sync.ts`）と一緒に動かして確認した。
+
+- discord-mcbe がピアとして見つかり、`register` で登録できる。
+- `chatSend` で通知したチャットが、Discord に1件だけ出る。応答は `true`。
+- Discord の発言がイベント `discordChat` で1回だけ届き、`message` の中身も入っている。discord-mcbe は自分では表示しない。
+- `sendMessage` で Discord にメッセージが出る。
+- 形の正しくない要求と、存在しないメソッドの呼び出しは失敗として返る。
+- 状態 `connected` が読める。
 
 - Webhook を使う場合の表示名とアバター。username に表示名を使い、アバター URL には装飾なしの名前を使うことは、単体テスト（`minecraft-chat-webhook.test.ts`）で確認している。
 
