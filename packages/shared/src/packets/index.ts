@@ -27,4 +27,5 @@ export * from './set-action-bar';
 export * from './set-game-mode';
 export * from './set-title';
 export * from './update-subtitle';
+export * from './websocket-command';
 export * from './world-initialize';
