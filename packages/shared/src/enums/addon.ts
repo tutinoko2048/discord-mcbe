@@ -2,6 +2,8 @@
 export enum AddonFeature {
   /** The add-on handles Minecraft chat itself and reports it to discord-mcbe. */
   MinecraftChat = 'minecraft_chat',
+  /** The add-on displays chat relayed from Discord in place of discord-mcbe. */
+  DiscordChat = 'discord_chat',
 }
 
 /** MCBE-IPC channels discord-mcbe exposes to other add-ons. */
@@ -18,4 +20,6 @@ export enum AddonChannel {
   Connect = 'dmc:connect',
   /** send (discord-mcbe → add-ons): the connection to the server has ended. */
   Disconnect = 'dmc:disconnect',
+  /** send (discord-mcbe → add-ons): a chat message relayed from Discord, for the add-on to display. */
+  DiscordChat = 'dmc:discord_chat',
 }

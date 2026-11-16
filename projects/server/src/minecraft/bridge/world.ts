@@ -78,6 +78,15 @@ export class ScriptWorld<SESSION extends ISession = ISession> {
     if (res.error) throw new BridgeActionError(res);
   }
 
+  /**
+   * Sends a chat message relayed from Discord.
+   * An add-on in the world may display it in place of discord-mcbe, for example to honor its own mute settings.
+   */
+  async sendDiscordChat(text: string): Promise<void> {
+    const res = await this.session.send(ActionId.DiscordChat, { text });
+    if (res.error) throw new BridgeActionError(res);
+  }
+
   async sendScriptEvent(id: string, message: string): Promise<void> {
     const res = await this.session.send(ActionId.SendScriptEvent, {
       id,

@@ -48,6 +48,17 @@ export const AddonSendMessageSchema = v.object({
 });
 export type AddonSendMessage = v.InferOutput<typeof AddonSendMessageSchema>;
 
+/** Payload of `dmc:discord_chat`. */
+export const AddonDiscordChatSchema = v.object({
+  /** Ready-to-display text, already formatted by discord-mcbe. */
+  text: v.string(),
+});
+export type AddonDiscordChat = v.InferOutput<typeof AddonDiscordChatSchema>;
+
+export function safeParseAddonDiscordChat(input: unknown) {
+  return v.safeParse(AddonDiscordChatSchema, input);
+}
+
 export function safeParseAddonRegisterRequest(input: unknown) {
   return v.safeParse(AddonRegisterRequestSchema, input);
 }

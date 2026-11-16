@@ -5,6 +5,8 @@ import {
   AddonChannel,
   AddonFeature,
   safeParseAddonChatSend,
+  safeParseAddonDiscordChat,
+  safeParseClientBoundPacket,
   safeParseAddonRegisterRequest,
   safeParseAddonRegisterResponse,
   safeParseAddonSendMessage,
@@ -21,8 +23,25 @@ describe('add-on payload validation', () => {
       'dmc:send_message',
       'dmc:connect',
       'dmc:disconnect',
+      'dmc:discord_chat',
     ]);
-    expect<string[]>(Object.values(AddonFeature)).toEqual(['minecraft_chat']);
+    expect<string[]>(Object.values(AddonFeature)).toEqual(['minecraft_chat', 'discord_chat']);
+  });
+
+  test('validates relayed Discord chat', () => {
+    expect(safeParseAddonDiscordChat({ text: '[Discord] <Steve> hi', future: 1 }).success).toBe(true);
+    expect(safeParseAddonDiscordChat({}).success).toBe(false);
+    expect(
+      safeParseClientBoundPacket({ type: ActionId.DiscordChat, requestId: 'request-1', data: { text: 'hi' } })
+        .success,
+    ).toBe(true);
+    expect(
+      safeParseClientBoundPacket({
+        type: ActionId.DiscordChat,
+        requestId: 'request-1',
+        data: { message: 'hi' },
+      }).success,
+    ).toBe(false);
   });
 
   test('accepts a registration and ignores fields it does not know', () => {

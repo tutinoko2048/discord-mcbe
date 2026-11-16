@@ -11,6 +11,7 @@ import {
   createScoreboardScoreInfoDescriptor,
 } from './descriptors';
 import { getTPS } from './util';
+import type { AddonIntegration } from './features/addon-integration';
 
 type ClientBoundApplicationRequestType = ClientBoundApplicationRequestPacket['type'];
 type HandlerResponse<T extends ClientBoundApplicationRequestType> = ClientBoundRequestResponse<T>;
@@ -20,6 +21,13 @@ function res<T extends ClientBoundApplicationRequestType>(
   responseValue: NoInfer<ResponseData<T>>,
 ): HandlerResponse<T> {
   return { type: request.type, data: responseValue };
+}
+
+// The bridge, and with it this handler, is created before the client that owns the integration.
+let addonIntegration: AddonIntegration | undefined;
+
+export function bindAddonIntegration(integration: AddonIntegration): void {
+  addonIntegration = integration;
 }
 
 function assertNever(value: never): never {
@@ -39,6 +47,12 @@ export async function handleClientBoundRequest(
       } else {
         world.sendMessage(data.message);
       }
+      return res(request, null);
+    }
+
+    case ActionId.DiscordChat: {
+      const { text } = request.data;
+      if (!addonIntegration?.deliverDiscordChat(text)) world.sendMessage(text);
       return res(request, null);
     }
 

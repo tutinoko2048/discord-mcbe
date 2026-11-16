@@ -207,6 +207,36 @@ function notifyChat(source: string, player: Player, message: string) {
 - `message` in `beforeEvents.chatSend` already contains `Player.chatMessagePrefix`. Do not set `messagePrefix` when sending that `message` as is.
 - When `bot.allow_addon_messages` is `false`, reported chat is not sent to Discord.
 
+## Display chat from Discord
+
+discord-mcbe shows chat from Discord to everyone in the world. If the add-on should decide who sees it, for example to honor a chat mute setting, add `discord_chat` to `features` when calling `dmc:register`.
+
+Once `discord_chat` is registered, discord-mcbe stops displaying chat from Discord and passes it to the add-on through `dmc:discord_chat`. The add-on is responsible for displaying it.
+
+```ts
+import { world } from '@minecraft/server';
+import { IPC, PROTO } from 'mcbe-ipc';
+
+IPC.on('dmc:discord_chat', PROTO.String, (json) => {
+  const { text } = JSON.parse(json) as { text: string };
+  for (const player of world.getPlayers()) {
+    // The add-on decides which players do not see it
+    if (player.hasTag('mute_discord')) continue;
+    player.sendMessage(text);
+  }
+});
+```
+
+| Field  | Description                                                |
+| ------ | ---------------------------------------------------------- |
+| `text` | Ready-to-display text. It reflects `translation_overrides` |
+
+- Only chat from Discord is passed. Other messages, such as the connection notice, are still displayed by discord-mcbe.
+- A message with attachments may arrive as two notifications, one for the text and one for the attachment notice.
+- Register `discord_chat` from only one add-on per world. If several add-ons register it, each one displays the chat.
+- When `bot.allow_addon_messages` is `false`, the registration is ignored and discord-mcbe shows the chat to everyone.
+- If `features` in the response does not include `discord_chat`, the installed discord-mcbe does not support this feature. It then shows the chat to everyone as before.
+
 ## Listen for connection events
 
 `dmc:connect` is emitted when a connection starts, and `dmc:disconnect` is emitted when it ends. Neither event carries data.
@@ -242,7 +272,9 @@ IPC.send(AddonChannel.ChatSend, PROTO.String, JSON.stringify(payload));
 | Export                                           | Description                                      |
 | ------------------------------------------------ | ------------------------------------------------ |
 | `AddonChannel`                                   | Channel names such as `dmc:register`             |
-| `AddonFeature`                                   | Feature names (`minecraft_chat`)                 |
+| `AddonFeature`                                   | Feature names such as `minecraft_chat`           |
 | `AddonRegisterRequest` / `AddonRegisterResponse` | Request and response types of `dmc:register`     |
 | `AddonChatSend` / `AddonSendMessage`             | Types of `dmc:on_chat_send` / `dmc:send_message` |
+| `AddonDiscordChat`                               | Type of `dmc:discord_chat`                       |
 | `safeParseAddonRegisterResponse`                 | Validates the response of `dmc:register`         |
+| `safeParseAddonDiscordChat`                      | Validates the payload of `dmc:discord_chat`      |

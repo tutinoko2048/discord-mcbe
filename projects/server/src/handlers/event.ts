@@ -178,12 +178,12 @@ export class EventHandler {
           _t('console.reply', message.guild.name, senderName, repliedName, repliedContent, content),
         );
 
-        await this.app.minecraft.broadcastMessage(
+        await this.app.minecraft.broadcastDiscordChat(
           _t('minecraft.reply', senderName, repliedName, repliedContent, content),
         );
       } else {
         this.logger.info(_t('console.message', message.guild.name, senderName, content));
-        await this.app.minecraft.broadcastMessage(_t('minecraft.message', senderName, content));
+        await this.app.minecraft.broadcastDiscordChat(_t('minecraft.message', senderName, content));
       }
     }
 
@@ -200,7 +200,7 @@ export class EventHandler {
           ),
         );
 
-        await this.app.minecraft.broadcastMessage(
+        await this.app.minecraft.broadcastDiscordChat(
           _t(
             'minecraft.reply.withAttachments',
             senderName,
@@ -213,7 +213,7 @@ export class EventHandler {
         this.logger.info(
           _t('console.message.withAttachments', message.guild.name, senderName, message.attachments.size),
         );
-        await this.app.minecraft.broadcastMessage(
+        await this.app.minecraft.broadcastDiscordChat(
           _t('minecraft.message.withAttachments', senderName, message.attachments.size),
         );
       }

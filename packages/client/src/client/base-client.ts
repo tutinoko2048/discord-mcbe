@@ -1,6 +1,7 @@
 import { system, world } from '@minecraft/server';
 import { ActionId, DisconnectReason, type ResponseData } from '@discord-mcbe/shared';
 import { registerEvents } from './event';
+import { bindAddonIntegration } from './handler';
 import { registerCommands } from './command';
 import { createPlayerDescriptor } from './descriptors';
 import { Logger } from '../utils';
@@ -34,6 +35,7 @@ export abstract class BaseClient<T extends IBridgeClient = IBridgeClient> {
 
     // register events to send to server
     this.integration = new AddonIntegration(this.bridge, this.logger);
+    bindAddonIntegration(this.integration);
     registerEvents(this.bridge, this.integration);
 
     system.beforeEvents.startup.subscribe((ev) => registerCommands(ev.customCommandRegistry, this));

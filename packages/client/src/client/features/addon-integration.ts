@@ -8,6 +8,7 @@ import {
   safeParseAddonChatSend,
   safeParseAddonRegisterRequest,
   safeParseAddonSendMessage,
+  type AddonDiscordChat,
   type AddonRegisterResponse,
   type ChatFormatting,
   type ServerSettings,
@@ -88,11 +89,26 @@ export class AddonIntegration {
    * Stays false until the server confirms it accepts messages from add-ons.
    */
   get isMinecraftChatDelegated(): boolean {
-    if (!this.serverSettings?.allowAddonMessages) return false;
-    for (const features of this.registrations.values()) {
-      if (features.has(AddonFeature.MinecraftChat)) return true;
-    }
-    return false;
+    return this.isDelegated(AddonFeature.MinecraftChat);
+  }
+
+  /**
+   * Hands a chat message relayed from Discord to the add-on that registered to display it.
+   * Returns false when no add-on takes it, so the caller displays it itself.
+   */
+  deliverDiscordChat(text: string): boolean {
+    if (!this.isDelegated(AddonFeature.DiscordChat)) return false;
+    const payload: AddonDiscordChat = { text };
+    IPC.send(AddonChannel.DiscordChat, PROTO.String, JSON.stringify(payload));
+    return true;
+  }
+
+  private isDelegated(feature: AddonFeature): boolean {
+    return !!this.serverSettings?.allowAddonMessages && this.sourcesWith(feature).length > 0;
+  }
+
+  private sourcesWith(feature: AddonFeature): string[] {
+    return [...this.registrations].filter(([, features]) => features.has(feature)).map(([source]) => source);
   }
 
   private register(payload: unknown): AddonRegisterResponse {
@@ -110,6 +126,12 @@ export class AddonIntegration {
     );
     this.registrations.set(source, accepted);
     this.logger.info(`Add-on registered: ${source} (${[...accepted].join(', ') || 'no features'})`);
+
+    // Every registered add-on receives the relayed chat, so two of them would display it twice.
+    const displays = this.sourcesWith(AddonFeature.DiscordChat);
+    if (accepted.has(AddonFeature.DiscordChat) && displays.length > 1) {
+      this.logger.warn(`Discord chat will be displayed more than once: ${displays.join(', ')}`);
+    }
     return [...accepted];
   }
 

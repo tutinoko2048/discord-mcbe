@@ -84,6 +84,11 @@ export class MinecraftHandler {
     await Promise.allSettled(this.getWorlds().map((world) => world.sendMessage(message)));
   }
 
+  /** Sends a chat message relayed from Discord to every world. */
+  async broadcastDiscordChat(text: string): Promise<void> {
+    await Promise.allSettled(this.getWorlds().map((world) => world.sendDiscordChat(text)));
+  }
+
   private onClientConnect(session: ISession) {
     this.logger.debug('onClientConnect', session.id);
   }

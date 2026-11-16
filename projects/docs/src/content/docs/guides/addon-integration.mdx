@@ -207,6 +207,36 @@ function notifyChat(source: string, player: Player, message: string) {
 - `beforeEvents.chatSend`の`message`には`Player.chatMessagePrefix`がすでに含まれています。その`message`をそのまま送る場合は、`messagePrefix`を指定しないでください。
 - `bot.allow_addon_messages`が`false`のとき、通知されたチャットはDiscordへ送信されません。
 
+## Discordのチャットを表示する
+
+discord-mcbeは、Discordから届いたチャットをワールドの全員に表示します。チャットのミュートなど、表示する相手をアドオン側で決めたい場合は、`dmc:register`の`features`に`discord_chat`を加えて登録します。
+
+`discord_chat`を登録すると、discord-mcbeはDiscordのチャットを自分では表示せず、`dmc:discord_chat`でアドオンへ渡します。表示はアドオンが行ってください。
+
+```ts
+import { world } from '@minecraft/server';
+import { IPC, PROTO } from 'mcbe-ipc';
+
+IPC.on('dmc:discord_chat', PROTO.String, (json) => {
+  const { text } = JSON.parse(json) as { text: string };
+  for (const player of world.getPlayers()) {
+    // 表示しないプレイヤーをアドオン側で決める
+    if (player.hasTag('mute_discord')) continue;
+    player.sendMessage(text);
+  }
+});
+```
+
+| フィールド | 説明                                                                  |
+| ---------- | --------------------------------------------------------------------- |
+| `text`     | そのまま表示できる文字列。`translation_overrides`の内容が反映されます |
+
+- 対象はDiscordから届いたチャットだけです。接続時の通知などは、これまでどおりdiscord-mcbeが表示します。
+- 添付ファイルのあるメッセージは、本文と添付の案内が別々に届くことがあります。
+- `discord_chat`を登録するアドオンは、1つのワールドに1つだけにしてください。複数のアドオンが登録すると、それぞれが表示して重複します。
+- `bot.allow_addon_messages`が`false`のときは登録が無視され、discord-mcbeが全員に表示します。
+- 応答の`features`に`discord_chat`が含まれない場合、導入されているdiscord-mcbeはこの機能に対応していません。その場合もdiscord-mcbeが全員に表示します。
+
 ## 接続イベントを受け取る
 
 接続開始時に`dmc:connect`、切断時に`dmc:disconnect`が発火します。どちらもデータはありません。
@@ -239,10 +269,12 @@ const payload: AddonChatSend = {
 IPC.send(AddonChannel.ChatSend, PROTO.String, JSON.stringify(payload));
 ```
 
-| エクスポート                                     | 内容                                        |
-| ------------------------------------------------ | ------------------------------------------- |
-| `AddonChannel`                                   | チャンネル名（`dmc:register`など）          |
-| `AddonFeature`                                   | 機能名（`minecraft_chat`）                  |
-| `AddonRegisterRequest` / `AddonRegisterResponse` | `dmc:register`の要求と応答の型              |
-| `AddonChatSend` / `AddonSendMessage`             | `dmc:on_chat_send` / `dmc:send_message`の型 |
-| `safeParseAddonRegisterResponse`                 | `dmc:register`の応答を検証する関数          |
+| エクスポート                                     | 内容                                         |
+| ------------------------------------------------ | -------------------------------------------- |
+| `AddonChannel`                                   | チャンネル名（`dmc:register`など）           |
+| `AddonFeature`                                   | 機能名（`minecraft_chat`など）               |
+| `AddonRegisterRequest` / `AddonRegisterResponse` | `dmc:register`の要求と応答の型               |
+| `AddonChatSend` / `AddonSendMessage`             | `dmc:on_chat_send` / `dmc:send_message`の型  |
+| `AddonDiscordChat`                               | `dmc:discord_chat`の型                       |
+| `safeParseAddonRegisterResponse`                 | `dmc:register`の応答を検証する関数           |
+| `safeParseAddonDiscordChat`                      | `dmc:discord_chat`のペイロードを検証する関数 |

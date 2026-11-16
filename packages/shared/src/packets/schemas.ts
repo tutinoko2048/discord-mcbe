@@ -3,6 +3,7 @@ import { ChatSendPacket } from './chat-send';
 import { requestSchemas } from './common';
 import { ConnectPacket } from './connect';
 import { DisconnectPacket } from './disconnect';
+import { DiscordChatPacket } from './discord-chat';
 import { DiscordSendPacket } from './discord-send';
 import { GetEntityDimensionPacket } from './get-entity-dimension';
 import { GetEntityLocationPacket } from './get-entity-location';
@@ -62,6 +63,7 @@ export const InternalPacket = v.variant('type', requestSchemas(InternalPackets))
 
 export const ClientBoundRequestPackets = [
   SendMessagePacket,
+  DiscordChatPacket,
   RunCommandPacket,
   SendScriptEventPacket,
   GetTpsPacket,
