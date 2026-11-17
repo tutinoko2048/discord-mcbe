@@ -56,6 +56,9 @@ jobs:
       - name: Check
         run: pnpm run check
 
+      - name: Test
+        run: pnpm run test
+
       - name: Resolve npm tag from version
         run: |
           if [[ "$VERSION" =~ -([0-9A-Za-z]+)\. ]]; then
