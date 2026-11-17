@@ -8,4 +8,7 @@
   "themeColor": "#4a53df",
   "mergeModulesRenameDefaults": true,
   "mergeModulesMergeMode": "module",
+  "packageOptions": {
+    "skipErrorChecking": true
+  }
 }

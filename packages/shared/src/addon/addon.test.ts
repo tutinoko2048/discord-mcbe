@@ -2,21 +2,19 @@
 
 import { describe, expect, test } from 'bun:test';
 import {
-  AddonChannel,
+  AddonIpc,
+  AddonSync,
   AddonFeature,
-  safeParseAddonChatSend,
   safeParseAddonDiscordChat,
   safeParseClientBoundPacket,
-  safeParseAddonRegisterRequest,
   safeParseAddonRegisterResponse,
-  safeParseAddonSendMessage,
   safeParseServerBoundPacket,
   ActionId,
 } from '..';
 
 describe('add-on payload validation', () => {
   test('keeps channel and feature names stable', () => {
-    expect<string[]>(Object.values(AddonChannel)).toEqual([
+    expect<string[]>(Object.values(AddonIpc.Channel)).toEqual([
       'dmc:ping',
       'dmc:register',
       'dmc:on_chat_send',
@@ -26,6 +24,10 @@ describe('add-on payload validation', () => {
       'dmc:discord_chat',
     ]);
     expect<string[]>(Object.values(AddonFeature)).toEqual(['minecraft_chat', 'discord_chat']);
+    expect(AddonSync.NODE_ID).toBe('discord-mcbe');
+    expect<string[]>(Object.values(AddonSync.Method)).toEqual(['register', 'chatSend', 'sendMessage']);
+    expect<string[]>(Object.values(AddonSync.Event)).toEqual(['connect', 'disconnect', 'discordChat']);
+    expect<string[]>(Object.values(AddonSync.StateKey)).toEqual(['connected']);
   });
 
   test('validates relayed Discord chat', () => {
@@ -70,7 +72,7 @@ describe('add-on payload validation', () => {
   });
 
   test('accepts a registration and ignores fields it does not know', () => {
-    const result = safeParseAddonRegisterRequest({
+    const result = AddonIpc.safeParseRegisterRequest({
       source: 'example-addon',
       protocol: 1,
       features: ['minecraft_chat', 'feature_from_the_future'],
@@ -85,11 +87,11 @@ describe('add-on payload validation', () => {
   });
 
   test('rejects malformed registrations', () => {
-    expect(safeParseAddonRegisterRequest(undefined).success).toBe(false);
-    expect(safeParseAddonRegisterRequest({ source: '', protocol: 1, features: [] }).success).toBe(false);
-    expect(safeParseAddonRegisterRequest({ source: 'example-addon', features: [] }).success).toBe(false);
+    expect(AddonIpc.safeParseRegisterRequest(undefined).success).toBe(false);
+    expect(AddonIpc.safeParseRegisterRequest({ source: '', protocol: 1, features: [] }).success).toBe(false);
+    expect(AddonIpc.safeParseRegisterRequest({ source: 'example-addon', features: [] }).success).toBe(false);
     expect(
-      safeParseAddonRegisterRequest({ source: 'example-addon', protocol: 1, features: 'minecraft_chat' })
+      AddonIpc.safeParseRegisterRequest({ source: 'example-addon', protocol: 1, features: 'minecraft_chat' })
         .success,
     ).toBe(false);
   });
@@ -103,10 +105,11 @@ describe('add-on payload validation', () => {
 
   test('accepts chat with or without formatting', () => {
     expect(
-      safeParseAddonChatSend({ source: 'example-addon', playerId: '-4294967295', message: 'hello' }).success,
+      AddonIpc.safeParseChatSend({ source: 'example-addon', playerId: '-4294967295', message: 'hello' })
+        .success,
     ).toBe(true);
 
-    const result = safeParseAddonChatSend({
+    const result = AddonIpc.safeParseChatSend({
       source: 'example-addon',
       playerId: '-4294967295',
       message: 'hello',
@@ -122,7 +125,7 @@ describe('add-on payload validation', () => {
   });
 
   test('produces chat that fits the bridge packet', () => {
-    const chat = safeParseAddonChatSend({
+    const chat = AddonIpc.safeParseChatSend({
       source: 'example-addon',
       playerId: '-4294967295',
       message: 'hello',
@@ -142,17 +145,17 @@ describe('add-on payload validation', () => {
   test('rejects malformed chat', () => {
     const chat = { source: 'example-addon', playerId: '-4294967295', message: 'hello' };
 
-    expect(safeParseAddonChatSend({ ...chat, playerId: '' }).success).toBe(false);
-    expect(safeParseAddonChatSend({ ...chat, message: 1 }).success).toBe(false);
-    expect(safeParseAddonChatSend({ ...chat, formatting: { namePrefix: 1 } }).success).toBe(false);
-    expect(safeParseAddonChatSend({ ...chat, formatting: 'bold' }).success).toBe(false);
+    expect(AddonIpc.safeParseChatSend({ ...chat, playerId: '' }).success).toBe(false);
+    expect(AddonIpc.safeParseChatSend({ ...chat, message: 1 }).success).toBe(false);
+    expect(AddonIpc.safeParseChatSend({ ...chat, formatting: { namePrefix: 1 } }).success).toBe(false);
+    expect(AddonIpc.safeParseChatSend({ ...chat, formatting: 'bold' }).success).toBe(false);
   });
 
   test('validates messages sent to Discord', () => {
     expect(
-      safeParseAddonSendMessage({ source: 'example-addon', message: { content: 'hello' } }).success,
+      AddonIpc.safeParseSendMessage({ source: 'example-addon', message: { content: 'hello' } }).success,
     ).toBe(true);
-    expect(safeParseAddonSendMessage({ source: 'example-addon', message: 'hello' }).success).toBe(false);
-    expect(safeParseAddonSendMessage({ source: '', message: { content: 'hello' } }).success).toBe(false);
+    expect(AddonIpc.safeParseSendMessage({ source: 'example-addon', message: 'hello' }).success).toBe(false);
+    expect(AddonIpc.safeParseSendMessage({ source: '', message: { content: 'hello' } }).success).toBe(false);
   });
 });

@@ -5,10 +5,23 @@ description: discord-mcbeを利用して、他のアドオンからDiscordへメ
 
 import { Code, Tabs, TabItem } from '@astrojs/starlight/components';
 
-discord-mcbeには、<a href="https://github.com/OmniacDev/MCBE-IPC" target="_blank" rel="noopener noreferrer">MCBE-IPC</a>を使った他のアドオンとの連携機能があります。
-これにより、他のアドオンからdiscord-mcbeを経由してDiscordへメッセージを送信したり、アドオンが処理したチャットをDiscordへ表示したりできます。
+discord-mcbeには、他のアドオンとの連携機能があります。
+他のアドオンからdiscord-mcbeを経由してDiscordへメッセージを送信したり、アドオンが処理したチャットをDiscordへ表示したりできます。
 
-他のアドオンへのMCBE-IPCの導入方法は配布元の説明に従ってください。
+連携には、次のどちらかのライブラリを使います。できることと、やりとりするデータの内容は同じです。
+
+- <a href="https://github.com/OmniacDev/MCBE-IPC" target="_blank" rel="noopener noreferrer">
+    MCBE-IPC
+  </a>
+- <a
+    href="https://github.com/bedrock-core/server/tree/main/packages/sync"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    @bedrock-core/sync
+  </a>
+
+1つのアドオンでは、どちらか一方だけを使ってください。ライブラリの導入方法は、それぞれの配布元の説明に従ってください。
 
 :::caution
 この機能は、同じワールドで有効になっている他のアドオンを信頼できることを前提としています。
@@ -16,14 +29,40 @@ discord-mcbeには、<a href="https://github.com/OmniacDev/MCBE-IPC" target="_bl
 なお、この機能は`config.json`の`bot.allow_addon_messages`を`false`にすることで無効化できます。
 :::
 
-この機能を無効にするには、`config.json`の`bot.allow_addon_messages`を`false`にします。無効にしても、導入・接続確認用の`ping`には応答します。
+この機能を無効にするには、`config.json`の`bot.allow_addon_messages`を`false`にします。無効にしても、導入と接続状態の確認には応答します。
+
+## 準備
+
+<Tabs syncKey="provider">
+<TabItem label="MCBE-IPC">
+
+準備は要りません。discord-mcbeは`dmc:`で始まるチャンネルを使います。
+
+</TabItem>
+<TabItem label="@bedrock-core/sync">
+
+ノードを作り、ワールドの読み込み後に起動します。以降の例では、ここで作った`sync`を使います。
+
+```ts
+import { world } from '@minecraft/server';
+import { createSync } from '@bedrock-core/sync';
+
+export const sync = createSync({ id: 'example-addon', version: '1.0.0' });
+
+world.afterEvents.worldLoad.subscribe(() => sync.start());
+```
+
+discord-mcbeは`discord-mcbe`というIDのノードとして参加します。アドオンのノードのIDは、アドオン名としてdiscord-mcbeに伝わります。
+
+</TabItem>
+</Tabs>
 
 ## discord-mcbeが導入されているか確認する
 
-`dmc:ping`の応答は、`true`なら接続中、`false`なら導入済みですが未接続です。20tick以内に応答がなければ、discord-mcbeは導入されていません。この確認は起動時に一度だけ行ってください。
+<Tabs syncKey="provider">
+<TabItem label="MCBE-IPC">
 
-<Tabs syncKey="code">
-<TabItem value="ts" label="TypeScript">
+`dmc:ping`の応答は、`true`なら接続中、`false`なら導入済みですが未接続です。20tick以内に応答がなければ、discord-mcbeは導入されていません。この確認は起動時に一度だけ行ってください。
 
 ```ts
 import { system } from '@minecraft/server';
@@ -38,18 +77,18 @@ export function getDiscordMcbeStatus(): Promise<boolean | undefined> {
 ```
 
 </TabItem>
-<TabItem value="js" label="JavaScript">
+<TabItem label="@bedrock-core/sync">
 
-```js
-import { system } from '@minecraft/server';
-import { IPC, PROTO } from 'mcbe-ipc';
+discord-mcbeが導入されていれば、ピアとして見つかります。サーバーに接続しているかどうかは、状態`connected`で読めます。
 
-export function getDiscordMcbeStatus() {
-  return Promise.race([
-    IPC.invoke('dmc:ping', PROTO.Void, undefined, PROTO.Boolean),
-    system.waitTicks(20).then(() => undefined),
-  ]);
-}
+```ts
+sync.discovery.onPeerUp((peer) => {
+  if (peer.id !== 'discord-mcbe') return;
+  // discord-mcbeが導入されている
+});
+
+// true: 接続中 / false: 未接続 / undefined: まだ見つかっていない
+const connected = sync.state.get('discord-mcbe', 'connected');
 ```
 
 </TabItem>
@@ -57,10 +96,12 @@ export function getDiscordMcbeStatus() {
 
 ## Discordへメッセージを送る
 
-`dmc:send_message`へ送信元と[Discord Create Message API](https://docs.discord.com/developers/resources/message#create-message)形式のmessageを含むobjectをJSON文字列として送ると、Discordへメッセージが送信されます。
+[Discord Create Message API](https://docs.discord.com/developers/resources/message#create-message)形式の`message`を送ると、Discordへメッセージが送信されます。
 
-<Tabs syncKey="code">
-<TabItem value="ts" label="TypeScript">
+<Tabs syncKey="provider">
+<TabItem label="MCBE-IPC">
+
+`dmc:send_message`へ、送信元のアドオン名`source`と`message`を含むobjectをJSON文字列として送ります。
 
 ```ts
 import { IPC, PROTO } from 'mcbe-ipc';
@@ -75,16 +116,16 @@ sendDiscordMessage('example-addon', {
 ```
 
 </TabItem>
-<TabItem value="js" label="JavaScript">
+<TabItem label="@bedrock-core/sync">
 
-```js
-import { IPC, PROTO } from 'mcbe-ipc';
+RPCの`sendMessage`を呼びます。応答は、サーバーへ渡したら`true`、discord-mcbeが未接続なら`false`です。
 
-function sendDiscordMessage(source, message) {
-  IPC.send('dmc:send_message', PROTO.String, JSON.stringify({ source, message }));
+```ts
+function sendDiscordMessage(message: Record<string, unknown>) {
+  return sync.rpc.request('discord-mcbe', 'sendMessage', { message });
 }
 
-sendDiscordMessage('example-addon', {
+void sendDiscordMessage({
   content: 'このメッセージは別のアドオンから送信しています',
 });
 ```
@@ -92,7 +133,7 @@ sendDiscordMessage('example-addon', {
 </TabItem>
 </Tabs>
 
-`source`には送信元のアドオン名を指定します。`message`では`embeds`など、JSONで表現できるCreate Message APIのフィールドも利用できます。添付ファイル本体の転送には対応していません。
+`message`では`embeds`など、JSONで表現できるCreate Message APIのフィールドも利用できます。添付ファイル本体の転送には対応していません。
 
 ## チャットを処理するアドオンと連携する
 
@@ -100,10 +141,10 @@ sendDiscordMessage('example-addon', {
 
 ### 1. 起動時に登録する
 
-`dmc:register`を起動時に一度だけ呼び出します。20tick以内に応答がなければ、discord-mcbeは導入されていません。
+<Tabs syncKey="provider">
+<TabItem label="MCBE-IPC">
 
-<Tabs syncKey="code">
-<TabItem value="ts" label="TypeScript">
+`dmc:register`を起動時に一度だけ呼び出します。20tick以内に応答がなければ、discord-mcbeは導入されていません。
 
 ```ts
 import { system } from '@minecraft/server';
@@ -130,34 +171,34 @@ export async function registerToDiscordMcbe(source: string): Promise<RegisterRes
 ```
 
 </TabItem>
-<TabItem value="js" label="JavaScript">
+<TabItem label="@bedrock-core/sync">
 
-```js
-import { system } from '@minecraft/server';
-import { IPC, PROTO } from 'mcbe-ipc';
+discord-mcbeがピアとして見つかったら、RPCの`register`を呼びます。アドオンがワールドからいなくなると、登録は自動で解除されます。
 
-export async function registerToDiscordMcbe(source) {
-  const response = await Promise.race([
-    IPC.invoke(
-      'dmc:register',
-      PROTO.String,
-      JSON.stringify({ source, protocol: 1, features: ['minecraft_chat'] }),
-      PROTO.String,
-    ),
-    system.waitTicks(20).then(() => undefined),
-  ]);
-  return response === undefined ? undefined : JSON.parse(response);
+```ts
+interface RegisterResponse {
+  protocol: number;
+  connected: boolean;
+  features: string[];
 }
+
+sync.discovery.onPeerUp(async (peer) => {
+  if (peer.id !== 'discord-mcbe') return;
+  const response = (await sync.rpc.request('discord-mcbe', 'register', {
+    protocol: 1,
+    features: ['minecraft_chat'],
+  })) as RegisterResponse;
+});
 ```
 
 </TabItem>
 </Tabs>
 
-| フィールド | 説明                                                               |
-| ---------- | ------------------------------------------------------------------ |
-| `source`   | アドオン名。以降の通知でも同じ値を使います                         |
-| `protocol` | このページで説明している形式のバージョン。現在は`1`                |
-| `features` | 利用する機能。チャットを通知する場合は`minecraft_chat`を指定します |
+| フィールド | 説明                                                                 |
+| ---------- | -------------------------------------------------------------------- |
+| `source`   | アドオン名。以降の通知でも同じ値を使います。MCBE-IPCでだけ指定します |
+| `protocol` | このページで説明している形式のバージョン。現在は`1`                  |
+| `features` | 利用する機能。チャットを通知する場合は`minecraft_chat`を指定します   |
 
 応答の`features`には、要求した機能のうちdiscord-mcbeが受け付けたものが入ります。`connected`は応答時点の接続状態です。
 
@@ -165,7 +206,12 @@ export async function registerToDiscordMcbe(source) {
 
 ### 2. チャットを通知する
 
-Discordへ表示したいチャットごとに`dmc:on_chat_send`を送信します。全体チャットだけを通知するなど、どのチャットを通知するかはアドオン側で決めてください。
+Discordへ表示したいチャットごとに通知します。全体チャットだけを通知するなど、どのチャットを通知するかはアドオン側で決めてください。
+
+<Tabs syncKey="provider">
+<TabItem label="MCBE-IPC">
+
+`dmc:on_chat_send`を送信します。
 
 ```ts
 import type { Player } from '@minecraft/server';
@@ -185,9 +231,29 @@ function notifyChat(source: string, player: Player, message: string) {
 }
 ```
 
+</TabItem>
+<TabItem label="@bedrock-core/sync">
+
+RPCの`chatSend`を呼びます。応答は、サーバーへ渡したら`true`、渡さなかったら`false`です。
+
+```ts
+import type { Player } from '@minecraft/server';
+
+function notifyChat(player: Player, message: string) {
+  return sync.rpc.request('discord-mcbe', 'chatSend', {
+    playerId: player.id,
+    message,
+    formatting: { namePrefix: '[Team A] ' },
+  });
+}
+```
+
+</TabItem>
+</Tabs>
+
 | フィールド   | 説明                                             |
 | ------------ | ------------------------------------------------ |
-| `source`     | 登録時と同じアドオン名                           |
+| `source`     | 登録時と同じアドオン名。MCBE-IPCでだけ指定します |
 | `playerId`   | 発言したプレイヤーの`Player.id`                  |
 | `message`    | 装飾を含まない本文                               |
 | `formatting` | 送信者名と本文の前後に付ける文字列。省略できます |
@@ -209,9 +275,14 @@ function notifyChat(source: string, player: Player, message: string) {
 
 ## Discordのチャットを表示する
 
-discord-mcbeは、Discordから届いたチャットをワールドの全員に表示します。チャットのミュートなど、表示する相手をアドオン側で決めたい場合は、`dmc:register`の`features`に`discord_chat`を加えて登録します。
+discord-mcbeは、Discordから届いたチャットをワールドの全員に表示します。チャットのミュートなど、表示する相手をアドオン側で決めたい場合は、登録の`features`に`discord_chat`を加えます。
 
-`discord_chat`を登録すると、discord-mcbeはDiscordのチャットを自分では表示せず、`dmc:discord_chat`でアドオンへ渡します。表示はアドオンが行ってください。
+`discord_chat`を登録すると、discord-mcbeはDiscordのチャットを自分では表示せず、アドオンへ渡します。表示はアドオンが行ってください。
+
+<Tabs syncKey="provider">
+<TabItem label="MCBE-IPC">
+
+`dmc:discord_chat`で、JSON文字列として届きます。
 
 ```ts
 import { world } from '@minecraft/server';
@@ -226,6 +297,27 @@ IPC.on('dmc:discord_chat', PROTO.String, (json) => {
   }
 });
 ```
+
+</TabItem>
+<TabItem label="@bedrock-core/sync">
+
+イベント`discordChat`で届きます。
+
+```ts
+import { world } from '@minecraft/server';
+
+sync.events.on('discord-mcbe', 'discordChat', (payload) => {
+  const { text } = payload as { text: string };
+  for (const player of world.getPlayers()) {
+    // 表示しないプレイヤーをアドオン側で決める
+    if (player.hasTag('mute_discord')) continue;
+    player.sendMessage(text);
+  }
+});
+```
+
+</TabItem>
+</Tabs>
 
 | フィールド | 説明                                                                  |
 | ---------- | --------------------------------------------------------------------- |
@@ -260,14 +352,19 @@ IPC.on('dmc:discord_chat', PROTO.String, (json) => {
 
 - 対象はDiscordから届いたチャットだけです。接続時の通知などは、これまでどおりdiscord-mcbeが表示します。
 - Discordのメッセージ1件につき、通知は1回です。本文と添付ファイルの両方があるメッセージでは、`text`が2行になります。
-- `dmc:discord_chat`は同じワールドの全アドオンに届きます。ユーザーIDやロールを渡したくないアドオンがある場合は、`bot.allow_addon_messages`を`false`にしてください。
+- この通知は同じワールドの全アドオンに届きます。ユーザーIDやロールを渡したくないアドオンがある場合は、`bot.allow_addon_messages`を`false`にしてください。
 - `discord_chat`を登録するアドオンは、1つのワールドに1つだけにしてください。複数のアドオンが登録すると、それぞれが表示して重複します。
 - `bot.allow_addon_messages`が`false`のときは登録が無視され、discord-mcbeが全員に表示します。
 - 応答の`features`に`discord_chat`が含まれない場合、導入されているdiscord-mcbeはこの機能に対応していません。その場合もdiscord-mcbeが全員に表示します。
 
 ## 接続イベントを受け取る
 
-接続開始時に`dmc:connect`、切断時に`dmc:disconnect`が発火します。どちらもデータはありません。
+サーバーへの接続が始まったときと、切断されたときに通知されます。どちらもデータはありません。
+
+<Tabs syncKey="provider">
+<TabItem label="MCBE-IPC">
+
+`dmc:connect`と`dmc:disconnect`が発火します。
 
 ```ts
 import { IPC, PROTO } from 'mcbe-ipc';
@@ -281,28 +378,65 @@ IPC.on('dmc:disconnect', PROTO.Void, () => {
 });
 ```
 
+</TabItem>
+<TabItem label="@bedrock-core/sync">
+
+イベント`connect`と`disconnect`が発火します。現在の状態は、状態`connected`でも読めます。
+
+```ts
+sync.events.on('discord-mcbe', 'connect', () => {
+  // discord-mcbeへの接続が開始された
+});
+
+sync.events.on('discord-mcbe', 'disconnect', () => {
+  // discord-mcbeから切断された
+});
+```
+
+</TabItem>
+</Tabs>
+
 ## 型と定数を利用する
 
-バンドラーを使っているアドオンは、npmパッケージ`@discord-mcbe/shared`からチャンネル名、機能名、ペイロードの型と検証関数を利用できます。
+バンドラーを使っているアドオンは、npmパッケージ`@discord-mcbe/shared`から名前の定数、ペイロードの型と検証関数を利用できます。どちらのライブラリでも使うものはそのまま、片方だけで使うものは`AddonIpc`と`AddonSync`にまとまっています。
+
+<Tabs syncKey="provider">
+<TabItem label="MCBE-IPC">
 
 ```ts
 import { IPC, PROTO } from 'mcbe-ipc';
-import { AddonChannel, type AddonChatSend } from '@discord-mcbe/shared';
+import { AddonIpc } from '@discord-mcbe/shared';
 
-const payload: AddonChatSend = {
+const payload: AddonIpc.ChatSend = {
   source: 'example-addon',
   playerId: player.id,
   message: 'hello',
 };
-IPC.send(AddonChannel.ChatSend, PROTO.String, JSON.stringify(payload));
+IPC.send(AddonIpc.Channel.ChatSend, PROTO.String, JSON.stringify(payload));
 ```
 
-| エクスポート                                     | 内容                                         |
-| ------------------------------------------------ | -------------------------------------------- |
-| `AddonChannel`                                   | チャンネル名（`dmc:register`など）           |
-| `AddonFeature`                                   | 機能名（`minecraft_chat`など）               |
-| `AddonRegisterRequest` / `AddonRegisterResponse` | `dmc:register`の要求と応答の型               |
-| `AddonChatSend` / `AddonSendMessage`             | `dmc:on_chat_send` / `dmc:send_message`の型  |
-| `AddonDiscordChat` / `AddonDiscordMessage`       | `dmc:discord_chat`と、その`message`の型      |
-| `safeParseAddonRegisterResponse`                 | `dmc:register`の応答を検証する関数           |
-| `safeParseAddonDiscordChat`                      | `dmc:discord_chat`のペイロードを検証する関数 |
+</TabItem>
+<TabItem label="@bedrock-core/sync">
+
+```ts
+import { AddonSync } from '@discord-mcbe/shared';
+
+const dmc = sync.rpc.typed<AddonSync.Rpc>(AddonSync.NODE_ID);
+await dmc.chatSend({ playerId: player.id, message: 'hello' });
+```
+
+</TabItem>
+</Tabs>
+
+| エクスポート                                                              | 内容                                            |
+| ------------------------------------------------------------------------- | ----------------------------------------------- |
+| `AddonFeature`                                                            | 機能名（`minecraft_chat`など）                  |
+| `AddonRegisterRequest` / `AddonRegisterResponse`                          | 登録の要求と応答の型                            |
+| `AddonChatSend` / `AddonSendMessage`                                      | チャットの通知と、Discordへ送るメッセージの型   |
+| `AddonDiscordChat` / `AddonDiscordMessage`                                | Discordのチャットと、その`message`の型          |
+| `safeParseAddonRegisterResponse` / `safeParseAddonDiscordChat`            | 登録の応答と、Discordのチャットを検証する関数   |
+| `AddonIpc.Channel`                                                        | MCBE-IPCのチャンネル名（`dmc:register`など）    |
+| `AddonIpc.RegisterRequest` / `AddonIpc.ChatSend` / `AddonIpc.SendMessage` | MCBE-IPCのペイロードの型。`source`が加わります  |
+| `AddonSync.NODE_ID`                                                       | `@bedrock-core/sync`でのdiscord-mcbeのノードID  |
+| `AddonSync.Method` / `AddonSync.Event` / `AddonSync.StateKey`             | `@bedrock-core/sync`のRPC、イベント、状態の名前 |
+| `AddonSync.Rpc`                                                           | `@bedrock-core/sync`のRPCの型                   |

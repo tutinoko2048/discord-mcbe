@@ -25,6 +25,7 @@
     "clean": "rimraf dist .turbo tsconfig.tsbuildinfo"
   },
   "dependencies": {
+    "@bedrock-core/sync": "2.0.0",
     "@discord-mcbe/shared": "workspace:*",
     "@minecraft/server": "catalog:",
     "@minecraft/server-net": "catalog:",
