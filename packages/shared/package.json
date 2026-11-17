@@ -28,6 +28,7 @@
     "lint:fix": "vp lint --fix",
     "format": "vp fmt",
     "check": "vp check",
+    "test": "bun test",
     "clean": "rimraf dist .turbo tsconfig.tsbuildinfo"
   },
   "dependencies": {

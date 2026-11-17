@@ -10,10 +10,10 @@
     "lint:fix": "turbo run lint:fix",
     "format": "turbo run format",
     "check": "turbo run check",
+    "test": "turbo run test",
     "clean": "pnpm run -r clean",
     "prepare": "vp config",
     "bump-version": "bun run scripts/version.ts",
-    "publish": "bun run scripts/publish.ts",
     "create-release-assets": "bun run scripts/create-release-assets.ts"
   },
   "devDependencies": {

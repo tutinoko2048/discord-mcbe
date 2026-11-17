@@ -10,6 +10,9 @@
     "lint:fix": {},
     "format": {},
     "check": {},
+    "test": {
+      "dependsOn": ["^build"]
+    },
     "clean": {
       "cache": false
     }

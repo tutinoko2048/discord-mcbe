@@ -475,7 +475,7 @@ WebSocket 接続では、サーバーからアドオンへのパケットを、�
 実機では確認していないこと:
 
 - MakeCountry の Lite 版（`dist/lite`）。フル版と同じ連携コードがバンドルに入っていることは確認している。
-- BDS（`@minecraft/server-net` 接続）でのフェーズ2と `@bedrock-core/sync`。
+- BDS（`@minecraft/server-net` 接続）でのフェーズ2。
 
 ### `@bedrock-core/sync`
 
